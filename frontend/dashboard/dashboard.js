@@ -305,7 +305,7 @@
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("/api/spark-chat", {
+      const response = await fetch("https://idsnext-backend.onrender.com/api/spark-chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -327,7 +327,7 @@
   async function loadUserXP() {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("/api/users/me", {
+      const response = await fetch("https://idsnext-backend.onrender.com/api/users/me", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const user = await response.json();

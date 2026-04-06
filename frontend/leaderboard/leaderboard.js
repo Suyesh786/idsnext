@@ -7,7 +7,7 @@ async function loadUsers() {
 
   try {
 
-    const res = await fetch("/api/users/leaderboard", {
+    const res = await fetch("https://idsnext-backend.onrender.com/api/users/leaderboard", {
     headers: {
         Authorization: "Bearer " + localStorage.getItem("token")
     }
