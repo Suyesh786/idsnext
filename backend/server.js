@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 5000;
 // ─────────────────────────────────────────
 
 app.use(cors({
-  origin: ["http://localhost:5001", "http://127.0.0.1:5001"],
+  origin: ["http://idsnext-backend.onrender.com", "http://127.0.0.1:5001"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
