@@ -1,0 +1,62 @@
+<!--
+  spark.html — Spark AI Chat Assistant markup
+  This file is NOT loaded directly by the browser.
+  spark.js fetches this fragment and injects it into
+  the <body> of every page that loads spark.js.
+-->
+
+<!-- Spark Floating Orb -->
+<button class="spark-orb" id="sparkOrb" aria-label="Open Spark AI Assistant">
+  <img src="/spark/spark-orb.png" alt="Spark" class="spark-orb-img" />
+  <span class="spark-orb-pulse"></span>
+</button>
+
+<!-- Spark Chat Panel -->
+<div class="spark-panel" id="sparkPanel" aria-hidden="true">
+
+  <!-- Header -->
+  <div class="spark-header">
+    <div class="spark-header-left">
+      <img src="/spark/spark-logo.png" alt="Spark Logo" class="spark-logo-img" />
+      <div class="spark-header-info">
+        <span class="spark-name">Spark</span>
+        <span class="spark-tagline">Your AI Study Companion</span>
+      </div>
+    </div>
+    <div class="spark-header-right">
+      <div class="spark-status">
+        <span class="spark-status-dot"></span>
+        <span class="spark-status-text">Always here to help</span>
+      </div>
+      <button class="spark-close-btn" id="sparkClose" aria-label="Close Spark">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="spark-messages" id="sparkMessages" role="log" aria-live="polite"></div>
+
+  <!-- Input -->
+  <div class="spark-input-row">
+    <input
+      type="text"
+      id="sparkInput"
+      class="spark-input"
+      placeholder="Type a message..."
+      autocomplete="off"
+      aria-label="Message Spark"
+    />
+    <button class="spark-send-btn" id="sparkSend" aria-label="Send message">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 
+          1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 
+          1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+      </svg>
+    </button>
+  </div>
+
+</div>

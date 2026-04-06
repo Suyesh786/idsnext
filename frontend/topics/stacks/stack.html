@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stacks | iDS Studio Next</title>
+<link rel="stylesheet" href="../../dashboard/dashboard.css">
+<link rel="stylesheet" href="stack.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
+
+<!-- ═══════════ SIDEBAR (identical to dashboard.html) ═══════════ -->
+<aside class="sidebar">
+
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="28" rx="8" fill="url(#logoGrad)"/>
+        <text x="6" y="20" font-family="DM Sans" font-weight="700" font-size="14" fill="white">iD</text>
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#1a56db"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <a href="../../dashboard/dashboard.html" class="menu-item">Dashboard</a>
+    <a href="../../learn/learn.html" class="menu-item active">Learn</a>
+    <a href="../../practice/practice.html" class="menu-item">Practice</a>
+    <a href="../../leaderboard/leaderboard.html" class="menu-item">Leaderboard</a>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        Logout
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main stack-main">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 1</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Stacks</span>
+      </nav>
+      <!-- Page Title -->
+      <h1 class="lesson-heading">
+        Stack
+        <span class="lesson-heading-tag">LIFO – Last In First Out</span>
+      </h1>
+    </div>
+
+    <!-- Mark Complete Button -->
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+  <h2>What is a Stack?</h2>
+    <p>
+    A stack is a linear data structure that follows the principle of
+    <strong>LIFO (Last In First Out)</strong>.
+    </p>
+    <p>
+    The last element inserted into the stack is the first one removed.
+    </p>
+    <h3>Basic Operations</h3>
+    <ul>
+    <li><strong>Push</strong> – Insert element into stack</li>
+    <li><strong>Pop</strong> – Remove top element</li>
+    <li><strong>Peek</strong> – View top element</li>
+    <li><strong>IsEmpty</strong> – Check if stack is empty</li>
+    </ul>
+    <h3>Example</h3>
+    <pre>
+    Push 1
+    Push 2
+    Push 3
+
+    Stack:
+    3
+    2
+    1
+
+    Pop → removes 3
+    </pre>
+    <!-- Lesson material goes here -->
+    <div class="lesson-placeholder">
+      <!-- Placeholder visual for empty state -->
+      <div class="placeholder-icon">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <rect width="48" height="48" rx="14" fill="#eef3ff"/>
+          <path d="M16 14h16v4H16zM16 22h16v4H16zM16 30h10v4H16z" fill="#3b6cff" opacity="0.5"/>
+          <rect x="28" y="30" width="8" height="4" rx="2" fill="#3b6cff"/>
+        </svg>
+      </div>
+      <p class="placeholder-text">Lesson content will appear here.</p>
+      <p class="placeholder-sub">Unit 1 · Stacks · LIFO</p>
+    </div>
+
+    <!-- Bottom-right sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Large star -->
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGrad)" opacity="0.18"/>
+        <!-- Small sparkle top-right -->
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <!-- Tiny dot -->
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGrad" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="stack.js"></script>
+<link rel="stylesheet" href="../../spark/spark.css">
+<script src="../../spark/spark.js"></script>
+</body>
+</html>

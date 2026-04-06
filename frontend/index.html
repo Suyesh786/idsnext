@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ideas Studio Next — Master Data Structures Visually</title>
+  <link rel="stylesheet" href="home.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════ NAVBAR ═══════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <img src="image/ilogo.png" alt="Ideas Studio Next Logo" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="logo-fallback">
+          <span class="logo-bracket">{</span><span class="logo-dot"></span><span class="logo-bracket">}</span>
+        </div>
+        <span class="logo-text">iDS Studio <strong>Next</strong></span>
+        
+      </a>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="#features"     class="nav-link">Features</a></li>
+        <li><a href="#how-it-works" class="nav-link">How it Works</a></li>
+        <li><a href="#reviews"      class="nav-link">Reviews</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="auth/login.html" class="btn-ghost">Log In</a>
+        <a href="auth/signup.html" class="btn-primary nav-cta">Get Started Free</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-dots"></div>
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+
+    <div class="container hero-inner">
+
+      <!-- LEFT -->
+      <div class="hero-left">
+
+        <div class="hero-badge fade-in">
+          <span class="badge-dot"></span>
+          Built for CS Students &amp; Teachers
+        </div>
+
+        <h1 class="hero-heading fade-in">
+          The Visual Way to<br />
+          <span class="heading-accent">Master Data Structures</span>
+        </h1>
+
+        <p class="hero-sub fade-in">
+          Interactive lessons, coding challenges, and live simulators to help you <em>truly understand</em> data structures.
+        </p>
+
+        <!-- FOUR FEATURE CARDS -->
+        <div class="hero-feature-cards">
+          <div class="hero-feat-card fade-in" style="--card-delay: 0;">
+            <div class="feat-card-icon icon-blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <span class="feat-card-label">50+ Interactive Lessons</span>
+          </div>
+
+          <div class="hero-feat-card fade-in" style="--card-delay: 1;">
+            <div class="feat-card-icon icon-cyan">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <span class="feat-card-label">Coding Practice Challenges</span>
+          </div>
+
+          <div class="hero-feat-card fade-in" style="--card-delay: 2;">
+            <div class="feat-card-icon icon-green">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <span class="feat-card-label">Live Simulator &amp; Visualizations</span>
+          </div>
+
+          <div class="hero-feat-card fade-in" style="--card-delay: 3;">
+            <div class="feat-card-icon icon-orange">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <span class="feat-card-label">AI-Powered Assistance</span>
+          </div>
+        </div>
+
+        <div class="trust-row fade-in">
+          <div class="trust-item"><span class="trust-check">✔</span> Free forever</div>
+          <div class="trust-item"><span class="trust-check">✔</span> No credit card</div>
+          <div class="trust-item"><span class="trust-check">✔</span> University ready</div>
+        </div>
+      </div>
+
+      <!-- RIGHT — Interactive DS Card -->
+      <div class="hero-right fade-in fade-in-delay">
+        <div class="ds-card">
+          <div class="ds-card-header">
+            <div class="ds-card-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="ds-card-title">Data Structure Explorer</span>
+          </div>
+
+          <div class="ds-tabs">
+            <button class="ds-tab active" data-tab="array">Array</button>
+            <button class="ds-tab" data-tab="stack">Stack</button>
+            <button class="ds-tab" data-tab="queue">Queue</button>
+            <button class="ds-tab" data-tab="tree">Tree</button>
+          </div>
+
+          <div class="ds-content">
+            <!-- Array -->
+            <div class="ds-panel active" id="tab-array">
+              <p class="ds-label">int arr[5] = {12, 7, 45, 23, 9};</p>
+              <div class="array-visual">
+                <div class="array-box"><span class="array-val">12</span><span class="array-idx">0</span></div>
+                <div class="array-box"><span class="array-val">7</span><span class="array-idx">1</span></div>
+                <div class="array-box highlighted">
+                  <div class="highlight-tag">max</div>
+                  <span class="array-val">45</span><span class="array-idx">2</span>
+                </div>
+                <div class="array-box"><span class="array-val">23</span><span class="array-idx">3</span></div>
+                <div class="array-box"><span class="array-val">9</span><span class="array-idx">4</span></div>
+              </div>
+              <p class="ds-info">Random access <strong>O(1)</strong> · Search <strong>O(n)</strong></p>
+            </div>
+
+            <!-- Stack -->
+            <div class="ds-panel" id="tab-stack">
+              <p class="ds-label">stack&lt;int&gt; s; // LIFO</p>
+              <div class="stack-visual">
+                <div class="stack-box stack-top"><span>42</span><span class="stack-tag">← TOP</span></div>
+                <div class="stack-box"><span>17</span></div>
+                <div class="stack-box"><span>8</span></div>
+                <div class="stack-box"><span>31</span><span class="stack-tag">BOTTOM</span></div>
+              </div>
+              <p class="ds-info">Push/Pop <strong>O(1)</strong> · Last In, First Out</p>
+            </div>
+
+            <!-- Queue -->
+            <div class="ds-panel" id="tab-queue">
+              <p class="ds-label">queue&lt;int&gt; q; // FIFO</p>
+              <div class="queue-visual">
+                <div class="queue-arrow">
+                  <span>DEQUEUE</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+                <div class="queue-boxes">
+                  <div class="queue-box queue-front"><span>5</span><span class="queue-tag">FRONT</span></div>
+                  <div class="queue-box"><span>13</span></div>
+                  <div class="queue-box"><span>27</span></div>
+                  <div class="queue-box queue-rear"><span>9</span><span class="queue-tag">REAR</span></div>
+                </div>
+                <div class="queue-arrow">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <span>ENQUEUE</span>
+                </div>
+              </div>
+              <p class="ds-info">Enqueue/Dequeue <strong>O(1)</strong> · First In, First Out</p>
+            </div>
+
+            <!-- Tree -->
+            <div class="ds-panel" id="tab-tree">
+              <p class="ds-label">Binary Search Tree</p>
+              <div class="tree-visual">
+                <div class="tree-level"><div class="tree-node tree-root">25</div></div>
+                <div class="tree-connectors">
+                  <div class="tree-line tree-line-left"></div>
+                  <div class="tree-line tree-line-right"></div>
+                </div>
+                <div class="tree-level">
+                  <div class="tree-node">15</div>
+                  <div class="tree-node tree-search">36</div>
+                </div>
+                <div class="tree-connectors tree-connectors-l2">
+                  <div class="tree-line"></div><div class="tree-line"></div>
+                  <div class="tree-line"></div><div class="tree-line"></div>
+                </div>
+                <div class="tree-level">
+                  <div class="tree-node tree-small">10</div>
+                  <div class="tree-node tree-small">20</div>
+                  <div class="tree-node tree-small">30</div>
+                  <div class="tree-node tree-small">40</div>
+                </div>
+              </div>
+              <p class="ds-info">Search/Insert <strong>O(log n)</strong> avg</p>
+            </div>
+          </div>
+
+          <!-- Try It CTA inside card -->
+          <div class="ds-card-cta">
+            <a href="auth/signup.html" class="btn-primary btn-large ds-cta-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Try It For Free
+            </a>
+          </div>
+        </div>
+
+        <div class="float-badge float-badge-1">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Visual Learning
+        </div>
+        <div class="float-badge float-badge-2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Live Simulator
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ STATS ═══════════ -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" data-target="50" data-suffix="+">0+</div>
+          <div class="stat-label">Lessons</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="120" data-suffix="+">0+</div>
+          <div class="stat-label">Practice Problems</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="4" data-suffix="">0</div>
+          <div class="stat-label">Live Simulators</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="100" data-suffix="%">0%</div>
+          <div class="stat-label">Free</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FEATURES ═══════════ -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">Features</div>
+        <h2 class="section-title">Everything You Need to <span class="accent">Excel</span></h2>
+        <p class="section-sub">A complete learning ecosystem built for serious CS learners and educators.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon icon-purple">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3>Structured Curriculum</h3>
+          <p>From arrays to graphs — a carefully sequenced path that builds intuition step by step.</p>
+          <a href="#" class="feature-link">Explore →</a>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon icon-cyan">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <h3>Practice Coding</h3>
+          <p>Hundreds of curated problems with hints, solutions, and complexity breakdowns.</p>
+          <a href="#" class="feature-link">Explore →</a>
+        </div>
+        <div class="feature-card feature-card-highlight fade-in">
+          <div class="feature-icon icon-blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3>Live Lab Simulator</h3>
+          <p>Interact with data structures in real-time. Push, pop, insert and watch it animate live.</p>
+          <a href="#" class="feature-link">Explore →</a>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon icon-orange">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <h3>Compare Mode</h3>
+          <p>Put two algorithms side by side and watch them race. Complexity made visible.</p>
+          <a href="#" class="feature-link">Explore →</a>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon icon-green">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <h3>Track Progress</h3>
+          <p>Streak tracking, mastery badges, and detailed analytics so you always know where you stand.</p>
+          <a href="#" class="feature-link">Explore →</a>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon icon-pink">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Teacher Tools</h3>
+          <p>Create classrooms, assign problems, monitor student progress, and export reports.</p>
+          <a href="#" class="feature-link">Explore →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ AI STUDY ASSISTANT (FEATURE PREVIEW) ═══════════ -->
+  <section class="ai-section" id="ai-assistant">
+    <div class="ai-bg-blob ai-bg-blob-1"></div>
+    <div class="ai-bg-blob ai-bg-blob-2"></div>
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag section-tag-ai">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          AI-Powered
+        </div>
+        <h2 class="section-title">AI Study <span class="accent">Assistant</span></h2>
+        <p class="section-sub">Let AI guide your learning journey. Tell the AI what topics you already understand and it will generate a personalized study plan for mastering data structures.</p>
+        <div class="preview-banner">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Feature Preview — Coming Soon
+        </div>
+      </div>
+
+      <div class="ai-cards-row">
+
+        <!-- LEFT: Study Planner Card -->
+        <div class="ai-card ai-card-preview fade-in">
+          <div class="ai-card-header">
+            <div class="ai-card-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div>
+              <h3 class="ai-card-title">Personalized Study Planner</h3>
+              <p class="ai-card-sub">Get a custom learning path based on what you know.</p>
+            </div>
+          </div>
+
+          <div class="ai-form">
+            <p class="ai-question">What topics have you already studied?</p>
+            <div class="ai-checkboxes">
+              <label class="ai-checkbox-label ai-checkbox-disabled"><input type="checkbox" value="Arrays" disabled /><span>Arrays</span></label>
+              <label class="ai-checkbox-label ai-checkbox-disabled"><input type="checkbox" value="Linked Lists" disabled /><span>Linked Lists</span></label>
+              <label class="ai-checkbox-label ai-checkbox-disabled"><input type="checkbox" value="Stack" disabled /><span>Stack</span></label>
+              <label class="ai-checkbox-label ai-checkbox-disabled"><input type="checkbox" value="Queue" disabled /><span>Queue</span></label>
+              <label class="ai-checkbox-label ai-checkbox-disabled"><input type="checkbox" value="Trees" disabled /><span>Trees</span></label>
+              <label class="ai-checkbox-label ai-checkbox-disabled"><input type="checkbox" value="Graphs" disabled /><span>Graphs</span></label>
+            </div>
+            <button class="btn-ai btn-disabled" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Generate My Study Plan
+            </button>
+          </div>
+
+          <div class="ai-result ai-result-static">
+            <div class="ai-result-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Example AI Output
+            </div>
+            <p class="ai-example-label">Your Personalized Study Path</p>
+            <ol class="ai-plan-list">
+              <li><span class="ai-step-num">1</span><strong>Stack &amp; Queue fundamentals</strong></li>
+              <li><span class="ai-step-num">2</span><strong>Linked Lists</strong></li>
+              <li><span class="ai-step-num">3</span><strong>Binary Trees</strong></li>
+              <li><span class="ai-step-num">4</span><strong>Binary Search Trees</strong></li>
+              <li><span class="ai-step-num">5</span><strong>Graph Traversals</strong></li>
+              <li><span class="ai-step-num">6</span><strong>Competitive programming prep</strong></li>
+            </ol>
+            <p class="ai-result-note">Estimated completion: <strong>3–4 weeks</strong> at 1 hr/day</p>
+          </div>
+        </div>
+
+        <!-- RIGHT: AI Code Helper Card -->
+        <div class="ai-card ai-card-helper ai-card-preview fade-in fade-in-delay">
+          <div class="ai-card-header">
+            <div class="ai-card-icon ai-card-icon-purple">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div>
+              <h3 class="ai-card-title">AI Code Helper</h3>
+              <p class="ai-card-sub">Ask questions about algorithms, data structures, or debugging code.</p>
+            </div>
+          </div>
+
+          <div class="ai-suggestions">
+            <span class="ai-suggestion-chip ai-chip-disabled">Explain stack push</span>
+            <span class="ai-suggestion-chip ai-chip-disabled">Binary search O(log n)?</span>
+            <span class="ai-suggestion-chip ai-chip-disabled">Debug linked list</span>
+          </div>
+
+          <div class="ai-input-row">
+            <input type="text" class="ai-input ai-input-disabled" placeholder="Explain stack push operation..." disabled />
+            <button class="btn-ai-ask btn-disabled" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              Ask AI
+            </button>
+          </div>
+
+          <div class="ai-chat-response ai-response-static">
+            <div class="ai-response-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              AI Response Example
+            </div>
+            <div class="ai-response-body">
+              Always consider time and space complexity when choosing a data structure.<br /><br />
+              <strong>Arrays:</strong> Fast access but slower insertions.<br /><br />
+              <strong>Linked Lists:</strong> Fast insertions but slower access.<br /><br />
+              <strong>Trees:</strong> Useful for hierarchical data.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ HOW IT WORKS ═══════════ -->
+  <section class="how-section" id="how-it-works">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">Process</div>
+        <h2 class="section-title">How It <span class="accent">Works</span></h2>
+        <p class="section-sub">From zero to fluent in three simple steps.</p>
+      </div>
+
+      <div class="steps-row">
+        <div class="step-card fade-in">
+          <div class="step-number">01</div>
+          <div class="step-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          <h3>Pick a Topic</h3>
+          <p>Browse our structured curriculum and choose the data structure you want to conquer today.</p>
+        </div>
+        <div class="step-arrow fade-in">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div class="step-card fade-in">
+          <div class="step-number">02</div>
+          <div class="step-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3>Learn &amp; Simulate</h3>
+          <p>Watch animated explanations, interact with the live simulator, and build real understanding.</p>
+        </div>
+        <div class="step-arrow fade-in">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div class="step-card fade-in">
+          <div class="step-number">03</div>
+          <div class="step-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h3>Practice &amp; Compete</h3>
+          <p>Solve curated problems, earn badges, and climb the leaderboard. Mastery is the goal.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ TESTIMONIALS ═══════════ -->
+  <section class="reviews-section" id="reviews">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">Reviews</div>
+        <h2 class="section-title">Loved by <span class="accent">Learners</span></h2>
+        <p class="section-sub">Hear from students and educators who changed how they think about CS.</p>
+      </div>
+
+      <div class="reviews-grid">
+        <div class="review-card fade-in">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-quote">"I finally understood how a BST actually works after <em>seeing</em> the insertions animate in real time. No textbook came close to this."</p>
+          <div class="review-author">
+            <div class="review-avatar avatar-1">AR</div>
+            <div>
+              <div class="review-name">Arjun Reddy</div>
+              <div class="review-role">CS Student, IIT Hyderabad</div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card review-card-featured fade-in">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-quote">"I assign Ideas Studio Next as a supplement to my algorithms course. The Compare Mode alone saves me an hour of lecturing every week."</p>
+          <div class="review-author">
+            <div class="review-avatar avatar-2">PM</div>
+            <div>
+              <div class="review-name">Prof. Meera Nair</div>
+              <div class="review-role">Associate Professor, BITS Pilani</div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card fade-in">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-quote">"I went from barely passing DSA to cracking my placement interview in 6 weeks. The structured curriculum made all the difference."</p>
+          <div class="review-author">
+            <div class="review-avatar avatar-3">SP</div>
+            <div>
+              <div class="review-name">Sneha Patel</div>
+              <div class="review-role">Final Year Student, VIT Vellore</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CTA ═══════════ -->
+  <section class="cta-section">
+    <div class="container cta-inner fade-in">
+      <div class="cta-badge">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        100% Free — No Catch
+      </div>
+      <h2 class="cta-heading">Ready to Master<br /><span>Data Structures?</span></h2>
+      <p class="cta-sub">Join thousands of students and teachers building real CS intuition — for free, forever.</p>
+      <div class="cta-buttons">
+        <a href="#" class="btn-primary btn-large">Create Free Account</a>
+        <a href="#" class="btn-outline-white btn-large">I Have an Account</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">
+          <img src="image/ilogo.png" alt="Ideas Studio Next" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="logo-fallback">
+            <span class="logo-bracket">{</span><span class="logo-dot"></span><span class="logo-bracket">}</span>
+          </div>
+          <span class="logo-text">Ideas Studio <strong>Next</strong></span>
+        </a>
+        <p class="footer-tagline">Making data structures click for everyone.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-link" aria-label="Twitter">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+          </a>
+          <a href="#" class="social-link" aria-label="GitHub">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </a>
+          <a href="#" class="social-link" aria-label="YouTube">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.41 19.1C5.12 19.56 12 19.56 12 19.56s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="#">Curriculum</a></li>
+          <li><a href="#">Simulators</a></li>
+          <li><a href="#">Practice Hub</a></li>
+          <li><a href="#">Leaderboard</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Learn</h4>
+        <ul>
+          <li><a href="#">Array Visualizer</a></li>
+          <li><a href="#">Tree Explorer</a></li>
+          <li><a href="#">Graph Tracer</a></li>
+          <li><a href="#">Compare Mode</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Tools</h4>
+        <ul>
+          <li><a href="#">Code Editor</a></li>
+          <li><a href="#">Complexity Calc</a></li>
+          <li><a href="#">AI Assistant</a></li>
+          <li><a href="#">Cheatsheets</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>For Teachers</h4>
+        <ul>
+          <li><a href="#">Classroom Setup</a></li>
+          <li><a href="#">Assignments</a></li>
+          <li><a href="#">Progress Reports</a></li>
+          <li><a href="#">Educator Hub</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <p>© 2026 Ideas Studio Next. All rights reserved. Made with ♥ for learners everywhere.</p>
+        <div class="footer-legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

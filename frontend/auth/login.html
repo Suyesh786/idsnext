@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iDS Studio Next — Login</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="login.css" />
+</head>
+
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- Logo & Title -->
+    <div class="brand">
+      <div class="logo-icon">
+        <img
+          src="../image/ilogo.png"
+          alt="iDS logo"
+          class="logo-img"
+          onerror="this.style.display='none'; this.parentElement.querySelector('.logo-fallback').style.display='flex';"
+        />
+        <span class="logo-fallback">iDS</span>
+      </div>
+
+      <h1 class="brand-name">iDS Studio <span class="brand-next">Next</span></h1>
+      <p class="brand-subtitle">AI Powered Data Structure Learning</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="card-wrapper">
+      <div class="card-glow"></div>
+
+      <div class="card">
+
+        <div class="card-header">
+          <h2 class="card-title">Welcome Back</h2>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="loginForm">
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <!-- Error Message Box -->
+          <div id="errorBox" style="display:none;color:red;margin-bottom:10px;"></div>
+
+          <button class="btn-primary" type="submit">
+            Continue
+          </button>
+
+        </form>
+
+        <div class="card-links">
+          <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+          <p><a href="#">Browse Public Sections</a></p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JS -->
+  <script src="../script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iDS Studio Next — Sign Up</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="signup.css" />
+</head>
+
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- Logo & Title -->
+    <div class="brand">
+      <div class="logo-icon">
+        <img
+          src="../image/ilogo.png"
+          alt="iDS logo"
+          class="logo-img"
+          onerror="this.style.display='none'; this.parentElement.querySelector('.logo-fallback').style.display='flex';"
+        />
+        <span class="logo-fallback">iDS</span>
+      </div>
+      <h1 class="brand-name">iDS Studio <span class="brand-next">Next</span></h1>
+      <p class="brand-subtitle">Join iDS Studio and start learning</p>
+    </div>
+
+    <!-- Card -->
+    <div class="card-wrapper">
+      <div class="card-glow"></div>
+
+      <div class="card">
+
+        <div class="card-header">
+          <h2 class="card-title">Create Account</h2>
+        </div>
+
+        <!-- ── SECTION 1: Option Cards ── -->
+        <div id="optionsSection" class="section">
+
+          <!-- Option 1: Clickable -->
+          <button type="button" class="option-card" id="optionTeacher" onclick="showForm()">
+            <div class="option-icon">🎓</div>
+            <div class="option-body">
+              <span class="option-title">I was added by my teacher</span>
+              <span class="option-desc">Your teacher has already created an account for you</span>
+            </div>
+            <span class="option-arrow">→</span>
+          </button>
+
+          <!-- Option 2: Hover only -->
+          <div class="option-card option-disabled" title="Coming soon">
+            <div class="option-icon">📚</div>
+            <div class="option-body">
+              <span class="option-title">Register as External Student</span>
+              <span class="option-desc">Create a new account and request to join a section</span>
+            </div>
+            <span class="option-arrow">→</span>
+          </div>
+
+          <!-- Option 3: Hover only -->
+          <div class="option-card option-disabled" title="Coming soon">
+            <div class="option-icon">🏫</div>
+            <div class="option-body">
+              <span class="option-title">Register as Teacher</span>
+              <span class="option-desc">Create a teacher account (requires admin approval)</span>
+            </div>
+            <span class="option-arrow">→</span>
+          </div>
+
+        </div>
+
+        <!-- ── SECTION 2: Form ── -->
+        <div id="formSection" class="section hidden">
+
+          <button class="back-btn" onclick="showOptions()">
+            <span class="back-arrow">←</span> Back to options
+          </button>
+
+          <!-- Blue Info Box -->
+          <div class="info-box">
+            <p>If your teacher added you, please use the login page to set your password.</p>
+            <a href="login.html" class="info-link">Go to Login →</a>
+          </div>
+
+          <!-- Form -->
+          <form id="signupForm">
+
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Your full name"
+                autocomplete="name"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Minimum 6 characters"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              />
+            </div>
+
+            <!-- ── Animated Section Dropdown ── -->
+            <div class="form-group">
+              <label>Section <span class="optional-tag">(optional)</span></label>
+
+              <!-- Hidden input that carries the value to the form submission -->
+              <input type="hidden" id="section" name="section" value="" />
+
+              <div class="custom-select" id="sectionSelect">
+                <button type="button" class="select-trigger" id="selectTrigger" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="select-value" id="selectValue">Select your section</span>
+                  <span class="select-chevron" id="selectChevron">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                </button>
+
+                <div class="select-dropdown" id="selectDropdown" role="listbox" aria-label="Section">
+                  <div class="select-dropdown-inner">
+                    <button type="button" class="select-option" role="option" data-value="CSE AIML - A">
+                      <span class="option-check">✓</span>
+                      <span>CSE AIML - A</span>
+                    </button>
+                    <button type="button" class="select-option" role="option" data-value="CSE AIML - B">
+                      <span class="option-check">✓</span>
+                      <span>CSE AIML - B</span>
+                    </button>
+                    <button type="button" class="select-option" role="option" data-value="CSE AIML - R">
+                      <span class="option-check">✓</span>
+                      <span>CSE AIML - R</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <span class="field-hint">Your teacher will share this, or select from available sections above.</span>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorBox" class="error-box" style="display:none;"></div>
+
+            <button class="btn-primary" type="submit">Create Account</button>
+
+          </form>
+
+        </div>
+
+        <!-- Bottom link — always visible -->
+        <div class="card-links">
+          <p>Already have an account? <a href="login.html">Sign In</a></p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ---------- Section transitions ---------- */
+    function showForm() {
+      const opts = document.getElementById('optionsSection');
+      const form = document.getElementById('formSection');
+
+      opts.classList.add('fade-out');
+      setTimeout(() => {
+        opts.classList.add('hidden');
+        opts.classList.remove('fade-out');
+        form.classList.remove('hidden');
+        form.classList.add('fade-in');
+        setTimeout(() => form.classList.remove('fade-in'), 400);
+      }, 250);
+    }
+
+    function showOptions() {
+      const opts = document.getElementById('optionsSection');
+      const form = document.getElementById('formSection');
+
+      form.classList.add('fade-out');
+      setTimeout(() => {
+        form.classList.add('hidden');
+        form.classList.remove('fade-out');
+        opts.classList.remove('hidden');
+        opts.classList.add('fade-in');
+        setTimeout(() => opts.classList.remove('fade-in'), 400);
+      }, 250);
+    }
+
+    /* ---------- Browse placeholder ---------- */
+    function handleBrowse() {
+      alert('Section browser coming soon!');
+    }
+  </script>
+  <script src="signup.js"></script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn | IDS Studio Next</title>
+<link rel="stylesheet" href="../dashboard/dashboard.css">
+<link rel="stylesheet" href="learn.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- ═══ MOBILE / DESKTOP TOP BAR (hamburger lives here) ═══ -->
+<div class="topbar" id="topbar">
+  <!-- Hamburger button -->
+  <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <!-- Logo shown in topbar on mobile -->
+  <div class="topbar-logo">
+    <img src="../image/ilogo.png" class="logo-img" alt="IDS Logo">
+    <span class="topbar-site-name">iDS Studio <span class="topbar-next">Next</span></span>
+  </div>
+</div>
+
+<!-- Dark overlay for mobile sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="mainSidebar">
+
+  <!-- Desktop-only: hamburger toggle at top of sidebar -->
+  <div class="sidebar-desktop-toggle">
+    <button class="hamburger-btn" id="desktopHamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="../image/ilogo.png" class="logo-img" alt="IDS Logo">
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <a href="../dashboard/dashboard.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+      </svg>
+      <span class="menu-label">Dashboard</span>
+    </a>
+    <a href="../learn/learn.html" class="menu-item active">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+      </svg>
+      <span class="menu-label">Learn</span>
+    </a>
+    <a href="../practice/practice.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+      </svg>
+      <span class="menu-label">Practice</span>
+    </a>
+    <a href="../leaderboard/leaderboard.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+      </svg>
+      <span class="menu-label">Leaderboard</span>
+    </a>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        <span class="menu-label">Logout</span>
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="mainContent">
+
+  <!-- Page Header -->
+  <div class="learn-header">
+    <div>
+      <h1 class="learn-title">Learn Data Structures</h1>
+      <p class="learn-subtitle">Master core concepts step-by-step</p>
+    </div>
+  </div>
+
+  <!-- Units Container -->
+  <div class="units-container">
+
+    <!-- ── Unit 1: Introduction to Data Structures (expanded by default) ── -->
+    <div class="unit-card unit-expanded" style="--delay: 0ms">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-badge badge-blue">01</div>
+          <div class="unit-meta">
+            <span class="unit-title">Introduction to Data Structures</span>
+            <span class="unit-count">5 topics</span>
+          </div>
+        </div>
+        <div class="unit-chevron">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="unit-body">
+        <div class="topic-list">
+
+          <!-- Topic 1: ADT -->
+          <div class="topic-card topic-clickable" onclick="window.location.href='../topics/adt/adt.html'">
+            <div class="topic-icon-wrap icon-purple">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+              </svg>
+            </div>
+            <div class="topic-content">
+              <span class="topic-name">Abstract Data Types (ADT)</span>
+              <span class="topic-desc">Learn the conceptual foundations of data structures</span>
+            </div>
+          </div>
+
+          <!-- Topic 2: Array ADT -->
+          <div class="topic-card topic-clickable" onclick="window.location.href='../topics/array-adt/array-adt.html'">
+            <div class="topic-icon-wrap icon-blue">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+              </svg>
+            </div>
+            <div class="topic-content">
+              <span class="topic-name">Array ADT</span>
+              <span class="topic-desc">Understand contiguous arrays and their time complexity</span>
+            </div>
+          </div>
+
+          <!-- Topic 3: Sparse Matrix -->
+          <div class="topic-card topic-clickable" onclick="window.location.href='../topics/sparse-matrix/sparse-matrix.html'">
+            <div class="topic-icon-wrap icon-teal">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="topic-content">
+              <span class="topic-name">Sparse Matrix</span>
+              <span class="topic-desc">Sparse matrix using arrays and operations</span>
+            </div>
+          </div>
+
+          <!-- Topic 4: Stacks -->
+          <div class="topic-card topic-clickable" onclick="window.location.href='../topics/stacks/stack.html'">
+            <div class="topic-icon-wrap icon-orange">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
+              </svg>
+            </div>
+            <div class="topic-content">
+              <span class="topic-name">Stacks</span>
+              <span class="topic-desc">Representation and application, stack operations in C</span>
+            </div>
+          </div>
+
+          <!-- Topic 5: Queues -->
+          <div class="topic-card topic-clickable" onclick="window.location.href='../topics/queue/queue.html'">
+            <div class="topic-icon-wrap icon-green">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm0 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2z"/>
+              </svg>
+            </div>
+            <div class="topic-content">
+              <span class="topic-name">Queues</span>
+              <span class="topic-desc">Representation and application, queue operations in C</span>
+            </div>
+          </div>
+
+        </div><!-- /topic-list -->
+      </div>
+    </div>
+
+    <!-- ── Unit 2: Advanced Structures (collapsed) ── -->
+    <div class="unit-card unit-collapsed" style="--delay: 80ms">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-badge badge-purple">02</div>
+          <div class="unit-meta">
+            <span class="unit-title">Advanced Structures</span>
+            <span class="unit-count">Coming soon</span>
+          </div>
+        </div>
+        <div class="unit-chevron">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+      <div class="unit-body">
+        <div class="unit-empty-state">
+          <span>Topics will be added soon. Stay tuned!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Unit 3: Trees (collapsed) ── -->
+    <div class="unit-card unit-collapsed" style="--delay: 160ms">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-badge badge-green">03</div>
+          <div class="unit-meta">
+            <span class="unit-title">Trees</span>
+            <span class="unit-count">Coming soon</span>
+          </div>
+        </div>
+        <div class="unit-chevron">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+      <div class="unit-body">
+        <div class="unit-empty-state">
+          <span>Topics will be added soon. Stay tuned!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Unit 4: Graphs (collapsed) ── -->
+    <div class="unit-card unit-collapsed" style="--delay: 240ms">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-badge badge-orange">04</div>
+          <div class="unit-meta">
+            <span class="unit-title">Graphs</span>
+            <span class="unit-count">Coming soon</span>
+          </div>
+        </div>
+        <div class="unit-chevron">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+      <div class="unit-body">
+        <div class="unit-empty-state">
+          <span>Topics will be added soon. Stay tuned!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Unit 5: Algorithms (collapsed) ── -->
+    <div class="unit-card unit-collapsed" style="--delay: 320ms">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-badge badge-red">05</div>
+          <div class="unit-meta">
+            <span class="unit-title">Algorithms</span>
+            <span class="unit-count">Coming soon</span>
+          </div>
+        </div>
+        <div class="unit-chevron">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+      <div class="unit-body">
+        <div class="unit-empty-state">
+          <span>Topics will be added soon. Stay tuned!</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /units-container -->
+
+</main>
+
+<!-- Auth + User Hydration -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "../auth/login.html";
+    return;
+  }
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user && user.name) {
+    const sidebarName = document.getElementById("sidebarUserName");
+    if (sidebarName) sidebarName.textContent = user.name;
+
+    const avatar = document.getElementById("userAvatar");
+    if (avatar) avatar.textContent = user.name.charAt(0).toUpperCase();
+  }
+});
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "/index.html";
+}
+
+function toggleUnit(headerEl) {
+  const unitCard = headerEl.closest(".unit-card");
+  const isExpanded = unitCard.classList.contains("unit-expanded");
+  if (isExpanded) {
+    unitCard.classList.remove("unit-expanded");
+    unitCard.classList.add("unit-collapsed");
+  } else {
+    unitCard.classList.remove("unit-collapsed");
+    unitCard.classList.add("unit-expanded");
+  }
+}
+</script>
+
+<!-- Sidebar toggle logic (learn.js) -->
+<script src="learn.js"></script>
+
+<!-- ═══════════ Spark AI Chat Assistant ═══════════ -->
+<link rel="stylesheet" href="../spark/spark.css">
+<script src="../spark/spark.js"></script>
+
+</body>
+</html>

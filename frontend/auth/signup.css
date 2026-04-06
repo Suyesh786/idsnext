@@ -1,0 +1,756 @@
+/* ============================================================
+   iDS Studio Next — Signup Page Styles
+   Matches login.css background animation & visual language
+   ============================================================ */
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --blue-primary:   #2563EB;
+  --blue-light:     #3B82F6;
+  --purple-primary: #7C3AED;
+  --text-heading:   #0F172A;
+  --text-body:      #334155;
+  --text-subtle:    #94A3B8;
+  --link-color:     #2563EB;
+  --input-bg:       #ffffff;
+  --input-border:   #CBD5E1;
+  --card-bg:        #f5f7fb;
+  --radius-card:    16px;
+  --radius-input:   10px;
+  --radius-btn:     10px;
+  --font-main:      'DM Sans', sans-serif;
+  --font-mono:      'DM Mono', monospace;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Animated Page Background (IDENTICAL TO LOGIN.CSS) ---------- */
+
+body {
+  min-height: 100vh;
+
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #f4f8ff 15%,
+    #e3edff 30%,
+    #c7dcff 45%,
+    #b4d2ff 60%,
+    #c7dcff 75%,
+    #e6f0ff 90%,
+    #ffffff 100%
+  );
+
+  background-size: 300% 300%;
+
+  animation: bgFlow 22s ease-in-out infinite;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes bgFlow {
+
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+
+}
+
+/* ---------- Page Wrapper ---------- */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 16px 40px;
+  width: 100%;
+  margin-top: -3vh;
+
+  animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ---------- Brand / Logo ---------- */
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(37, 99, 235, 0.28);
+  overflow: hidden;
+  position: relative;
+}
+
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.logo-fallback {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--blue-primary), var(--purple-primary));
+  position: absolute;
+  inset: 0;
+}
+
+.brand-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+}
+
+.brand-next {
+  color: var(--blue-primary);
+  font-weight: 800;
+}
+
+.brand-subtitle {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-subtle);
+  letter-spacing: 0.01em;
+}
+
+/* ---------- Card Wrapper ---------- */
+.card-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+}
+
+/* ---------- Glowing Animated Border (matches login.css) ---------- */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.card-glow {
+  position: absolute;
+  inset: -3px;
+  border-radius: calc(var(--radius-card) + 3px);
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0deg,
+    transparent 55deg,
+    #2563EB    80deg,
+    #7C3AED   130deg,
+    #2563EB   170deg,
+    transparent 210deg,
+    transparent 360deg
+  );
+  filter: blur(6px);
+  animation: rotateBorder 7s linear infinite;
+  z-index: 0;
+  opacity: 0.9;
+}
+
+.card-glow::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: calc(var(--radius-card) + 1px);
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0deg,
+    transparent 55deg,
+    #2563EB    80deg,
+    #7C3AED   130deg,
+    #2563EB   170deg,
+    transparent 210deg,
+    transparent 360deg
+  );
+  filter: blur(1px);
+  animation: rotateBorder 7s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes rotateBorder {
+  0%   { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
+/* ---------- Card ---------- */
+.card {
+  position: relative;
+  z-index: 1;
+  background: var(--card-bg);
+  border-radius: var(--radius-card);
+  padding: 36px 32px 32px;
+  box-shadow:
+    0 6px 32px rgba(37, 99, 235, 0.09),
+    0 2px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  border-radius: inherit;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.25),
+    rgba(255,255,255,0.05)
+  );
+
+  z-index: -1;   /* put highlight behind content */
+}
+
+/* ---------- Card Header ---------- */
+.card-header {
+  margin-bottom: 2px;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+}
+
+/* ---------- Section visibility & transitions ---------- */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.fade-out {
+  animation: fadeOut 0.25s ease forwards;
+}
+
+.fade-in {
+  animation: fadeInUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateY(-6px); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Option Cards ---------- */
+.option-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1.5px solid var(--input-border);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-main);
+  text-decoration: none;
+  color: inherit;
+
+  position: relative;
+  overflow: hidden;
+
+  transition:
+    transform    0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow   0.22s ease,
+    border-color 0.22s ease;
+  position: relative;
+}
+.option-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(37, 99, 235, 0.15),
+    transparent
+  );
+
+  transition: left 0.6s ease;
+}
+
+.option-card:hover::before {
+  left: 100%;
+}
+
+.option-card:hover {
+  transform: scale(1.025) translateY(-2px);
+  border-color: var(--blue-primary);
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.12),
+    0 8px 24px rgba(37, 99, 235, 0.14);
+}
+
+.option-card:hover .option-arrow {
+  transform: translateX(4px);
+}
+
+/* Disabled option cards: hover-only, no click */
+.option-disabled {
+  cursor: default;
+}
+
+.option-disabled:hover {
+  transform: scale(1.02) translateY(-2px);
+  border-color: var(--blue-primary);
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.10),
+    0 6px 18px rgba(37, 99, 235, 0.10);
+}
+
+/* Option card internals */
+.option-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.option-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.option-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.option-desc {
+  font-size: 12px;
+  color: var(--text-subtle);
+  line-height: 1.45;
+}
+
+.option-arrow {
+  font-size: 16px;
+  color: var(--blue-primary);
+  flex-shrink: 0;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Back Button ---------- */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--blue-primary);
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 2px;
+  transition: opacity 0.18s ease;
+  width: fit-content;
+}
+
+.back-btn:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+.back-arrow {
+  font-size: 15px;
+}
+
+/* ---------- Info Box ---------- */
+.info-box {
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-box p {
+  font-size: 13px;
+  color: #1E40AF;
+  line-height: 1.5;
+}
+
+.info-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.18s ease;
+}
+
+.info-link:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+/* ---------- Form Groups ---------- */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.form-group:first-of-type {
+  margin-top: 0;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-body);
+}
+
+.optional-tag {
+  font-weight: 400;
+  color: var(--text-subtle);
+  font-size: 12px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+  width: 100%;
+  padding: 11px 14px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  color: var(--text-heading);
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  border-radius: var(--radius-input);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder {
+  color: var(--text-subtle);
+}
+
+.form-group input:focus {
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.field-hint {
+  font-size: 12px;
+  color: var(--text-subtle);
+  line-height: 1.45;
+}
+
+/* ---------- Error Box ---------- */
+.error-box {
+  background: #FEF2F2;
+  border: 1.5px solid #FECACA;
+  color: #991B1B;
+  font-size: 13px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+/* ---------- Primary Button ---------- */
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-light) 100%);
+  border: none;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+  transition:
+    transform   0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow  0.18s ease;
+  margin-top: 16px;
+  display: block;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.36);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.20);
+}
+
+/* ---------- Card Links ---------- */
+.card-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.card-links p {
+  font-size: 13px;
+  color: var(--text-subtle);
+}
+
+.card-links a {
+  color: var(--link-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.card-links a:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+/* ---------- Entry Animation ---------- */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   Custom Animated Section Dropdown
+   ============================================================ */
+
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+/* The trigger button — looks like a normal input */
+.select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 14px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  color: var(--text-subtle);
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  border-radius: var(--radius-input);
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  transition:
+    border-color 0.2s ease,
+    box-shadow   0.2s ease,
+    color        0.2s ease;
+  user-select: none;
+}
+
+.select-trigger:focus-visible {
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Open state — trigger gets the blue ring */
+.custom-select.is-open .select-trigger {
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* When a value has been selected, show it in heading color */
+.select-trigger.has-value {
+  color: var(--text-heading);
+}
+
+/* Chevron icon — rotates when open */
+.select-chevron {
+  display: flex;
+  align-items: center;
+  color: var(--text-subtle);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.custom-select.is-open .select-chevron {
+  transform: rotate(180deg);
+  color: var(--blue-primary);
+}
+
+/* ---------- Dropdown Panel ---------- */
+.select-dropdown {
+  position: absolute;
+  top: 100%;           /* sits flush below the trigger */
+  left: 0;
+  right: 0;
+  z-index: 200;
+
+  /* clip overflow so the inner panel slides out cleanly */
+  overflow: hidden;
+
+  /* panel shape */
+  background: #ffffff;
+  border: 1.5px solid var(--blue-primary);
+  border-top: none;
+  border-bottom-left-radius: var(--radius-input);
+  border-bottom-right-radius: var(--radius-input);
+
+  box-shadow:
+    0 8px 24px rgba(37, 99, 235, 0.12),
+    0 2px 8px  rgba(0, 0, 0, 0.06);
+
+  /* Closed state */
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+
+  transition:
+    max-height 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity    0.22s ease;
+}
+
+/* Open state — slide down */
+.custom-select.is-open .select-dropdown {
+  max-height: 200px;   /* enough for 3–4 options */
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Inner wrapper adds the padding without affecting the clip animation */
+.select-dropdown-inner {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ---------- Individual Options ---------- */
+.select-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-body);
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.16s ease,
+    color      0.16s ease;
+}
+
+.select-option:hover {
+  background: #EFF6FF;
+  color: var(--blue-primary);
+}
+
+/* Checkmark — only visible on the selected option */
+.option-check {
+  font-size: 13px;
+  color: var(--blue-primary);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  flex-shrink: 0;
+  width: 14px;
+}
+
+.select-option.is-selected .option-check {
+  opacity: 1;
+}
+
+.select-option.is-selected {
+  color: var(--blue-primary);
+  background: #EFF6FF;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .page-wrapper {
+    margin-top: 0;
+    padding: 24px 16px 32px;
+  }
+
+  .card {
+    padding: 28px 20px 24px;
+  }
+
+  .brand-name {
+    font-size: 19px;
+  }
+
+  .option-card {
+    padding: 14px 14px;
+    gap: 12px;
+  }
+}

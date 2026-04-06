@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard | IDS Studio Next</title>
+<link rel="stylesheet" href="../dashboard/dashboard.css">
+<link rel="stylesheet" href="leaderboard.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- ═══ MOBILE / DESKTOP TOP BAR (hamburger lives here) ═══ -->
+<div class="topbar" id="topbar">
+  <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <div class="topbar-logo">
+    <img src="../image/ilogo.png" class="logo-img" alt="IDS Logo">
+    <span class="topbar-site-name">iDS Studio <span class="topbar-next">Next</span></span>
+  </div>
+</div>
+
+<!-- Dark overlay for mobile sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="mainSidebar">
+
+  <!-- Desktop-only: hamburger toggle at top of sidebar -->
+  <div class="sidebar-desktop-toggle">
+    <button class="hamburger-btn" id="desktopHamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="../image/ilogo.png" class="logo-img" alt="IDS Logo">
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <a href="../dashboard/dashboard.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+      </svg>
+      <span class="menu-label">Dashboard</span>
+    </a>
+    <a href="../learn/learn.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+      </svg>
+      <span class="menu-label">Learn</span>
+    </a>
+    <a href="../practice/practice.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+      </svg>
+      <span class="menu-label">Practice</span>
+    </a>
+    <a href="../leaderboard/leaderboard.html" class="menu-item active">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+      </svg>
+      <span class="menu-label">Leaderboard</span>
+    </a>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        <span class="menu-label">Logout</span>
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="mainContent">
+
+  <!-- Header -->
+  <div class="lb-header">
+    <div>
+      <h1 class="lb-title">Top Performers</h1>
+      <p class="lb-subtitle">See who is leading the learning race 🚀</p>
+    </div>
+    <div class="lb-refresh-wrap">
+      <button class="lb-refresh-btn" id="refreshBtn" onclick="refreshLeaderboard()">
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Podium Section -->
+  <div class="podium-section">
+    <div class="podium-stage" id="podiumStage">
+
+      <!-- 2nd Place -->
+      <div class="podium-slot podium-slot--2nd">
+        <div class="podium-name" id="name-2">—</div>
+        <div class="podium-xp" id="xp-2">-</div>
+        <div class="podium-bar podium-bar--2nd animate-bar" id="podiumBar2nd">
+          <span class="podium-rank-label">2nd</span>
+          <svg class="podium-trophy podium-trophy--silver" width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 2h12v8a6 6 0 01-12 0V2z" stroke="#94a3b8" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M6 5H3a2 2 0 000 4h3" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M18 5h3a2 2 0 010 4h-3" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M12 16v4" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M8 20h8" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 1st Place -->
+      <div class="podium-slot podium-slot--1st">
+        <div class="podium-name podium-name--1st" id="name-1">—</div>
+        <div class="podium-xp" id="xp-1">-</div>
+        <div class="podium-bar podium-bar--1st animate-bar animate-bar--delay1" id="podiumBar1st">
+          <span class="podium-rank-label">1st</span>
+          <svg class="podium-trophy podium-trophy--gold" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 2h12v8a6 6 0 01-12 0V2z" stroke="#d97706" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M6 5H3a2 2 0 000 4h3" stroke="#d97706" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M18 5h3a2 2 0 010 4h-3" stroke="#d97706" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M12 16v4" stroke="#d97706" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M8 20h8" stroke="#d97706" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 3rd Place -->
+      <div class="podium-slot podium-slot--3rd">
+        <div class="podium-name" id="name-3">—</div>
+        <div class="podium-xp" id="xp-3">-</div>
+        <div class="podium-bar podium-bar--3rd animate-bar animate-bar--delay2" id="podiumBar3rd">
+          <span class="podium-rank-label">3rd</span>
+          <svg class="podium-trophy podium-trophy--bronze" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 2h12v8a6 6 0 01-12 0V2z" stroke="#b45309" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M6 5H3a2 2 0 000 4h3" stroke="#b45309" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M18 5h3a2 2 0 010 4h-3" stroke="#b45309" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M12 16v4" stroke="#b45309" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M8 20h8" stroke="#b45309" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+    <div class="podium-shadow"></div>
+  </div>
+
+  <!-- Leaderboard Table -->
+  <div class="lb-table-card">
+    <div class="lb-table-header">
+      <span class="lb-table-title">Full Rankings</span>
+      <span class="lb-student-count" id="studentCount">7 students</span>
+    </div>
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th class="col-rank">Rank</th>
+          <th class="col-name">Name</th>
+          <th class="col-xp">XP</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard-body">
+        <!-- Populated by leaderboard.js -->
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- Auth + User Hydration -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "../auth/login.html";
+    return;
+  }
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user && user.name) {
+    const sidebarName = document.getElementById("sidebarUserName");
+    if (sidebarName) sidebarName.textContent = user.name;
+    const avatar = document.getElementById("userAvatar");
+    if (avatar) avatar.textContent = user.name.charAt(0).toUpperCase();
+  }
+});
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "/index.html";
+}
+</script>
+
+<script src="leaderboard.js"></script>
+
+<!-- ═══════════ Spark AI Chat Assistant ═══════════ -->
+<link rel="stylesheet" href="../spark/spark.css">
+<script src="../spark/spark.js"></script>
+
+</body>
+</html>

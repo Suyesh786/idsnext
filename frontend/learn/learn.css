@@ -1,0 +1,470 @@
+/* ─── Learn Page: Page Header ────────────────────────────────── */
+.learn-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.learn-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.learn-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-top: 5px;
+  font-weight: 400;
+}
+
+/* ─── Units Container ─────────────────────────────────────────── */
+.units-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 48px;
+}
+
+/* ─── Unit Card ───────────────────────────────────────────────── */
+.unit-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+
+  /* Page load animation */
+  opacity: 0;
+  transform: translateY(14px);
+  animation: unitFadeIn 0.35s ease forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes unitFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Unit Header ─────────────────────────────────────────────── */
+.unit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.18s ease;
+}
+
+.unit-header:hover {
+  background: #f7f9ff;
+}
+
+.unit-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.unit-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.badge-blue   { background: var(--blue-light);   color: var(--blue); }
+.badge-purple { background: var(--purple-light);  color: var(--purple); }
+.badge-green  { background: #ecfdf5;              color: var(--green); }
+.badge-orange { background: var(--orange-light);  color: var(--orange); }
+.badge-red    { background: #fef2f2;              color: #dc2626; }
+
+.unit-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.unit-title {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.unit-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* Chevron rotation */
+.unit-chevron {
+  color: var(--text-muted);
+  transition: transform 0.25s ease, color 0.18s ease;
+  display: flex;
+  align-items: center;
+}
+
+.unit-expanded .unit-chevron {
+  transform: rotate(180deg);
+  color: var(--blue);
+}
+
+/* ─── Unit Body (accordion) ───────────────────────────────────── */
+.unit-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.25s ease;
+  padding: 0 24px;
+}
+
+.unit-expanded .unit-body {
+  max-height: 600px;
+  padding: 0 24px 20px;
+}
+
+/* ─── Topic List ──────────────────────────────────────────────── */
+.topic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ─── Topic Card ──────────────────────────────────────────────── */
+.topic-card {
+  display: flex;
+  will-change: transform;
+  align-items: center;
+  gap: 14px;
+  background: #f5f8ff;
+  border: 1px solid #dde6fb;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(59,108,255,0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease,
+              box-shadow 0.2s ease,
+              background 0.18s ease,
+              border-color 0.18s ease;
+}
+
+.topic-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(59,108,255,0.18);
+  background: #e8f0ff;
+  border-color: var(--blue);
+}
+
+.topic-clickable:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59,108,255,0.14);
+}
+
+/* ─── Topic Icon ──────────────────────────────────────────────── */
+.topic-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-teal  { background: #e0fafa; color: #0d9488; }
+.icon-green { background: #ecfdf5; color: var(--green); }
+
+/* ─── Topic Content ───────────────────────────────────────────── */
+.topic-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.topic-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topic-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Empty State ─────────────────────────────────────────────── */
+.unit-empty-state {
+  padding: 14px 4px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unit-empty-state::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue-mid);
+  flex-shrink: 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   HAMBURGER BUTTON  (shared — used in topbar + desktop sidebar)
+   ═══════════════════════════════════════════════════════════════ */
+.hamburger-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--text-secondary, #64748b);
+  transition: background 0.18s ease;
+}
+
+.hamburger-btn:hover {
+  background: var(--blue-light, #eff4ff);
+  border-color: var(--blue, #3b6cff);
+}
+
+.hamburger-btn:hover span {
+  background: var(--blue, #3b6cff);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TOP BAR  (visible on mobile, hidden on desktop)
+   ═══════════════════════════════════════════════════════════════ */
+.topbar {
+  display: none !important; /* hidden on desktop — !important prevents dashboard.css from overriding */
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--card-bg, #fff);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  position: sticky;
+  top: 0;
+  z-index: 150;
+}
+
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-logo img{
+width:26px;
+height:26px;
+object-fit:contain;
+}
+
+.topbar-site-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.topbar-next {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--blue, #3b6cff);
+  background: var(--blue-light, #eff4ff);
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   DESKTOP SIDEBAR TOGGLE ROW
+   ═══════════════════════════════════════════════════════════════ */
+.sidebar-desktop-toggle {
+  display: none; /* Hidden on desktop — dashboard has no sidebar hamburger */
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR COLLAPSED STATE (desktop only)
+   ═══════════════════════════════════════════════════════════════ */
+.sidebar.sidebar-collapsed {
+  width: 68px !important;
+  overflow: hidden;
+}
+
+/* Hide text labels when collapsed */
+.sidebar.sidebar-collapsed .logo-text,
+.sidebar.sidebar-collapsed .menu-label,
+.sidebar.sidebar-collapsed .user-info {
+  display: none;
+}
+
+/* Center logo icon when collapsed */
+.sidebar.sidebar-collapsed .logo {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Center nav items when collapsed */
+.sidebar.sidebar-collapsed .menu-item {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Center user chip when collapsed */
+.sidebar.sidebar-collapsed .user-chip {
+  justify-content: center;
+}
+
+/* Center logout when collapsed */
+.sidebar.sidebar-collapsed .logout button {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+}
+
+/* Align desktop hamburger to center when collapsed */
+.sidebar.sidebar-collapsed .sidebar-desktop-toggle {
+  justify-content: center;
+}
+
+/* Smooth width transition on desktop */
+.sidebar {
+  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Main content shifts right when sidebar is expanded, fills when collapsed */
+.main {
+  transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main.main-expanded {
+  /* dashboard.css sets the sidebar width via a variable or fixed value.
+     Override margin-left here to fill the space left by the collapsed sidebar. */
+  margin-left: 68px !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE OVERLAY (dark background behind drawer)
+   ═══════════════════════════════════════════════════════════════ */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 190;
+  backdrop-filter: blur(1px);
+}
+
+.sidebar-overlay.active {
+  display: block;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE  (≤768px)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Show topbar on mobile */
+  .topbar {
+    display: flex !important;
+  }
+
+  /* Hide the desktop sidebar toggle on mobile (we use the topbar hamburger) */
+  .sidebar-desktop-toggle {
+    display: none;
+  }
+
+  /* Sidebar becomes a fixed slide-in drawer */
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100% !important;
+    width: 240px !important;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 4px 0 32px rgba(15, 23, 42, 0.15);
+  }
+
+  /* Open state */
+  .sidebar.sidebar-mobile-open {
+    transform: translateX(0) !important;
+  }
+
+  /* Main content fills full width on mobile */
+  .main {
+    margin-left: 0 !important;
+    padding: 20px 16px !important;
+  }
+
+  /* Undo any desktop collapse state on mobile */
+  .sidebar.sidebar-collapsed {
+    width: 240px !important;
+  }
+
+  .sidebar.sidebar-collapsed .logo-text,
+  .sidebar.sidebar-collapsed .menu-label,
+  .sidebar.sidebar-collapsed .user-info {
+    display: unset;
+  }
+
+  .sidebar.sidebar-collapsed .logo,
+  .sidebar.sidebar-collapsed .menu-item,
+  .sidebar.sidebar-collapsed .user-chip,
+  .sidebar.sidebar-collapsed .logout button {
+    justify-content: unset;
+  }
+}
