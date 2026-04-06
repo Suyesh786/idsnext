@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
 
-      const response = await fetch("http://idsnext-backend.onrender.com/api/auth/register", {
+      const response = await fetch("https://idsnext-backend.onrender.com/api/auth/register", {
 
         method: "POST",
 
