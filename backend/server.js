@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 5000;
 // ─────────────────────────────────────────
 
 app.use(cors({
-  origin: ["https://idsnext-backend.onrender.com", "http://127.0.0.1:5001"],
+  origin: ["https://idsnext-backend.onrender.com", "https://idsnext.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
@@ -146,7 +146,7 @@ const startServer = async () => {
 await connectDB();
 
 app.listen(PORT, () => {
-console.log(`✅ Server running at http://localhost:${PORT}`);
+console.log(`✅ Server running on port ${PORT}`);
 });
 
 };
