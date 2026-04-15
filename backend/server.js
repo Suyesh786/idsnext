@@ -19,28 +19,33 @@ const PORT = process.env.PORT || 5000;
 // ─────────────────────────────────────────
 
 app.use(cors({
-origin: [
-  "https://idsnext.vercel.app",
-  "https://idsnext.vercel.app/",
-  /\.vercel\.app$/,
-  "http://localhost:5500",
-  "http://localhost:3000"
-],
+  origin: function (origin, callback) {
+    const allowed = [
+      "https://idsnext.vercel.app",
+      "http://localhost:5500",
+      "http://localhost:3000"
+    ];
+    if (!origin || allowed.includes(origin) || /\.vercel\.app$/.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
+app.options("*", cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  session({
-    secret: "spark-secret-key",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+app.use(session({
+  secret: process.env.SESSION_SECRET || "spark-secret-key",
+  resave: false,
+  saveUninitialized: false,
+}));
 
 // ─────────────────────────────────────────
 // Serve Frontend Static Files
@@ -49,9 +54,7 @@ app.use(
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 // ─────────────────────────────────────────
-// Health Check Endpoint
-// (Pinged every 5 min by UptimeRobot / cron-job.org
-//  to keep Render free tier from sleeping)
+// Health Check
 // ─────────────────────────────────────────
 
 app.get("/health", (req, res) => {
@@ -70,15 +73,11 @@ app.use("/api/users", userRoutes);
 // ─────────────────────────────────────────
 
 app.post("/api/spark-chat", verifyToken, async (req, res) => {
-
   try {
-
     const { message } = req.body;
     const sessionId = req.sessionID;
-
     const msg = message.toLowerCase();
 
-    // ── XP query ──
     if (msg.includes("xp")) {
       const user = await User.findById(req.user.id);
       if (!user) return res.json({ reply: "I couldn't find your account." });
@@ -87,7 +86,6 @@ app.post("/api/spark-chat", verifyToken, async (req, res) => {
       });
     }
 
-    // ── Rank query ──
     if (msg.includes("rank") || msg.includes("position")) {
       const users = await User.find().sort({ xp: -1 });
       const currentUser = await User.findById(req.user.id);
@@ -98,7 +96,6 @@ app.post("/api/spark-chat", verifyToken, async (req, res) => {
       });
     }
 
-    // ── Default → AI ──
     const reply = await askSpark(message, sessionId);
     res.json({ reply });
 
@@ -106,7 +103,6 @@ app.post("/api/spark-chat", verifyToken, async (req, res) => {
     console.error("Spark error:", err);
     res.status(500).json({ reply: "Spark failed to respond." });
   }
-
 });
 
 // ─────────────────────────────────────────
