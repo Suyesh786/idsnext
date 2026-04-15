@@ -29,11 +29,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
-session({
-secret: "spark-secret-key",
-resave: false,
-saveUninitialized: true,
-})
+  session({
+    secret: "spark-secret-key",
+    resave: false,
+    saveUninitialized: true,
+  })
 );
 
 // ─────────────────────────────────────────
@@ -43,20 +43,27 @@ saveUninitialized: true,
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 // ─────────────────────────────────────────
+// Health Check Endpoint
+// (Pinged every 5 min by UptimeRobot / cron-job.org
+//  to keep Render free tier from sleeping)
+// ─────────────────────────────────────────
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+// ─────────────────────────────────────────
 // API Routes
 // ─────────────────────────────────────────
 
-// Authentication routes
 app.use("/api/auth", authRoutes);
-
-// Leaderboard / user routes
 app.use("/api/users", userRoutes);
 
 // ─────────────────────────────────────────
 // Spark AI Chat Route
 // ─────────────────────────────────────────
 
-app.post("/api/spark-chat", verifyToken,async (req, res) => {
+app.post("/api/spark-chat", verifyToken, async (req, res) => {
 
   try {
 
@@ -65,66 +72,33 @@ app.post("/api/spark-chat", verifyToken,async (req, res) => {
 
     const msg = message.toLowerCase();
 
-    // ─────────────────────────
-    // Check for XP question
-    // ─────────────────────────
-
+    // ── XP query ──
     if (msg.includes("xp")) {
-
       const user = await User.findById(req.user.id);
-
-      if (!user) {
-        return res.json({
-          reply: "I couldn't find your account."
-        });
-      }
-
+      if (!user) return res.json({ reply: "I couldn't find your account." });
       return res.json({
         reply: `You currently have **${user.xp} XP**.\n\nKeep completing lessons to increase your XP and climb the leaderboard! 🚀`
       });
-
     }
 
-    // ─────────────────────────
-    // Check for rank question
-    // ─────────────────────────
-
+    // ── Rank query ──
     if (msg.includes("rank") || msg.includes("position")) {
-
       const users = await User.find().sort({ xp: -1 });
-
       const currentUser = await User.findById(req.user.id);
-
-      if (!currentUser) {
-        return res.json({
-          reply: "I couldn't determine your rank."
-        });
-      }
-
+      if (!currentUser) return res.json({ reply: "I couldn't determine your rank." });
       const rank = users.findIndex(u => u._id.toString() === currentUser._id.toString()) + 1;
-
       return res.json({
         reply: `You are currently **Rank #${rank}** on the leaderboard with **${currentUser.xp} XP**.\n\nGreat work! Keep learning to move even higher. 🔥`
       });
-
     }
 
-    // ─────────────────────────
-    // Default → send to AI
-    // ─────────────────────────
-
+    // ── Default → AI ──
     const reply = await askSpark(message, sessionId);
-
     res.json({ reply });
 
   } catch (err) {
-
     console.error("Spark error:", err);
-
-    res.status(500).json({
-      reply: "Spark failed to respond."
-    });
-
+    res.status(500).json({ reply: "Spark failed to respond." });
   }
 
 });
@@ -134,7 +108,7 @@ app.post("/api/spark-chat", verifyToken,async (req, res) => {
 // ─────────────────────────────────────────
 
 app.get("/", (req, res) => {
-res.sendFile(path.join(__dirname, "../frontend", "index.html"));
+  res.sendFile(path.join(__dirname, "../frontend", "index.html"));
 });
 
 // ─────────────────────────────────────────
@@ -142,13 +116,10 @@ res.sendFile(path.join(__dirname, "../frontend", "index.html"));
 // ─────────────────────────────────────────
 
 const startServer = async () => {
-
-await connectDB();
-
-app.listen(PORT, () => {
-console.log(`✅ Server running on port ${PORT}`);
-});
-
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`✅ Server running at http://localhost:${PORT}`);
+  });
 };
 
 startServer();

@@ -7,7 +7,7 @@ async function loadUsers() {
 
   try {
 
-    const res = await fetch("https://idsnext-backend.onrender.com/api/users/leaderboard", {
+    const res = await fetch("http://localhost:5001/api/users/leaderboard", {
     headers: {
         Authorization: "Bearer " + localStorage.getItem("token")
     }
@@ -75,7 +75,7 @@ function updatePodium(sorted) {
 
 /* ── Rank Label ───────────────────────────── */
 
-function ordinal(n) {
+function ordinal(n) { // Returns ordinal suffix for a number
 
   const s = ["th","st","nd","rd"];
   const v = n % 100;

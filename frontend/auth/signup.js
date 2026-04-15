@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// iDS Studio Next — Signup Script
+// iDS Studio Next — signup.js
 // Handles account creation + animated section dropdown
 // ─────────────────────────────────────────────
 
@@ -12,25 +12,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const hiddenInput   = document.getElementById("section");
   const options       = selectWrapper ? selectWrapper.querySelectorAll(".select-option") : [];
 
-  /**
-   * Open the dropdown panel
-   */
   function openDropdown() {
     selectWrapper.classList.add("is-open");
     trigger.setAttribute("aria-expanded", "true");
   }
 
-  /**
-   * Close the dropdown panel
-   */
   function closeDropdown() {
     selectWrapper.classList.remove("is-open");
     trigger.setAttribute("aria-expanded", "false");
   }
 
-  /**
-   * Toggle open / closed
-   */
   function toggleDropdown() {
     if (selectWrapper.classList.contains("is-open")) {
       closeDropdown();
@@ -39,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Wire up the trigger button
   if (trigger) {
     trigger.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -47,43 +37,36 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Handle option selection
   options.forEach((option) => {
     option.addEventListener("click", () => {
       const value = option.getAttribute("data-value");
-
-      // Update hidden input (submitted with the form)
       hiddenInput.value = value;
-
-      // Update visible label
       valueLabel.textContent = value;
       trigger.classList.add("has-value");
-
-      // Mark selected option
       options.forEach((o) => o.classList.remove("is-selected"));
       option.classList.add("is-selected");
-
-      // Close the dropdown
       closeDropdown();
     });
   });
 
-  // Close dropdown when clicking outside
   document.addEventListener("click", (e) => {
     if (selectWrapper && !selectWrapper.contains(e.target)) {
       closeDropdown();
     }
   });
 
-  // Close on Escape key
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      closeDropdown();
-    }
+    if (e.key === "Escape") closeDropdown();
   });
 
+
   /* ── Form Submission ── */
-  const form = document.querySelector("form");
+  const form       = document.getElementById("signupForm");
+  const errorBox   = document.getElementById("errorBox");
+  const submitBtn  = document.getElementById("submitBtn");
+  const btnText    = document.getElementById("btnText");
+  const btnSpinner = document.getElementById("btnSpinner");
+  const wakeNotice = document.getElementById("wakeNotice");
 
   if (!form) {
     console.error("Signup form not found");
@@ -91,67 +74,92 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   form.addEventListener("submit", async (e) => {
-
     e.preventDefault();
 
-    // Get form values
+    // ── Reset errors ──
+    hideError();
+
     const name     = document.querySelector("#name").value.trim();
     const email    = document.querySelector("#email").value.trim();
     const password = document.querySelector("#password").value.trim();
     const section  = document.querySelector("#section")?.value || null;
 
-    // Basic validation
+    // ── Validation ──
     if (!name || !email || !password) {
-      alert("Please fill all required fields");
+      showError("Please fill in all required fields.");
       return;
     }
 
     if (password.length < 6) {
-      alert("Password must be at least 6 characters");
+      showError("Password must be at least 6 characters.");
       return;
     }
 
+    // ── Loading state ──
+    setLoading(true);
+
+    // ── Wake-up notice after 4 seconds ──
+    const wakeTimer = setTimeout(() => {
+      if (wakeNotice) wakeNotice.style.display = "block";
+    }, 4000);
+
     try {
 
-      const response = await fetch("https://idsnext-backend.onrender.com/api/auth/register", {
-
+      const response = await fetch("http://localhost:5001/api/auth/register", {
         method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          section
-        })
-
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, section })
       });
 
       const data = await response.json();
 
+      clearTimeout(wakeTimer);
+
       if (data.success) {
 
-        alert("Account created successfully!");
-
-        // redirect to login page
+        // Keep button loading during redirect
+        if (btnText) btnText.textContent = "Account created! Redirecting...";
         window.location.href = "login.html";
 
       } else {
 
-        alert(data.message);
+        setLoading(false);
+        if (wakeNotice) wakeNotice.style.display = "none";
+        showError(data.message || "Registration failed. Please try again.");
 
       }
 
     } catch (error) {
 
+      clearTimeout(wakeTimer);
+      setLoading(false);
+      if (wakeNotice) wakeNotice.style.display = "none";
       console.error("Signup request error:", error);
-      alert("Server error. Please try again later.");
+      showError("Could not reach the server. Please try again.");
 
     }
 
   });
+
+  /* ── Helpers ── */
+
+  function setLoading(isLoading) {
+    if (!submitBtn) return;
+    submitBtn.disabled = isLoading;
+    if (btnText)    btnText.textContent      = isLoading ? "Creating account..." : "Create Account";
+    if (btnSpinner) btnSpinner.style.display = isLoading ? "inline-block" : "none";
+  }
+
+  function showError(message) {
+    if (!errorBox) return;
+    errorBox.textContent = message;
+    errorBox.style.display = "block";
+  }
+
+  function hideError() {
+    if (!errorBox) return;
+    errorBox.textContent = "";
+    errorBox.style.display = "none";
+  }
 
 });

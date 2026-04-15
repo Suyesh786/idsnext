@@ -134,7 +134,7 @@
 
   /* ── Welcome Animation ──────────────────────────── */
   function playWelcome() {
-    let userName = "there";
+    let userName = "there"; // default fallback username
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       if (user && user.name) userName = user.name.split(" ")[0];
@@ -305,7 +305,7 @@
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("https://idsnext-backend.onrender.com/api/spark-chat", {
+      const response = await fetch("http://localhost:5001/api/spark-chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -327,7 +327,7 @@
   async function loadUserXP() {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("https://idsnext-backend.onrender.com/api/users/me", {
+      const response = await fetch("http://localhost:5001/api/users/me", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const user = await response.json();

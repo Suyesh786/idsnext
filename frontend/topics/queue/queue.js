@@ -39,7 +39,7 @@ async function checkIfCompleted() {
 
   try {
 
-    const response = await fetch("https://idsnext-backend.onrender.com/api/users/me", {
+    const response = await fetch("http://localhost:5001/api/users/me", {
       headers: {
         "Authorization": `Bearer ${token}`
       }
@@ -66,7 +66,7 @@ async function markComplete() {
 
   try {
 
-    const response = await fetch("https://idsnext-backend.onrender.com1/api/users/complete-topic", {
+    const response = await fetch("http://localhost:5001/api/users/complete-topic", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

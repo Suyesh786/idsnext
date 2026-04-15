@@ -10,6 +10,51 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="signup.css" />
+
+  <style>
+    /* ── Loading spinner ── */
+    .btn-spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Wake-up notice ── */
+    .wake-notice {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #eff4ff;
+      border: 1px solid #c7d8ff;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: #3b6cff;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ── Error box ── */
+    .error-box {
+      display: none;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #be123c;
+    }
+  </style>
 </head>
 
 <body>
@@ -44,7 +89,6 @@
         <!-- ── SECTION 1: Option Cards ── -->
         <div id="optionsSection" class="section">
 
-          <!-- Option 1: Clickable -->
           <button type="button" class="option-card" id="optionTeacher" onclick="showForm()">
             <div class="option-icon">🎓</div>
             <div class="option-body">
@@ -54,7 +98,6 @@
             <span class="option-arrow">→</span>
           </button>
 
-          <!-- Option 2: Hover only -->
           <div class="option-card option-disabled" title="Coming soon">
             <div class="option-icon">📚</div>
             <div class="option-body">
@@ -64,7 +107,6 @@
             <span class="option-arrow">→</span>
           </div>
 
-          <!-- Option 3: Hover only -->
           <div class="option-card option-disabled" title="Coming soon">
             <div class="option-icon">🏫</div>
             <div class="option-body">
@@ -83,7 +125,7 @@
             <span class="back-arrow">←</span> Back to options
           </button>
 
-          <!-- Blue Info Box -->
+          <!-- Info Box -->
           <div class="info-box">
             <p>If your teacher added you, please use the login page to set your password.</p>
             <a href="login.html" class="info-link">Go to Login →</a>
@@ -129,11 +171,10 @@
               />
             </div>
 
-            <!-- ── Animated Section Dropdown ── -->
+            <!-- Animated Section Dropdown -->
             <div class="form-group">
               <label>Section <span class="optional-tag">(optional)</span></label>
 
-              <!-- Hidden input that carries the value to the form submission -->
               <input type="hidden" id="section" name="section" value="" />
 
               <div class="custom-select" id="sectionSelect">
@@ -167,16 +208,24 @@
               <span class="field-hint">Your teacher will share this, or select from available sections above.</span>
             </div>
 
-            <!-- Error Message -->
-            <div id="errorBox" class="error-box" style="display:none;"></div>
+            <!-- Inline Error Message -->
+            <div id="errorBox" class="error-box"></div>
 
-            <button class="btn-primary" type="submit">Create Account</button>
+            <button class="btn-primary" type="submit" id="submitBtn">
+              <span class="btn-spinner" id="btnSpinner"></span>
+              <span id="btnText">Create Account</span>
+            </button>
+
+            <!-- Wake-up notice -->
+            <div class="wake-notice" id="wakeNotice">
+              ⏳ Server is waking up, please wait a moment...
+            </div>
 
           </form>
 
         </div>
 
-        <!-- Bottom link — always visible -->
+        <!-- Bottom link -->
         <div class="card-links">
           <p>Already have an account? <a href="login.html">Sign In</a></p>
         </div>
@@ -187,11 +236,10 @@
   </div>
 
   <script>
-    /* ---------- Section transitions ---------- */
+    /* ── Section transitions (UI only — no logic) ── */
     function showForm() {
       const opts = document.getElementById('optionsSection');
       const form = document.getElementById('formSection');
-
       opts.classList.add('fade-out');
       setTimeout(() => {
         opts.classList.add('hidden');
@@ -205,7 +253,6 @@
     function showOptions() {
       const opts = document.getElementById('optionsSection');
       const form = document.getElementById('formSection');
-
       form.classList.add('fade-out');
       setTimeout(() => {
         form.classList.add('hidden');
@@ -215,12 +262,9 @@
         setTimeout(() => opts.classList.remove('fade-in'), 400);
       }, 250);
     }
-
-    /* ---------- Browse placeholder ---------- */
-    function handleBrowse() {
-      alert('Section browser coming soon!');
-    }
   </script>
+
+  <!-- Signup logic -->
   <script src="signup.js"></script>
 </body>
 </html>

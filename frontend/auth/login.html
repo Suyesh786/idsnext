@@ -10,6 +10,51 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="login.css" />
+
+  <style>
+    /* ── Loading spinner ── */
+    .btn-spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Wake-up notice ── */
+    .wake-notice {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #eff4ff;
+      border: 1px solid #c7d8ff;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: #3b6cff;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ── Error box ── */
+    .error-box {
+      display: none;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #be123c;
+    }
+  </style>
 </head>
 
 <body>
@@ -69,12 +114,18 @@
             />
           </div>
 
-          <!-- Error Message Box -->
-          <div id="errorBox" style="display:none;color:red;margin-bottom:10px;"></div>
+          <!-- Inline Error Message Box -->
+          <div id="errorBox" class="error-box"></div>
 
-          <button class="btn-primary" type="submit">
-            Continue
+          <button class="btn-primary" type="submit" id="submitBtn">
+            <span class="btn-spinner" id="btnSpinner"></span>
+            <span id="btnText">Continue</span>
           </button>
+
+          <!-- Wake-up notice (shown after 4s if server is cold-starting) -->
+          <div class="wake-notice" id="wakeNotice">
+            ⏳ Server is waking up, please wait a moment...
+          </div>
 
         </form>
 
@@ -88,8 +139,8 @@
 
   </div>
 
-  <!-- JS -->
-  <script src="../script.js"></script>
+  <!-- Login logic only — no script.js needed on this page -->
+  <script src="login.js"></script>
 
 </body>
 </html>

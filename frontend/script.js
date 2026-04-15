@@ -1,6 +1,7 @@
 /* ════════════════════════════════════════════
    IDEAS STUDIO NEXT — script.js
-   Light Theme Edition
+   Global / Landing Page Scripts Only
+   Login logic has been moved to auth/login.js
 ════════════════════════════════════════════ */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -262,94 +263,5 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
     });
-
-
-  /* ─────────────────────────────────────────
-     LOGIN SYSTEM
-  ───────────────────────────────────────── */
-
-  const loginForm = document.getElementById("loginForm");
-  const errorBox = document.getElementById("errorBox");
-
-  if (loginForm) {
-
-    loginForm.addEventListener("submit", async (e) => {
-
-      e.preventDefault();
-
-      if (errorBox) errorBox.style.display = "none";
-
-      const email =
-        document.getElementById("email").value.trim();
-
-      const password =
-        document.getElementById("password").value.trim();
-
-      try {
-
-        const response = await fetch("https://idsnext-backend.onrender.com/api/auth/login", {
-
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            email,
-            password
-          })
-
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-
-          localStorage.setItem("token", data.token);
-
-          localStorage.setItem(
-            "user",
-            JSON.stringify(data.user)
-          );
-
-          window.location.href = "/dashboard/dashboard.html";
-
-        } else {
-
-          if (errorBox) {
-
-            errorBox.textContent =
-              data.message || "Invalid credentials";
-
-            errorBox.style.display = "block";
-
-          }
-
-        }
-
-      } catch (err) {
-
-        if (errorBox) {
-
-          errorBox.textContent =
-            "Server error. Try again.";
-
-          errorBox.style.display = "block";
-
-        }
-
-      }
-
-    });
-
-  }
-
-  const toggle = document.getElementById("navToggle");
-  const menu = document.getElementById("navMenu");
-
-  toggle.addEventListener("click", () => {
-    menu.classList.toggle("active");
-  });
 
 });
