@@ -19,11 +19,13 @@ const PORT = process.env.PORT || 5000;
 // ─────────────────────────────────────────
 
 app.use(cors({
-  origin: [
-    "https://idsnext.vercel.app",
-    /\.vercel\.app$/,
-    "http://localhost:5500"
-  ],
+origin: [
+  "https://idsnext.vercel.app",
+  "https://idsnext.vercel.app/",
+  /\.vercel\.app$/,
+  "http://localhost:5500",
+  "http://localhost:3000"
+],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
