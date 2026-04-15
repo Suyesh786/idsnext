@@ -325,6 +325,11 @@
     try {
         const token = localStorage.getItem("token");
 
+        if (!token) {
+          typeMessage("Please login again to use Spark.");
+          return;
+        }
+
         const response = await fetch("https://idsnext-backend.onrender.com/api/spark-chat", {
         method: "POST",
         headers: {

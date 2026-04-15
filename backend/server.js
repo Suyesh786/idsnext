@@ -75,7 +75,7 @@ app.use("/api/users", userRoutes);
 app.post("/api/spark-chat", verifyToken, async (req, res) => {
   try {
     const { message } = req.body;
-    const sessionId = req.sessionID;
+    const sessionId = req.user.id;
     const msg = message.toLowerCase();
 
     if (msg.includes("xp")) {
