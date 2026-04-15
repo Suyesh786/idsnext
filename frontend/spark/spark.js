@@ -325,7 +325,7 @@
     try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch("http://idsnext-backend.onrender.com/api/spark-chat", {
+        const response = await fetch("https://idsnext-backend.onrender.com/api/spark-chat", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
