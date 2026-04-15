@@ -88,7 +88,7 @@
     if (!token) return;
   
     try {
-      const response = await fetch("http://localhost:5001/api/users/complete-topic", {
+      const response = await fetch("http://idsnext-backend.onrender.com/api/users/complete-topic", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
