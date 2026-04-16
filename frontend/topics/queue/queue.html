@@ -204,13 +204,12 @@
           <div class="queue-diagram-wrap">
             <div class="queue-pointer-row">
               <span class="q-ptr-label front-ptr">FRONT</span>
-              <span class="q-ptr-spacer"></span>
-              <span class="q-ptr-label rear-ptr">REAR</span>
+              <span class="q-ptr-label rear-ptr rear-before-enq">REAR</span>
             </div>
             <div class="queue-diagram">
               <div class="queue-slot slot-front">10</div>
               <div class="queue-slot">20</div>
-              <div class="queue-slot">30</div>
+              <div class="queue-slot slot-rear">30</div>
               <div class="queue-slot slot-empty">—</div>
             </div>
             <div class="queue-arrows">
@@ -234,7 +233,7 @@
               <div class="queue-slot slot-front">10</div>
               <div class="queue-slot">20</div>
               <div class="queue-slot">30</div>
-              <div class="queue-slot slot-new">40</div>
+              <div class="queue-slot slot-new slot-rear">40</div>
             </div>
             <div class="queue-arrows">
               <span class="q-arrow-label">↑</span>
@@ -260,7 +259,7 @@
               <div class="queue-slot slot-dequeue-target">10</div>
               <div class="queue-slot">20</div>
               <div class="queue-slot">30</div>
-              <div class="queue-slot">40</div>
+              <div class="queue-slot slot-rear">40</div>
             </div>
             <div class="queue-arrows">
               <span class="q-arrow-label dequeue-arrow">↑</span>
@@ -275,7 +274,7 @@
           <p class="diagram-title">After Dequeue (10 removed from Front)</p>
           <div class="queue-diagram-wrap">
             <div class="queue-pointer-row">
-              <span class="q-ptr-label front-ptr" style="margin-left: 64px;">FRONT</span>
+              <span class="q-ptr-label front-ptr front-after-dq">FRONT</span>
               <span class="q-ptr-spacer"></span>
               <span class="q-ptr-label rear-ptr">REAR</span>
             </div>
@@ -313,30 +312,43 @@
         <p class="lesson-para">In an array-based queue, we maintain two indices — <code class="inline-code">front</code> and <code class="inline-code">rear</code>. Enqueue increments <code class="inline-code">rear</code> and places the element; Dequeue increments <code class="inline-code">front</code>. The downside is wasted space when front keeps moving right.</p>
         <div class="code-block">
           <div class="code-header">
-            <span class="code-lang">Python</span>
+            <span class="code-lang">C</span>
             <button class="copy-btn" onclick="copyQueueCode(this)">Copy</button>
           </div>
-          <pre class="code-content"><span class="c-kw">class</span> Queue:
-    <span class="c-kw">def</span> __init__(self):
-        self.items = []
+          <pre class="code-content">
+#include &lt;stdio.h&gt;
+#define MAX 100
 
-    <span class="c-kw">def</span> enqueue(self, value):
-        self.items.append(value)       <span class="c-comment"># Add at rear</span>
+int queue[MAX];
+int front = -1;
+int rear = -1;
 
-    <span class="c-kw">def</span> dequeue(self):
-        <span class="c-kw">if</span> self.is_empty():
-            <span class="c-kw">raise</span> IndexError(<span class="c-str">"Queue Underflow"</span>)
-        <span class="c-kw">return</span> self.items.pop(0)        <span class="c-comment"># Remove from front</span>
+void enqueue(int value) {
+    if (rear == MAX - 1) {
+        printf("Queue Overflow\n");
+        return;
+    }
 
-    <span class="c-kw">def</span> front(self):
-        <span class="c-kw">return</span> self.items[0]            <span class="c-comment"># Peek front</span>
+    if (front == -1)
+        front = 0;
 
-    <span class="c-kw">def</span> is_empty(self):
-        <span class="c-kw">return</span> len(self.items) == 0</pre>
+    rear++;
+    queue[rear] = value;
+}
+
+int dequeue() {
+    if (front == -1 || front > rear) {
+        printf("Queue Underflow\n");
+        return -1;
+    }
+
+    return queue[front++];
+}
+</pre>
         </div>
         <div class="info-box">
           <span class="info-icon">💡</span>
-          <span>In a simple array queue, <code class="inline-code">dequeue</code> using <code class="inline-code">pop(0)</code> is O(n) because all elements shift. Use <code class="inline-code">collections.deque</code> in Python for O(1) dequeue.</span>
+          <span>In C, queues are typically implemented using arrays or linked lists. Proper index management allows enqueue and dequeue operations to run in O(1) time.</span>
         </div>
       </div>
 
@@ -345,31 +357,48 @@
         <p class="lesson-para">A <strong>Circular Queue</strong> solves the wasted-space problem of a simple array queue. When the rear reaches the end of the array, it wraps around to the beginning using modulo arithmetic — forming a logical circle. This allows reuse of freed slots efficiently.</p>
         <div class="code-block">
           <div class="code-header">
-            <span class="code-lang">Python</span>
+            <span class="code-lang">C</span>
             <button class="copy-btn" onclick="copyQueueCode(this)">Copy</button>
           </div>
-          <pre class="code-content"><span class="c-kw">class</span> CircularQueue:
-    <span class="c-kw">def</span> __init__(self, capacity):
-        self.capacity = capacity
-        self.queue    = [None] * capacity
-        self.front    = 0
-        self.rear     = -1
-        self.size     = 0
+<pre class="code-content">
+#include &lt;stdio.h&gt;
+#define SIZE 5
 
-    <span class="c-kw">def</span> enqueue(self, value):
-        <span class="c-kw">if</span> self.size == self.capacity:
-            <span class="c-kw">raise</span> OverflowError(<span class="c-str">"Queue Overflow"</span>)
-        self.rear = (self.rear + 1) % self.capacity   <span class="c-comment"># wrap around</span>
-        self.queue[self.rear] = value
-        self.size += 1
+int queue[SIZE];
+int front = -1;
+int rear = -1;
 
-    <span class="c-kw">def</span> dequeue(self):
-        <span class="c-kw">if</span> self.size == 0:
-            <span class="c-kw">raise</span> IndexError(<span class="c-str">"Queue Underflow"</span>)
-        value = self.queue[self.front]
-        self.front = (self.front + 1) % self.capacity  <span class="c-comment"># wrap around</span>
-        self.size -= 1
-        <span class="c-kw">return</span> value</pre>
+void enqueue(int value) {
+
+    if ((rear + 1) % SIZE == front) {
+        printf("Queue Overflow\n");
+        return;
+    }
+
+    if (front == -1)
+        front = 0;
+
+    rear = (rear + 1) % SIZE;
+    queue[rear] = value;
+}
+
+int dequeue() {
+
+    if (front == -1) {
+        printf("Queue Underflow\n");
+        return -1;
+    }
+
+    int value = queue[front];
+
+    if (front == rear)
+        front = rear = -1;
+    else
+        front = (front + 1) % SIZE;
+
+    return value;
+}
+</pre>
         </div>
         <div class="info-box">
           <span class="info-icon">💡</span>
