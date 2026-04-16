@@ -308,7 +308,7 @@ function pushElement() {
     if (prevLabel) prevLabel.textContent = "";
   }
 
-  container.appendChild(el);
+  container.prepend(el);
 
   setStatus(`✓ Pushed ${value} onto the stack.`, "success");
   updateStats();
@@ -338,7 +338,7 @@ function popElement() {
   if (!container) { animating = false; return; }  // DOM safety check
 
   const elements = container.querySelectorAll(".sim-element");
-  const topEl = elements[elements.length - 1];
+  const topEl = elements[0];
 
   if (!topEl) {
     animating = false;
