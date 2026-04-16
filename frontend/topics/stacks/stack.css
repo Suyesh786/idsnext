@@ -183,7 +183,6 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  /* Task 2: richer gradient + stronger left-accent */
   background: linear-gradient(135deg, #f0f6ff 0%, #e8f1ff 60%, #eef4ff 100%);
   border: 1px solid #c0d4ff;
   border-left: 4px solid var(--blue);
@@ -225,7 +224,6 @@
   gap: 16px;
 }
 
-/* Task 2: soft gradient background + stronger depth */
 .analogy-card {
   background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
   border: 1px solid #d0e2ff;
@@ -265,7 +263,6 @@
   margin-bottom: 32px;
 }
 
-/* Task 2: subtle gradient tint per card */
 .op-card {
   background: linear-gradient(150deg, #fafcff 0%, #f3f7ff 100%);
   border: 1px solid #dce8ff;
@@ -587,7 +584,6 @@
   gap: 16px;
 }
 
-/* Task 2: gradient tint + lift on hover */
 .app-card {
   background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
   border: 1px solid #d0e2ff;
@@ -622,7 +618,6 @@
 /* ─── Simulator Section ──────────────────────────────────────── */
 .simulator-section { margin-bottom: 24px; }
 
-/* Task 2: stronger glow + richer gradient for simulator card */
 .simulator-card {
   position: relative;
   background: linear-gradient(145deg, #f4f8ff 0%, #eaf2ff 50%, #f0f6ff 100%);
@@ -644,7 +639,6 @@
     0 1px 3px rgba(0,0,0,0.05);
 }
 
-/* Subtle ambient glow ring behind the card */
 .simulator-card::before {
   content: "";
   position: absolute;
@@ -793,7 +787,7 @@
   align-items: center;
   gap: 6px;
   flex: 1;
-  position: relative; /* needed for TOP pointer absolute positioning */
+  position: relative;
 }
 
 .sim-top-label,
@@ -805,41 +799,31 @@
   text-transform: uppercase;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   TASK 1 FIX: Stack container — center elements horizontally
-───────────────────────────────────────────────────────────── */
 .sim-stack-container {
   width: 100%;
   max-height: 320px;
   overflow-y: auto;
-  /* Task 2: richer inset background for the stack well */
   background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
   border: 2px solid #b8d0ff;
   border-radius: 16px;
   padding: 14px 12px;
-  /* Center stack elements horizontally */
   display: flex;
   flex-direction: column;
-  align-items: center;       /* ← key fix: center boxes horizontally */
+  align-items: center;
   justify-content: flex-end;
   gap: 6px;
   position: relative;
   box-shadow: inset 0 2px 10px rgba(79,140,255,0.07);
 }
 
-/* ─────────────────────────────────────────────────────────────
-   TASK 1 FIX: Stack element — fixed-width centered box, not a bar
-───────────────────────────────────────────────────────────── */
 .sim-element {
-  /* Fixed width so elements look like stacked blocks, not full-width bars */
   width: 100px;
   min-width: 80px;
   max-width: 120px;
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
-  justify-content: center;   /* center the value inside the box */
+  justify-content: center;
   gap: 4px;
   padding: 10px 8px;
   border-radius: 10px;
@@ -852,11 +836,9 @@
   position: relative;
   animation: slide-in-top 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  /* Task 2: subtle resting shadow */
   box-shadow: 0 2px 8px rgba(79,140,255,0.10);
 }
 
-/* Task 2: lift element on hover */
 .sim-element:hover {
   transform: translateY(-2px) scale(1.03);
   box-shadow: 0 6px 16px rgba(29,78,216,0.18);
@@ -866,11 +848,9 @@
   background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
   color: #fff;
   border-color: #1d4ed8;
-  /* Task 2: stronger lift + glow for the top element */
   box-shadow: 0 6px 20px rgba(29,78,216,0.35), 0 2px 6px rgba(29,78,216,0.2);
 }
 
-/* The small TOP label — positioned below the value inside the box */
 .sim-element .elem-value {
   line-height: 1;
 }
@@ -881,7 +861,6 @@
   opacity: 0.75;
   font-family: var(--font);
   letter-spacing: 0.4px;
-  /* Push label to bottom-right corner within the fixed-width box */
   position: absolute;
   bottom: 4px;
   right: 7px;
@@ -902,7 +881,6 @@
   100% { transform: translateY(-80px) scale(0.7); opacity: 0; }
 }
 
-/* Glow animation for display — staggered pulse, looks great as-is */
 @keyframes glow-pulse {
   0%   { box-shadow: 0 2px 8px rgba(79,140,255,0.10), 0 0 0 0 rgba(79,140,255,0.55); }
   40%  { box-shadow: 0 2px 8px rgba(79,140,255,0.10), 0 0 0 8px rgba(79,140,255,0.18); }
@@ -978,7 +956,6 @@
   min-width: 100px;
 }
 
-/* Task 2: stats cards with gradient background */
 .sim-stat {
   background: linear-gradient(135deg, #f0f6ff 0%, #e8f1ff 100%);
   border: 1.5px solid #c0d4ff;
@@ -1117,3 +1094,452 @@
 .xp-popup-amount { font-size: 15px; font-weight: 700; color: #1b5e20; letter-spacing: -0.2px; }
 
 .xp-popup-sub { font-size: 12px; color: #388e3c; font-weight: 500; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   HAMBURGER BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+.hamburger-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.hamburger-btn span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--text-secondary, #64748b);
+  transition: background 0.18s ease;
+}
+.hamburger-btn:hover {
+  background: var(--blue-light, #eff4ff);
+  border-color: var(--blue, #3b6cff);
+}
+.hamburger-btn:hover span {
+  background: var(--blue, #3b6cff);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TOP BAR (visible on mobile, hidden on desktop)
+   ═══════════════════════════════════════════════════════════════ */
+.topbar {
+  display: none !important;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--card-bg, #fff);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  position: sticky;
+  top: 0;
+  z-index: 150;
+}
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.topbar-logo img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+.topbar-site-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  font-family: 'DM Sans', sans-serif;
+}
+.topbar-next {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--blue, #3b6cff);
+  background: var(--blue-light, #eff4ff);
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   DESKTOP SIDEBAR TOGGLE ROW — hidden on desktop
+   ═══════════════════════════════════════════════════════════════ */
+.sidebar-desktop-toggle {
+  display: none;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR COLLAPSED STATE (desktop only)
+   ═══════════════════════════════════════════════════════════════ */
+.sidebar.sidebar-collapsed {
+  width: 68px !important;
+  overflow: hidden;
+}
+.sidebar.sidebar-collapsed .logo-text,
+.sidebar.sidebar-collapsed .menu-label,
+.sidebar.sidebar-collapsed .user-info {
+  display: none;
+}
+.sidebar.sidebar-collapsed .logo {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+.sidebar.sidebar-collapsed .menu-item {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+.sidebar.sidebar-collapsed .user-chip {
+  justify-content: center;
+}
+.sidebar.sidebar-collapsed .logout button {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+}
+.sidebar.sidebar-collapsed .sidebar-desktop-toggle {
+  justify-content: center;
+}
+.sidebar {
+  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.main {
+  transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.main.main-expanded {
+  margin-left: 68px !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE OVERLAY
+   ═══════════════════════════════════════════════════════════════ */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 190;
+  backdrop-filter: blur(1px);
+}
+.sidebar-overlay.active {
+  display: block;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Tablet (≤ 1024px)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .stack-main {
+    padding: 28px 32px 36px;
+  }
+
+  .lesson-content-box {
+    padding: 32px 32px 48px;
+  }
+
+  .ops-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .analogy-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Mobile (≤ 768px)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .topbar {
+    display: flex !important;
+  }
+
+  .sidebar-desktop-toggle {
+    display: none;
+  }
+
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100% !important;
+    width: 240px !important;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 4px 0 32px rgba(15, 23, 42, 0.15);
+  }
+
+  .sidebar.sidebar-mobile-open {
+    transform: translateX(0) !important;
+  }
+
+  .main {
+    margin-left: 0 !important;
+    padding: 20px 16px !important;
+  }
+
+  .stack-main {
+    padding: 20px 16px 28px;
+    height: auto;
+    min-height: 100vh;
+    overflow: auto;
+  }
+
+  .lesson-content-box {
+    padding: 24px 20px 40px;
+    overflow-y: visible;
+  }
+
+  .lesson-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .lesson-heading {
+    font-size: 24px;
+  }
+
+  .mark-complete-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .analogy-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ops-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .apps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .diagram-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Simulator */
+  .simulator-card {
+    padding: 20px 18px 26px;
+  }
+
+  .sim-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .sim-input-group {
+    width: 100%;
+  }
+
+  .sim-input {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+  }
+
+  .sim-btn-group {
+    width: 100%;
+  }
+
+  .sim-btn {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  /* Stack visualizer */
+  .sim-visualizer {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .sim-stack-wrap {
+    width: 100%;
+  }
+
+  .sim-stack-container {
+    max-height: 260px;
+  }
+
+  .sim-element {
+    width: 88px;
+    min-width: 72px;
+    max-width: 100px;
+    font-size: 14px;
+    padding: 9px 8px;
+  }
+
+  /* TOP pointer — reposition for mobile since visualizer stacks vertically */
+  .sim-top-pointer {
+    right: auto;
+    left: calc(100% + 10px);
+  }
+
+  .sim-top-pointer::after {
+    right: auto;
+    left: -6px;
+    border-left-color: transparent;
+    border-right-color: var(--blue);
+    border-right-width: 5px;
+    border-left: none;
+  }
+
+  /* Stats become a horizontal row */
+  .sim-stats {
+    flex-direction: row;
+    min-width: unset;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .sim-stat {
+    flex: 1;
+    padding: 12px 10px;
+  }
+
+  .sim-stat-value {
+    font-size: 20px;
+  }
+
+  .impl-tabs {
+    flex-wrap: wrap;
+  }
+
+  .comparison-table-wrap {
+    overflow-x: auto;
+  }
+
+  .comparison-table {
+    font-size: 12.5px;
+    min-width: 400px;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 9px 12px;
+  }
+
+  .sidebar.sidebar-collapsed {
+    width: 240px !important;
+  }
+
+  .sidebar.sidebar-collapsed .logo-text,
+  .sidebar.sidebar-collapsed .menu-label,
+  .sidebar.sidebar-collapsed .user-info {
+    display: unset;
+  }
+
+  .sidebar.sidebar-collapsed .logo,
+  .sidebar.sidebar-collapsed .menu-item,
+  .sidebar.sidebar-collapsed .user-chip,
+  .sidebar.sidebar-collapsed .logout button {
+    justify-content: unset;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Small Mobile (≤ 480px)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .stack-main {
+    padding: 16px 12px 20px;
+  }
+
+  .lesson-content-box {
+    padding: 18px 14px 32px;
+  }
+
+  .lesson-heading {
+    font-size: 20px;
+  }
+
+  .section-title {
+    font-size: 17px;
+  }
+
+  .analogy-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ops-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .diagram-row {
+    grid-template-columns: 1fr;
+  }
+
+  .apps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .simulator-card {
+    padding: 16px 12px 20px;
+  }
+
+  .sim-btn {
+    font-size: 12px;
+    padding: 10px 8px;
+  }
+
+  .sim-stack-container {
+    max-height: 220px;
+  }
+
+  .sim-element {
+    width: 76px;
+    min-width: 64px;
+    max-width: 88px;
+    font-size: 13px;
+    padding: 8px 6px;
+  }
+
+  .sim-stat-value {
+    font-size: 18px;
+  }
+
+  .sim-stat-label {
+    font-size: 10px;
+  }
+
+  .xp-popup {
+    left: 16px;
+    right: 16px;
+    top: 16px;
+  }
+
+  .lesson-section {
+    margin-bottom: 36px;
+  }
+}

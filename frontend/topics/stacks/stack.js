@@ -210,7 +210,7 @@ function refreshTopHighlight() {
   const elements = container.querySelectorAll(".sim-element");
   elements.forEach((el, i) => {
     const label = el.querySelector(".elem-label");
-    if (i === elements.length - 1) {
+    if (i === 0) {
       // Visual top — highlight + label
       el.classList.add("is-top");
       if (label) label.textContent = "TOP";
