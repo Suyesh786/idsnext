@@ -101,58 +101,433 @@
 
   <!-- Content Box -->
   <div class="lesson-content-box" id="lessonContentBox">
-  <h2>What is a Stack?</h2>
-    <p>
-    A stack is a linear data structure that follows the principle of
-    <strong>LIFO (Last In First Out)</strong>.
-    </p>
-    <p>
-    The last element inserted into the stack is the first one removed.
-    </p>
-    <h3>Basic Operations</h3>
-    <ul>
-    <li><strong>Push</strong> – Insert element into stack</li>
-    <li><strong>Pop</strong> – Remove top element</li>
-    <li><strong>Peek</strong> – View top element</li>
-    <li><strong>IsEmpty</strong> – Check if stack is empty</li>
-    </ul>
-    <h3>Example</h3>
-    <pre>
-    Push 1
-    Push 2
-    Push 3
 
-    Stack:
-    3
-    2
-    1
-
-    Pop → removes 3
-    </pre>
-    <!-- Lesson material goes here -->
-    <div class="lesson-placeholder">
-      <!-- Placeholder visual for empty state -->
-      <div class="placeholder-icon">
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-          <rect width="48" height="48" rx="14" fill="#eef3ff"/>
-          <path d="M16 14h16v4H16zM16 22h16v4H16zM16 30h10v4H16z" fill="#3b6cff" opacity="0.5"/>
-          <rect x="28" y="30" width="8" height="4" rx="2" fill="#3b6cff"/>
-        </svg>
+    <!-- ── SECTION 1: What is a Stack ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is a Stack?</h2>
       </div>
-      <p class="placeholder-text">Lesson content will appear here.</p>
-      <p class="placeholder-sub">Unit 1 · Stacks · LIFO</p>
-    </div>
+
+      <div class="definition-box">
+        <div class="definition-icon">📚</div>
+        <div class="definition-body">
+          <strong>Stack</strong> is a linear data structure that follows the
+          <span class="highlight-text">LIFO (Last In, First Out)</span> principle.
+          The element inserted last is the first one to be removed — just like a stack of plates.
+        </div>
+      </div>
+
+      <p class="lesson-para">
+        A stack is an abstract data type with a bounded (or unbounded) capacity. It is a simple data structure that allows adding and removing elements in a particular order. Every time an element is added, it goes on top of the stack. The only element that can be removed is the element that is at the top of the stack, just like a pile of objects.
+      </p>
+    </section>
+
+    <!-- ── SECTION 2: Real World Analogies ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Real World Analogies</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="analogy-emoji">🍽️</div>
+          <h4 class="analogy-title">Stack of Plates</h4>
+          <p class="analogy-desc">You place plates on top of one another. When you need a plate, you take the top one. You cannot remove a plate from the middle without removing all plates above it.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🌐</div>
+          <h4 class="analogy-title">Browser Back Button</h4>
+          <p class="analogy-desc">Every page you visit is pushed onto a stack. When you click "Back", the most recently visited page (top of stack) is popped and you return to the previous one.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">↩️</div>
+          <h4 class="analogy-title">Undo in Editors</h4>
+          <p class="analogy-desc">Every edit operation is pushed onto a stack. Pressing Ctrl+Z pops the last operation, effectively undoing the most recent change first.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: Basic Operations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Basic Operations</h2>
+      </div>
+
+      <div class="ops-grid">
+        <div class="op-card">
+          <div class="op-badge op-push">Push</div>
+          <p class="op-desc">Insert an element at the top of the stack.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(1)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-pop">Pop</div>
+          <p class="op-desc">Remove and return the top element of the stack.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(1)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-peek">Peek</div>
+          <p class="op-desc">Return the top element without removing it from the stack.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(1)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-empty">IsEmpty</div>
+          <p class="op-desc">Check whether the stack contains any elements or not.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(1)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Diagrams -->
+      <div class="diagram-row">
+        <div class="diagram-card">
+          <h4 class="diagram-title">Push Operation</h4>
+          <div class="diagram-body">
+            <div class="diagram-col">
+              <span class="diagram-label">Before Push (4)</span>
+              <div class="stack-diagram">
+                <div class="stack-slot slot-top">3</div>
+                <div class="stack-slot">2</div>
+                <div class="stack-slot">1</div>
+                <div class="stack-base"></div>
+              </div>
+            </div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-col">
+              <span class="diagram-label">After Push (4)</span>
+              <div class="stack-diagram">
+                <div class="stack-slot slot-new">4 ← new</div>
+                <div class="stack-slot slot-top">3</div>
+                <div class="stack-slot">2</div>
+                <div class="stack-slot">1</div>
+                <div class="stack-base"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="diagram-card">
+          <h4 class="diagram-title">Pop Operation</h4>
+          <div class="diagram-body">
+            <div class="diagram-col">
+              <span class="diagram-label">Before Pop</span>
+              <div class="stack-diagram">
+                <div class="stack-slot slot-top slot-pop-target">4 ← removes</div>
+                <div class="stack-slot">3</div>
+                <div class="stack-slot">2</div>
+                <div class="stack-slot">1</div>
+                <div class="stack-base"></div>
+              </div>
+            </div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-col">
+              <span class="diagram-label">After Pop</span>
+              <div class="stack-diagram">
+                <div class="stack-slot slot-top">3</div>
+                <div class="stack-slot">2</div>
+                <div class="stack-slot">1</div>
+                <div class="stack-base"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: Implementation ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Stack Implementation in C</h2>
+      </div>
+
+      <div class="impl-tabs">
+        <button class="impl-tab active" onclick="switchTab('array')">Using Array</button>
+        <button class="impl-tab" onclick="switchTab('linked')">Using Linked List</button>
+      </div>
+
+      <div id="tab-array" class="impl-panel active">
+        <p class="lesson-para">An array-based stack uses a fixed-size array and a <code class="inline-code">top</code> pointer that tracks the index of the top element.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — Stack using Array</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-kw">#define</span> MAX 100
+
+<span class="c-kw">int</span> stack[MAX];
+<span class="c-kw">int</span> top = -1;
+
+<span class="c-comment">// Push element onto stack</span>
+<span class="c-kw">void</span> push(<span class="c-kw">int</span> value) {
+    <span class="c-kw">if</span> (top == MAX - 1) {
+        printf(<span class="c-str">"Stack Overflow!\n"</span>);
+        <span class="c-kw">return</span>;
+    }
+    stack[++top] = value;
+}
+
+<span class="c-comment">// Pop element from stack</span>
+<span class="c-kw">int</span> pop() {
+    <span class="c-kw">if</span> (top == -1) {
+        printf(<span class="c-str">"Stack Underflow!\n"</span>);
+        <span class="c-kw">return</span> -1;
+    }
+    <span class="c-kw">return</span> stack[top--];
+}
+
+<span class="c-comment">// Peek at top element</span>
+<span class="c-kw">int</span> peek() {
+    <span class="c-kw">if</span> (top == -1) <span class="c-kw">return</span> -1;
+    <span class="c-kw">return</span> stack[top];
+}
+
+<span class="c-comment">// Check if stack is empty</span>
+<span class="c-kw">int</span> isEmpty() {
+    <span class="c-kw">return</span> top == -1;
+}</pre>
+        </div>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span><strong>Space Complexity:</strong> O(n) — requires pre-allocated memory for MAX elements. Stack Overflow occurs when <code class="inline-code">top == MAX - 1</code>.</span>
+        </div>
+      </div>
+
+      <div id="tab-linked" class="impl-panel">
+        <p class="lesson-para">A linked list-based stack uses dynamic memory. Each node stores a value and a pointer to the node below it. The head of the list is the top of the stack.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — Stack using Linked List</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-kw">struct</span> Node {
+    <span class="c-kw">int</span> data;
+    <span class="c-kw">struct</span> Node* next;
+};
+
+<span class="c-kw">struct</span> Node* top = NULL;
+
+<span class="c-comment">// Push element onto stack</span>
+<span class="c-kw">void</span> push(<span class="c-kw">int</span> value) {
+    <span class="c-kw">struct</span> Node* newNode =
+        (<span class="c-kw">struct</span> Node*) malloc(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> Node));
+    newNode->data = value;
+    newNode->next = top;
+    top = newNode;
+}
+
+<span class="c-comment">// Pop element from stack</span>
+<span class="c-kw">int</span> pop() {
+    <span class="c-kw">if</span> (top == NULL) {
+        printf(<span class="c-str">"Stack Underflow!\n"</span>);
+        <span class="c-kw">return</span> -1;
+    }
+    <span class="c-kw">int</span> val = top->data;
+    <span class="c-kw">struct</span> Node* temp = top;
+    top = top->next;
+    free(temp);
+    <span class="c-kw">return</span> val;
+}
+
+<span class="c-comment">// Peek at top element</span>
+<span class="c-kw">int</span> peek() {
+    <span class="c-kw">if</span> (top == NULL) <span class="c-kw">return</span> -1;
+    <span class="c-kw">return</span> top->data;
+}
+
+<span class="c-comment">// Check if stack is empty</span>
+<span class="c-kw">int</span> isEmpty() {
+    <span class="c-kw">return</span> top == NULL;
+}</pre>
+        </div>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span><strong>Advantage:</strong> Dynamic size — no overflow unless system runs out of heap memory. Each node is allocated on demand using <code class="inline-code">malloc()</code>.</span>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="comparison-table-wrap">
+        <h4 class="table-heading">Array vs Linked List — Quick Comparison</h4>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Array</th>
+              <th>Linked List</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Size</td><td>Fixed (static)</td><td>Dynamic</td></tr>
+            <tr><td>Memory</td><td>Pre-allocated</td><td>On-demand</td></tr>
+            <tr><td>Overflow risk</td><td>Yes</td><td>No (heap limit)</td></tr>
+            <tr><td>Access speed</td><td>Faster (cache)</td><td>Slightly slower</td></tr>
+            <tr><td>Extra memory</td><td>None</td><td>Pointer per node</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Applications of Stack</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon">🧮</div>
+          <h4 class="app-title">Expression Evaluation</h4>
+          <p class="app-desc">Stacks are used to evaluate arithmetic expressions in postfix (RPN) notation, and to convert between infix, prefix, and postfix forms.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📞</div>
+          <h4 class="app-title">Function Call Stack</h4>
+          <p class="app-desc">Every function call pushes a stack frame (local vars, return address) onto the call stack. When a function returns, its frame is popped.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🔍</div>
+          <h4 class="app-title">DFS in Graphs</h4>
+          <p class="app-desc">Depth-First Search uses a stack (explicit or via recursion) to explore nodes. Each unvisited neighbor is pushed and explored depth-first.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🔤</div>
+          <h4 class="app-title">Parenthesis Checking</h4>
+          <p class="app-desc">Push every opening bracket. When a closing bracket is found, pop and verify it matches. If the stack is empty at end, brackets are balanced.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 6: Interactive Simulator ── -->
+    <section class="lesson-section simulator-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Interactive Stack Simulator</h2>
+      </div>
+      <p class="lesson-para">Try out stack operations live. Push values onto the stack, pop them off, and watch the animations bring the data structure to life.</p>
+
+      <div class="simulator-card" id="simulatorCard">
+
+        <!-- Controls -->
+        <div class="sim-controls">
+          <div class="sim-input-group">
+            <label class="sim-label">Enter Value</label>
+            <input type="number" id="simInput" class="sim-input" placeholder="e.g. 42" min="-999" max="999"
+              onkeydown="if(event.key==='Enter') pushElement()">
+          </div>
+          <div class="sim-btn-group">
+            <button class="sim-btn sim-push" onclick="pushElement()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+              </svg>
+              Push
+            </button>
+            <button class="sim-btn sim-pop" onclick="popElement()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+              </svg>
+              Pop
+            </button>
+            <button class="sim-btn sim-display" onclick="displayStack()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+              </svg>
+              Display
+            </button>
+            <button class="sim-btn sim-clear" onclick="clearStack()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Status message -->
+        <div class="sim-status" id="simStatus">
+          <span id="simStatusText">Ready — push a value to begin</span>
+        </div>
+
+        <!-- Stack Visualizer -->
+        <div class="sim-visualizer">
+          <div class="sim-stack-wrap">
+            <div class="sim-top-label">↑ TOP</div>
+
+            <!-- TOP pointer indicator — positioned absolutely inside sim-stack-wrap -->
+            <div class="sim-top-pointer" id="simTopPointer">TOP →</div>
+
+            <div class="sim-stack-container" id="simStackContainer">
+              <div class="sim-empty-state" id="simEmptyState">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                  <rect width="32" height="32" rx="8" fill="#eef3ff"/>
+                  <path d="M10 9h12v4H10zM10 15h12v4H10zM10 21h8v4H10z" fill="#3b6cff" opacity="0.4"/>
+                </svg>
+                <p>Stack is empty</p>
+              </div>
+            </div>
+            <div class="sim-bottom-label">↓ BOTTOM</div>
+          </div>
+
+          <!-- Stats -->
+          <div class="sim-stats">
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statSize">0</span>
+              <span class="sim-stat-label">Size</span>
+            </div>
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statTop">—</span>
+              <span class="sim-stat-label">Top</span>
+            </div>
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statOps">0</span>
+              <span class="sim-stat-label">Operations</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dustbin (for pop animation) -->
+        <div class="dustbin" id="dustbin" aria-hidden="true">
+          <div class="dustbin-lid" id="dustbinLid">
+            <svg width="40" height="12" viewBox="0 0 40 12" fill="none">
+              <rect width="40" height="12" rx="4" fill="#ef4444"/>
+              <rect x="15" y="3" width="10" height="6" rx="2" fill="#dc2626"/>
+            </svg>
+          </div>
+          <div class="dustbin-body">
+            <svg width="36" height="44" viewBox="0 0 36 44" fill="none">
+              <rect x="2" y="0" width="32" height="44" rx="4" fill="#ef4444"/>
+              <line x1="12" y1="6" x2="12" y2="38" stroke="#dc2626" stroke-width="2"/>
+              <line x1="18" y1="6" x2="18" y2="38" stroke="#dc2626" stroke-width="2"/>
+              <line x1="24" y1="6" x2="24" y2="38" stroke="#dc2626" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+
+      </div><!-- /simulator-card -->
+    </section>
 
     <!-- Bottom-right sparkle decoration -->
     <div class="sparkle-deco" aria-hidden="true">
       <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Large star -->
         <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
               fill="url(#sparkleGrad)" opacity="0.18"/>
-        <!-- Small sparkle top-right -->
         <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
               fill="#3b6cff" opacity="0.35"/>
-        <!-- Tiny dot -->
         <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
         <defs>
           <linearGradient id="sparkleGrad" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
