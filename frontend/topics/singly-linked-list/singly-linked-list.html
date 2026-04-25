@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Singly Linked List | iDS Studio Next</title>
+<link rel="stylesheet" href="../../dashboard/dashboard.css">
+<link rel="stylesheet" href="singly-linked-list.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="../../image/ilogo.png" alt="iDS Studio" class="logo-img">
+      <defs>
+        <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#4f8cff"/>
+          <stop offset="100%" stop-color="#1a56db"/>
+        </linearGradient>
+      </defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <a href="../../dashboard/dashboard.html" class="menu-item">Dashboard</a>
+    <a href="../../learn/learn.html" class="menu-item active">Learn</a>
+    <a href="../../practice/practice.html" class="menu-item">Practice</a>
+    <a href="../../leaderboard/leaderboard.html" class="menu-item">Leaderboard</a>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        Logout
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main sll-main">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 2</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Singly Linked List</span>
+      </nav>
+      <!-- Page Title -->
+      <h1 class="lesson-heading">
+        Singly Linked List
+        <span class="lesson-heading-tag">Linear – Sequential Access</span>
+      </h1>
+    </div>
+
+    <!-- Mark Complete Button -->
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- ── SECTION 1: What is a Singly Linked List ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is a Singly Linked List?</h2>
+      </div>
+
+      <div class="definition-box">
+        <div class="definition-icon">🔗</div>
+        <div class="definition-body">
+          A <strong>Singly Linked List</strong> is a linear data structure in which elements, called
+          <span class="highlight-text">nodes</span>, are connected sequentially. Each node holds a
+          <span class="highlight-text">data</span> field and a <span class="highlight-text">next pointer</span>
+          that references the following node — the last node's next pointer is <code class="inline-code">NULL</code>.
+        </div>
+      </div>
+
+      <p class="lesson-para">
+        Unlike arrays, a singly linked list does not store elements in contiguous memory. Each node is allocated independently in the heap, and the chain is maintained purely by pointers. This gives the list dynamic sizing — it can grow or shrink at runtime without pre-allocation. Traversal is strictly one-directional: from the <strong>head</strong> node toward the tail.
+      </p>
+
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="analogy-emoji">🚂</div>
+          <h4 class="analogy-title">Train Carriages</h4>
+          <p class="analogy-desc">Each carriage (node) connects to the next one via a coupling (pointer). You board from the front (head) and walk carriage by carriage — you cannot jump to the middle.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">📎</div>
+          <h4 class="analogy-title">Paper Clip Chain</h4>
+          <p class="analogy-desc">Each clip holds data and links to the next clip. Adding a clip at either end is fast, but finding a specific one means scanning from the first clip forward.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🌐</div>
+          <h4 class="analogy-title">Scavenger Hunt</h4>
+          <p class="analogy-desc">Each clue (node) reveals the location of the next clue (next pointer). You must start at clue #1 (head) and follow the chain — there is no random access to clue #5.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 2: Structure Visualization ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Structure Visualization</h2>
+      </div>
+
+      <p class="lesson-para">
+        A node is the building block of a singly linked list. It contains two parts: the <code class="inline-code">data</code> that the node stores, and a <code class="inline-code">next</code> pointer which holds the memory address of the next node in the list.
+      </p>
+
+      <!-- Node anatomy diagram -->
+      <div class="sll-node-anatomy">
+        <div class="anatomy-label">Node Structure</div>
+        <div class="anatomy-body">
+          <div class="anatomy-cell anatomy-data">
+            <span class="anatomy-cell-label">data</span>
+            <span class="anatomy-cell-val">42</span>
+          </div>
+          <div class="anatomy-divider"></div>
+          <div class="anatomy-cell anatomy-next">
+            <span class="anatomy-cell-label">next</span>
+            <span class="anatomy-cell-val">0x1A4</span>
+          </div>
+        </div>
+        <div class="anatomy-caption">Each node occupies two memory fields</div>
+      </div>
+
+      <!-- Full list diagram -->
+      <div class="sll-chain-diagram">
+        <div class="sll-pointer-row">
+          <div class="sll-ptr-label head-ptr">HEAD</div>
+          <div class="sll-ptr-arrow-down">↓</div>
+          <div class="sll-ptr-spacer"></div>
+          <div class="sll-ptr-spacer"></div>
+          <div class="sll-ptr-spacer"></div>
+          <div class="sll-ptr-label tail-ptr">TAIL</div>
+          <div class="sll-ptr-arrow-down">↓</div>
+        </div>
+        <div class="sll-nodes-row">
+          <div class="sll-node-box">
+            <div class="sll-node-data">10</div>
+            <div class="sll-node-next">next</div>
+          </div>
+          <div class="sll-chain-arrow">→</div>
+          <div class="sll-node-box">
+            <div class="sll-node-data">25</div>
+            <div class="sll-node-next">next</div>
+          </div>
+          <div class="sll-chain-arrow">→</div>
+          <div class="sll-node-box">
+            <div class="sll-node-data">38</div>
+            <div class="sll-node-next">next</div>
+          </div>
+          <div class="sll-chain-arrow">→</div>
+          <div class="sll-node-box sll-node-tail">
+            <div class="sll-node-data">57</div>
+            <div class="sll-node-next sll-null">NULL</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram-row">
+        <div class="diagram-card">
+          <h4 class="diagram-title">Memory Layout</h4>
+          <div class="sll-memory-table">
+            <div class="sll-mem-row sll-mem-header">
+              <span>Address</span><span>Data</span><span>Next Ptr</span>
+            </div>
+            <div class="sll-mem-row">
+              <span class="sll-mem-addr">0x100</span><span class="sll-mem-data">10</span><span class="sll-mem-next">→ 0x1A4</span>
+            </div>
+            <div class="sll-mem-row">
+              <span class="sll-mem-addr">0x1A4</span><span class="sll-mem-data">25</span><span class="sll-mem-next">→ 0x2B8</span>
+            </div>
+            <div class="sll-mem-row">
+              <span class="sll-mem-addr">0x2B8</span><span class="sll-mem-data">38</span><span class="sll-mem-next">→ 0x3C2</span>
+            </div>
+            <div class="sll-mem-row">
+              <span class="sll-mem-addr">0x3C2</span><span class="sll-mem-data">57</span><span class="sll-mem-next sll-null-small">NULL</span>
+            </div>
+          </div>
+        </div>
+        <div class="diagram-card">
+          <h4 class="diagram-title">Key Properties</h4>
+          <div class="sll-props-list">
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-blue"></span>
+              <span class="sll-prop-text"><strong>Head</strong> — pointer to the first node; entry point of the list</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-green"></span>
+              <span class="sll-prop-text"><strong>Tail</strong> — last node whose <code class="inline-code">next</code> is <code class="inline-code">NULL</code></span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-orange"></span>
+              <span class="sll-prop-text"><strong>One-directional</strong> — traversal is head → tail only</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-purple"></span>
+              <span class="sll-prop-text"><strong>Dynamic</strong> — size grows/shrinks at runtime</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: Operations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Operations</h2>
+      </div>
+
+      <div class="ops-grid">
+        <div class="op-card">
+          <div class="op-badge op-ins-beg">Insert Begin</div>
+          <p class="op-desc">Create a new node, set its next to current head, then update head to the new node.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(1)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-ins-end">Insert End</div>
+          <p class="op-desc">With a tail pointer: create node, set tail's next, update tail. No traversal needed.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(1)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-delete">Delete Node</div>
+          <p class="op-desc">Locate the target node's predecessor, redirect its next pointer, then free the node.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(n)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-traverse">Traversal</div>
+          <p class="op-desc">Start at head, visit each node by following next pointers until NULL is reached.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(n)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Operation Diagrams -->
+      <div class="diagram-row">
+        <div class="diagram-card">
+          <h4 class="diagram-title">Insert at Beginning</h4>
+          <div class="sll-op-diagram">
+            <div class="sll-op-step">
+              <span class="sll-op-step-label">Before</span>
+              <div class="sll-mini-chain">
+                <div class="sll-mini-ptr">HEAD→</div>
+                <div class="sll-mini-node">20</div>
+                <span class="sll-mini-arr">→</span>
+                <div class="sll-mini-node">35</div>
+                <span class="sll-mini-arr">→</span>
+                <span class="sll-mini-null">NULL</span>
+              </div>
+            </div>
+            <div class="sll-op-step">
+              <span class="sll-op-step-label">After insert(10)</span>
+              <div class="sll-mini-chain">
+                <div class="sll-mini-ptr">HEAD→</div>
+                <div class="sll-mini-node sll-mini-new">10</div>
+                <span class="sll-mini-arr">→</span>
+                <div class="sll-mini-node">20</div>
+                <span class="sll-mini-arr">→</span>
+                <div class="sll-mini-node">35</div>
+                <span class="sll-mini-arr">→</span>
+                <span class="sll-mini-null">NULL</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="diagram-card">
+          <h4 class="diagram-title">Delete a Node</h4>
+          <div class="sll-op-diagram">
+            <div class="sll-op-step">
+              <span class="sll-op-step-label">Before delete(20)</span>
+              <div class="sll-mini-chain">
+                <div class="sll-mini-ptr">HEAD→</div>
+                <div class="sll-mini-node">10</div>
+                <span class="sll-mini-arr">→</span>
+                <div class="sll-mini-node sll-mini-del">20</div>
+                <span class="sll-mini-arr">→</span>
+                <div class="sll-mini-node">35</div>
+                <span class="sll-mini-arr">→</span>
+                <span class="sll-mini-null">NULL</span>
+              </div>
+            </div>
+            <div class="sll-op-step">
+              <span class="sll-op-step-label">After delete</span>
+              <div class="sll-mini-chain">
+                <div class="sll-mini-ptr">HEAD→</div>
+                <div class="sll-mini-node">10</div>
+                <span class="sll-mini-arr sll-arr-long">──→</span>
+                <div class="sll-mini-node">35</div>
+                <span class="sll-mini-arr">→</span>
+                <span class="sll-mini-null">NULL</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: Implementation in C ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Implementation in C</h2>
+      </div>
+
+      <div class="impl-tabs">
+        <button class="impl-tab active" onclick="switchTab('struct')">Node Structure</button>
+        <button class="impl-tab" onclick="switchTab('insert')">Insert & Delete</button>
+        <button class="impl-tab" onclick="switchTab('display')">Display</button>
+      </div>
+
+      <div id="tab-struct" class="impl-panel active">
+        <p class="lesson-para">The foundational building block — a <code class="inline-code">Node</code> struct with a data field and a self-referential pointer to the next node.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — Node Structure</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-kw">#include</span> &lt;stdio.h&gt;
+<span class="c-kw">#include</span> &lt;stdlib.h&gt;
+
+<span class="c-comment">// Node structure definition</span>
+<span class="c-kw">struct</span> Node {
+    <span class="c-kw">int</span> data;            <span class="c-comment">// Data stored in the node</span>
+    <span class="c-kw">struct</span> Node* next;   <span class="c-comment">// Pointer to next node</span>
+};
+
+<span class="c-comment">// Head and tail pointers</span>
+<span class="c-kw">struct</span> Node* head = NULL;
+<span class="c-kw">struct</span> Node* tail = NULL;
+
+<span class="c-comment">// Helper: create a new node</span>
+<span class="c-kw">struct</span> Node* createNode(<span class="c-kw">int</span> value) {
+    <span class="c-kw">struct</span> Node* newNode =
+        (<span class="c-kw">struct</span> Node*) malloc(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    <span class="c-kw">return</span> newNode;
+}</pre>
+        </div>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span>The <code class="inline-code">next</code> pointer inside <code class="inline-code">struct Node</code> is self-referential — it points to another object of the same type. This is what forms the chain.</span>
+        </div>
+      </div>
+
+      <div id="tab-insert" class="impl-panel">
+        <p class="lesson-para">Insert at the beginning runs in O(1). Insert at the end also runs in O(1) because we maintain a <code class="inline-code">tail</code> pointer — no traversal required.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — Insert at Beginning &amp; End</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-comment">// Insert at beginning — O(1)</span>
+<span class="c-kw">void</span> insertAtBeginning(<span class="c-kw">int</span> value) {
+    <span class="c-kw">struct</span> Node* newNode = createNode(value);
+    <span class="c-kw">if</span> (head == NULL) {
+        head = tail = newNode;  <span class="c-comment">// First node</span>
+    } <span class="c-kw">else</span> {
+        newNode->next = head;
+        head = newNode;
+    }
+}
+
+<span class="c-comment">// Insert at end — O(1) with tail pointer</span>
+<span class="c-kw">void</span> insertAtEnd(<span class="c-kw">int</span> value) {
+    <span class="c-kw">struct</span> Node* newNode = createNode(value);
+    <span class="c-kw">if</span> (tail == NULL) {
+        head = tail = newNode;  <span class="c-comment">// First node</span>
+    } <span class="c-kw">else</span> {
+        tail->next = newNode;
+        tail = newNode;
+    }
+}
+
+<span class="c-comment">// Delete by value — O(n)</span>
+<span class="c-kw">void</span> deleteNode(<span class="c-kw">int</span> value) {
+    <span class="c-kw">if</span> (head == NULL) { printf(<span class="c-str">"List is empty.\n"</span>); <span class="c-kw">return</span>; }
+
+    <span class="c-comment">// Deleting head node</span>
+    <span class="c-kw">if</span> (head->data == value) {
+        <span class="c-kw">struct</span> Node* temp = head;
+        head = head->next;
+        <span class="c-kw">if</span> (head == NULL) tail = NULL;
+        free(temp);
+        <span class="c-kw">return</span>;
+    }
+
+    <span class="c-comment">// Find predecessor</span>
+    <span class="c-kw">struct</span> Node* prev = head;
+    <span class="c-kw">while</span> (prev->next != NULL &amp;&amp; prev->next->data != value)
+        prev = prev->next;
+
+    <span class="c-kw">if</span> (prev->next == NULL) { printf(<span class="c-str">"Value not found.\n"</span>); <span class="c-kw">return</span>; }
+
+    <span class="c-kw">struct</span> Node* target = prev->next;
+    prev->next = target->next;
+    <span class="c-kw">if</span> (target == tail) tail = prev;
+    free(target);
+}</pre>
+        </div>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span><strong>Tail pointer advantage:</strong> Without a tail pointer, inserting at the end requires traversing the entire list — O(n). Maintaining <code class="inline-code">tail</code> reduces it to O(1).</span>
+        </div>
+      </div>
+
+      <div id="tab-display" class="impl-panel">
+        <p class="lesson-para">Traversal starts at the head and visits each node by following the next pointer until <code class="inline-code">NULL</code> is reached. This always takes O(n) time.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — Display &amp; Traversal</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-comment">// Display all nodes — O(n)</span>
+<span class="c-kw">void</span> display() {
+    <span class="c-kw">if</span> (head == NULL) {
+        printf(<span class="c-str">"List is empty.\n"</span>);
+        <span class="c-kw">return</span>;
+    }
+    <span class="c-kw">struct</span> Node* current = head;
+    printf(<span class="c-str">"HEAD → "</span>);
+    <span class="c-kw">while</span> (current != NULL) {
+        printf(<span class="c-str">"[%d | next] → "</span>, current->data);
+        current = current->next;
+    }
+    printf(<span class="c-str">"NULL\n"</span>);
+}
+
+<span class="c-comment">// Count nodes — O(n)</span>
+<span class="c-kw">int</span> length() {
+    <span class="c-kw">int</span> count = 0;
+    <span class="c-kw">struct</span> Node* current = head;
+    <span class="c-kw">while</span> (current != NULL) {
+        count++;
+        current = current->next;
+    }
+    <span class="c-kw">return</span> count;
+}
+
+<span class="c-comment">// Search for a value — O(n)</span>
+<span class="c-kw">int</span> search(<span class="c-kw">int</span> value) {
+    <span class="c-kw">struct</span> Node* current = head;
+    <span class="c-kw">int</span> pos = 0;
+    <span class="c-kw">while</span> (current != NULL) {
+        <span class="c-kw">if</span> (current->data == value) <span class="c-kw">return</span> pos;
+        current = current->next;
+        pos++;
+    }
+    <span class="c-kw">return</span> -1;  <span class="c-comment">// Not found</span>
+}</pre>
+        </div>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span><strong>No random access:</strong> Unlike arrays, you cannot jump to index <em>i</em> in O(1). You must traverse from head, which makes singly linked lists unsuitable for binary search.</span>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="comparison-table-wrap">
+        <h4 class="table-heading">Singly Linked List vs Array — Quick Comparison</h4>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Array</th>
+              <th>Singly Linked List</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Size</td><td>Fixed (static)</td><td>Dynamic</td></tr>
+            <tr><td>Memory layout</td><td>Contiguous</td><td>Scattered (heap)</td></tr>
+            <tr><td>Random access</td><td>O(1)</td><td>O(n)</td></tr>
+            <tr><td>Insert at beginning</td><td>O(n) — shift</td><td>O(1)</td></tr>
+            <tr><td>Insert at end</td><td>O(1) amortised</td><td>O(1) with tail ptr</td></tr>
+            <tr><td>Delete</td><td>O(n) — shift</td><td>O(n) — traverse</td></tr>
+            <tr><td>Extra memory</td><td>None</td><td>Pointer per node</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: Advantages & Limitations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Advantages &amp; Limitations</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">✅</div>
+          <h4 class="analogy-title">Dynamic Size</h4>
+          <p class="analogy-desc">Memory is allocated on demand. The list expands or contracts at runtime with no wasted pre-allocated space.</p>
+        </div>
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">✅</div>
+          <h4 class="analogy-title">Fast Head Insertion</h4>
+          <p class="analogy-desc">Inserting at the beginning is O(1) — simply update the head pointer. No shifting of existing elements required.</p>
+        </div>
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">✅</div>
+          <h4 class="analogy-title">Efficient Deletion</h4>
+          <p class="analogy-desc">Once the predecessor is found, deletion is O(1) — just relink pointers. Arrays would require shifting all subsequent elements.</p>
+        </div>
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">❌</div>
+          <h4 class="analogy-title">No Random Access</h4>
+          <p class="analogy-desc">Accessing element at position <em>i</em> requires traversal from head — O(n). Arrays access any element in O(1) via index.</p>
+        </div>
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">❌</div>
+          <h4 class="analogy-title">Extra Memory</h4>
+          <p class="analogy-desc">Every node stores an additional pointer field (4 or 8 bytes). For small data types, this overhead can be significant.</p>
+        </div>
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">❌</div>
+          <h4 class="analogy-title">No Reverse Traversal</h4>
+          <p class="analogy-desc">Singly linked lists can only be traversed forward. Backward traversal requires a doubly linked list or a full reversal pass.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 6: Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Applications of Singly Linked List</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon">🧠</div>
+          <h4 class="app-title">Dynamic Memory Allocation</h4>
+          <p class="app-desc">OS free-block lists are implemented as linked lists. When memory is freed, its block is inserted; when allocated, a suitable block is removed from the list.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📚</div>
+          <h4 class="app-title">Implementing Stacks &amp; Queues</h4>
+          <p class="app-desc">Both stacks and queues can be built on a singly linked list. Stack uses head insertion/deletion; Queue uses tail insertion and head deletion.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🗺️</div>
+          <h4 class="app-title">Graph Adjacency Lists</h4>
+          <p class="app-desc">Each vertex in a graph stores its neighbours as a singly linked list. This representation is memory-efficient for sparse graphs compared to an adjacency matrix.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🔢</div>
+          <h4 class="app-title">Polynomial Representation</h4>
+          <p class="app-desc">Sparse polynomials are stored as linked lists where each node holds a coefficient and exponent pair — efficient addition and multiplication without wasted zero terms.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 7: Interactive Simulator ── -->
+    <section class="lesson-section simulator-section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Interactive Linked List Simulator</h2>
+      </div>
+      <p class="lesson-para">Build a singly linked list live. Insert nodes at the beginning or end, delete by value, and watch the pointer chain animate in real time.</p>
+
+      <div class="simulator-card" id="simulatorCard">
+
+        <!-- Controls -->
+        <div class="sim-controls">
+          <div class="sim-input-group">
+            <label class="sim-label">Enter Value</label>
+            <input type="number" id="simInput" class="sim-input" placeholder="e.g. 42" min="-999" max="999"
+              onkeydown="if(event.key==='Enter') sllInsertEnd()">
+          </div>
+          <div class="sim-btn-group">
+            <button class="sim-btn sim-push" onclick="sllInsertBeginning()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+              </svg>
+              Insert Begin
+            </button>
+            <button class="sim-btn sim-ins-end" onclick="sllInsertEnd()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+              </svg>
+              Insert End
+            </button>
+            <button class="sim-btn sim-pop" onclick="sllDelete()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+              Delete
+            </button>
+            <button class="sim-btn sim-display" onclick="sllTraverse()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+              </svg>
+              Traverse
+            </button>
+            <button class="sim-btn sim-clear" onclick="sllReset()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+              </svg>
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Status message -->
+        <div class="sim-status" id="simStatus">
+          <span id="simStatusText">Ready — insert a value to begin</span>
+        </div>
+
+        <!-- Linked List Visualizer -->
+        <div class="sll-visualizer">
+
+          <!-- Pointer labels row (HEAD / TAIL) -->
+          <div class="sll-ptr-indicators" id="sllPtrIndicators">
+            <!-- dynamically populated -->
+          </div>
+
+          <!-- Node chain area -->
+          <div class="sll-sim-container" id="sllSimContainer">
+            <div class="sim-empty-state" id="simEmptyState">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <rect width="32" height="32" rx="8" fill="#eef3ff"/>
+                <path d="M6 12h8v8H6zM18 12h8v8h-8z" fill="#3b6cff" opacity="0.35"/>
+                <path d="M14 16h4" stroke="#3b6cff" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <p>List is empty</p>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="sim-stats">
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statSize">0</span>
+              <span class="sim-stat-label">Size</span>
+            </div>
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statHead">—</span>
+              <span class="sim-stat-label">Head</span>
+            </div>
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statTail">—</span>
+              <span class="sim-stat-label">Tail</span>
+            </div>
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statOps">0</span>
+              <span class="sim-stat-label">Ops</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /simulator-card -->
+    </section>
+
+    <!-- Bottom-right sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGrad2)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGrad2" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="singly-linked-list.js"></script>
+<link rel="stylesheet" href="../../spark/spark.css">
+<script src="../../spark/spark.js"></script>
+</body>
+</html>
