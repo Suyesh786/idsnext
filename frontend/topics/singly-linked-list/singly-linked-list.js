@@ -165,6 +165,29 @@ let nodeIdSeq = 0;  // auto-increment for unique node ids
 
 function newId() { return "n" + (++nodeIdSeq); }
 
+/* ─── Position input toggle ──────────────────────────────────── */
+function enablePositionInput(enable) {
+  const posInput = document.getElementById("simPosInput");
+  if (!posInput) return;
+  posInput.disabled = !enable;
+}
+
+function handleInsertAtPosition() {
+  const posInput = document.getElementById("simPosInput");
+  if (!posInput) return;
+
+  // If position input is currently disabled, enable it first
+  if (posInput.disabled) {
+    enablePositionInput(true);
+    posInput.focus();
+    setStatus("Position input enabled — enter a position and click 'At Position' again.", "info");
+    return;
+  }
+
+  // Position input is already enabled — proceed with insertion
+  sllInsertAtPosition();
+}
+
 /* ─── Status helpers ─────────────────────────────────────────── */
 function setStatus(msg, type = "") {
   const bar = document.getElementById("simStatus");
@@ -192,7 +215,7 @@ function updateEmptyState() {
   empty.style.display = size === 0 ? "flex" : "none";
 }
 
-/* ─── Validate input ─────────────────────────────────────────── */
+/* ─── Validate value input ───────────────────────────────────── */
 function getInputValue() {
   const input = document.getElementById("simInput");
   if (!input) return null;
@@ -211,9 +234,33 @@ function getInputValue() {
   return val;
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ─── Validate position input ────────────────────────────────── */
+function getPositionValue() {
+  const input = document.getElementById("simPosInput");
+  if (!input) return null;
+  const raw = input.value.trim();
+  if (raw === "" || isNaN(Number(raw))) {
+    setStatus("⚠ Please enter a valid position (0-based index).", "error");
+    input.focus();
+    return null;
+  }
+  const pos = parseInt(raw, 10);
+  if (pos < 0) {
+    setStatus("⚠ Position must be 0 or greater.", "error");
+    input.focus();
+    return null;
+  }
+  if (pos > size) {
+    setStatus(`⚠ Position ${pos} is out of range. Valid range: 0 to ${size}.`, "error");
+    input.focus();
+    return null;
+  }
+  return pos;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    DOM RENDERING — builds horizontal chain
-══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════ */
 
 /**
  * Full re-render of the node chain.
@@ -258,7 +305,6 @@ function renderList(newNodeId = null, deleteNodeId = null) {
     // Animate new node
     if (id === newNodeId) {
       el.classList.add("node-new");
-      // Remove class after animation
       setTimeout(() => {
         el.classList.remove("node-new");
       }, 500);
@@ -345,15 +391,14 @@ function updatePointerLabels(orderedIds, domNodes) {
   if (headEl) {
     const headRect = headEl.getBoundingClientRect();
     const headTag  = makeTag("HEAD", "ptr-head");
-    // Position relative to ptrContainer
     const leftOffset = headRect.left - ptrRect.left + headRect.width / 2;
     headTag.style.position = "absolute";
-    headTag.style.left = (leftOffset - 20) + "px"; // approx center
+    headTag.style.left = (leftOffset - 20) + "px";
     headTag.style.bottom = "0";
     ptrContainer.appendChild(headTag);
   }
 
-  // TAIL tag (only if different from head, or always show both)
+  // TAIL tag
   const tailEl = domNodes[tailId];
   if (tailEl) {
     const tailRect = tailEl.getBoundingClientRect();
@@ -362,7 +407,6 @@ function updatePointerLabels(orderedIds, domNodes) {
     tailTag.style.position = "absolute";
 
     if (headId === tailId) {
-      // Single node — stack tags
       tailTag.style.left = (leftOffset + 30) + "px";
     } else {
       tailTag.style.left = (leftOffset - 20) + "px";
@@ -373,9 +417,9 @@ function updatePointerLabels(orderedIds, domNodes) {
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    INSERT AT BEGINNING — O(1)
-══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════ */
 function sllInsertBeginning() {
   if (animating) return;
 
@@ -390,11 +434,9 @@ function sllInsertBeginning() {
   animating = true;
   const id = newId();
 
-  // Internal: create node, point its next to current head
   nodes[id] = { id, value: val, next: head };
 
   if (head === null) {
-    // Empty list: both head and tail point to new node
     head = id;
     tail = id;
   } else {
@@ -413,9 +455,9 @@ function sllInsertBeginning() {
   setTimeout(() => { animating = false; }, 500);
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    INSERT AT END — O(1) with tail pointer
-══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════ */
 function sllInsertEnd() {
   if (animating) return;
 
@@ -430,21 +472,17 @@ function sllInsertEnd() {
   animating = true;
   const id = newId();
 
-  // Internal: create node
   nodes[id] = { id, value: val, next: null };
 
   if (tail === null) {
-    // Empty list
     head = id;
     tail = id;
   } else {
-    // Highlight current tail briefly
     const tailEl = document.querySelector(`[data-id="${tail}"]`);
     if (tailEl) {
       tailEl.classList.add("node-highlight");
       setTimeout(() => tailEl.classList.remove("node-highlight"), 250);
     }
-    // Link current tail to new node
     nodes[tail].next = id;
     tail = id;
   }
@@ -454,7 +492,6 @@ function sllInsertEnd() {
   document.getElementById("simInput").value = "";
   document.getElementById("simInput").focus();
 
-  // Small delay so tail highlight is visible before re-render
   setTimeout(() => {
     renderList(id);
     updateStats();
@@ -463,9 +500,104 @@ function sllInsertEnd() {
   }, 280);
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
+   INSERT AT POSITION — O(n) traversal, 0-based index
+═══════════════════════════════════════════════════════════════ */
+function sllInsertAtPosition() {
+  if (animating) return;
+
+  const val = getInputValue();
+  if (val === null) return;
+
+  const pos = getPositionValue();
+  if (pos === null) return;
+
+  if (size >= MAX_LIST_SIZE) {
+    setStatus(`⚠ List is full! Maximum size is ${MAX_LIST_SIZE}.`, "error");
+    return;
+  }
+
+  // Position 0 = insert at beginning
+  if (pos === 0) {
+    sllInsertBeginning();
+    return;
+  }
+
+  // Position == size = insert at end
+  if (pos === size) {
+    sllInsertEnd();
+    return;
+  }
+
+  animating = true;
+
+  // Collect ordered IDs for traversal animation
+  const orderedIds = [];
+  let cur = head;
+  while (cur !== null) {
+    orderedIds.push(cur);
+    cur = nodes[cur].next;
+  }
+
+  // Traverse and highlight nodes up to pos-1, then insert
+  let step = 0;
+
+  function traverseToPos() {
+    if (step >= pos) {
+      // Done traversing — remove highlight and perform insertion
+      orderedIds.forEach(id => {
+        const el = document.querySelector(`[data-id="${id}"]`);
+        if (el) el.classList.remove("node-position-highlight");
+      });
+
+      // Insert: prevId is orderedIds[pos - 1]
+      const prevId = orderedIds[pos - 1];
+      const nextId = nodes[prevId].next;
+
+      const newNodeId = newId();
+      nodes[newNodeId] = { id: newNodeId, value: val, next: nextId };
+      nodes[prevId].next = newNodeId;
+
+      // Update tail if inserting at last position
+      if (nextId === null) tail = newNodeId;
+
+      size++;
+      opCount++;
+
+      document.getElementById("simInput").value = "";
+      document.getElementById("simPosInput").value = "";
+
+      setTimeout(() => {
+        renderList(newNodeId);
+        updateStats();
+        setStatus(`✓ Inserted ${val} at position ${pos} (0-based).`, "success");
+        setTimeout(() => { animating = false; }, 500);
+      }, 120);
+      return;
+    }
+
+    // Highlight current node
+    const el = document.querySelector(`[data-id="${orderedIds[step]}"]`);
+    if (el) {
+      el.classList.add("node-position-highlight");
+      if (step === pos - 1) {
+        // Mark the node just before insertion point differently
+        setTimeout(() => el.classList.add("node-insert-target"), 150);
+      }
+    }
+    setStatus(`Traversing… at index ${step} (value: ${nodes[orderedIds[step]].value})`, "info");
+
+    step++;
+    setTimeout(traverseToPos, 350);
+  }
+
+  setStatus(`Traversing to position ${pos}…`, "info");
+  traverseToPos();
+}
+
+/* ═══════════════════════════════════════════════════════════════
    DELETE BY VALUE — O(n)
-══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════ */
 function sllDelete() {
   if (animating) return;
 
@@ -477,17 +609,24 @@ function sllDelete() {
     return;
   }
 
-  // Find the node with this value
+  // Find the node with this value — traverse with animation
+  const orderedIds = [];
+  let cur = head;
+  while (cur !== null) {
+    orderedIds.push(cur);
+    cur = nodes[cur].next;
+  }
+
   let targetId  = null;
   let prevId    = null;
-  let cur       = head;
-  while (cur !== null) {
-    if (nodes[cur].value === val) {
-      targetId = cur;
+  let foundAt   = -1;
+  for (let i = 0; i < orderedIds.length; i++) {
+    if (nodes[orderedIds[i]].value === val) {
+      targetId = orderedIds[i];
+      prevId = i > 0 ? orderedIds[i - 1] : null;
+      foundAt = i;
       break;
     }
-    prevId = cur;
-    cur = nodes[cur].next;
   }
 
   if (targetId === null) {
@@ -497,48 +636,226 @@ function sllDelete() {
 
   animating = true;
 
-  // Step 1: Highlight the target node
-  const targetEl = document.querySelector(`[data-id="${targetId}"]`);
-  if (targetEl) targetEl.classList.add("node-highlight");
+  // Traverse and highlight nodes up to target
+  let step = 0;
+
+  function traverseToTarget() {
+    if (step > foundAt) {
+      // Done traversing — now delete
+      orderedIds.forEach(id => {
+        const el = document.querySelector(`[data-id="${id}"]`);
+        if (el) el.classList.remove("node-position-highlight");
+      });
+
+      const targetEl = document.querySelector(`[data-id="${targetId}"]`);
+      if (targetEl) {
+        targetEl.classList.remove("node-position-highlight");
+        targetEl.classList.add("node-highlight");
+      }
+
+      setTimeout(() => {
+        if (targetEl) {
+          targetEl.classList.remove("node-highlight");
+          targetEl.classList.add("node-del");
+        }
+
+        setTimeout(() => {
+          if (prevId === null) {
+            head = nodes[targetId].next;
+            if (head === null) tail = null;
+          } else {
+            nodes[prevId].next = nodes[targetId].next;
+            if (targetId === tail) tail = prevId;
+          }
+
+          delete nodes[targetId];
+          size--;
+          opCount++;
+
+          document.getElementById("simInput").value = "";
+
+          renderList();
+          updateStats();
+          setStatus(`✓ Deleted node with value ${val} (found at index ${foundAt}).`, "success");
+          animating = false;
+        }, 420);
+      }, 300);
+      return;
+    }
+
+    const el = document.querySelector(`[data-id="${orderedIds[step]}"]`);
+    if (el) {
+      if (step > 0) {
+        const prevEl = document.querySelector(`[data-id="${orderedIds[step - 1]}"]`);
+        if (prevEl) prevEl.classList.remove("node-position-highlight");
+      }
+      el.classList.add("node-position-highlight");
+    }
+
+    const isTarget = orderedIds[step] === targetId;
+    setStatus(
+      isTarget
+        ? `✓ Found value ${val} at index ${step}!`
+        : `Searching… index ${step}: ${nodes[orderedIds[step]].value} ≠ ${val}`,
+      isTarget ? "success" : "info"
+    );
+
+    step++;
+    setTimeout(traverseToTarget, 330);
+  }
+
+  setStatus(`Searching for value ${val}…`, "info");
+  traverseToTarget();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DELETE AT BEGINNING — O(1)
+═══════════════════════════════════════════════════════════════ */
+function sllDeleteBeginning() {
+  if (animating) return;
+
+  if (size === 0) {
+    setStatus("⚠ List is empty — nothing to delete.", "error");
+    return;
+  }
+
+  animating = true;
+
+  const targetId = head;
+  const headEl = document.querySelector(`[data-id="${targetId}"]`);
+
+  // Step 1: Highlight head node
+  if (headEl) headEl.classList.add("node-highlight");
+  setStatus(`Highlighting head node (value: ${nodes[targetId].value})…`, "info");
 
   setTimeout(() => {
     // Step 2: Animate deletion
-    if (targetEl) {
-      targetEl.classList.remove("node-highlight");
-      targetEl.classList.add("node-del");
+    if (headEl) {
+      headEl.classList.remove("node-highlight");
+      headEl.classList.add("node-del");
     }
 
     setTimeout(() => {
-      // Step 3: Update internal structure
-      if (prevId === null) {
-        // Deleting head
-        head = nodes[targetId].next;
-        if (head === null) tail = null; // list became empty
-      } else {
-        nodes[prevId].next = nodes[targetId].next;
-        if (targetId === tail) {
-          tail = prevId; // deleted tail — update tail pointer
-        }
-      }
-
+      // Step 3: Update internal state
+      const deletedVal = nodes[targetId].value;
+      head = nodes[targetId].next;
+      if (head === null) tail = null;
       delete nodes[targetId];
       size--;
       opCount++;
 
-      document.getElementById("simInput").value = "";
-      document.getElementById("simInput").focus();
-
       renderList();
       updateStats();
-      setStatus(`✓ Deleted node with value ${val}.`, "success");
+      setStatus(`✓ Deleted head node (value: ${deletedVal}). New head updated.`, "success");
       animating = false;
     }, 420);
-  }, 300);
+  }, 320);
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
+   DELETE AT END — O(n) must traverse to find new tail
+═══════════════════════════════════════════════════════════════ */
+function sllDeleteEnd() {
+  if (animating) return;
+
+  if (size === 0) {
+    setStatus("⚠ List is empty — nothing to delete.", "error");
+    return;
+  }
+
+  animating = true;
+
+  if (size === 1) {
+    // Only one node — same as delete beginning
+    const targetId = head;
+    const el = document.querySelector(`[data-id="${targetId}"]`);
+    if (el) el.classList.add("node-highlight");
+    setStatus(`Highlighting tail node (value: ${nodes[targetId].value})…`, "info");
+
+    setTimeout(() => {
+      if (el) { el.classList.remove("node-highlight"); el.classList.add("node-del"); }
+      setTimeout(() => {
+        const deletedVal = nodes[targetId].value;
+        head = null; tail = null;
+        delete nodes[targetId];
+        size--;
+        opCount++;
+        renderList();
+        updateStats();
+        setStatus(`✓ Deleted tail node (value: ${deletedVal}). List is now empty.`, "success");
+        animating = false;
+      }, 420);
+    }, 320);
+    return;
+  }
+
+  // Traverse to find the node before tail
+  const orderedIds = [];
+  let cur = head;
+  while (cur !== null) {
+    orderedIds.push(cur);
+    cur = nodes[cur].next;
+  }
+
+  const targetId = orderedIds[orderedIds.length - 1];
+  const newTailId = orderedIds[orderedIds.length - 2];
+
+  // Animate traversal to find tail
+  let step = 0;
+
+  function traverseToTail() {
+    if (step >= orderedIds.length) {
+      // Done traversal — highlight tail and delete
+      orderedIds.forEach(id => {
+        const el = document.querySelector(`[data-id="${id}"]`);
+        if (el) el.classList.remove("node-position-highlight");
+      });
+
+      const tailEl = document.querySelector(`[data-id="${targetId}"]`);
+      if (tailEl) tailEl.classList.add("node-highlight");
+      setStatus(`Found tail node (value: ${nodes[targetId].value}). Removing…`, "info");
+
+      setTimeout(() => {
+        if (tailEl) { tailEl.classList.remove("node-highlight"); tailEl.classList.add("node-del"); }
+
+        setTimeout(() => {
+          const deletedVal = nodes[targetId].value;
+          nodes[newTailId].next = null;
+          tail = newTailId;
+          delete nodes[targetId];
+          size--;
+          opCount++;
+
+          renderList();
+          updateStats();
+          setStatus(`✓ Deleted tail node (value: ${deletedVal}). Tail pointer updated.`, "success");
+          animating = false;
+        }, 420);
+      }, 340);
+      return;
+    }
+
+    const el = document.querySelector(`[data-id="${orderedIds[step]}"]`);
+    if (el) {
+      if (step > 0) {
+        const prevEl = document.querySelector(`[data-id="${orderedIds[step - 1]}"]`);
+        if (prevEl) prevEl.classList.remove("node-position-highlight");
+      }
+      el.classList.add("node-position-highlight");
+    }
+
+    setStatus(`Traversing to tail… at index ${step} (value: ${nodes[orderedIds[step]].value})`, "info");
+    step++;
+    setTimeout(traverseToTail, 280);
+  }
+
+  setStatus(`Traversing to find tail node…`, "info");
+  traverseToTail();
+}
+
+/* ═══════════════════════════════════════════════════════════════
    TRAVERSE — highlight nodes one by one
-══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════ */
 function sllTraverse() {
   if (animating) return;
 
@@ -549,7 +866,6 @@ function sllTraverse() {
 
   animating = true;
 
-  // Walk the internal list to get ordered IDs
   const orderedIds = [];
   let cur = head;
   while (cur !== null) {
@@ -557,7 +873,6 @@ function sllTraverse() {
     cur = nodes[cur].next;
   }
 
-  // Collect DOM elements
   const domEls = orderedIds.map(id => document.querySelector(`[data-id="${id}"]`));
 
   let i = 0;
@@ -573,9 +888,7 @@ function sllTraverse() {
       return;
     }
     const el = domEls[i];
-    if (el) {
-      el.classList.add("node-traversed");
-    }
+    if (el) el.classList.add("node-traversed");
     setStatus(`Visiting node ${i + 1}/${orderedIds.length}: value = ${values[i]}`, "info");
     i++;
     setTimeout(highlightNext, 320);
@@ -584,9 +897,9 @@ function sllTraverse() {
   highlightNext();
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    RESET — clear entire list
-══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════ */
 function sllReset() {
   if (animating) return;
   if (size === 0) {
@@ -596,7 +909,6 @@ function sllReset() {
 
   animating = true;
 
-  // Fade out all node elements quickly
   const container = document.getElementById("sllSimContainer");
   if (container) {
     Array.from(container.children).forEach(child => {
@@ -609,7 +921,6 @@ function sllReset() {
   }
 
   setTimeout(() => {
-    // Reset internal state
     nodes   = {};
     head    = null;
     tail    = null;
@@ -617,9 +928,17 @@ function sllReset() {
     opCount = 0;
     nodeIdSeq = 0;
 
+    // Re-enable position input handling
+    enablePositionInput(false);
+    const posInput = document.getElementById("simPosInput");
+    if (posInput) posInput.value = "";
+
     renderList();
     updateStats();
     setStatus("List reset. Ready for a new sequence.", "info");
     animating = false;
   }, 260);
 }
+
+
+/* ─── End of Simulator ───────────────────────────────────────── */

@@ -1063,6 +1063,109 @@
 }
 .sim-clear:hover { background: #e0e0e0; }
 
+/* ─── Position Input (disabled by default, enabled on selection) */
+.sim-pos-input:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #f3f4f6;
+  border-color: #e2e8f0;
+}
+
+.sim-pos-input:not(:disabled) {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245,158,11,0.15);
+}
+
+.sim-pos-input:not(:disabled):focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.22);
+}
+
+.sim-label-hint {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.75;
+}
+
+/* ─── Inputs row (value + position side by side) ─────────────── */
+.sim-inputs-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+/* ─── Button groups with labels ──────────────────────────────── */
+.sim-btn-groups-wrap {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.sim-btn-group-labeled {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sim-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding-left: 2px;
+}
+
+/* ─── Sim controls vertical layout ───────────────────────────── */
+.sim-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+/* Insert at Position — amber/orange */
+.sim-ins-pos {
+  background: #fff8e8;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.sim-ins-pos:hover { background: #fde68a; }
+
+/* Delete at Beginning — dark red */
+.sim-del-begin {
+  background: #fff0f0;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+.sim-del-begin:hover { background: #fecaca; }
+
+/* Delete at End — orange-red */
+.sim-del-end {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+.sim-del-end:hover { background: #fed7aa; }
+
+/* ─── Traversal position index badge on nodes ────────────────── */
+.sll-node-el.node-position-highlight {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #fff8e8 0%, #fde68a 100%);
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.3), 0 4px 14px rgba(245,158,11,0.25);
+}
+
+.sll-node-el.node-insert-target {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.25), 0 4px 14px rgba(16,185,129,0.18);
+}
+
 /* ─── Status Bar ─────────────────────────────────────────────── */
 .sim-status {
   display: flex;
@@ -1664,14 +1767,23 @@
     gap: 12px;
   }
 
+  .sim-inputs-row {
+    gap: 10px;
+  }
+
   .sim-input-group {
     width: 100%;
   }
 
-  .sim-input {
+  .sim-input,
+  .sim-pos-input {
     width: 100%;
     box-sizing: border-box;
     min-height: 44px;
+  }
+
+  .sim-btn-groups-wrap {
+    gap: 12px;
   }
 
   .sim-btn-group {
