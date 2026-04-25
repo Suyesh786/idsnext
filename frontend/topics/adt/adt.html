@@ -1,30 +1,568 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<p>
-<a href="../../learn/learn.html">← Back to Topics</a>
-</p>
 <head>
 <meta charset="UTF-8">
-<title>Coming Soon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abstract Data Type | iDS Studio Next</title>
+<link rel="stylesheet" href="../../dashboard/dashboard.css">
+<link rel="stylesheet" href="adt.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 </head>
 
-<body style="font-family: Arial, sans-serif; padding: 40px;">
+<body>
 
-<h2>🚧 This topic is coming soon</h2>
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
 
-<p>
-We are currently preparing this lesson.
-</p>
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
 
-<p>
-Meanwhile, you can explore:
-</p>
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="../../image/ilogo.png" alt="iDS Studio" class="logo-img">
+      <defs>
+        <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#4f8cff"/>
+          <stop offset="100%" stop-color="#1a56db"/>
+        </linearGradient>
+      </defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
 
-<ul>
-<li><a href="../stacks/stack.html">Stacks</a></li>
-<li><a href="../queue/queue.html">Queues</a></li>
-</ul>
+  <nav class="menu">
+    <a href="../../dashboard/dashboard.html" class="menu-item">Dashboard</a>
+    <a href="../../learn/learn.html" class="menu-item active">Learn</a>
+    <a href="../../practice/practice.html" class="menu-item">Practice</a>
+    <a href="../../leaderboard/leaderboard.html" class="menu-item">Leaderboard</a>
+  </nav>
 
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        Logout
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main adt-main">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <nav class="breadcrumb">
+        <a href="../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 1</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Abstract Data Type</span>
+      </nav>
+      <h1 class="lesson-heading">
+        Abstract Data Type
+        <span class="lesson-heading-tag">ADT — What &amp; Why</span>
+      </h1>
+    </div>
+
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- ── SECTION 1: What is an ADT ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is an Abstract Data Type (ADT)?</h2>
+      </div>
+
+      <div class="definition-box">
+        <div class="definition-icon">🧩</div>
+        <div class="definition-body">
+          An <strong>Abstract Data Type (ADT)</strong> is a
+          <span class="highlight-text">mathematical model</span> for a data type,
+          defined by its <span class="highlight-text">data values</span> and the
+          <span class="highlight-text">operations</span> that can be performed on it —
+          completely independent of any implementation details.
+        </div>
+      </div>
+
+      <p class="lesson-para">
+        Think of an ADT as a <em>contract</em> or <em>specification</em>. It tells you
+        <strong>what</strong> a data structure does, not <strong>how</strong> it does it.
+        The internal mechanics — arrays, pointers, memory layout — are hidden from the user.
+        This separation is the essence of <strong>abstraction</strong>.
+      </p>
+      <p class="lesson-para">
+        For example, a Stack ADT defines that you can <code class="inline-code">push</code>,
+        <code class="inline-code">pop</code>, and <code class="inline-code">peek</code>.
+        Whether it is built using an array or a linked list internally is irrelevant to the programmer using it.
+      </p>
+
+      <!-- ADT vs Data Structure comparison table -->
+      <div class="comparison-table-wrap">
+        <h4 class="table-heading">ADT vs Data Structure — Key Difference</h4>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>Abstract Data Type (ADT)</th>
+              <th>Data Structure</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Definition</td><td>Logical model — what it does</td><td>Concrete implementation — how it's stored</td></tr>
+            <tr><td>Focus</td><td>Operations &amp; behaviour</td><td>Memory layout &amp; algorithms</td></tr>
+            <tr><td>Implementation</td><td>None — it's abstract</td><td>Specific (array, linked list, tree…)</td></tr>
+            <tr><td>Example</td><td>Stack ADT, Queue ADT, List ADT</td><td>Array-based Stack, Singly Linked List</td></tr>
+            <tr><td>User sees</td><td>Interface (push, pop, enqueue…)</td><td>Internals (pointers, indices, nodes…)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECTION 2: Real World Analogies ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Real World Analogies</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="analogy-emoji">🏧</div>
+          <h4 class="analogy-title">ATM Machine</h4>
+          <p class="analogy-desc">You interact with an ATM using buttons: withdraw, deposit, check balance. You don't know how the bank's internal system works — you only use the defined interface.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">📺</div>
+          <h4 class="analogy-title">TV Remote</h4>
+          <p class="analogy-desc">A TV remote gives you operations: volume up, channel change, power. You never need to understand the IR signals or circuit boards inside — just use the buttons.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🚗</div>
+          <h4 class="analogy-title">Car Driving Interface</h4>
+          <p class="analogy-desc">A driver uses the steering wheel, pedals, and gear stick. Whether the car is petrol, diesel, or electric is hidden. The driving interface (ADT) stays the same.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: Characteristics of ADT ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Characteristics of ADT</h2>
+      </div>
+
+      <div class="ops-grid">
+        <div class="op-card">
+          <div class="op-badge op-push">Encapsulation</div>
+          <p class="op-desc">Data and the operations on it are bundled together. The internal state is hidden and can only be accessed through defined operations.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Principle</span>
+            <span class="complexity-value">Data Hiding</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-pop">Abstraction</div>
+          <p class="op-desc">The user works with a simplified view — only the <em>what</em>, never the <em>how</em>. Implementation details are completely invisible.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Principle</span>
+            <span class="complexity-value">Interface Only</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-peek">Defined Operations</div>
+          <p class="op-desc">Every ADT comes with a clear, well-defined set of operations. These form the contract between the user and the implementation.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Principle</span>
+            <span class="complexity-value">Fixed API</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-empty">Implementation-Free</div>
+          <p class="op-desc">The same ADT can have multiple implementations. A List ADT can be built with an array or a linked list — both satisfy the contract.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Principle</span>
+            <span class="complexity-value">Interchangeable</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADT Conceptual Diagram -->
+      <div class="adt-diagram-wrap">
+        <h4 class="diagram-title">ADT Conceptual Model — The Black Box</h4>
+        <div class="adt-blackbox-diagram">
+
+          <!-- Left: Operations IN -->
+          <div class="adt-ops-column adt-ops-in">
+            <div class="adt-ops-label">Operations (Interface)</div>
+            <div class="adt-op-pill adt-pill-green">insert( )</div>
+            <div class="adt-op-pill adt-pill-red">delete( )</div>
+            <div class="adt-op-pill adt-pill-orange">search( )</div>
+            <div class="adt-op-pill adt-pill-purple">display( )</div>
+            <div class="adt-arrows-group">
+              <span class="adt-arrow-right">→</span>
+              <span class="adt-arrow-right">→</span>
+              <span class="adt-arrow-right">→</span>
+              <span class="adt-arrow-right">→</span>
+            </div>
+          </div>
+
+          <!-- Center: The Black Box -->
+          <div class="adt-box">
+            <div class="adt-box-label-top">ADT</div>
+            <div class="adt-box-inner">
+              <div class="adt-box-hidden-label">⬛ Implementation Hidden</div>
+              <div class="adt-box-detail">Array-based?</div>
+              <div class="adt-box-detail">Linked List?</div>
+              <div class="adt-box-detail">Tree-based?</div>
+              <div class="adt-box-footer">User doesn't need to know</div>
+            </div>
+          </div>
+
+          <!-- Right: Results OUT -->
+          <div class="adt-ops-column adt-ops-out">
+            <div class="adt-arrows-group">
+              <span class="adt-arrow-right">→</span>
+              <span class="adt-arrow-right">→</span>
+              <span class="adt-arrow-right">→</span>
+              <span class="adt-arrow-right">→</span>
+            </div>
+            <div class="adt-ops-label">Results (Output)</div>
+            <div class="adt-op-pill adt-pill-result">Data stored ✓</div>
+            <div class="adt-op-pill adt-pill-result">Element removed ✓</div>
+            <div class="adt-op-pill adt-pill-result">Index returned ✓</div>
+            <div class="adt-op-pill adt-pill-result">All items shown ✓</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: Types of ADTs ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Types of ADTs</h2>
+      </div>
+
+      <p class="lesson-para">
+        ADTs are broadly classified into two categories based on how their elements are organised
+        and the relationships between them.
+      </p>
+
+      <div class="adt-types-grid">
+
+        <!-- Linear ADTs -->
+        <div class="adt-type-card adt-type-linear">
+          <div class="adt-type-header">
+            <span class="adt-type-badge adt-badge-blue">Linear ADTs</span>
+            <span class="adt-type-tag">Sequential structure</span>
+          </div>
+          <p class="adt-type-desc">Elements are arranged in a single sequence, one after another. Each element has at most one predecessor and one successor.</p>
+          <div class="adt-type-items">
+            <div class="adt-type-item">
+              <span class="adt-item-dot adt-dot-blue"></span>
+              <div>
+                <strong>Array ADT</strong>
+                <span class="adt-item-sub">Fixed-size, indexed, random access in O(1)</span>
+              </div>
+            </div>
+            <div class="adt-type-item">
+              <span class="adt-item-dot adt-dot-blue"></span>
+              <div>
+                <strong>List ADT</strong>
+                <span class="adt-item-sub">Dynamic sequence — insert and delete anywhere</span>
+              </div>
+            </div>
+            <div class="adt-type-item">
+              <span class="adt-item-dot adt-dot-blue"></span>
+              <div>
+                <strong>Stack ADT</strong>
+                <span class="adt-item-sub">LIFO — last inserted is first removed</span>
+              </div>
+            </div>
+            <div class="adt-type-item">
+              <span class="adt-item-dot adt-dot-blue"></span>
+              <div>
+                <strong>Queue ADT</strong>
+                <span class="adt-item-sub">FIFO — first inserted is first removed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Non-Linear ADTs -->
+        <div class="adt-type-card adt-type-nonlinear">
+          <div class="adt-type-header">
+            <span class="adt-type-badge adt-badge-purple">Non-Linear ADTs</span>
+            <span class="adt-type-tag">Hierarchical / networked</span>
+          </div>
+          <p class="adt-type-desc">Elements can have multiple predecessors or successors, forming hierarchical or networked relationships.</p>
+          <div class="adt-type-items">
+            <div class="adt-type-item">
+              <span class="adt-item-dot adt-dot-purple"></span>
+              <div>
+                <strong>Tree ADT</strong>
+                <span class="adt-item-sub">Hierarchical structure — one root, many children</span>
+              </div>
+            </div>
+            <div class="adt-type-item">
+              <span class="adt-item-dot adt-dot-purple"></span>
+              <div>
+                <strong>Graph ADT</strong>
+                <span class="adt-item-sub">Nodes connected by edges — general network model</span>
+              </div>
+            </div>
+            <div class="adt-type-item">
+              <span class="adt-item-dot adt-dot-purple"></span>
+              <div>
+                <strong>Heap ADT</strong>
+                <span class="adt-item-sub">Tree satisfying heap property (min or max)</span>
+              </div>
+            </div>
+            <div class="adt-type-item">
+              <span class="adt-item-dot adt-dot-purple"></span>
+              <div>
+                <strong>Map / Set ADT</strong>
+                <span class="adt-item-sub">Key-value associations or unique-element collections</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: Example Implementation in C ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Example Implementation in C</h2>
+      </div>
+
+      <p class="lesson-para">
+        Below is a simple List ADT in C — demonstrating how the ADT
+        <em>specification</em> (the struct and its operation signatures) separates from the
+        <em>implementation</em> details inside each function body.
+      </p>
+
+      <div class="impl-tabs">
+        <button class="impl-tab active" onclick="switchTab('spec')">ADT Specification</button>
+        <button class="impl-tab" onclick="switchTab('impl')">Implementation</button>
+      </div>
+
+      <!-- Tab: Specification -->
+      <div id="tab-spec" class="impl-panel active">
+        <p class="lesson-para">
+          The specification defines the <strong>data</strong> (the struct) and
+          the <strong>operation signatures</strong>. This is what users of the ADT see.
+        </p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — List ADT Specification (header)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-comment">/* list_adt.h — Public interface. Users only see this. */</span>
+
+<span class="c-kw">#define</span> MAX_SIZE 100
+
+<span class="c-comment">/* ── Data Definition ────────────────────────────── */</span>
+<span class="c-kw">typedef struct</span> {
+    <span class="c-kw">int</span>  data[MAX_SIZE]; <span class="c-comment">/* storage — hidden from user */</span>
+    <span class="c-kw">int</span>  size;           <span class="c-comment">/* current number of elements */</span>
+} ListADT;
+
+<span class="c-comment">/* ── Operation Signatures (the ADT contract) ─── */</span>
+<span class="c-kw">void</span> list_init   (ListADT* L);
+<span class="c-kw">void</span> list_insert (ListADT* L, <span class="c-kw">int</span> pos, <span class="c-kw">int</span> value);
+<span class="c-kw">void</span> list_delete (ListADT* L, <span class="c-kw">int</span> pos);
+<span class="c-kw">int</span>  list_get    (ListADT* L, <span class="c-kw">int</span> pos);
+<span class="c-kw">int</span>  list_size   (ListADT* L);
+<span class="c-kw">void</span> list_display(ListADT* L);</pre>
+        </div>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span>This header file is the <strong>ADT</strong>. A programmer can use the List without ever looking at the <code class="inline-code">.c</code> implementation file.</span>
+        </div>
+      </div>
+
+      <!-- Tab: Implementation -->
+      <div id="tab-impl" class="impl-panel">
+        <p class="lesson-para">
+          The implementation provides the actual code for each operation.
+          It could be swapped for a linked-list version without the user noticing.
+        </p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — List ADT Implementation</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-comment">/* list_adt.c — Internal implementation. Users don't see this. */</span>
+
+<span class="c-kw">void</span> list_init(ListADT* L) {
+    L->size = 0;
+}
+
+<span class="c-kw">void</span> list_insert(ListADT* L, <span class="c-kw">int</span> pos, <span class="c-kw">int</span> value) {
+    <span class="c-kw">if</span> (L->size >= MAX_SIZE || pos < 0 || pos > L->size) <span class="c-kw">return</span>;
+    <span class="c-kw">for</span> (<span class="c-kw">int</span> i = L->size; i > pos; i--)
+        L->data[i] = L->data[i - 1];  <span class="c-comment">/* shift right */</span>
+    L->data[pos] = value;
+    L->size++;
+}
+
+<span class="c-kw">void</span> list_delete(ListADT* L, <span class="c-kw">int</span> pos) {
+    <span class="c-kw">if</span> (pos < 0 || pos >= L->size) <span class="c-kw">return</span>;
+    <span class="c-kw">for</span> (<span class="c-kw">int</span> i = pos; i < L->size - 1; i++)
+        L->data[i] = L->data[i + 1];  <span class="c-comment">/* shift left */</span>
+    L->size--;
+}
+
+<span class="c-kw">int</span> list_get(ListADT* L, <span class="c-kw">int</span> pos) {
+    <span class="c-kw">return</span> (pos >= 0 && pos < L->size) ? L->data[pos] : -1;
+}
+
+<span class="c-kw">int</span> list_size(ListADT* L) { <span class="c-kw">return</span> L->size; }
+
+<span class="c-kw">void</span> list_display(ListADT* L) {
+    printf(<span class="c-str">"List: [ "</span>);
+    <span class="c-kw">for</span> (<span class="c-kw">int</span> i = 0; i < L->size; i++)
+        printf(<span class="c-str">"%d "</span>, L->data[i]);
+    printf(<span class="c-str">"]\n"</span>);
+}</pre>
+        </div>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span>This implementation uses an array internally. You could replace it with a linked list and the user's code would work unchanged — that is the power of ADTs.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 6: Advantages & Limitations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Advantages &amp; Limitations</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card app-card-pro">
+          <div class="app-icon">🔒</div>
+          <h4 class="app-title">Information Hiding</h4>
+          <p class="app-desc">Users only interact through the defined interface. Internal details are shielded, reducing unintended misuse and coupling.</p>
+        </div>
+        <div class="app-card app-card-pro">
+          <div class="app-icon">♻️</div>
+          <h4 class="app-title">Reusability</h4>
+          <p class="app-desc">An ADT can be implemented once and reused across many programs. The same Stack ADT works in expression evaluators, compilers, and browsers.</p>
+        </div>
+        <div class="app-card app-card-pro">
+          <div class="app-icon">🔄</div>
+          <h4 class="app-title">Implementation Flexibility</h4>
+          <p class="app-desc">You can swap the underlying implementation (array ↔ linked list) without breaking any existing user code — only the <code class="inline-code">.c</code> file changes.</p>
+        </div>
+        <div class="app-card app-card-con">
+          <div class="app-icon">⚙️</div>
+          <h4 class="app-title">Overhead</h4>
+          <p class="app-desc">Function call indirection and abstraction layers can introduce slight performance overhead compared to direct, implementation-aware manipulation.</p>
+        </div>
+        <div class="app-card app-card-con">
+          <div class="app-icon">📐</div>
+          <h4 class="app-title">Design Complexity</h4>
+          <p class="app-desc">Designing a clean, complete ADT interface requires careful thought upfront. A poorly designed ADT is hard to extend later without breaking contracts.</p>
+        </div>
+        <div class="app-card app-card-con">
+          <div class="app-icon">🧪</div>
+          <h4 class="app-title">Not Directly Runnable</h4>
+          <p class="app-desc">An ADT is a specification — it cannot be run or tested on its own. It always requires at least one concrete implementation before it becomes usable.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 7: Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Applications of ADTs</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon">🏗️</div>
+          <h4 class="app-title">Software Design</h4>
+          <p class="app-desc">ADTs are the backbone of modular software. Each module exposes an ADT-style interface — enabling teams to build, test, and swap components independently.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🗂️</div>
+          <h4 class="app-title">Data Organisation</h4>
+          <p class="app-desc">Databases and file systems use ADTs (like Maps, Sets, Queues) to organise records and buffers, abstracting the storage engine from the query layer.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📦</div>
+          <h4 class="app-title">Standard Libraries</h4>
+          <p class="app-desc">Python's <code class="inline-code">list</code>, C++'s <code class="inline-code">std::vector</code>, and Java's <code class="inline-code">ArrayList</code> are all concrete implementations of the List ADT — ready to use out of the box.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🌐</div>
+          <h4 class="app-title">Operating Systems</h4>
+          <p class="app-desc">OS kernels use Queue ADTs for process scheduling, Stack ADTs for function call management, and Graph ADTs for resource allocation graphs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom-right sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGradAdt)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGradAdt" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="adt.js"></script>
+<link rel="stylesheet" href="../../spark/spark.css">
+<script src="../../spark/spark.js"></script>
 </body>
 </html>
