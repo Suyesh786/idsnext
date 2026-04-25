@@ -1,29 +1,555 @@
 <!DOCTYPE html>
 <html lang="en">
-<p>
-<a href="../../learn/learn.html">← Back to Topics</a>
-</p>
 <head>
 <meta charset="UTF-8">
-<title>Coming Soon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Array ADT | iDS Studio Next</title>
+<link rel="stylesheet" href="../../dashboard/dashboard.css">
+<link rel="stylesheet" href="array-adt.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 </head>
 
-<body style="font-family: Arial, sans-serif; padding: 40px;">
+<body>
 
-<h2>🚧 This topic is coming soon</h2>
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
 
-<p>
-We are currently preparing this lesson.
-</p>
+<!-- ═══════════ SIDEBAR (identical to dashboard.html) ═══════════ -->
+<aside class="sidebar">
 
-<p>
-Meanwhile, you can explore:
-</p>
+  <div class="logo">
+  <div class="logo-icon">
+    <img src="../../image/ilogo.png" alt="iDS Studio" class="logo-img">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#1a56db"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
 
-<ul>
-<li><a href="../stacks/stacks.html">Stacks</a></li>
-<li><a href="../queue/queue.html">Queues</a></li>
-</ul>
+  <nav class="menu">
+    <a href="../../dashboard/dashboard.html" class="menu-item">Dashboard</a>
+    <a href="../../learn/learn.html" class="menu-item active">Learn</a>
+    <a href="../../practice/practice.html" class="menu-item">Practice</a>
+    <a href="../../leaderboard/leaderboard.html" class="menu-item">Leaderboard</a>
+  </nav>
 
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        Logout
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main array-adt-main">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 1</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Array ADT</span>
+      </nav>
+      <!-- Page Title -->
+      <h1 class="lesson-heading">
+        Array ADT
+        <span class="lesson-heading-tag">Abstract Data Type</span>
+      </h1>
+    </div>
+
+    <!-- Mark Complete Button -->
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- ── SECTION 1: What is Array ADT ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is Array ADT?</h2>
+      </div>
+
+      <div class="definition-box">
+        <div class="definition-icon">📦</div>
+        <div class="definition-body">
+          <strong>Array ADT</strong> is an <span class="highlight-text">Abstract Data Type</span> that represents
+          a finite, ordered collection of elements — all of the same type — stored at
+          <span class="highlight-text">contiguous memory locations</span> and accessed using an integer index.
+        </div>
+      </div>
+
+      <p class="lesson-para">
+        In the ADT perspective, we define what an array <em>does</em> — not how it is stored internally.
+        An Array ADT specifies a fixed capacity, zero-based indexing, and a set of operations
+        (create, insert, delete, search, traverse) without exposing memory details to the user.
+      </p>
+      <p class="lesson-para">
+        The key distinction: a raw C array is just a block of memory, while the <strong>Array ADT</strong>
+        wraps it with a size, a maximum capacity, and well-defined operations — turning a primitive
+        into a proper data structure.
+      </p>
+    </section>
+
+    <!-- ── SECTION 2: Real World Analogies ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Real World Analogies</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="analogy-emoji">🪑</div>
+          <h4 class="analogy-title">Seats in a Classroom</h4>
+          <p class="analogy-desc">Each seat has a fixed number (index). You can directly go to seat 5 without checking every other seat. The classroom has a fixed capacity — just like an array.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">📚</div>
+          <h4 class="analogy-title">Books on a Shelf</h4>
+          <p class="analogy-desc">Books are arranged in a specific order on a shelf. You access book at position 3 directly. Inserting a book in the middle requires shifting others to the right.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🅿️</div>
+          <h4 class="analogy-title">Parking Slots</h4>
+          <p class="analogy-desc">A parking lot has numbered slots (0, 1, 2 …). You know exactly which slot is free and can drive directly to slot 7. The total number of slots is fixed at construction.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: Types of Arrays ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Types of Arrays</h2>
+      </div>
+
+      <div class="ops-grid array-types-grid">
+        <div class="op-card">
+          <div class="op-badge op-1d">1D Array</div>
+          <p class="op-desc">A single row of elements stored sequentially. Accessed with one index: <code class="inline-code">arr[i]</code>. Most common and fundamental type.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Access Time</span>
+            <span class="complexity-value">O(1)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-2d">2D Array</div>
+          <p class="op-desc">A grid of rows and columns — essentially an array of arrays. Accessed with two indices: <code class="inline-code">arr[i][j]</code>. Used for matrices and tables.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Access Time</span>
+            <span class="complexity-value">O(1)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-multi">Multi-D Array</div>
+          <p class="op-desc">Three or more dimensions — e.g. <code class="inline-code">arr[i][j][k]</code>. Used in scientific computing, image processing, and 3D data.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Access Time</span>
+            <span class="complexity-value">O(1)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Static Array Visual -->
+      <div class="array-visual-wrap">
+        <h4 class="diagram-title">Visual Representation — 1D Array</h4>
+        <div class="array-visual">
+          <div class="array-label-row">
+            <span class="arr-label-text">Index →</span>
+            <div class="arr-index-row">
+              <span class="arr-index">0</span>
+              <span class="arr-index">1</span>
+              <span class="arr-index">2</span>
+              <span class="arr-index">3</span>
+              <span class="arr-index">4</span>
+              <span class="arr-index">5</span>
+              <span class="arr-index">6</span>
+            </div>
+          </div>
+          <div class="arr-cells-row">
+            <span class="arr-name-label">arr[ ]</span>
+            <div class="arr-cell arr-cell-filled">12</div>
+            <div class="arr-cell arr-cell-filled">35</div>
+            <div class="arr-cell arr-cell-filled arr-cell-highlight">57</div>
+            <div class="arr-cell arr-cell-filled">80</div>
+            <div class="arr-cell arr-cell-filled">24</div>
+            <div class="arr-cell arr-cell-empty">—</div>
+            <div class="arr-cell arr-cell-empty">—</div>
+          </div>
+          <div class="array-visual-caption">
+            <span class="arr-caption-item"><span class="arr-legend arr-legend-filled"></span> Occupied slot</span>
+            <span class="arr-caption-item"><span class="arr-legend arr-legend-empty"></span> Empty slot</span>
+            <span class="arr-caption-item"><span class="arr-legend arr-legend-highlight"></span> Currently accessed (index 2)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: Operations on Array ADT ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Operations on Array ADT</h2>
+      </div>
+
+      <div class="ops-grid">
+        <div class="op-card">
+          <div class="op-badge op-traverse">Traversal</div>
+          <p class="op-desc">Visit every element one by one from index 0 to size−1. Used to print, sum, or process all elements.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(n)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-insert">Insertion</div>
+          <p class="op-desc">Add an element at a given index. Elements after that position must shift right by one. Costly at the beginning.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(n)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-delete">Deletion</div>
+          <p class="op-desc">Remove an element at a given index. Elements after it must shift left. Size decrements by one after deletion.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(n)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-search">Searching</div>
+          <p class="op-desc">Find an element by value (linear search) or by index (direct access). Index-based access is instant.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(n) / O(1)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Operation Diagrams -->
+      <div class="diagram-row">
+        <div class="diagram-card">
+          <h4 class="diagram-title">Insertion at Index 2</h4>
+          <div class="diagram-body">
+            <div class="diagram-col">
+              <span class="diagram-label">Before Insert (99)</span>
+              <div class="array-diag">
+                <div class="adiag-row">
+                  <div class="adiag-cell">10</div>
+                  <div class="adiag-cell">20</div>
+                  <div class="adiag-cell adiag-target">30</div>
+                  <div class="adiag-cell">40</div>
+                  <div class="adiag-cell adiag-empty">—</div>
+                </div>
+                <div class="adiag-idx-row">
+                  <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span>
+                </div>
+              </div>
+            </div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-col">
+              <span class="diagram-label">After Insert (99)</span>
+              <div class="array-diag">
+                <div class="adiag-row">
+                  <div class="adiag-cell">10</div>
+                  <div class="adiag-cell">20</div>
+                  <div class="adiag-cell adiag-new">99</div>
+                  <div class="adiag-cell">30</div>
+                  <div class="adiag-cell">40</div>
+                </div>
+                <div class="adiag-idx-row">
+                  <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="diagram-card">
+          <h4 class="diagram-title">Deletion at Index 1</h4>
+          <div class="diagram-body">
+            <div class="diagram-col">
+              <span class="diagram-label">Before Delete</span>
+              <div class="array-diag">
+                <div class="adiag-row">
+                  <div class="adiag-cell">10</div>
+                  <div class="adiag-cell adiag-del">20 ✕</div>
+                  <div class="adiag-cell">30</div>
+                  <div class="adiag-cell">40</div>
+                  <div class="adiag-cell adiag-empty">—</div>
+                </div>
+                <div class="adiag-idx-row">
+                  <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span>
+                </div>
+              </div>
+            </div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-col">
+              <span class="diagram-label">After Delete</span>
+              <div class="array-diag">
+                <div class="adiag-row">
+                  <div class="adiag-cell">10</div>
+                  <div class="adiag-cell">30</div>
+                  <div class="adiag-cell">40</div>
+                  <div class="adiag-cell adiag-empty">—</div>
+                  <div class="adiag-cell adiag-empty">—</div>
+                </div>
+                <div class="adiag-idx-row">
+                  <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: Example Implementation in C ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Example Implementation in C</h2>
+      </div>
+
+      <p class="lesson-para">
+        Below is a struct-based Array ADT in C. It encapsulates the data array, current size,
+        and maximum capacity — exposing only named operations to the user.
+      </p>
+
+      <div class="impl-tabs">
+        <button class="impl-tab active" onclick="switchTab('struct')">Struct Definition</button>
+        <button class="impl-tab" onclick="switchTab('ops')">Operations</button>
+      </div>
+
+      <div id="tab-struct" class="impl-panel active">
+        <p class="lesson-para">The <code class="inline-code">ArrayADT</code> struct wraps a fixed-size array with a size tracker and max capacity field.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — Array ADT Struct</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-kw">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+<span class="c-kw">#define</span> MAX 10
+
+<span class="c-comment">// Array ADT definition</span>
+<span class="c-kw">struct</span> ArrayADT {
+    <span class="c-kw">int</span> data[MAX]; <span class="c-comment">// underlying storage</span>
+    <span class="c-kw">int</span> size;      <span class="c-comment">// current number of elements</span>
+    <span class="c-kw">int</span> capacity;  <span class="c-comment">// maximum capacity</span>
+};
+
+<span class="c-comment">// Create / initialise an empty array ADT</span>
+<span class="c-kw">void</span> create(<span class="c-kw">struct</span> ArrayADT* arr) {
+    arr->size     = 0;
+    arr->capacity = MAX;
+}</pre>
+        </div>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span><strong>Encapsulation:</strong> By hiding the raw array inside a struct, users interact only through functions — the core idea of an ADT.</span>
+        </div>
+      </div>
+
+      <div id="tab-ops" class="impl-panel">
+        <p class="lesson-para">The four fundamental operations — <code class="inline-code">insert</code>, <code class="inline-code">delete</code>, <code class="inline-code">search</code>, and <code class="inline-code">display</code> — work on the struct pointer.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — Insert, Delete, Search, Display</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-comment">// Insert element at position pos</span>
+<span class="c-kw">void</span> insert(<span class="c-kw">struct</span> ArrayADT* arr, <span class="c-kw">int</span> pos, <span class="c-kw">int</span> value) {
+    <span class="c-kw">if</span> (arr->size >= arr->capacity) {
+        printf(<span class="c-str">"Array is full!\n"</span>); <span class="c-kw">return</span>;
+    }
+    <span class="c-kw">for</span> (<span class="c-kw">int</span> i = arr->size; i > pos; i--)
+        arr->data[i] = arr->data[i - 1]; <span class="c-comment">// shift right</span>
+    arr->data[pos] = value;
+    arr->size++;
+}
+
+<span class="c-comment">// Delete element at position pos</span>
+<span class="c-kw">void</span> deleteAt(<span class="c-kw">struct</span> ArrayADT* arr, <span class="c-kw">int</span> pos) {
+    <span class="c-kw">if</span> (pos < 0 || pos >= arr->size) {
+        printf(<span class="c-str">"Invalid position!\n"</span>); <span class="c-kw">return</span>;
+    }
+    <span class="c-kw">for</span> (<span class="c-kw">int</span> i = pos; i < arr->size - 1; i++)
+        arr->data[i] = arr->data[i + 1]; <span class="c-comment">// shift left</span>
+    arr->size--;
+}
+
+<span class="c-comment">// Linear search — returns index or -1</span>
+<span class="c-kw">int</span> search(<span class="c-kw">struct</span> ArrayADT* arr, <span class="c-kw">int</span> value) {
+    <span class="c-kw">for</span> (<span class="c-kw">int</span> i = 0; i < arr->size; i++)
+        <span class="c-kw">if</span> (arr->data[i] == value) <span class="c-kw">return</span> i;
+    <span class="c-kw">return</span> -1;
+}
+
+<span class="c-comment">// Display all elements</span>
+<span class="c-kw">void</span> display(<span class="c-kw">struct</span> ArrayADT* arr) {
+    printf(<span class="c-str">"Array: ["</span>);
+    <span class="c-kw">for</span> (<span class="c-kw">int</span> i = 0; i < arr->size; i++) {
+        printf(<span class="c-str">"%d"</span>, arr->data[i]);
+        <span class="c-kw">if</span> (i < arr->size - 1) printf(<span class="c-str">", "</span>);
+    }
+    printf(<span class="c-str">"]\n"</span>);
+}</pre>
+        </div>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span><strong>Shift Cost:</strong> Insertion and deletion at the beginning require shifting <em>all</em> elements — O(n) in the worst case.</span>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="comparison-table-wrap">
+        <h4 class="table-heading">Array ADT — Operation Complexity Summary</h4>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Operation</th>
+              <th>Best Case</th>
+              <th>Worst Case</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Access by index</td><td>O(1)</td><td>O(1)</td><td>Direct memory computation</td></tr>
+            <tr><td>Search (linear)</td><td>O(1)</td><td>O(n)</td><td>Best: element at index 0</td></tr>
+            <tr><td>Insert at end</td><td>O(1)</td><td>O(1)</td><td>No shifting needed</td></tr>
+            <tr><td>Insert at middle/start</td><td>O(n)</td><td>O(n)</td><td>Requires shifting elements</td></tr>
+            <tr><td>Delete at end</td><td>O(1)</td><td>O(1)</td><td>Just decrement size</td></tr>
+            <tr><td>Delete at middle/start</td><td>O(n)</td><td>O(n)</td><td>Requires shifting elements</td></tr>
+            <tr><td>Traversal</td><td>O(n)</td><td>O(n)</td><td>Always visits all elements</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECTION 6: Advantages & Limitations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Advantages &amp; Limitations</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card app-card-pro">
+          <div class="app-icon">⚡</div>
+          <h4 class="app-title">O(1) Direct Access</h4>
+          <p class="app-desc">Any element can be accessed in constant time using its index. No need to traverse — ideal for lookup-heavy tasks.</p>
+        </div>
+        <div class="app-card app-card-pro">
+          <div class="app-icon">🧠</div>
+          <h4 class="app-title">Cache Friendly</h4>
+          <p class="app-desc">Elements are stored contiguously in memory. Modern CPUs prefetch adjacent data, making array traversal extremely fast in practice.</p>
+        </div>
+        <div class="app-card app-card-con">
+          <div class="app-icon">📏</div>
+          <h4 class="app-title">Fixed Size</h4>
+          <p class="app-desc">Size must be declared at creation time. If you underestimate, you run out of space; if you overestimate, memory is wasted.</p>
+        </div>
+        <div class="app-card app-card-con">
+          <div class="app-icon">🔀</div>
+          <h4 class="app-title">Costly Insertions/Deletions</h4>
+          <p class="app-desc">Adding or removing elements in the middle requires shifting other elements, which takes O(n) time — inefficient for frequent mutations.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 7: Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Applications of Array ADT</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon">💾</div>
+          <h4 class="app-title">Data Storage</h4>
+          <p class="app-desc">Arrays are the backbone of most in-memory data storage. Databases use arrays internally for fixed-schema row storage and column buffers.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📊</div>
+          <h4 class="app-title">Matrices &amp; Grids</h4>
+          <p class="app-desc">2D arrays represent mathematical matrices, game boards, pixel grids, and spreadsheet data — enabling efficient row/column access.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🔎</div>
+          <h4 class="app-title">Lookup Tables</h4>
+          <p class="app-desc">Pre-computed values (trigonometry tables, colour palettes, hash buckets) are stored in arrays for O(1) lookup — trading memory for speed.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🧩</div>
+          <h4 class="app-title">Building Other Structures</h4>
+          <p class="app-desc">Stacks, Queues, Heaps, and Hash Tables are commonly implemented using arrays as their underlying storage mechanism.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom-right sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGrad2)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGrad2" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="array-adt.js"></script>
+<link rel="stylesheet" href="../../spark/spark.css">
+<script src="../../spark/spark.js"></script>
 </body>
 </html>
