@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Linked Lists | iDS Studio Next</title>
+<link rel="stylesheet" href="../../dashboard/dashboard.css">
+<link rel="stylesheet" href="linked-list-intro.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
+
+<!-- ═══════════ MOBILE TOPBAR ═══════════ -->
+<div class="topbar" id="topbar">
+  <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="topbar-logo">
+    <img src="../../image/ilogo.png" class="logo-img" alt="IDS Logo">
+    <span class="topbar-site-name">iDS Studio <span class="topbar-next">Next</span></span>
+  </div>
+</div>
+
+<!-- Dark overlay for mobile sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar" id="mainSidebar">
+
+  <div class="sidebar-desktop-toggle">
+    <button class="hamburger-btn" id="desktopHamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="../../image/ilogo.png" alt="iDS Studio" class="logo-img">
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <a href="../../dashboard/dashboard.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+      </svg>
+      <span class="menu-label">Dashboard</span>
+    </a>
+    <a href="../../learn/learn.html" class="menu-item active">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+      </svg>
+      <span class="menu-label">Learn</span>
+    </a>
+    <a href="../../practice/practice.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+      </svg>
+      <span class="menu-label">Practice</span>
+    </a>
+    <a href="../../leaderboard/leaderboard.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+      </svg>
+      <span class="menu-label">Leaderboard</span>
+    </a>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        <span class="menu-label">Logout</span>
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main ll-main">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 2</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Introduction to Linked Lists</span>
+      </nav>
+      <!-- Page Title -->
+      <h1 class="lesson-heading">
+        Linked Lists
+        <span class="lesson-heading-tag">Node-based Dynamic Structure</span>
+      </h1>
+    </div>
+
+    <!-- Mark Complete Button -->
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- ── SECTION 1: What is a Linked List? ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is a Linked List?</h2>
+      </div>
+
+      <div class="definition-box">
+        <div class="definition-icon">🔗</div>
+        <div class="definition-body">
+          A <strong>Linked List</strong> is a linear data structure where elements, called
+          <span class="highlight-text">nodes</span>, are stored in memory non-contiguously.
+          Each node holds a <span class="highlight-text">data value</span> and a
+          <span class="highlight-text">pointer</span> to the next node in the sequence.
+        </div>
+      </div>
+
+      <p class="lesson-para">
+        Unlike arrays, linked lists do not store elements in consecutive memory locations.
+        Instead, each node can live anywhere in memory — they are connected by pointers.
+        This makes linked lists inherently <strong>dynamic</strong>: their size can grow or shrink
+        at runtime without needing to declare a fixed capacity upfront.
+      </p>
+
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <span>The first node in a linked list is called the <strong>head</strong>. The last node points to <code class="inline-code">NULL</code>, signalling the end of the list.</span>
+      </div>
+    </section>
+
+    <!-- ── SECTION 2: Why Linked Lists? ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Why Linked Lists?</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="analogy-emoji">📦</div>
+          <h4 class="analogy-title">Array Limitation</h4>
+          <p class="analogy-desc">Arrays have a fixed size declared at compile time. If you need more space, you must reallocate and copy — an expensive O(n) operation.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">⚡</div>
+          <h4 class="analogy-title">Dynamic Allocation</h4>
+          <p class="analogy-desc">Linked lists grow and shrink on demand. Memory is requested from the heap only when a new node is needed — no wasted pre-allocation.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🔄</div>
+          <h4 class="analogy-title">Efficient Insert / Delete</h4>
+          <p class="analogy-desc">Inserting or deleting a node only requires updating a couple of pointers — O(1) at head or tail — unlike arrays which require shifting elements.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: Structure of a Node ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Structure of a Node</h2>
+      </div>
+
+      <p class="lesson-para">
+        Every linked list is made of <strong>nodes</strong>. A node has exactly two fields:
+        a <strong>data</strong> field that stores the value, and a <strong>next pointer</strong>
+        that stores the address of the following node.
+      </p>
+
+      <!-- Node anatomy visual -->
+      <div class="node-anatomy-wrap">
+        <div class="node-anatomy-card">
+          <div class="node-field field-data">
+            <span class="field-label">data</span>
+            <span class="field-value">42</span>
+          </div>
+          <div class="node-field field-next">
+            <span class="field-label">next</span>
+            <span class="field-value">→</span>
+          </div>
+        </div>
+        <div class="node-anatomy-desc">
+          <div class="node-desc-row">
+            <span class="node-desc-dot dot-blue"></span>
+            <span><strong>data</strong> — stores the actual value (int, char, struct, etc.)</span>
+          </div>
+          <div class="node-desc-row">
+            <span class="node-desc-dot dot-purple"></span>
+            <span><strong>next</strong> — pointer to the next node in the list (<code class="inline-code">NULL</code> if last)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- C struct code block -->
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">C — Node Structure</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content"><span class="c-kw">struct</span> Node {
+    <span class="c-kw">int</span>          data;   <span class="c-comment">// stores the value</span>
+    <span class="c-kw">struct</span> Node* next;   <span class="c-comment">// pointer to next node</span>
+};
+
+<span class="c-comment">// Create a new node dynamically</span>
+<span class="c-kw">struct</span> Node* createNode(<span class="c-kw">int</span> value) {
+    <span class="c-kw">struct</span> Node* newNode =
+        (<span class="c-kw">struct</span> Node*) malloc(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    <span class="c-kw">return</span> newNode;
+}</pre>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">ℹ️</span>
+        <span><strong>malloc()</strong> allocates memory on the heap. Always <code class="inline-code">free()</code> nodes when they are no longer needed to prevent memory leaks.</span>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: Types of Linked Lists ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Types of Linked Lists</h2>
+      </div>
+
+      <p class="lesson-para">
+        There are three main variations of linked lists, each suited to different use cases.
+        They differ in how nodes are connected and which directions you can traverse.
+      </p>
+
+      <!-- ── Type 1: Singly ── -->
+      <div class="ll-type-block">
+        <div class="ll-type-header">
+          <div class="op-badge op-push">Singly Linked List</div>
+          <p class="lesson-para" style="margin:0;">Each node has one pointer — <code class="inline-code">next</code> — pointing forward only. Traversal is one-directional (head → tail).</p>
+        </div>
+        <div class="ll-visual">
+          <div class="ll-label-row">
+            <span class="ll-head-label">HEAD</span>
+          </div>
+          <div class="ll-nodes-row">
+            <div class="ll-node">
+              <div class="ll-node-data">10</div>
+              <div class="ll-node-ptr">next</div>
+            </div>
+            <div class="ll-arrow ll-arrow-right">→</div>
+            <div class="ll-node">
+              <div class="ll-node-data">20</div>
+              <div class="ll-node-ptr">next</div>
+            </div>
+            <div class="ll-arrow ll-arrow-right">→</div>
+            <div class="ll-node">
+              <div class="ll-node-data">30</div>
+              <div class="ll-node-ptr">next</div>
+            </div>
+            <div class="ll-arrow ll-arrow-right">→</div>
+            <div class="ll-node ll-node-null">
+              <div class="ll-node-data ll-null-val">NULL</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Type 2: Doubly ── -->
+      <div class="ll-type-block">
+        <div class="ll-type-header">
+          <div class="op-badge op-peek">Doubly Linked List</div>
+          <p class="lesson-para" style="margin:0;">Each node has two pointers — <code class="inline-code">prev</code> and <code class="inline-code">next</code>. Traversal is bi-directional, enabling efficient forward and backward movement.</p>
+        </div>
+        <div class="ll-visual">
+          <div class="ll-label-row">
+            <span class="ll-head-label">HEAD</span>
+            <span class="ll-tail-label">TAIL</span>
+          </div>
+          <div class="ll-nodes-row">
+            <div class="ll-node ll-node-double">
+              <div class="ll-node-ptr ll-node-prev">NULL</div>
+              <div class="ll-node-data">10</div>
+              <div class="ll-node-ptr">next</div>
+            </div>
+            <div class="ll-arrow-double">
+              <span class="arrow-fwd">→</span>
+              <span class="arrow-bwd">←</span>
+            </div>
+            <div class="ll-node ll-node-double">
+              <div class="ll-node-ptr ll-node-prev">prev</div>
+              <div class="ll-node-data">20</div>
+              <div class="ll-node-ptr">next</div>
+            </div>
+            <div class="ll-arrow-double">
+              <span class="arrow-fwd">→</span>
+              <span class="arrow-bwd">←</span>
+            </div>
+            <div class="ll-node ll-node-double">
+              <div class="ll-node-ptr ll-node-prev">prev</div>
+              <div class="ll-node-data">30</div>
+              <div class="ll-node-ptr ll-null-val">NULL</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Type 3: Circular ── -->
+      <div class="ll-type-block">
+        <div class="ll-type-header">
+          <div class="op-badge op-empty">Circular Linked List</div>
+          <p class="lesson-para" style="margin:0;">The last node's <code class="inline-code">next</code> pointer points back to the <strong>head</strong> instead of NULL, forming a closed loop. Useful for round-robin scheduling.</p>
+        </div>
+        <div class="ll-visual ll-visual-circular">
+          <div class="ll-nodes-row ll-circular-row">
+            <div class="ll-node ll-node-head-highlight">
+              <div class="ll-node-data">10</div>
+              <div class="ll-node-ptr">next</div>
+            </div>
+            <div class="ll-arrow ll-arrow-right">→</div>
+            <div class="ll-node">
+              <div class="ll-node-data">20</div>
+              <div class="ll-node-ptr">next</div>
+            </div>
+            <div class="ll-arrow ll-arrow-right">→</div>
+            <div class="ll-node">
+              <div class="ll-node-data">30</div>
+              <div class="ll-node-ptr">next</div>
+            </div>
+          </div>
+          <div class="ll-circular-back">
+            <div class="ll-circular-line"></div>
+            <span class="ll-circular-label">↩ back to HEAD</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── SECTION 5: Advantages & Limitations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Advantages &amp; Limitations</h2>
+      </div>
+
+      <div class="pros-cons-grid">
+        <!-- Advantages -->
+        <div class="pros-card">
+          <div class="pros-card-header">
+            <span class="pros-icon">✅</span>
+            <h4 class="pros-title">Advantages</h4>
+          </div>
+          <ul class="pros-list">
+            <li><strong>Dynamic size</strong> — grows and shrinks at runtime with no pre-allocation needed.</li>
+            <li><strong>Efficient insertion/deletion</strong> — O(1) at head or when pointer is known.</li>
+            <li><strong>No memory waste</strong> — allocate only what you need, when you need it.</li>
+            <li><strong>Flexible memory</strong> — nodes need not be stored contiguously.</li>
+          </ul>
+        </div>
+        <!-- Limitations -->
+        <div class="cons-card">
+          <div class="cons-card-header">
+            <span class="cons-icon">⚠️</span>
+            <h4 class="cons-title">Limitations</h4>
+          </div>
+          <ul class="cons-list">
+            <li><strong>No random access</strong> — to reach element at index n, you must traverse from head. O(n).</li>
+            <li><strong>Extra memory</strong> — every node stores a pointer in addition to data.</li>
+            <li><strong>Cache unfriendly</strong> — non-contiguous storage leads to more cache misses than arrays.</li>
+            <li><strong>Reverse traversal</strong> — not possible with singly linked lists without extra work.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="comparison-table-wrap">
+        <h4 class="table-heading">Array vs Linked List — Quick Comparison</h4>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Array</th>
+              <th>Linked List</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Memory layout</td><td>Contiguous</td><td>Non-contiguous</td></tr>
+            <tr><td>Size</td><td>Fixed (static)</td><td>Dynamic</td></tr>
+            <tr><td>Random access</td><td>O(1)</td><td>O(n)</td></tr>
+            <tr><td>Insert at head</td><td>O(n) — shift needed</td><td>O(1)</td></tr>
+            <tr><td>Delete at head</td><td>O(n) — shift needed</td><td>O(1)</td></tr>
+            <tr><td>Extra memory</td><td>None</td><td>Pointer per node</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECTION 6: Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Applications of Linked Lists</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon">🗃️</div>
+          <h4 class="app-title">Dynamic Data Storage</h4>
+          <p class="app-desc">Whenever the number of elements is unknown at compile time — user inputs, file records, runtime collections — linked lists manage memory efficiently without over-allocation.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📚</div>
+          <h4 class="app-title">Implementing Stacks &amp; Queues</h4>
+          <p class="app-desc">Stacks and queues are typically built on top of linked lists. Push/enqueue adds a node; pop/dequeue removes one — both O(1) without array resizing overhead.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🗺️</div>
+          <h4 class="app-title">Graph Adjacency Lists</h4>
+          <p class="app-desc">Graphs with sparse edges are represented using adjacency lists — each vertex holds a linked list of its neighbours, saving memory over adjacency matrices.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">↩️</div>
+          <h4 class="app-title">Undo / Redo History</h4>
+          <p class="app-desc">Text editors and design tools maintain a doubly linked list of states. Moving forward or backward through history is simply following the next or prev pointer.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom-right sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGradLL)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGradLL" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="linked-list-intro.js"></script>
+<link rel="stylesheet" href="../../spark/spark.css">
+<script src="../../spark/spark.js"></script>
+</body>
+</html>
