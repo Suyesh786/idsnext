@@ -1,30 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<p>
-<a href="../../learn/learn.html">← Back to Topics</a>
-</p>
 <head>
 <meta charset="UTF-8">
-<title>Coming Soon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sparse Matrix | iDS Studio Next</title>
+<link rel="stylesheet" href="../../dashboard/dashboard.css">
+<link rel="stylesheet" href="sparse-matrix.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 </head>
 
-<body style="font-family: Arial, sans-serif; padding: 40px;">
+<body>
 
-<h2>🚧 This topic is coming soon</h2>
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
 
-<p>
-We are currently preparing this lesson.
-</p>
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
 
-<p>
-Meanwhile, you can explore:
-</p>
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="../../image/ilogo.png" alt="iDS Studio" class="logo-img">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#1a56db"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
 
-<ul>
-<li><a href="../stacks/stacks.html">Stacks</a></li>
-<li><a href="../queue/queue.html">Queues</a></li>
-</ul>
+  <nav class="menu">
+    <a href="../../dashboard/dashboard.html" class="menu-item">Dashboard</a>
+    <a href="../../learn/learn.html" class="menu-item active">Learn</a>
+    <a href="../../practice/practice.html" class="menu-item">Practice</a>
+    <a href="../../leaderboard/leaderboard.html" class="menu-item">Leaderboard</a>
+  </nav>
 
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        Logout
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main sparse-main">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 1</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Sparse Matrix</span>
+      </nav>
+      <!-- Page Title -->
+      <h1 class="lesson-heading">
+        Sparse Matrix
+        <span class="lesson-heading-tag">Memory-Efficient Storage</span>
+      </h1>
+    </div>
+
+    <!-- Mark Complete Button -->
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- ── SECTION 1: What is a Sparse Matrix ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is a Sparse Matrix?</h2>
+      </div>
+
+      <div class="definition-box">
+        <div class="definition-icon">🧩</div>
+        <div class="definition-body">
+          A <strong>Sparse Matrix</strong> is a matrix in which the
+          <span class="highlight-text">majority of elements are zero</span>.
+          Instead of storing all values including zeros, only the non-zero elements
+          are stored — saving significant memory and computation.
+        </div>
+      </div>
+
+      <p class="lesson-para">
+        In mathematics and computer science, a matrix is called sparse when the number of non-zero elements is much smaller than the total number of elements. A common rule of thumb: if more than two-thirds of all elements are zero, the matrix qualifies as sparse. In contrast, a <strong>dense matrix</strong> has most of its elements as non-zero values.
+      </p>
+
+      <!-- Sparse vs Dense Visual -->
+      <div class="diagram-row">
+        <div class="diagram-card">
+          <h4 class="diagram-title">Dense Matrix — Most elements are non-zero</h4>
+          <div class="matrix-visual">
+            <div class="matrix-grid dense-grid">
+              <div class="mcell filled">5</div><div class="mcell filled">3</div><div class="mcell filled">8</div><div class="mcell filled">1</div>
+              <div class="mcell filled">2</div><div class="mcell filled">7</div><div class="mcell filled">4</div><div class="mcell filled">9</div>
+              <div class="mcell filled">6</div><div class="mcell filled">1</div><div class="mcell filled">3</div><div class="mcell filled">2</div>
+              <div class="mcell filled">4</div><div class="mcell filled">8</div><div class="mcell filled">5</div><div class="mcell filled">7</div>
+            </div>
+            <span class="matrix-badge badge-dense">16/16 non-zero</span>
+          </div>
+        </div>
+        <div class="diagram-card">
+          <h4 class="diagram-title">Sparse Matrix — Most elements are zero</h4>
+          <div class="matrix-visual">
+            <div class="matrix-grid sparse-grid">
+              <div class="mcell zero">0</div><div class="mcell zero">0</div><div class="mcell filled">3</div><div class="mcell zero">0</div>
+              <div class="mcell zero">0</div><div class="mcell filled">7</div><div class="mcell zero">0</div><div class="mcell zero">0</div>
+              <div class="mcell zero">0</div><div class="mcell zero">0</div><div class="mcell zero">0</div><div class="mcell filled">5</div>
+              <div class="mcell filled">2</div><div class="mcell zero">0</div><div class="mcell zero">0</div><div class="mcell zero">0</div>
+            </div>
+            <span class="matrix-badge badge-sparse">4/16 non-zero</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 2: Real World Analogies ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Real World Analogies</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="analogy-emoji">🖼️</div>
+          <h4 class="analogy-title">Image Compression</h4>
+          <p class="analogy-desc">A grayscale image of a white page with a few black characters has mostly white (zero) pixels. Storing only the dark pixels drastically reduces file size — this is the core idea behind sparse storage.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🕸️</div>
+          <h4 class="analogy-title">Social Network Graphs</h4>
+          <p class="analogy-desc">In a graph of 1 million users, the adjacency matrix would be 1M × 1M. But each user connects to only a few hundred others, making 99.99% of entries zero — a classic sparse matrix scenario.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🔬</div>
+          <h4 class="analogy-title">Scientific Simulations</h4>
+          <p class="analogy-desc">In finite element analysis or physics simulations, each point in a grid only interacts with nearby points. The resulting matrix has non-zero entries only along a narrow band — sparsity is the norm.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: Representation Methods ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Representation Methods</h2>
+      </div>
+
+      <p class="lesson-para">
+        Since storing all the zeros wastes memory, sparse matrices are stored using compact representations that record only the non-zero elements along with their positions.
+      </p>
+
+      <div class="ops-grid repr-grid">
+        <div class="op-card">
+          <div class="op-badge op-triplet">Triplet / COO</div>
+          <p class="op-desc">Store each non-zero as a triplet: <strong>(row, column, value)</strong>. Simple and intuitive — the most beginner-friendly format.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Space</span>
+            <span class="complexity-value">O(nnz)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-csr">CSR Format</div>
+          <p class="op-desc"><strong>Compressed Sparse Row</strong> — stores values row by row using three arrays. Efficient for row-wise operations and matrix-vector multiplication.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Space</span>
+            <span class="complexity-value">O(nnz + n)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-linked">Linked List</div>
+          <p class="op-desc">Each row is a linked list of non-zero nodes. Dynamic — easy to insert or delete elements, useful when the sparsity pattern changes frequently.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Space</span>
+            <span class="complexity-value">O(nnz)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">ℹ️</span>
+        <span><strong>nnz</strong> stands for "number of non-zeros" — the key metric for any sparse matrix. Efficient representations keep memory proportional to <code class="inline-code">nnz</code>, not <code class="inline-code">rows × cols</code>.</span>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: Example Conversion ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Example Conversion</h2>
+      </div>
+
+      <p class="lesson-para">
+        Below is a 4×4 sparse matrix and its equivalent Triplet (COO) representation. Only the 5 non-zero elements are stored — instead of all 16 values.
+      </p>
+
+      <div class="conversion-wrap">
+        <!-- Source Matrix -->
+        <div class="conversion-block">
+          <h4 class="diagram-title">Original 4×4 Matrix</h4>
+          <div class="matrix-labeled">
+            <div class="matrix-col-labels">
+              <span></span><span>Col 0</span><span>Col 1</span><span>Col 2</span><span>Col 3</span>
+            </div>
+            <div class="matrix-rows">
+              <div class="matrix-row">
+                <span class="row-label">Row 0</span>
+                <div class="mcell zero">0</div><div class="mcell zero">0</div><div class="mcell filled">9</div><div class="mcell zero">0</div>
+              </div>
+              <div class="matrix-row">
+                <span class="row-label">Row 1</span>
+                <div class="mcell zero">0</div><div class="mcell filled">4</div><div class="mcell zero">0</div><div class="mcell zero">0</div>
+              </div>
+              <div class="matrix-row">
+                <span class="row-label">Row 2</span>
+                <div class="mcell zero">0</div><div class="mcell zero">0</div><div class="mcell zero">0</div><div class="mcell filled">6</div>
+              </div>
+              <div class="matrix-row">
+                <span class="row-label">Row 3</span>
+                <div class="mcell filled">1</div><div class="mcell zero">0</div><div class="mcell filled">8</div><div class="mcell zero">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="conversion-arrow">→</div>
+
+        <!-- Triplet Table -->
+        <div class="conversion-block">
+          <h4 class="diagram-title">Triplet Representation (COO)</h4>
+          <div class="comparison-table-wrap" style="margin-top:0;">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Row</th>
+                  <th>Column</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>0</td><td>0</td><td>2</td><td class="val-highlight">9</td></tr>
+                <tr><td>1</td><td>1</td><td>1</td><td class="val-highlight">4</td></tr>
+                <tr><td>2</td><td>2</td><td>3</td><td class="val-highlight">6</td></tr>
+                <tr><td>3</td><td>3</td><td>0</td><td class="val-highlight">1</td></tr>
+                <tr><td>4</td><td>3</td><td>2</td><td class="val-highlight">8</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="saving-badge">
+            <span>💾 Memory saved: <strong>11 of 16 slots</strong> eliminated</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: Implementation in C ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Implementation in C</h2>
+      </div>
+
+      <p class="lesson-para">
+        Below is a struct-based Triplet representation of a sparse matrix in C. We define a <code class="inline-code">Term</code> struct to hold each non-zero element and a <code class="inline-code">SparseMatrix</code> struct that stores the array of terms along with metadata.
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">C — Sparse Matrix using Triplet Representation</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content"><span class="c-comment">// Structure to hold a single non-zero element</span>
+<span class="c-kw">struct</span> Term {
+    <span class="c-kw">int</span> row;
+    <span class="c-kw">int</span> col;
+    <span class="c-kw">int</span> value;
+};
+
+<span class="c-comment">// Sparse matrix: stores metadata + array of non-zero terms</span>
+<span class="c-kw">struct</span> SparseMatrix {
+    <span class="c-kw">int</span> rows;
+    <span class="c-kw">int</span> cols;
+    <span class="c-kw">int</span> nnz;                  <span class="c-comment">// number of non-zero elements</span>
+    <span class="c-kw">struct</span> Term terms[100];   <span class="c-comment">// adjust size as needed</span>
+};
+
+<span class="c-comment">// Convert a 2D array into a SparseMatrix</span>
+<span class="c-kw">struct</span> SparseMatrix toSparse(<span class="c-kw">int</span> mat[][4], <span class="c-kw">int</span> r, <span class="c-kw">int</span> c) {
+    <span class="c-kw">struct</span> SparseMatrix sm;
+    sm.rows = r;
+    sm.cols = c;
+    sm.nnz  = 0;
+
+    <span class="c-kw">for</span> (<span class="c-kw">int</span> i = 0; i < r; i++) {
+        <span class="c-kw">for</span> (<span class="c-kw">int</span> j = 0; j < c; j++) {
+            <span class="c-kw">if</span> (mat[i][j] != 0) {
+                sm.terms[sm.nnz].row   = i;
+                sm.terms[sm.nnz].col   = j;
+                sm.terms[sm.nnz].value = mat[i][j];
+                sm.nnz++;
+            }
+        }
+    }
+    <span class="c-kw">return</span> sm;
+}
+
+<span class="c-comment">// Print all non-zero terms</span>
+<span class="c-kw">void</span> printSparse(<span class="c-kw">struct</span> SparseMatrix sm) {
+    printf(<span class="c-str">"Row  Col  Value\n"</span>);
+    <span class="c-kw">for</span> (<span class="c-kw">int</span> i = 0; i < sm.nnz; i++) {
+        printf(<span class="c-str">"%3d  %3d  %5d\n"</span>,
+            sm.terms[i].row,
+            sm.terms[i].col,
+            sm.terms[i].value);
+    }
+}</pre>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">ℹ️</span>
+        <span><strong>Space Complexity:</strong> O(nnz) — only non-zero elements are stored. For an m×n matrix with k non-zeros, we store just 3k integers instead of m×n, which is a massive saving when k ≪ m×n.</span>
+      </div>
+    </section>
+
+    <!-- ── SECTION 6: Advantages & Limitations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Advantages &amp; Limitations</h2>
+      </div>
+
+      <div class="adv-lim-grid">
+        <div class="adv-card">
+          <div class="adv-header">
+            <span class="adv-icon">✅</span>
+            <h4 class="adv-title">Advantages</h4>
+          </div>
+          <ul class="adv-list">
+            <li><strong>Memory efficient</strong> — only non-zero values are stored, drastically reducing RAM usage for large matrices.</li>
+            <li><strong>Faster computation</strong> — operations skip zero entries, speeding up matrix-vector multiplication in ML and simulations.</li>
+            <li><strong>Scalability</strong> — enables working with matrices of millions of rows that would be impossible to store densely.</li>
+            <li><strong>Widely supported</strong> — standard libraries (SciPy, LAPACK) natively support sparse formats.</li>
+          </ul>
+        </div>
+        <div class="lim-card">
+          <div class="adv-header">
+            <span class="adv-icon">⚠️</span>
+            <h4 class="adv-title">Limitations</h4>
+          </div>
+          <ul class="adv-list">
+            <li><strong>Access overhead</strong> — random element access is slower; you must search through stored terms rather than index directly.</li>
+            <li><strong>Insertion complexity</strong> — adding a new non-zero element may require shifting or rebuilding the storage structure.</li>
+            <li><strong>Not always better</strong> — if the matrix is dense, sparse representation wastes extra space storing row/col indices.</li>
+            <li><strong>Conversion cost</strong> — transforming between dense and sparse formats takes time and temporary memory.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 7: Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Applications</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon">🕸️</div>
+          <h4 class="app-title">Graph Algorithms</h4>
+          <p class="app-desc">Adjacency matrices for real-world networks (road maps, social graphs) are extremely sparse. Representing them as sparse matrices makes BFS, DFS, and shortest-path algorithms tractable at scale.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🤖</div>
+          <h4 class="app-title">Machine Learning</h4>
+          <p class="app-desc">Text data (TF-IDF vectors, bag-of-words) produces sparse feature matrices — a document may use only 200 of 50,000 vocabulary words. Sparse formats are essential in NLP pipelines.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🖼️</div>
+          <h4 class="app-title">Image Processing</h4>
+          <p class="app-desc">Convolution filters, edge detection matrices, and transformation kernels are sparse. Operating on sparse filter representations speeds up image analysis significantly.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">⚡</div>
+          <h4 class="app-title">Scientific Computing</h4>
+          <p class="app-desc">Partial differential equations discretized on a grid yield large sparse systems. Finite element analysis, circuit simulation, and weather modelling all rely heavily on sparse matrix solvers.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom-right sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGrad2)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGrad2" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="sparse-matrix.js"></script>
+<link rel="stylesheet" href="../../spark/spark.css">
+<script src="../../spark/spark.js"></script>
 </body>
 </html>
