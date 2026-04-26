@@ -129,7 +129,8 @@ function cacheElements() {
     explainTitle:    q('explainTitle'),
     explainText:     q('explainText'),
     whatBody:        q('whatBody'),
-    conceptText:     q('conceptText')
+    conceptText:     q('conceptText'),
+    vizValueInput:   q('vizValueInput')
   };
   if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
 }
@@ -713,8 +714,22 @@ function resetHeadStyle() {
 // ═══════════════════════════════════════════════════════════════
 //  CONTROLS  (onclick targets in HTML)
 // ═══════════════════════════════════════════════════════════════
+function readInputValue() {
+  var input = VIZ.el.vizValueInput;
+  var raw = input ? input.value.trim() : '';
+  var val = (raw === '' || isNaN(Number(raw))) ? 0 : Number(raw);
+  VIZ.newValue = val;
+  // Refresh dynamic text in STEPS that reference the value
+  STEPS[0].explainText = 'We start with a linked list containing nodes <strong>1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong>.<br><br>Our goal: insert a new node with value <strong>' + val + '</strong> at the very beginning.';
+  STEPS[0].whatBody    = 'The HEAD pointer currently points to node 1. We call <code>insertAtBeginning(&amp;head, ' + val + ')</code>.';
+  STEPS[2].explainText = '<code>newNode-&gt;data = val;</code> writes our value (<strong>' + val + '</strong>) into the data field of the new node.';
+  STEPS[2].whatBody    = 'The new node\'s data field now shows "' + val + '". The next pointer is still uninitialised.';
+  STEPS[5].explainText = 'The function returns. The linked list is now:<br><strong>' + val + ' \u2192 1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong><br><br>Node ' + val + ' is the new head of the list.';
+}
+
 function vizNext() {
   if (VIZ.currentStep >= VIZ.totalSteps) return;
+  if (VIZ.currentStep === 0) readInputValue();
   applyStep(VIZ.currentStep + 1);
 }
 
@@ -734,6 +749,7 @@ function vizTogglePlay() {
 
 function startPlay() {
   if (VIZ.currentStep >= VIZ.totalSteps) applyStep(0);
+  readInputValue();
   VIZ.isPlaying = true;
   if (VIZ.el.btnPlay)    VIZ.el.btnPlay.classList.add('playing');
   if (VIZ.el.playIcon)   VIZ.el.playIcon.style.display  = 'none';
