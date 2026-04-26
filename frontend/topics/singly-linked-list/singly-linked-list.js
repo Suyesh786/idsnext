@@ -942,3 +942,23 @@ function sllReset() {
 
 
 /* ─── End of Simulator ───────────────────────────────────────── */
+/* ─── Visualize Code Button ───────────────────────────────────────
+   Opens visualize.html with a smooth fade-out transition.
+──────────────────────────────────────────────────────────────── */
+function openVisualizer() {
+  const btn = document.querySelector(".visualize-code-btn");
+
+  // Ripple glow
+  if (btn) {
+    btn.classList.add("ripple-active");
+    setTimeout(() => btn.classList.remove("ripple-active"), 300);
+  }
+
+  // Fade out page then redirect
+  document.body.style.transition = "opacity 0.2s ease";
+  document.body.style.opacity = "0";
+
+  setTimeout(() => {
+    window.location.href = "visualize.html";
+  }, 180);
+}
