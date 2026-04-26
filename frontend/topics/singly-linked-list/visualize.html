@@ -37,6 +37,35 @@
   </div>
 </header>
 
+<!-- ═══════════ OPERATION SELECTOR BAR ═══════════ -->
+<nav class="viz-op-selector-bar" id="opSelectorBar">
+  <button class="viz-op-pill viz-op-pill-active" data-mode="insert-beginning" onclick="switchMode('insert-beginning')">
+    <span class="viz-op-pill-icon">+</span>
+    Insert at Beginning
+  </button>
+  <button class="viz-op-pill" data-mode="insert-end" onclick="switchMode('insert-end')">
+    <span class="viz-op-pill-icon">+</span>
+    Insert at End
+  </button>
+  <button class="viz-op-pill" data-mode="insert-position" onclick="switchMode('insert-position')">
+    <span class="viz-op-pill-icon">+</span>
+    Insert at Position
+  </button>
+  <div class="viz-op-pill-divider"></div>
+  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-beginning" onclick="switchMode('delete-beginning')">
+    <span class="viz-op-pill-icon">−</span>
+    Delete at Beginning
+  </button>
+  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-end" onclick="switchMode('delete-end')">
+    <span class="viz-op-pill-icon">−</span>
+    Delete at End
+  </button>
+  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-position" onclick="switchMode('delete-position')">
+    <span class="viz-op-pill-icon">−</span>
+    Delete at Position
+  </button>
+</nav>
+
 <!-- ═══════════ MAIN 3-PANEL LAYOUT ═══════════ -->
 <main class="viz-main">
 
@@ -56,101 +85,7 @@
 
     <div class="viz-code-block">
       <div class="viz-code-lines" id="codeLines">
-
-        <!-- Node structure -->
-        <div class="viz-code-line viz-code-comment" data-line="0">
-          <span class="lnum">1</span>
-          <span class="lcode"><span class="c-comment">// Node structure</span></span>
-        </div>
-        <div class="viz-code-line" data-line="0">
-          <span class="lnum">2</span>
-          <span class="lcode"><span class="c-kw">struct</span> Node {</span>
-        </div>
-        <div class="viz-code-line" data-line="0">
-          <span class="lnum">3</span>
-          <span class="lcode">&nbsp;&nbsp;<span class="c-type">int</span> data;</span>
-        </div>
-        <div class="viz-code-line" data-line="0">
-          <span class="lnum">4</span>
-          <span class="lcode">&nbsp;&nbsp;<span class="c-kw">struct</span> Node* next;</span>
-        </div>
-        <div class="viz-code-line" data-line="0">
-          <span class="lnum">5</span>
-          <span class="lcode">};</span>
-        </div>
-
-        <div class="viz-code-line viz-code-spacer" data-line="0">
-          <span class="lnum">6</span>
-          <span class="lcode">&nbsp;</span>
-        </div>
-
-        <!-- Function header -->
-        <div class="viz-code-line" data-line="0">
-          <span class="lnum">7</span>
-          <span class="lcode"><span class="c-type">void</span> <span class="c-fn">insertAtBeginning</span>(<span class="c-type">int</span> value) {</span>
-        </div>
-
-        <!-- Step 1: malloc -->
-        <div class="viz-code-line viz-highlightable" data-line="1">
-          <span class="lnum">8</span>
-          <span class="lcode">&nbsp;&nbsp;<span class="c-kw">struct</span> Node* newNode = (<span class="c-kw">struct</span> Node*)</span>
-        </div>
-        <div class="viz-code-line viz-highlightable" data-line="1">
-          <span class="lnum">9</span>
-          <span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">malloc</span>(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> Node));</span>
-        </div>
-
-        <!-- Step 2: assign data -->
-        <div class="viz-code-line viz-highlightable" data-line="2">
-          <span class="lnum">10</span>
-          <span class="lcode">&nbsp;&nbsp;newNode-&gt;data = value;</span>
-        </div>
-
-        <div class="viz-code-line viz-code-spacer" data-line="0">
-          <span class="lnum">11</span>
-          <span class="lcode">&nbsp;</span>
-        </div>
-
-        <!-- NULL check -->
-        <div class="viz-code-line" data-line="0">
-          <span class="lnum">12</span>
-          <span class="lcode">&nbsp;&nbsp;<span class="c-kw">if</span> (head == <span class="c-kw">NULL</span>) {</span>
-        </div>
-        <div class="viz-code-line" data-line="0">
-          <span class="lnum">13</span>
-          <span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;head = tail = newNode; <span class="c-comment">// First node</span></span>
-        </div>
-        <div class="viz-code-line" data-line="0">
-          <span class="lnum">14</span>
-          <span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;newNode-&gt;next = <span class="c-kw">NULL</span>;</span>
-        </div>
-        <div class="viz-code-line" data-line="0">
-          <span class="lnum">15</span>
-          <span class="lcode">&nbsp;&nbsp;} <span class="c-kw">else</span> {</span>
-        </div>
-
-        <!-- Step 3: link next -->
-        <div class="viz-code-line viz-highlightable" data-line="3">
-          <span class="lnum">16</span>
-          <span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;newNode-&gt;next = head;</span>
-        </div>
-
-        <!-- Step 4: update head -->
-        <div class="viz-code-line viz-highlightable" data-line="4">
-          <span class="lnum">17</span>
-          <span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;head = newNode;</span>
-        </div>
-
-        <!-- Closing braces -->
-        <div class="viz-code-line" data-line="0">
-          <span class="lnum">18</span>
-          <span class="lcode">&nbsp;&nbsp;}</span>
-        </div>
-        <div class="viz-code-line" data-line="5">
-          <span class="lnum">19</span>
-          <span class="lcode">}</span>
-        </div>
-
+        <!-- Code lines injected by JS based on active mode -->
       </div>
     </div>
 
@@ -166,6 +101,14 @@
 
   <!-- ══════════ CENTER: ANIMATION PANEL ══════════ -->
   <section class="viz-panel viz-anim-panel">
+    <!-- Coming soon overlay (hidden by default) -->
+    <div class="viz-coming-soon-overlay" id="comingSoonOverlay">
+      <div class="viz-coming-soon-card">
+        <div class="viz-coming-soon-icon">🚧</div>
+        <h3 class="viz-coming-soon-title" id="comingSoonTitle">Coming Soon</h3>
+        <p class="viz-coming-soon-text" id="comingSoonText">This operation is being built.<br>Switch back to <strong>Insert at Beginning</strong> to explore the working animation.</p>
+      </div>
+    </div>
     <div class="viz-panel-header">
       <div class="viz-panel-title-row">
         <span class="viz-panel-icon">
@@ -179,9 +122,9 @@
     </div>
 
     <!-- Value input row -->
-    <div class="viz-value-input-row">
+    <div class="viz-value-input-row" id="valueInputRow">
       <div class="viz-value-input-wrap">
-        <label class="viz-value-label" for="vizValueInput">Insert value</label>
+        <label class="viz-value-label" for="vizValueInput" id="vizValueLabel">Insert value</label>
         <input
           type="number"
           id="vizValueInput"
@@ -232,6 +175,20 @@
               fill="none" marker-end="url(#arrowHead)"
               stroke-dasharray="1000" stroke-dashoffset="1000"/>
       </svg>
+
+      <!-- TEMP pointer label (delete operations) -->
+      <div class="viz-temp-pointer" id="tempPointer" style="display:none">
+        <div class="viz-ptr-label viz-ptr-label-temp">temp</div>
+        <div class="viz-ptr-addr viz-ptr-addr-temp" id="tempAddr">0x101</div>
+        <div class="viz-ptr-arrow viz-ptr-arrow-temp">↓</div>
+      </div>
+
+      <!-- PTR pointer label (delete-end operation) -->
+      <div class="viz-ptr-pointer" id="ptrPointer" style="display:none">
+        <div class="viz-ptr-label viz-ptr-label-ptr">ptr</div>
+        <div class="viz-ptr-addr viz-ptr-addr-ptr" id="ptrAddr">NULL</div>
+        <div class="viz-ptr-arrow viz-ptr-arrow-ptr">↓</div>
+      </div>
 
       <!-- Main list -->
       <div class="viz-list-row" id="listRow">

@@ -1103,3 +1103,257 @@
   border-color: var(--blue, #3b6cff);
   box-shadow: 0 0 0 3px rgba(59, 108, 255, 0.12);
 }
+/* ═══ OPERATION SELECTOR BAR ════════════════════════════════ */
+.viz-op-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  flex-shrink: 0;
+  background: var(--card-bg, #fff);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.viz-op-selector-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.viz-op-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  background: var(--bg, #f8fafc);
+  border: 1.5px solid var(--border, #e2e8f0);
+  border-radius: 99px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease,
+              box-shadow 0.18s ease, transform 0.15s ease;
+  font-family: var(--font, 'DM Sans', sans-serif);
+  letter-spacing: -0.1px;
+}
+
+.viz-op-pill:hover:not(.viz-op-pill-active) {
+  color: var(--blue, #3b6cff);
+  background: var(--blue-light, #eff4ff);
+  border-color: var(--blue-mid, #c0d4ff);
+  box-shadow: 0 2px 8px rgba(59,108,255,0.1);
+  transform: translateY(-1px);
+}
+
+.viz-op-pill-delete:hover:not(.viz-op-pill-active) {
+  color: #dc2626;
+  background: #fff1f1;
+  border-color: #fca5a5;
+  box-shadow: 0 2px 8px rgba(220,38,38,0.1);
+}
+
+.viz-op-pill-active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--blue, #3b6cff) 0%, #2d5ee8 100%);
+  border-color: var(--blue, #3b6cff);
+  box-shadow: 0 3px 10px rgba(59,108,255,0.3);
+}
+
+.viz-op-pill-active.viz-op-pill-delete {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border-color: #dc2626;
+  box-shadow: 0 3px 10px rgba(220,38,38,0.3);
+}
+
+.viz-op-pill-icon {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: -1px;
+  font-style: normal;
+}
+
+.viz-op-pill-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--border, #e2e8f0);
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+/* ═══ COMING SOON OVERLAY ════════════════════════════════════ */
+.viz-coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(248, 250, 252, 0.92);
+  backdrop-filter: blur(4px);
+  border-radius: inherit;
+  animation: overlay-fade-in 0.22s ease;
+}
+
+.viz-coming-soon-overlay.visible {
+  display: flex;
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.viz-coming-soon-card {
+  text-align: center;
+  padding: 32px 36px;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(15,23,42,0.1);
+  max-width: 300px;
+}
+
+.viz-coming-soon-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.viz-coming-soon-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0 0 8px;
+  letter-spacing: -0.2px;
+}
+
+.viz-coming-soon-text {
+  font-size: 13px;
+  color: var(--text-secondary, #64748b);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.viz-coming-soon-text strong {
+  color: var(--blue, #3b6cff);
+  font-weight: 700;
+}
+
+/* Ensure anim-panel is relative for overlay positioning */
+.viz-anim-panel {
+  position: relative;
+}
+/* ═══ TEMP POINTER (Delete operations) ══════════════════════ */
+.viz-temp-pointer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  transition: left 0.32s cubic-bezier(0.4,0,0.2,1),
+              top  0.32s cubic-bezier(0.4,0,0.2,1),
+              opacity 0.25s ease;
+  z-index: 11;
+  pointer-events: none;
+}
+
+.viz-ptr-label-temp {
+  color: #dc2626;
+  background: #fff1f1;
+  border-color: #fca5a5;
+}
+
+.viz-ptr-addr-temp {
+  color: #dc2626;
+  background: #fff1f1;
+  border-color: #fca5a5;
+}
+
+.viz-ptr-arrow-temp {
+  font-size: 16px;
+  color: #dc2626;
+  text-align: center;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+/* ── Node highlight for temp pointer target ── */
+.viz-node.viz-node-temp-highlight {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.18), 0 6px 20px rgba(220,38,38,0.2) !important;
+  animation: temp-node-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes temp-node-glow {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(220,38,38,0.18), 0 6px 20px rgba(220,38,38,0.2); }
+  50%       { box-shadow: 0 0 0 5px rgba(220,38,38,0.28), 0 8px 26px rgba(220,38,38,0.3); }
+}
+
+/* Empty list NULL display */
+.viz-null-empty {
+  font-size: 14px;
+  font-weight: 700;
+  color: #94a3b8;
+  padding: 14px 20px;
+  margin-top: 8px;
+}
+/* ═══ PTR POINTER (Delete at End operation) ══════════════════ */
+.viz-ptr-pointer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  transition: left 0.38s cubic-bezier(0.4,0,0.2,1),
+              top  0.38s cubic-bezier(0.4,0,0.2,1),
+              opacity 0.25s ease;
+  z-index: 11;
+  pointer-events: none;
+}
+
+.viz-ptr-label-ptr {
+  color: #ea580c;
+  background: #fff7ed;
+  border-color: #fdba74;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 1.5px solid #fdba74;
+  white-space: nowrap;
+  font-family: var(--mono, 'JetBrains Mono', monospace);
+}
+
+.viz-ptr-addr-ptr {
+  font-size: 10px;
+  font-weight: 600;
+  color: #ea580c;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  border-radius: 5px;
+  padding: 1px 6px;
+  margin-top: 2px;
+  font-family: var(--mono, 'JetBrains Mono', monospace);
+  white-space: nowrap;
+}
+
+.viz-ptr-arrow-ptr {
+  font-size: 16px;
+  color: #ea580c;
+  text-align: center;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+/* ── Node highlight for ptr pointer target ── */
+.viz-node.viz-node-ptr-highlight {
+  border-color: #ea580c !important;
+  box-shadow: 0 0 0 3px rgba(234,88,12,0.18), 0 6px 20px rgba(234,88,12,0.2) !important;
+  animation: ptr-node-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes ptr-node-glow {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(234,88,12,0.18), 0 6px 20px rgba(234,88,12,0.2); }
+  50%       { box-shadow: 0 0 0 5px rgba(234,88,12,0.28), 0 8px 26px rgba(234,88,12,0.3); }
+}

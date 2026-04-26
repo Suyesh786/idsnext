@@ -4,6 +4,238 @@
 ──────────────────────────────────────────────────────────────── */
 
 // ═══════════════════════════════════════════════════════════════
+//  MODE
+// ═══════════════════════════════════════════════════════════════
+var mode = 'insert-beginning';
+
+var MODE_LABELS = {
+  'insert-beginning': 'Insert at Beginning',
+  'insert-end':       'Insert at End',
+  'insert-position':  'Insert at Position',
+  'delete-beginning': 'Delete at Beginning',
+  'delete-end':       'Delete at End',
+  'delete-position':  'Delete at Position'
+};
+
+// ── Code HTML templates per mode ────────────────────────────────
+var CODE_TEMPLATES = {
+  'insert-beginning': [
+    { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Node structure</span>' },
+    { line: 0, html: '<span class="c-kw">struct</span> Node {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-type">int</span> data;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* next;' },
+    { line: 0, html: '};' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-type">void</span> <span class="c-fn">insertAtBeginning</span>(<span class="c-type">int</span> value) {' },
+    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* newNode = (<span class="c-kw">struct</span> Node*)' },
+    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">malloc</span>(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> Node));' },
+    { line: 2, cls: 'viz-highlightable', html: '&nbsp;&nbsp;newNode-&gt;data = value;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">if</span> (head == <span class="c-kw">NULL</span>) {' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;head = tail = newNode; <span class="c-comment">// First node</span>' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;newNode-&gt;next = <span class="c-kw">NULL</span>;' },
+    { line: 0, html: '&nbsp;&nbsp;} <span class="c-kw">else</span> {' },
+    { line: 3, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;newNode-&gt;next = head;' },
+    { line: 4, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;head = newNode;' },
+    { line: 0, html: '&nbsp;&nbsp;}' },
+    { line: 5, html: '}' }
+  ],
+  'delete-beginning': [
+    { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Node structure</span>' },
+    { line: 0, html: '<span class="c-kw">struct</span> Node {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-type">int</span> data;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* next;' },
+    { line: 0, html: '};' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-type">void</span> <span class="c-fn">deleteAtBeginning</span>() {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">if</span> (head == <span class="c-kw">NULL</span>) <span class="c-kw">return</span>;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">if</span> (head == tail) {' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">free</span>(head); head = tail = <span class="c-kw">NULL</span>;' },
+    { line: 0, html: '&nbsp;&nbsp;} <span class="c-kw">else</span> {' },
+    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">struct</span> Node* temp = head;' },
+    { line: 2, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;head = head-&gt;next;' },
+    { line: 3, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">free</span>(temp);' },
+    { line: 4, html: '&nbsp;&nbsp;}' },
+    { line: 4, html: '}' }
+  ],
+  'delete-end': [
+    { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Node structure</span>' },
+    { line: 0, html: '<span class="c-kw">struct</span> Node {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-type">int</span> data;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* next;' },
+    { line: 0, html: '};' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-type">void</span> <span class="c-fn">deleteAtEnd</span>() {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">if</span> (head == <span class="c-kw">NULL</span>) { <span class="c-fn">printf</span>(<span class="c-str">"empty\\n"</span>); <span class="c-kw">return</span>; }' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">if</span> (head-&gt;next == <span class="c-kw">NULL</span>) {' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">free</span>(head); head = tail = <span class="c-kw">NULL</span>; <span class="c-kw">return</span>;' },
+    { line: 0, html: '&nbsp;&nbsp;}' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* temp = head;' },
+    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* ptr = <span class="c-kw">NULL</span>;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 2, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">while</span> (temp-&gt;next != <span class="c-kw">NULL</span>) {' },
+    { line: 2, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;ptr = temp;' },
+    { line: 2, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;temp = temp-&gt;next;' },
+    { line: 2, cls: 'viz-highlightable', html: '&nbsp;&nbsp;}' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 4, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-fn">free</span>(temp);' },
+    { line: 5, cls: 'viz-highlightable', html: '&nbsp;&nbsp;ptr-&gt;next = <span class="c-kw">NULL</span>;' },
+    { line: 6, cls: 'viz-highlightable', html: '&nbsp;&nbsp;tail = ptr;' },
+    { line: 0, html: '}' }
+  ]
+};
+
+function renderCodePanel(m) {
+  var container = document.getElementById('codeLines');
+  if (!container) return;
+  var tpl = CODE_TEMPLATES[m] || CODE_TEMPLATES['insert-beginning'];
+  var html = '';
+  var lineNum = 1;
+  for (var i = 0; i < tpl.length; i++) {
+    var t = tpl[i];
+    var extra = t.cls ? ' ' + t.cls : '';
+    html += '<div class="viz-code-line' + extra + '" data-line="' + t.line + '">';
+    html += '<span class="lnum">' + lineNum + '</span>';
+    html += '<span class="lcode">' + t.html + '</span>';
+    html += '</div>';
+    lineNum++;
+  }
+  container.innerHTML = html;
+}
+
+function switchMode(newMode) {
+  if (newMode === mode) return;
+  mode = newMode;
+
+  // Update pill button states
+  var pills = document.querySelectorAll('.viz-op-pill');
+  for (var i = 0; i < pills.length; i++) {
+    pills[i].classList.remove('viz-op-pill-active');
+  }
+  var active = document.querySelector('.viz-op-pill[data-mode="' + newMode + '"]');
+  if (active) active.classList.add('viz-op-pill-active');
+
+  // Update header badge text
+  var badge = document.querySelector('.viz-operation-badge');
+  if (badge) {
+    badge.childNodes[badge.childNodes.length - 1].textContent = ' ' + (MODE_LABELS[newMode] || newMode);
+  }
+
+  // Stop playback
+  stopPlay();
+
+  // Reset animation state
+  VIZ.currentStep = 0;
+  VIZ.newValue    = 0;
+  if (VIZ.el.vizValueInput) VIZ.el.vizValueInput.value = '';
+
+  hideCurve();
+  hideNewNode();
+  hideTempPointer();
+  if (typeof hidePtrPointer === 'function') hidePtrPointer();
+
+  if (newMode === 'insert-beginning') {
+    var overlay = document.getElementById('comingSoonOverlay');
+    if (overlay) overlay.classList.remove('visible');
+    var inputRow = document.getElementById('valueInputRow');
+    if (inputRow) inputRow.style.display = '';
+    var lbl = document.getElementById('vizValueLabel');
+    if (lbl) lbl.textContent = 'Insert value';
+    renderCodePanel('insert-beginning');
+    VIZ.totalSteps = 5;
+    if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
+    rebuildStepList(INSERT_BEGINNING_STEP_LABELS);
+    rebuildDots(5);
+    buildList(VIZ.initialList, false, 0);
+    applyStep(0);
+
+  } else if (newMode === 'delete-beginning') {
+    var overlay = document.getElementById('comingSoonOverlay');
+    if (overlay) overlay.classList.remove('visible');
+    var inputRow = document.getElementById('valueInputRow');
+    if (inputRow) inputRow.style.display = 'none';
+    renderCodePanel('delete-beginning');
+    VIZ.totalSteps = 4;
+    if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
+    rebuildStepList(DELETE_BEGINNING_STEP_LABELS);
+    rebuildDots(4);
+    VIZ.deleteList = VIZ.initialList.slice();
+    buildList(VIZ.deleteList, false, 0);
+    applyStep(0);
+
+  } else if (newMode === 'delete-end') {
+    var overlay = document.getElementById('comingSoonOverlay');
+    if (overlay) overlay.classList.remove('visible');
+    var inputRow = document.getElementById('valueInputRow');
+    if (inputRow) inputRow.style.display = 'none';
+    renderCodePanel('delete-end');
+    VIZ.totalSteps = 6;
+    if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
+    rebuildStepList(DELETE_END_STEP_LABELS);
+    rebuildDots(6);
+    VIZ.deleteList = VIZ.initialList.slice();
+    buildList(VIZ.deleteList, false, 0);
+    applyStep(0);
+
+  } else {
+    var overlay = document.getElementById('comingSoonOverlay');
+    if (overlay) {
+      var title = document.getElementById('comingSoonTitle');
+      var text  = document.getElementById('comingSoonText');
+      if (title) title.textContent = MODE_LABELS[newMode] + ' \u2014 Coming Soon';
+      if (text)  text.innerHTML = 'This operation is being built.<br>Switch back to <strong>Insert at Beginning</strong> to explore the working animation.';
+      overlay.classList.add('visible');
+    }
+    var inputRow = document.getElementById('valueInputRow');
+    if (inputRow) inputRow.style.display = 'none';
+    buildList(VIZ.initialList, false, 0);
+    applyStep(0);
+  }
+}
+
+var INSERT_BEGINNING_STEP_LABELS = [
+  'Allocate memory (malloc)',
+  'Assign value to node',
+  'Link new node \u2192 old head',
+  'Update HEAD pointer',
+  'Final rearrangement'
+];
+
+var DELETE_BEGINNING_STEP_LABELS = [
+  'Save head: temp = head',
+  'Move head: head = head\u2192next',
+  'Free temp node',
+  'Final arrangement'
+];
+
+function rebuildStepList(labels) {
+  var list = document.getElementById('stepList');
+  if (!list) return;
+  var html = '';
+  for (var i = 0; i < labels.length; i++) {
+    html += '<div class="viz-step-item viz-step-upcoming" data-step="' + (i + 1) + '">';
+    html += '<div class="viz-step-dot"></div>';
+    html += '<span>' + labels[i] + '</span>';
+    html += '</div>';
+  }
+  list.innerHTML = html;
+}
+
+function rebuildDots(total) {
+  var container = document.getElementById('progressDots');
+  if (!container) return;
+  var html = '<div class="viz-dot viz-dot-active" data-step="0"></div>';
+  for (var i = 1; i <= total; i++) {
+    html += '<div class="viz-dot" data-step="' + i + '"></div>';
+  }
+  container.innerHTML = html;
+}
+
+
+// ═══════════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════════
 var VIZ = {
@@ -14,6 +246,7 @@ var VIZ = {
   playDelay: 2000,
   initialList: [1, 2, 3, 4],
   newValue: 0,
+  deleteList: [1, 2, 3, 4],
   el: {}
 };
 
@@ -83,6 +316,143 @@ var STEPS = [
   }
 ];
 
+// ── Delete at Beginning step definitions ────────────────────────
+var DELETE_STEPS = [
+  {
+    codeLine: null,
+    animStatus: 'Ready',
+    animStatusClass: '',
+    explainStepNum: 'Initial State',
+    explainTitle: 'Starting Point',
+    explainText: 'We have a linked list: <strong>1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong>.<br><br>Goal: delete the <strong>first node</strong> (value 1) from the beginning.',
+    whatBody: 'HEAD points to node 1. We call <code>deleteAtBeginning(&amp;head)</code>.',
+    conceptText: '\uD83D\uDCA1 Delete at beginning is O(1) \u2014 no traversal needed!'
+  },
+  {
+    codeLine: 1,
+    animStatus: 'Saving temp\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 1 of 4',
+    explainTitle: 'Save Head in Temp',
+    explainText: '<code>struct Node* temp = head;</code> saves the current head pointer so we can free it after moving HEAD forward.',
+    whatBody: 'A <strong>temp</strong> label appears above node 1. We now hold a reference to it so it won\'t be lost.',
+    conceptText: '\uD83D\uDCCC Without temp, we\'d lose the only reference to node 1 and cause a memory leak!'
+  },
+  {
+    codeLine: 2,
+    animStatus: 'Moving HEAD\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 2 of 4',
+    explainTitle: 'Move HEAD Forward',
+    explainText: '<code>head = head-&gt;next;</code> advances the HEAD pointer to the second node (value 2).',
+    whatBody: 'HEAD jumps to node 2. Node 1 is now unreachable from the list \u2014 but temp still holds its address.',
+    conceptText: '\u26A0\uFE0F Do this AFTER saving temp \u2014 otherwise you lose the reference to node 1 forever!'
+  },
+  {
+    codeLine: 3,
+    animStatus: 'Freeing memory\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 3 of 4',
+    explainTitle: 'Free the Temp Node',
+    explainText: '<code>free(temp);</code> releases the heap memory that node 1 was using back to the OS.',
+    whatBody: 'Node 1 fades out and disappears. Its memory is returned. temp becomes a dangling pointer.',
+    conceptText: '\uD83E\uDDE0 free() doesn\'t zero memory \u2014 it just marks it available. Never use temp after this!'
+  },
+  {
+    codeLine: 4,
+    animStatus: 'Complete \u2713',
+    animStatusClass: 'status-complete',
+    explainStepNum: 'Step 4 of 4',
+    explainTitle: 'Final Arrangement',
+    explainText: 'Deletion complete! The list is now:<br><strong>2 \u2192 3 \u2192 4 \u2192 NULL</strong><br><br>Node 2 is the new head.',
+    whatBody: 'Remaining nodes shift left. HEAD points to node 2. List shortened by one node.',
+    conceptText: '\u2705 Done! deleteAtBeginning always takes O(1) time regardless of list size.'
+  }
+];
+
+var DELETE_END_STEP_LABELS = [
+  'Initialize temp = head, ptr = NULL',
+  'Traverse: ptr follows temp',
+  'Reached last node (temp)',
+  'Free last node (temp)',
+  'Set ptr\u2192next = NULL',
+  'Update TAIL pointer'
+];
+
+// ── Delete at End step definitions ──────────────────────────────
+var DELETE_END_STEPS = [
+  {
+    codeLine: null,
+    animStatus: 'Ready',
+    animStatusClass: '',
+    explainStepNum: 'Initial State',
+    explainTitle: 'Starting Point',
+    explainText: 'We have a linked list: <strong>1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong>.<br><br>Goal: delete the <strong>last node</strong> (value 4) from the end.',
+    whatBody: 'HEAD points to node 1. TAIL points to node 4. We call <code>deleteAtEnd()</code>.',
+    conceptText: '\uD83D\uDCA1 Delete at end requires O(n) traversal to find the second-to-last node.'
+  },
+  {
+    codeLine: 1,
+    animStatus: 'Initializing\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 1 of 6',
+    explainTitle: 'Initialize Pointers',
+    explainText: '<code>temp = head</code> starts at node 1.<br><code>ptr = NULL</code> will trail one step behind temp.',
+    whatBody: '<strong>temp</strong> (blue) appears above node 1. <strong>ptr</strong> (orange) is NULL \u2014 shown faded.',
+    conceptText: '\uD83D\uDCCC ptr trails one step behind temp so it lands on the second-to-last node.'
+  },
+  {
+    codeLine: 2,
+    animStatus: 'Traversing\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 2 of 6',
+    explainTitle: 'While Loop Traversal',
+    explainText: 'We loop while <code>temp-&gt;next != NULL</code>.<br><br>Each iteration: <code>ptr = temp</code> then <code>temp = temp-&gt;next</code>.<br>Both pointers advance smoothly.',
+    whatBody: 'Watch temp and ptr move node-by-node until temp reaches the last node (4).',
+    conceptText: '\u26A0\uFE0F We need ptr because we must update ptr\u2192next = NULL after freeing temp.'
+  },
+  {
+    codeLine: 2,
+    animStatus: 'Loop end\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 3 of 6',
+    explainTitle: 'Loop Ends at Last Node',
+    explainText: '<code>temp-&gt;next == NULL</code> is true. We exit the loop.<br><br>Now: <strong>temp</strong> points to node 4 (last), <strong>ptr</strong> points to node 3 (second-to-last).',
+    whatBody: 'temp is highlighted on node 4. ptr rests on node 3. The condition <code>temp\u2192next == NULL</code> is met.',
+    conceptText: '\uD83C\uDFAF ptr is now the new tail once we free temp and update the link.'
+  },
+  {
+    codeLine: 4,
+    animStatus: 'Deleting node\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 4 of 6',
+    explainTitle: 'Free Last Node',
+    explainText: '<code>free(temp);</code> releases node 4\u2019s heap memory back to the OS.',
+    whatBody: 'Node 4 fades out and scales down, then disappears from the list.',
+    conceptText: '\uD83E\uDDE0 free() marks the memory available for reuse. Never access temp after this call!'
+  },
+  {
+    codeLine: 5,
+    animStatus: 'Updating link\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 5 of 6',
+    explainTitle: 'Set ptr\u2192next = NULL',
+    explainText: '<code>ptr-&gt;next = NULL;</code> severs node 3\u2019s link to the now-freed memory.',
+    whatBody: 'Node 3\u2019s next field updates to NULL. The list now terminates at node 3.',
+    conceptText: '\u26A0\uFE0F Without this, node 3 would have a dangling pointer to freed memory!'
+  },
+  {
+    codeLine: 6,
+    animStatus: 'Complete \u2713',
+    animStatusClass: 'status-complete',
+    explainStepNum: 'Step 6 of 6',
+    explainTitle: 'Update TAIL Pointer',
+    explainText: '<code>tail = ptr;</code> moves the TAIL pointer from node 4 to node 3.',
+    whatBody: 'TAIL slides from node 4 to node 3. Deletion complete! List: <strong>1 \u2192 2 \u2192 3 \u2192 NULL</strong>.',
+    conceptText: '\u2705 Done! deleteAtEnd takes O(n) time \u2014 we must traverse to find the second-to-last node.'
+  }
+];
+
 // ═══════════════════════════════════════════════════════════════
 //  MEMORY ADDRESS CONSTANTS
 // ═══════════════════════════════════════════════════════════════
@@ -96,6 +466,7 @@ var NEW_NODE_ADDR = '0x100';
 // ═══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function () {
   cacheElements();
+  renderCodePanel('insert-beginning');
   buildList(VIZ.initialList, false, 0);
   applyStep(0);
 });
@@ -130,7 +501,11 @@ function cacheElements() {
     explainText:     q('explainText'),
     whatBody:        q('whatBody'),
     conceptText:     q('conceptText'),
-    vizValueInput:   q('vizValueInput')
+    vizValueInput:   q('vizValueInput'),
+    tempPointer:     q('tempPointer'),
+    tempAddr:        q('tempAddr'),
+    ptrPointer:      q('ptrPointer'),
+    ptrAddr:         q('ptrAddr')
   };
   if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
 }
@@ -332,7 +707,8 @@ function positionHead(headIdx, total) {
 // ═══════════════════════════════════════════════════════════════
 function applyStep(idx) {
   VIZ.currentStep = idx;
-  var step = STEPS[idx];
+  var stepArr = (mode === 'delete-beginning') ? DELETE_STEPS : (mode === 'delete-end') ? DELETE_END_STEPS : STEPS;
+  var step = stepArr[idx];
   if (!step) return;
 
   if (VIZ.el.headerStepNum) VIZ.el.headerStepNum.textContent = idx;
@@ -358,7 +734,13 @@ function applyStep(idx) {
   if (VIZ.el.btnPrev) VIZ.el.btnPrev.disabled = (idx === 0);
   if (VIZ.el.btnNext) VIZ.el.btnNext.disabled = (idx === VIZ.totalSteps);
 
-  runAnimation(idx);
+  if (mode === 'delete-beginning') {
+    runDeleteAnimation(idx);
+  } else if (mode === 'delete-end') {
+    runDeleteAtEndStep(idx);
+  } else {
+    runAnimation(idx);
+  }
 }
 
 function animateCardUpdate(fn) {
@@ -675,6 +1057,203 @@ function anim_rearrange() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  DELETE AT BEGINNING ANIMATIONS
+// ═══════════════════════════════════════════════════════════════
+function runDeleteAnimation(step) {
+  switch (step) {
+    case 0: danim_initial();       break;
+    case 1: danim_saveTemp();      break;
+    case 2: danim_moveHead();      break;
+    case 3: danim_freeTemp();      break;
+    case 4: danim_finalArrange();  break;
+  }
+}
+
+function danim_initial() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  hideTempPointer();
+  hideCurve();
+  hideNewNode();
+  buildList(VIZ.deleteList, false, 0);
+}
+
+function danim_saveTemp() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  hideCurve();
+  hideNewNode();
+  buildList(VIZ.deleteList, false, 0);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      // Highlight first node with glow
+      var row = VIZ.el.listRow;
+      if (!row) return;
+      var firstWrap = row.querySelector('.viz-node-wrap');
+      var firstNode = firstWrap ? firstWrap.querySelector('.viz-node') : null;
+      if (firstNode) {
+        firstNode.classList.add('viz-node-temp-highlight');
+      }
+
+      // Position temp pointer above first node
+      showTempPointerOnNode(0);
+    });
+  });
+}
+
+function danim_moveHead() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  buildList(VIZ.deleteList, false, 0);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      // Keep temp label on node 0
+      var row = VIZ.el.listRow;
+      if (!row) return;
+      var wraps = row.querySelectorAll('.viz-node-wrap');
+      var firstNode = wraps[0] ? wraps[0].querySelector('.viz-node') : null;
+      if (firstNode) firstNode.classList.add('viz-node-temp-highlight');
+      showTempPointerOnNode(0);
+
+      // Move HEAD pointer to node 1 (index 1)
+      if (PTR.nodeList.length > 1) {
+        PTR.headIndex = 1;
+      }
+      // Animate head move
+      setTimeout(function () {
+        positionPointers();
+        if (VIZ.el.headAddr && PTR.nodeList[1]) {
+          VIZ.el.headAddr.textContent = PTR.nodeList[1].address;
+        }
+      }, 60);
+    });
+  });
+}
+
+function danim_freeTemp() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  buildList(VIZ.deleteList, false, 0);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var row = VIZ.el.listRow;
+      if (!row) return;
+      var wraps = row.querySelectorAll('.viz-node-wrap');
+
+      // Move HEAD to node index 1 immediately (no animation, static state for this step)
+      PTR.headIndex = 1;
+      positionPointers();
+
+      // Keep temp on node 0 briefly then fade it out along with node 0
+      var firstNode = wraps[0] ? wraps[0].querySelector('.viz-node') : null;
+      if (firstNode) firstNode.classList.add('viz-node-temp-highlight');
+      showTempPointerOnNode(0);
+
+      setTimeout(function () {
+        // Fade out temp pointer
+        hideTempPointer();
+
+        // Fade + shrink node 0 wrap
+        var firstWrap = wraps[0];
+        if (firstWrap) {
+          firstWrap.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.4,0,0.2,1), max-width 0.45s ease';
+          firstWrap.style.opacity    = '0';
+          firstWrap.style.transform  = 'scale(0.6)';
+          firstWrap.style.maxWidth   = firstWrap.offsetWidth + 'px';
+          // Also fade the arrow after this wrap
+          var nextSib = firstWrap.nextSibling;
+          if (nextSib && nextSib.classList && nextSib.classList.contains('viz-arrow')) {
+            nextSib.style.transition = 'opacity 0.35s ease';
+            nextSib.style.opacity    = '0';
+          }
+          setTimeout(function () {
+            firstWrap.style.maxWidth  = '0px';
+            firstWrap.style.overflow  = 'hidden';
+          }, 100);
+        }
+      }, 350);
+    });
+  });
+}
+
+function danim_finalArrange() {
+  hideTempPointer();
+  hideCurve();
+  hideNewNode();
+  // Build the list with node 1 removed
+  var newList = VIZ.initialList.slice(1);
+  VIZ.deleteList = newList;
+  PTR.headIndex  = 0;
+  PTR.tailIndex  = newList.length - 1;
+  if (newList.length === 0) {
+    // Empty list edge case
+    var row = VIZ.el.listRow;
+    if (row) {
+      row.innerHTML = '<div class="viz-null viz-null-empty">NULL (empty list)</div>';
+    }
+    var hp = VIZ.el.headPointer;
+    var tp = VIZ.el.tailPointer;
+    if (hp) { hp.style.opacity = '0'; }
+    if (tp) { tp.style.opacity = '0'; }
+    var ha = VIZ.el.headAddr;
+    var ta = VIZ.el.tailAddr;
+    if (ha) ha.textContent = 'NULL';
+    if (ta) ta.textContent = 'NULL';
+  } else {
+    var hp = VIZ.el.headPointer;
+    var tp = VIZ.el.tailPointer;
+    if (hp) hp.style.opacity = '1';
+    if (tp) tp.style.opacity = '1';
+    setTimeout(function () { buildList(newList, true, 0); }, 60);
+  }
+}
+
+// ── Temp pointer helpers ─────────────────────────────────────────
+function showTempPointerOnNode(nodeIndex) {
+  var tp = VIZ.el.tempPointer;
+  if (!tp) return;
+  tp.style.display = 'flex';
+  tp.style.opacity = '0';
+  tp.style.transition = 'left 0.32s cubic-bezier(0.4,0,0.2,1), top 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease';
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var canvas  = document.getElementById('animCanvas');
+      var row     = VIZ.el.listRow;
+      if (!canvas || !row) return;
+      var wraps   = row.querySelectorAll('.viz-node-wrap');
+      var wrap    = wraps[nodeIndex];
+      if (!wrap) return;
+      var node    = wrap.querySelector('.viz-node');
+      if (!node) return;
+      var cr = canvas.getBoundingClientRect();
+      var nr = node.getBoundingClientRect();
+      var cx = nr.left + nr.width / 2 - cr.left;
+      // Position temp BELOW head: offset down by pointer height + node height + gap
+      var tpH = tp.getBoundingClientRect().height || 48;
+      var topY = nr.top - cr.top - tpH - 4;
+      // Offset slightly right to not collide with HEAD
+      var offsetX = 22;
+      tp.style.left      = (cx + offsetX) + 'px';
+      tp.style.top       = topY + 'px';
+      tp.style.bottom    = 'auto';
+      tp.style.transform = 'translateX(-50%)';
+      tp.style.opacity   = '1';
+      if (VIZ.el.tempAddr && PTR.nodeList[nodeIndex]) {
+        VIZ.el.tempAddr.textContent = PTR.nodeList[nodeIndex].address;
+      }
+    });
+  });
+}
+
+function hideTempPointer() {
+  var tp = VIZ.el.tempPointer;
+  if (!tp) return;
+  tp.style.transition = 'opacity 0.25s ease';
+  tp.style.opacity    = '0';
+  setTimeout(function () { tp.style.display = 'none'; }, 260);
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  HELPERS
 // ═══════════════════════════════════════════════════════════════
 function hideNewNode() {
@@ -715,6 +1294,7 @@ function resetHeadStyle() {
 //  CONTROLS  (onclick targets in HTML)
 // ═══════════════════════════════════════════════════════════════
 function readInputValue() {
+  if (mode !== 'insert-beginning') return;
   var input = VIZ.el.vizValueInput;
   var raw = input ? input.value.trim() : '';
   var val = (raw === '' || isNaN(Number(raw))) ? 0 : Number(raw);
@@ -740,6 +1320,18 @@ function vizPrev() {
 
 function vizReset() {
   stopPlay();
+  hideTempPointer();
+  hidePtrPointer();
+  hideCurve();
+  hideNewNode();
+  var hp = VIZ.el.headPointer;
+  var tp2 = VIZ.el.tailPointer;
+  if (hp) hp.style.opacity = '1';
+  if (tp2) tp2.style.opacity = '1';
+  if (mode === 'delete-beginning' || mode === 'delete-end') {
+    VIZ.deleteList = VIZ.initialList.slice();
+    buildList(VIZ.deleteList, false, 0);
+  }
   applyStep(0);
 }
 
@@ -772,6 +1364,368 @@ function stopPlay() {
   if (VIZ.el.playIcon)   VIZ.el.playIcon.style.display  = '';
   if (VIZ.el.pauseIcon)  VIZ.el.pauseIcon.style.display = 'none';
   if (VIZ.el.playLabel)  VIZ.el.playLabel.textContent   = 'Play';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DELETE AT END ANIMATIONS
+// ═══════════════════════════════════════════════════════════════
+function runDeleteAtEndStep(step) {
+  switch (step) {
+    case 0: dend_initial();     break;
+    case 1: dend_initPtrs();    break;
+    case 2: dend_traverse();    break;
+    case 3: dend_loopEnd();     break;
+    case 4: dend_freeNode();    break;
+    case 5: dend_updateLink();  break;
+    case 6: dend_updateTail();  break;
+  }
+}
+
+function hidePtrPointer() {
+  var pp = VIZ.el.ptrPointer;
+  if (!pp) return;
+  pp.style.transition = 'opacity 0.25s ease';
+  pp.style.opacity    = '0';
+  setTimeout(function () { pp.style.display = 'none'; }, 260);
+}
+
+function showPtrPointerOnNode(nodeIndex, label) {
+  var pp = VIZ.el.ptrPointer;
+  if (!pp) return;
+  var lbl = pp.querySelector('.viz-ptr-label-ptr');
+  if (lbl) lbl.textContent = label || 'ptr';
+
+  pp.style.display = 'flex';
+  pp.style.opacity = '0';
+  pp.style.transition = 'left 0.38s cubic-bezier(0.4,0,0.2,1), top 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease';
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var canvas = document.getElementById('animCanvas');
+      var row    = VIZ.el.listRow;
+      if (!canvas || !row) return;
+      var wraps  = row.querySelectorAll('.viz-node-wrap');
+      var wrap   = wraps[nodeIndex];
+      if (!wrap) return;
+      var node   = wrap.querySelector('.viz-node');
+      if (!node) return;
+      var cr = canvas.getBoundingClientRect();
+      var nr = node.getBoundingClientRect();
+      var cx = nr.left + nr.width / 2 - cr.left;
+      var ppH = pp.getBoundingClientRect().height || 48;
+      // ptr goes BELOW the node row (opposite side from HEAD/TAIL/temp)
+      var botY = nr.bottom - cr.top + 8;
+      pp.style.left      = cx + 'px';
+      pp.style.top       = botY + 'px';
+      pp.style.bottom    = 'auto';
+      pp.style.transform = 'translateX(-50%)';
+      pp.style.opacity   = '1';
+      if (VIZ.el.ptrAddr && PTR.nodeList[nodeIndex]) {
+        VIZ.el.ptrAddr.textContent = PTR.nodeList[nodeIndex].address;
+      }
+    });
+  });
+}
+
+// ptr pointer showing "NULL" (faded) below the list
+function showPtrNull() {
+  var pp = VIZ.el.ptrPointer;
+  if (!pp) return;
+  var lbl = pp.querySelector('.viz-ptr-label-ptr');
+  if (lbl) lbl.textContent = 'ptr';
+  var addr = VIZ.el.ptrAddr;
+  if (addr) addr.textContent = 'NULL';
+
+  pp.style.display   = 'flex';
+  pp.style.opacity   = '0';
+  pp.style.transition = 'opacity 0.25s ease';
+  // Position below the list start (node 0 area)
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var canvas = document.getElementById('animCanvas');
+      var row    = VIZ.el.listRow;
+      if (!canvas || !row) return;
+      var wrap   = row.querySelector('.viz-node-wrap');
+      if (!wrap) return;
+      var node   = wrap.querySelector('.viz-node');
+      if (!node) return;
+      var cr = canvas.getBoundingClientRect();
+      var nr = node.getBoundingClientRect();
+      var cx = nr.left + nr.width / 2 - cr.left;
+      var botY = nr.bottom - cr.top + 8;
+      pp.style.left      = (cx - 40) + 'px';
+      pp.style.top       = botY + 'px';
+      pp.style.bottom    = 'auto';
+      pp.style.transform = 'translateX(-50%)';
+      pp.style.opacity   = '0.35'; // faded = NULL state
+    });
+  });
+}
+
+// Show temp pointer BELOW each node (to avoid colliding with HEAD/TAIL above)
+function showTempBelowNode(nodeIndex) {
+  var tp = VIZ.el.tempPointer;
+  if (!tp) return;
+  tp.style.display = 'flex';
+  tp.style.opacity = '0';
+  tp.style.transition = 'left 0.38s cubic-bezier(0.4,0,0.2,1), top 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease';
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var canvas = document.getElementById('animCanvas');
+      var row    = VIZ.el.listRow;
+      if (!canvas || !row) return;
+      var wraps  = row.querySelectorAll('.viz-node-wrap');
+      var wrap   = wraps[nodeIndex];
+      if (!wrap) return;
+      var node   = wrap.querySelector('.viz-node');
+      if (!node) return;
+      var cr = canvas.getBoundingClientRect();
+      var nr = node.getBoundingClientRect();
+      var cx = nr.left + nr.width / 2 - cr.left;
+      // temp sits ABOVE each node (same as delete-beginning, but use it for delete-end temp too)
+      var tpH = tp.getBoundingClientRect().height || 48;
+      var topY = nr.top - cr.top - tpH - 4;
+      tp.style.left      = cx + 'px';
+      tp.style.top       = topY + 'px';
+      tp.style.bottom    = 'auto';
+      tp.style.transform = 'translateX(-50%)';
+      tp.style.opacity   = '1';
+      if (VIZ.el.tempAddr && PTR.nodeList[nodeIndex]) {
+        VIZ.el.tempAddr.textContent = PTR.nodeList[nodeIndex].address;
+      }
+    });
+  });
+}
+
+function dend_initial() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  hideTempPointer();
+  hidePtrPointer();
+  hideCurve();
+  hideNewNode();
+  PTR.headIndex = 0;
+  PTR.tailIndex = VIZ.initialList.length - 1;
+  buildList(VIZ.deleteList, false, 0);
+}
+
+function dend_initPtrs() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  hideCurve();
+  hideNewNode();
+  buildList(VIZ.deleteList, false, 0);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      // Highlight node 0 (temp = head)
+      var row = VIZ.el.listRow;
+      if (!row) return;
+      var firstWrap = row.querySelector('.viz-node-wrap');
+      var firstNode = firstWrap ? firstWrap.querySelector('.viz-node') : null;
+      if (firstNode) firstNode.classList.add('viz-node-temp-highlight');
+
+      showTempBelowNode(0);  // temp above node 0
+      showPtrNull();          // ptr faded (NULL)
+    });
+  });
+}
+
+// Store traversal state for step 2
+var DEND_TRAV = { tempIdx: 0, ptrIdx: -1, timer: null };
+
+function dend_traverse() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  buildList(VIZ.deleteList, false, 0);
+
+  // Clear any prior traversal timer
+  if (DEND_TRAV.timer) { clearTimeout(DEND_TRAV.timer); DEND_TRAV.timer = null; }
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      DEND_TRAV.tempIdx = 0;
+      DEND_TRAV.ptrIdx  = -1;
+      // Start traversal animation: iteration delay 700ms each
+      animateTraversal();
+    });
+  });
+}
+
+function animateTraversal() {
+  var list = VIZ.deleteList;
+  // Advance one step: ptr = temp, temp = temp->next
+  DEND_TRAV.ptrIdx  = DEND_TRAV.tempIdx;
+  DEND_TRAV.tempIdx = DEND_TRAV.tempIdx + 1;
+
+  // Highlight nodes
+  var row = VIZ.el.listRow;
+  if (row) {
+    var wraps = row.querySelectorAll('.viz-node-wrap');
+    for (var i = 0; i < wraps.length; i++) {
+      var n = wraps[i].querySelector('.viz-node');
+      if (n) {
+        n.classList.remove('viz-node-temp-highlight', 'viz-node-ptr-highlight');
+      }
+    }
+    if (wraps[DEND_TRAV.ptrIdx]) {
+      var pn = wraps[DEND_TRAV.ptrIdx].querySelector('.viz-node');
+      if (pn) pn.classList.add('viz-node-ptr-highlight');
+    }
+    if (wraps[DEND_TRAV.tempIdx]) {
+      var tn = wraps[DEND_TRAV.tempIdx].querySelector('.viz-node');
+      if (tn) tn.classList.add('viz-node-temp-highlight');
+    }
+  }
+
+  showTempBelowNode(DEND_TRAV.tempIdx);
+  if (DEND_TRAV.ptrIdx >= 0) {
+    showPtrPointerOnNode(DEND_TRAV.ptrIdx);
+  }
+
+  // Continue if temp->next != NULL
+  if (DEND_TRAV.tempIdx < list.length - 1) {
+    DEND_TRAV.timer = setTimeout(function () {
+      if (mode === 'delete-end' && VIZ.currentStep === 2) {
+        animateTraversal();
+      }
+    }, 750);
+  }
+}
+
+function dend_loopEnd() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  if (DEND_TRAV.timer) { clearTimeout(DEND_TRAV.timer); DEND_TRAV.timer = null; }
+  buildList(VIZ.deleteList, false, 0);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      // temp at last node (index 3), ptr at second-to-last (index 2)
+      var lastIdx = VIZ.deleteList.length - 1;
+      var prevIdx = lastIdx - 1;
+
+      var row = VIZ.el.listRow;
+      if (row) {
+        var wraps = row.querySelectorAll('.viz-node-wrap');
+        for (var i = 0; i < wraps.length; i++) {
+          var n = wraps[i].querySelector('.viz-node');
+          if (n) n.classList.remove('viz-node-temp-highlight', 'viz-node-ptr-highlight');
+        }
+        if (wraps[prevIdx]) {
+          var pn = wraps[prevIdx].querySelector('.viz-node');
+          if (pn) pn.classList.add('viz-node-ptr-highlight');
+        }
+        if (wraps[lastIdx]) {
+          var tn = wraps[lastIdx].querySelector('.viz-node');
+          if (tn) tn.classList.add('viz-node-temp-highlight');
+        }
+      }
+
+      showTempBelowNode(lastIdx);
+      showPtrPointerOnNode(prevIdx);
+    });
+  });
+}
+
+function dend_freeNode() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  if (DEND_TRAV.timer) { clearTimeout(DEND_TRAV.timer); DEND_TRAV.timer = null; }
+  buildList(VIZ.deleteList, false, 0);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var lastIdx = VIZ.deleteList.length - 1;
+      var prevIdx = lastIdx - 1;
+
+      var row = VIZ.el.listRow;
+      if (!row) return;
+      var wraps = row.querySelectorAll('.viz-node-wrap');
+
+      // Show pointers at their final traversal positions
+      showTempBelowNode(lastIdx);
+      showPtrPointerOnNode(prevIdx);
+
+      // Highlight last node briefly then fade out
+      var lastWrap = wraps[lastIdx];
+      var lastNode = lastWrap ? lastWrap.querySelector('.viz-node') : null;
+      if (lastNode) lastNode.classList.add('viz-node-temp-highlight');
+
+      setTimeout(function () {
+        hideTempPointer();
+
+        // Fade + shrink last node wrap
+        if (lastWrap) {
+          lastWrap.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.4,0,0.2,1), max-width 0.45s ease';
+          lastWrap.style.opacity    = '0';
+          lastWrap.style.transform  = 'scale(0.6)';
+          lastWrap.style.maxWidth   = lastWrap.offsetWidth + 'px';
+
+          // Fade the arrow before it
+          var prevSib = lastWrap.previousSibling;
+          if (prevSib && prevSib.classList && prevSib.classList.contains('viz-arrow')) {
+            prevSib.style.transition = 'opacity 0.35s ease';
+            prevSib.style.opacity    = '0';
+          }
+          setTimeout(function () {
+            lastWrap.style.maxWidth = '0px';
+            lastWrap.style.overflow = 'hidden';
+          }, 100);
+        }
+      }, 350);
+    });
+  });
+}
+
+function dend_updateLink() {
+  if (DEND_TRAV.timer) { clearTimeout(DEND_TRAV.timer); DEND_TRAV.timer = null; }
+  // Show the list minus the last node
+  var truncList = VIZ.deleteList.slice(0, VIZ.deleteList.length - 1);
+  buildList(truncList, false, 0);
+
+  // Keep ptr at second-to-last (now last rendered)
+  var lastIdx = truncList.length - 1;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var row = VIZ.el.listRow;
+      if (!row) return;
+      var wraps = row.querySelectorAll('.viz-node-wrap');
+      // Highlight the ptr node (now last)
+      if (wraps[lastIdx]) {
+        var pn = wraps[lastIdx].querySelector('.viz-node');
+        if (pn) pn.classList.add('viz-node-ptr-highlight');
+        // Flash next field to show NULL update
+        var nextField = pn ? pn.querySelector('.viz-node-next') : null;
+        if (nextField) {
+          nextField.style.transition = 'background 0.3s ease, color 0.3s ease';
+          nextField.style.background = 'rgba(255,130,0,0.18)';
+          nextField.style.color      = '#f97316';
+          nextField.textContent      = 'NULL';
+          setTimeout(function () {
+            nextField.style.background = '';
+            nextField.style.color      = '';
+          }, 900);
+        }
+      }
+      showPtrPointerOnNode(lastIdx);
+      hideTempPointer();
+    });
+  });
+}
+
+function dend_updateTail() {
+  if (DEND_TRAV.timer) { clearTimeout(DEND_TRAV.timer); DEND_TRAV.timer = null; }
+  var truncList = VIZ.deleteList.slice(0, VIZ.deleteList.length - 1);
+  buildList(truncList, true, 0);
+
+  // Move TAIL to second-to-last (now last)
+  PTR.tailIndex = truncList.length - 1;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      positionPointers();
+      hidePtrPointer();
+      hideTempPointer();
+    });
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════
