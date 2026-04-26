@@ -477,6 +477,9 @@ function anim_assignValue() {
   }, 80);
 }
 
+// Global store for the drawn curve geometry so step 4 can reuse it
+var CURVE_GEOM = null;
+
 function anim_linkNext() {
   buildList(VIZ.initialList, false, 0);
   resetHeadStyle();
@@ -490,7 +493,6 @@ function anim_linkNext() {
   VIZ.el.newNodeData.textContent = String(VIZ.newValue);
   VIZ.el.newNodeEl.className = 'viz-node viz-node-new viz-node-linked';
 
-  // Update new node's "next" field to show address of first list node
   var firstNodeAddr = PTR.nodeList.length > 0 ? PTR.nodeList[0].address : 'NULL';
   var nextField = document.getElementById('newNodeNextField');
   if (nextField) nextField.textContent = firstNodeAddr;
@@ -499,7 +501,6 @@ function anim_linkNext() {
   var path = VIZ.el.curvePath;
   if (!svg || !path) return;
 
-  // Remove any old traveling arrowhead
   var oldDot = svg.querySelector('.viz-travel-dot');
   if (oldDot) oldDot.parentNode.removeChild(oldDot);
 
@@ -509,64 +510,57 @@ function anim_linkNext() {
       if (!canvas) return;
       var canvasRect = canvas.getBoundingClientRect();
 
-      // Source: RIGHT side of newNode (arrow exits from the right edge)
+      // Source: RIGHT side of newNode
       var newNodeEl = VIZ.el.newNodeEl;
       var newRect = newNodeEl ? newNodeEl.getBoundingClientRect() : null;
       var startX, startY;
       if (newRect) {
-        startX = newRect.right  - canvasRect.left;
+        startX = newRect.right - canvasRect.left;
         startY = newRect.top + newRect.height / 2 - canvasRect.top;
       } else {
-        startX = canvasRect.width / 2 + 40;
+        startX = canvasRect.width / 2 + 60;
         startY = canvasRect.height - 100;
       }
 
-      // Target: LEFT side of node 1 in the list row (arrow enters from the left)
+      // Target: LEFT side of node 1 — arrow enters horizontally from left (→)
       var listRow = VIZ.el.listRow;
       var firstWrap = listRow ? listRow.querySelector('.viz-node-wrap') : null;
       var firstNodeEl = firstWrap ? firstWrap.querySelector('.viz-node') : null;
       var endX, endY;
       if (firstNodeEl) {
         var fr = firstNodeEl.getBoundingClientRect();
-        endX = fr.left  - canvasRect.left;
+        endX = fr.left - canvasRect.left;
         endY = fr.top + fr.height / 2 - canvasRect.top;
       } else {
         endX = canvasRect.width * 0.15;
         endY = canvasRect.height * 0.38;
       }
 
-      // Path shape: start right → swing RIGHT → curve sharply UP → travel LEFT → hook DOWN into node 1 left
-      // This produces the backward-C / fishhook shape drawn in the user's sketch
-      var rightBulge = startX + 80;          // how far right we swing before going up
-      var arcTop     = Math.min(startY, endY) - 70;  // apex of the arc (above both rows)
-
-      // Cubic bezier: M startX startY  C cp1 cp2 mid  S cp3 end
-      // Segment 1: exit right, rise to apex
-      var cp1x = rightBulge;   var cp1y = startY;
-      var cp2x = rightBulge;   var cp2y = arcTop;
-      // midpoint at apex, horizontally between start and end
-      var midX = (startX + endX) / 2;  var midY = arcTop;
-      // Segment 2 (smooth continuation): come down into the left of node 1
-      var cp3x = endX - 60;    var cp3y = arcTop;
+      // Single smooth cubic bezier - no joints, no sharp corners.
+      // cp1 pulls right+slightly up from newNode exit.
+      // cp2 pulls from left+below into node 1 left side horizontally.
+      var cp1x = startX + 80;
+      var cp1y = startY - 60;
+      var cp2x = endX - 60;
+      var cp2y = endY + 160;
 
       var d = 'M ' + startX + ' ' + startY
-            + ' C ' + cp1x + ' ' + cp1y + ', ' + cp2x + ' ' + cp2y + ', ' + midX + ' ' + midY
-            + ' S ' + cp3x + ' ' + cp3y + ', ' + endX + ' ' + endY;
+        + ' C ' + cp1x + ' ' + cp1y + ', ' + cp2x + ' ' + cp2y + ', ' + endX + ' ' + endY;
 
       path.setAttribute('d', d);
+      CURVE_GEOM = { startX: startX, startY: startY, endX: endX, endY: endY };
+
       svg.classList.add('visible');
 
-      // Measure path length
       var len;
-      try { len = path.getTotalLength(); } catch (e) { len = 450; }
-      if (!len || len < 1) len = 450;
+      try { len = path.getTotalLength(); } catch (e) { len = 500; }
+      if (!len || len < 1) len = 500;
 
-      // Reset dashoffset for draw animation
       path.style.transition       = 'none';
       path.style.strokeDasharray  = len + 'px';
       path.style.strokeDashoffset = len + 'px';
 
-      // Traveling arrowhead dot — a circle that rides along the path via JS animation
+      // Traveling dot
       var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       dot.setAttribute('r', '5');
       dot.setAttribute('fill', '#3b6cff');
@@ -574,36 +568,30 @@ function anim_linkNext() {
       dot.style.filter = 'drop-shadow(0 0 4px rgba(59,108,255,0.7))';
       svg.appendChild(dot);
 
-      var duration  = 750;   // ms — matches the stroke animation
+      var duration  = 850;
       var startTime = null;
 
       function animateDot(ts) {
         if (!startTime) startTime = ts;
         var elapsed  = ts - startTime;
         var progress = Math.min(elapsed / duration, 1);
-        // ease in-out
         var eased = progress < 0.5
           ? 2 * progress * progress
           : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-        var offset = eased * len;
         try {
-          var pt = path.getPointAtLength(offset);
+          var pt = path.getPointAtLength(eased * len);
           dot.setAttribute('cx', pt.x);
           dot.setAttribute('cy', pt.y);
         } catch (err) {}
-
         if (progress < 1) {
           requestAnimationFrame(animateDot);
         } else {
-          // Remove dot once it reaches the end
           setTimeout(function () {
             if (dot.parentNode) dot.parentNode.removeChild(dot);
-          }, 120);
+          }, 150);
         }
       }
 
-      // Kick off both the stroke draw and the dot ride simultaneously
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           path.style.transition       = 'stroke-dashoffset ' + (duration / 1000) + 's cubic-bezier(0.4,0,0.2,1)';
@@ -616,8 +604,8 @@ function anim_linkNext() {
 }
 
 function anim_updateHead() {
-  buildList(VIZ.initialList, false, 99);  // headIdx=99 → out-of-range, pointers render on list first
-  hideCurve();
+  // Keep the curve from step 3 — do NOT call hideCurve()
+  buildList(VIZ.initialList, false, 99);  // 99 = out-of-range so TAIL renders but HEAD won't auto-place
 
   var wrap = VIZ.el.newNodeWrap;
   if (!wrap) return;
@@ -629,20 +617,60 @@ function anim_updateHead() {
   VIZ.el.newNodeEl.className      = 'viz-node viz-node-new viz-node-head';
   VIZ.el.newNodeLabel.textContent = 'newNode = HEAD';
 
-  // Move HEAD pointer onto the floating new node after it renders
+  // Keep curve SVG visible (don't hide it)
+  var svg = VIZ.el.curveSvg;
+  if (svg) svg.classList.add('visible');
+
+  // Place HEAD pointer just to the LEFT of node 1, pointing at it
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
-      positionHeadOnNewNode();
+      var canvas = document.getElementById('animCanvas');
+      var hp     = VIZ.el.headPointer;
+      if (!canvas || !hp) return;
+
+      var canvasRect = canvas.getBoundingClientRect();
+      var listRow    = VIZ.el.listRow;
+      var firstWrap  = listRow ? listRow.querySelector('.viz-node-wrap') : null;
+      var firstNode  = firstWrap ? firstWrap.querySelector('.viz-node') : null;
+
+      if (firstNode) {
+        var fr   = firstNode.getBoundingClientRect();
+        // Place HEAD to the LEFT of node 1 — arrow points rightward (→) into it
+        var leftX = fr.left - canvasRect.left - 10;
+        var topY  = fr.top  - canvasRect.top - hp.getBoundingClientRect().height - 4;
+        hp.style.top       = topY + 'px';
+        hp.style.bottom    = 'auto';
+        hp.style.left      = leftX + 'px';
+        hp.style.transform = 'translateX(-50%)';
+      }
+      if (VIZ.el.headAddr) VIZ.el.headAddr.textContent = NEW_NODE_ADDR;
     });
   });
 }
 
 function anim_rearrange() {
-  hideCurve();
-  hideNewNode();
-  resetHeadStyle();
-  var fullList = [VIZ.newValue].concat(VIZ.initialList);
-  setTimeout(function () { buildList(fullList, true, 0); }, 80);
+  // Retract the curve by animating dashoffset back to full length
+  var svg  = VIZ.el.curveSvg;
+  var path = VIZ.el.curvePath;
+  if (svg && path) {
+    var len;
+    try { len = path.getTotalLength(); } catch (e) { len = 500; }
+    if (!len || len < 1) len = 500;
+    path.style.transition       = 'stroke-dashoffset 0.4s cubic-bezier(0.4,0,0.2,1)';
+    path.style.strokeDashoffset = len + 'px';
+    setTimeout(function () {
+      svg.classList.remove('visible');
+    }, 420);
+  }
+
+  // After retract completes, hide new node and build final list
+  setTimeout(function () {
+    hideNewNode();
+    resetHeadStyle();
+    CURVE_GEOM = null;
+    var fullList = [VIZ.newValue].concat(VIZ.initialList);
+    setTimeout(function () { buildList(fullList, true, 0); }, 80);
+  }, 440);
 }
 
 // ═══════════════════════════════════════════════════════════════
