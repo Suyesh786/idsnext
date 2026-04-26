@@ -178,6 +178,13 @@ function buildList(values, withEnter, headIdx) {
 
   for (var i = 0; i < PTR.nodeList.length; i++) {
     var nodeObj = PTR.nodeList[i];
+    // Determine what "next" field should show
+    var nextAddr;
+    if (i < PTR.nodeList.length - 1) {
+      nextAddr = PTR.nodeList[i + 1].address;
+    } else {
+      nextAddr = 'NULL';
+    }
 
     var wrap = document.createElement('div');
     wrap.className = 'viz-node-wrap';
@@ -189,7 +196,7 @@ function buildList(values, withEnter, headIdx) {
 
     node.innerHTML =
       '<div class="viz-node-data">' + nodeObj.value + '</div>' +
-      '<div class="viz-node-next">next</div>';
+      '<div class="viz-node-next">' + nextAddr + '</div>';
 
     var addrEl = document.createElement('div');
     addrEl.className = 'viz-node-addr';
@@ -224,8 +231,7 @@ function buildList(values, withEnter, headIdx) {
 }
 
 // ── Core positioning engine ─────────────────────────────────────
-// Positions HEAD and TAIL above their respective node wraps.
-// Stacks them vertically if they land on the same node.
+// Positions HEAD and TAIL tightly just above their respective nodes.
 function positionPointers() {
   var canvas = document.getElementById('animCanvas');
   var row    = VIZ.el.listRow;
@@ -238,46 +244,45 @@ function positionPointers() {
 
   var canvasRect = canvas.getBoundingClientRect();
 
-  // HEAD
-  var hIdx   = Math.min(PTR.headIndex, wraps.length - 1);
-  var hWrap  = wraps[hIdx];
-  var hNode  = hWrap.querySelector('.viz-node');
-  var hRect  = (hNode || hWrap).getBoundingClientRect();
-  var hCx    = hRect.left + hRect.width / 2 - canvasRect.left;
+  // HEAD — position tightly above node top
+  var hIdx  = Math.min(PTR.headIndex, wraps.length - 1);
+  var hWrap = wraps[hIdx];
+  var hNode = hWrap.querySelector('.viz-node');
+  var hRect = (hNode || hWrap).getBoundingClientRect();
+  var hCx   = hRect.left + hRect.width / 2 - canvasRect.left;
+  // top = node top relative to canvas, then subtract pointer height + 4px gap
+  var hTopY = hRect.top - canvasRect.top - hp.getBoundingClientRect().height - 4;
 
-  // TAIL
-  var tIdx   = Math.min(PTR.tailIndex, wraps.length - 1);
-  var tWrap  = wraps[tIdx];
-  var tNode  = tWrap.querySelector('.viz-node');
-  var tRect  = (tNode || tWrap).getBoundingClientRect();
-  var tCx    = tRect.left + tRect.width / 2 - canvasRect.left;
-
-  var topRow = 8;   // px from canvas top — closer to node
+  // TAIL — position tightly above node top
+  var tIdx  = Math.min(PTR.tailIndex, wraps.length - 1);
+  var tWrap = wraps[tIdx];
+  var tNode = tWrap.querySelector('.viz-node');
+  var tRect = (tNode || tWrap).getBoundingClientRect();
+  var tCx   = tRect.left + tRect.width / 2 - canvasRect.left;
+  var tTopY = tRect.top - canvasRect.top - tp.getBoundingClientRect().height - 4;
 
   if (hIdx === tIdx) {
-    // Same node: HEAD left-of-center, TAIL right-of-center, offset ±18px
-    hp.style.top       = topRow + 'px';
+    hp.style.top       = hTopY + 'px';
     hp.style.bottom    = 'auto';
     hp.style.left      = (hCx - 22) + 'px';
     hp.style.transform = 'translateX(-50%)';
 
-    tp.style.top       = topRow + 'px';
+    tp.style.top       = tTopY + 'px';
     tp.style.bottom    = 'auto';
     tp.style.left      = (tCx + 22) + 'px';
     tp.style.transform = 'translateX(-50%)';
   } else {
-    hp.style.top       = topRow + 'px';
+    hp.style.top       = hTopY + 'px';
     hp.style.bottom    = 'auto';
     hp.style.left      = hCx + 'px';
     hp.style.transform = 'translateX(-50%)';
 
-    tp.style.top       = topRow + 'px';
+    tp.style.top       = tTopY + 'px';
     tp.style.bottom    = 'auto';
     tp.style.left      = tCx + 'px';
     tp.style.transform = 'translateX(-50%)';
   }
 
-  // Update address chips on both pointers
   updatePointerAddrs();
 }
 
@@ -295,7 +300,7 @@ function updatePointerAddrs() {
   }
 }
 
-// Convenience: move HEAD pointer above the floating new-node element
+// Convenience: move HEAD pointer tightly above the floating new-node element
 function positionHeadOnNewNode() {
   var canvas  = document.getElementById('animCanvas');
   var hp      = VIZ.el.headPointer;
@@ -305,14 +310,13 @@ function positionHeadOnNewNode() {
   var canvasRect = canvas.getBoundingClientRect();
   var nodeRect   = nodeEl.getBoundingClientRect();
   var cx         = nodeRect.left + nodeRect.width / 2 - canvasRect.left;
-  var topY       = nodeRect.top  - canvasRect.top  - 46;
+  var topY       = nodeRect.top  - canvasRect.top - hp.getBoundingClientRect().height - 4;
 
   hp.style.top       = topY + 'px';
   hp.style.bottom    = 'auto';
   hp.style.left      = cx + 'px';
   hp.style.transform = 'translateX(-50%)';
 
-  // Update HEAD address chip to new-node address
   if (VIZ.el.headAddr) VIZ.el.headAddr.textContent = PTR.newNodeAddr;
 }
 
@@ -441,6 +445,8 @@ function anim_malloc() {
   VIZ.el.newNodeData.textContent  = '?';
   VIZ.el.newNodeEl.className      = 'viz-node viz-node-new';
   VIZ.el.newNodeLabel.textContent = 'newNode';
+  var nextField = document.getElementById('newNodeNextField');
+  if (nextField) nextField.textContent = 'NULL';
   wrap.style.bottom    = '68px';
   wrap.style.left      = '50%';
   wrap.style.transform = 'translateX(-50%)';
@@ -484,22 +490,127 @@ function anim_linkNext() {
   VIZ.el.newNodeData.textContent = String(VIZ.newValue);
   VIZ.el.newNodeEl.className = 'viz-node viz-node-new viz-node-linked';
 
+  // Update new node's "next" field to show address of first list node
+  var firstNodeAddr = PTR.nodeList.length > 0 ? PTR.nodeList[0].address : 'NULL';
+  var nextField = document.getElementById('newNodeNextField');
+  if (nextField) nextField.textContent = firstNodeAddr;
+
   var svg  = VIZ.el.curveSvg;
   var path = VIZ.el.curvePath;
   if (!svg || !path) return;
-  svg.classList.add('visible');
 
-  var len;
-  try { len = path.getTotalLength(); } catch (e) { len = 220; }
-  if (!len || len < 1) len = 220;
+  // Remove any old traveling arrowhead
+  var oldDot = svg.querySelector('.viz-travel-dot');
+  if (oldDot) oldDot.parentNode.removeChild(oldDot);
 
-  path.style.transition       = 'none';
-  path.style.strokeDasharray  = len + 'px';
-  path.style.strokeDashoffset = len + 'px';
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
-      path.style.transition       = 'stroke-dashoffset 0.65s cubic-bezier(0.4,0,0.2,1)';
-      path.style.strokeDashoffset = '0px';
+      var canvas = document.getElementById('animCanvas');
+      if (!canvas) return;
+      var canvasRect = canvas.getBoundingClientRect();
+
+      // Source: RIGHT side of newNode (arrow exits from the right edge)
+      var newNodeEl = VIZ.el.newNodeEl;
+      var newRect = newNodeEl ? newNodeEl.getBoundingClientRect() : null;
+      var startX, startY;
+      if (newRect) {
+        startX = newRect.right  - canvasRect.left;
+        startY = newRect.top + newRect.height / 2 - canvasRect.top;
+      } else {
+        startX = canvasRect.width / 2 + 40;
+        startY = canvasRect.height - 100;
+      }
+
+      // Target: LEFT side of node 1 in the list row (arrow enters from the left)
+      var listRow = VIZ.el.listRow;
+      var firstWrap = listRow ? listRow.querySelector('.viz-node-wrap') : null;
+      var firstNodeEl = firstWrap ? firstWrap.querySelector('.viz-node') : null;
+      var endX, endY;
+      if (firstNodeEl) {
+        var fr = firstNodeEl.getBoundingClientRect();
+        endX = fr.left  - canvasRect.left;
+        endY = fr.top + fr.height / 2 - canvasRect.top;
+      } else {
+        endX = canvasRect.width * 0.15;
+        endY = canvasRect.height * 0.38;
+      }
+
+      // Path shape: start right → swing RIGHT → curve sharply UP → travel LEFT → hook DOWN into node 1 left
+      // This produces the backward-C / fishhook shape drawn in the user's sketch
+      var rightBulge = startX + 80;          // how far right we swing before going up
+      var arcTop     = Math.min(startY, endY) - 70;  // apex of the arc (above both rows)
+
+      // Cubic bezier: M startX startY  C cp1 cp2 mid  S cp3 end
+      // Segment 1: exit right, rise to apex
+      var cp1x = rightBulge;   var cp1y = startY;
+      var cp2x = rightBulge;   var cp2y = arcTop;
+      // midpoint at apex, horizontally between start and end
+      var midX = (startX + endX) / 2;  var midY = arcTop;
+      // Segment 2 (smooth continuation): come down into the left of node 1
+      var cp3x = endX - 60;    var cp3y = arcTop;
+
+      var d = 'M ' + startX + ' ' + startY
+            + ' C ' + cp1x + ' ' + cp1y + ', ' + cp2x + ' ' + cp2y + ', ' + midX + ' ' + midY
+            + ' S ' + cp3x + ' ' + cp3y + ', ' + endX + ' ' + endY;
+
+      path.setAttribute('d', d);
+      svg.classList.add('visible');
+
+      // Measure path length
+      var len;
+      try { len = path.getTotalLength(); } catch (e) { len = 450; }
+      if (!len || len < 1) len = 450;
+
+      // Reset dashoffset for draw animation
+      path.style.transition       = 'none';
+      path.style.strokeDasharray  = len + 'px';
+      path.style.strokeDashoffset = len + 'px';
+
+      // Traveling arrowhead dot — a circle that rides along the path via JS animation
+      var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('r', '5');
+      dot.setAttribute('fill', '#3b6cff');
+      dot.classList.add('viz-travel-dot');
+      dot.style.filter = 'drop-shadow(0 0 4px rgba(59,108,255,0.7))';
+      svg.appendChild(dot);
+
+      var duration  = 750;   // ms — matches the stroke animation
+      var startTime = null;
+
+      function animateDot(ts) {
+        if (!startTime) startTime = ts;
+        var elapsed  = ts - startTime;
+        var progress = Math.min(elapsed / duration, 1);
+        // ease in-out
+        var eased = progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+        var offset = eased * len;
+        try {
+          var pt = path.getPointAtLength(offset);
+          dot.setAttribute('cx', pt.x);
+          dot.setAttribute('cy', pt.y);
+        } catch (err) {}
+
+        if (progress < 1) {
+          requestAnimationFrame(animateDot);
+        } else {
+          // Remove dot once it reaches the end
+          setTimeout(function () {
+            if (dot.parentNode) dot.parentNode.removeChild(dot);
+          }, 120);
+        }
+      }
+
+      // Kick off both the stroke draw and the dot ride simultaneously
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          path.style.transition       = 'stroke-dashoffset ' + (duration / 1000) + 's cubic-bezier(0.4,0,0.2,1)';
+          path.style.strokeDashoffset = '0px';
+          requestAnimationFrame(animateDot);
+        });
+      });
     });
   });
 }
@@ -547,27 +658,23 @@ function hideCurve() {
   if (!svg || !path) return;
   svg.classList.remove('visible');
   path.style.transition       = 'none';
-  path.style.strokeDashoffset = '220px';
+  path.style.strokeDasharray  = '1000px';
+  path.style.strokeDashoffset = '1000px';
 }
 
 function resetHeadStyle() {
-  // Reset HEAD pointer element transitions
   var hp = VIZ.el.headPointer;
   if (hp) {
     hp.style.transition = 'left 0.38s cubic-bezier(0.4,0,0.2,1), top 0.38s cubic-bezier(0.4,0,0.2,1)';
-    hp.style.top        = '8px';
     hp.style.bottom     = 'auto';
     var arr = hp.querySelector('.viz-ptr-arrow');
     if (arr) arr.textContent = '\u2193';
   }
-  // Reset TAIL pointer element transitions
   var tp = VIZ.el.tailPointer;
   if (tp) {
     tp.style.transition = 'left 0.38s cubic-bezier(0.4,0,0.2,1), top 0.38s cubic-bezier(0.4,0,0.2,1)';
-    tp.style.top        = '8px';
     tp.style.bottom     = 'auto';
   }
-  // Re-position both above the correct nodes
   PTR.headIndex = 0;
   PTR.tailIndex = VIZ.initialList.length - 1;
   requestAnimationFrame(function () {

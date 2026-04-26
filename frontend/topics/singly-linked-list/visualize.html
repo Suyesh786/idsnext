@@ -199,21 +199,23 @@
       <div class="viz-new-node-wrap" id="newNodeWrap">
         <div class="viz-node viz-node-new" id="newNodeEl">
           <div class="viz-node-data" id="newNodeData">?</div>
-          <div class="viz-node-next">next</div>
+          <div class="viz-node-next" id="newNodeNextField">NULL</div>
         </div>
         <div class="viz-new-node-addr" id="newNodeAddr">0x100</div>
         <div class="viz-new-node-label" id="newNodeLabel">newNode</div>
       </div>
 
       <!-- Curved arrow from new node to head (hidden initially) -->
-      <svg class="viz-curve-svg" id="curveSvg" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <svg class="viz-curve-svg" id="curveSvg" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <marker id="arrowHead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L8,3 z" fill="#3b6cff"/>
+          <marker id="arrowHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+            <path d="M0,0 L0,8 L10,4 z" fill="#3b6cff"/>
           </marker>
         </defs>
-        <path id="curvePath" d="M 100 20 Q 100 60 40 80" stroke="#3b6cff" stroke-width="2.5"
-              fill="none" marker-end="url(#arrowHead)" stroke-dasharray="200" stroke-dashoffset="200"/>
+        <path id="curvePath" d=""
+              stroke="#3b6cff" stroke-width="2.5"
+              fill="none" marker-end="url(#arrowHead)"
+              stroke-dasharray="1000" stroke-dashoffset="1000"/>
       </svg>
 
       <!-- Main list -->
