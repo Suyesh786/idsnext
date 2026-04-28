@@ -157,6 +157,9 @@ function switchMode(newMode) {
   var posRow = document.getElementById('posInputRow');
   if (posRow) posRow.style.display = 'none';
 
+  var positionRow = document.getElementById('positionRow');
+  if (positionRow) positionRow.style.display = 'none';      
+
   // Update pill button states
   var pills = document.querySelectorAll('.viz-op-pill');
   for (var i = 0; i < pills.length; i++) {
@@ -191,6 +194,7 @@ if (inputEl && inputEl.value !== '') {
   hideNewNode();
   hideTempPointer();
   if (typeof hidePtrPointer === 'function') hidePtrPointer();
+  if (typeof hideLoopBox    === 'function') hideLoopBox();
 
   if (newMode === 'insert-beginning') {
     var overlay = document.getElementById('comingSoonOverlay');
@@ -294,6 +298,10 @@ if (inputEl && inputEl.value !== '') {
     DMID_SEQ_STATE.prevIdx = -1;
     DMID_SEQ_STATE.iVal    = 0;
     buildList(VIZ.deleteList, false, 0);
+    // show + populate position labels
+    var positionRow = document.getElementById('positionRow');
+    if (positionRow) positionRow.style.display = 'none';
+
     applyStep(0);
 
 
@@ -1040,21 +1048,49 @@ var PTR = {
 // Build nodeList from a values array using stable MEM_ADDRS mapping.
 // Special case: if a value matches VIZ.newValue and we're building the
 // final rearranged list, that node keeps its real address (0x100).
+//
+// IMPORTANT: addresses are looked up by VALUE against the initial list,
+// not by current position. This ensures that after a deletion the
+// surviving nodes keep their original addresses (e.g. node 4 always
+// shows 0x104, even after node 3 is spliced out and it shifts left).
 function buildNodeList(values) {
   PTR.nodeList = [];
+
+  // Build a stable value→address map from the initial list once.
+  // If duplicate values exist each occurrence gets its own entry in
+  // order, so we track a per-value usage counter.
+  var initialList = VIZ.initialList;
+  var addrByValue = {};          // value → [addr, addr, …]  (handles duplicates)
+  for (var k = 0; k < initialList.length; k++) {
+    var v = initialList[k];
+    var a = MEM_ADDRS[k] || ('0x' + (0x101 + k).toString(16));
+    if (!addrByValue[v]) addrByValue[v] = [];
+    addrByValue[v].push(a);
+  }
+  var usageCount = {};           // tracks how many times we've already used a value
+
   var newInserted = false;
   for (var i = 0; i < values.length; i++) {
-    var isNewNode = (!newInserted && values[i] === VIZ.newValue && values.length === VIZ.initialList.length + 1);
+    var val = values[i];
+    var isNewNode = (!newInserted && val === VIZ.newValue && values.length === VIZ.initialList.length + 1);
     var addr;
     if (isNewNode) {
-      addr = NEW_NODE_ADDR;   // '0x100'
+      addr = NEW_NODE_ADDR;      // '0x100'
       newInserted = true;
     } else {
-      // Shift index back by 1 if new node was prepended
-      var baseIdx = newInserted ? (i - 1) : i;
-      addr = MEM_ADDRS[baseIdx] || ('0x' + (0x101 + baseIdx).toString(16));
+      // Look up address by value so position-shifts after deletion don't
+      // change the displayed address of surviving nodes.
+      var idx = usageCount[val] || 0;
+      if (addrByValue[val] && addrByValue[val][idx] !== undefined) {
+        addr = addrByValue[val][idx];
+      } else {
+        // Fallback: positional (handles newly-inserted values not in initialList)
+        var baseIdx = newInserted ? (i - 1) : i;
+        addr = MEM_ADDRS[baseIdx] || ('0x' + (0x101 + baseIdx).toString(16));
+      }
+      usageCount[val] = idx + 1;
     }
-    PTR.nodeList.push({ value: values[i], address: addr });
+    PTR.nodeList.push({ value: val, address: addr });
   }
 }
 
@@ -1096,6 +1132,14 @@ function buildList(values, withEnter, headIdx) {
 
     wrap.appendChild(node);
     wrap.appendChild(addrEl);
+
+    if (mode === 'delete-middle') {
+      var posLabel = document.createElement('div');
+      posLabel.className = 'viz-pos-label';
+      posLabel.textContent = i;
+      wrap.appendChild(posLabel);
+    }
+
     row.appendChild(wrap);
 
     if (i < PTR.nodeList.length - 1) {
@@ -2199,6 +2243,7 @@ function vizReset() {
   hidePtrPointer();
   hideCurve();
   hideNewNode();
+  hideLoopBox();
   var hp = VIZ.el.headPointer;
   var tp2 = VIZ.el.tailPointer;
   if (hp) hp.style.opacity = '1';
@@ -2620,6 +2665,36 @@ var DEND_TRAV = { tempIdx: 0, ptrIdx: -1, timer: null };
 // ═══════════════════════════════════════════════════════════════
 //  DELETE AT MIDDLE ANIMATIONS — micro-step engine
 // ═══════════════════════════════════════════════════════════════
+// ── Loop condition box helpers (delete-middle only) ──────────────
+function updateLoopBox(i, pos) {
+  var box = document.getElementById('loopCheckBox');
+  if (!box) return;
+
+  var wasTrue  = box.classList.contains('loop-true');
+  var wasFalse = box.classList.contains('loop-false');
+  var isTrue   = (i < pos);
+  var changing = (isTrue ? !wasTrue : !wasFalse) || !box.classList.contains('active');
+
+  box.classList.add('active');
+  box.textContent = 'i = ' + i + ',  pos = ' + pos + '   →   ' + i + ' < ' + pos + (isTrue ? '  ✓' : '  ✗');
+
+  box.classList.remove('loop-true', 'loop-false', 'state-change');
+  // Force reflow so the animation retriggers even on repeated calls
+  void box.offsetWidth;
+  box.classList.add(isTrue ? 'loop-true' : 'loop-false');
+  if (changing) box.classList.add('state-change');
+}
+
+function hideLoopBox() {
+  var box = document.getElementById('loopCheckBox');
+  if (!box) return;
+  box.classList.remove('active', 'loop-true', 'loop-false', 'state-change');
+}
+
+function hideLoopBoxDelayed(ms) {
+  setTimeout(hideLoopBox, ms || 700);
+}
+
 function runDeleteMiddleAnimation(step) {
   if (step === 0) {
     dmid_initial();
@@ -2679,6 +2754,7 @@ function dmid_initial() {
   hidePtrPointer();
   hideCurve();
   hideNewNode();
+  hideLoopBox();
   DMID_SEQ_STATE.tempIdx = 0;
   DMID_SEQ_STATE.prevIdx = -1;
   DMID_SEQ_STATE.iVal    = 0;
@@ -2692,6 +2768,7 @@ function dmid_initPtrs() {
   DMID_SEQ_STATE.tempIdx = 0;
   DMID_SEQ_STATE.prevIdx = -1;
   DMID_SEQ_STATE.iVal    = 0;
+  hideLoopBox();
   buildList(VIZ.deleteList, false, 0);
 
   requestAnimationFrame(function () {
@@ -2709,6 +2786,9 @@ function dmid_whileCheck() {
 
   var ti = DMID_SEQ_STATE.tempIdx;
   var pi = DMID_SEQ_STATE.prevIdx;
+
+  // Show live loop condition: current i value vs target pos
+  updateLoopBox(DMID_SEQ_STATE.iVal, VIZ.deletePos);
 
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
@@ -2767,6 +2847,9 @@ function dmid_iInc(newI) {
   buildList(VIZ.deleteList, false, 0);
   DMID_SEQ_STATE.iVal = newI;
 
+  // Update loop box to preview the new i value (condition re-checked next step)
+  updateLoopBox(DMID_SEQ_STATE.iVal, VIZ.deletePos);
+
   var ti = DMID_SEQ_STATE.tempIdx;
   var pi = DMID_SEQ_STATE.prevIdx;
 
@@ -2786,6 +2869,10 @@ function dmid_iInc(newI) {
 function dmid_loopEnd() {
   VIZ.deleteList = VIZ.initialList.slice();
   buildList(VIZ.deleteList, false, 0);
+
+  // Show the failing condition (i == pos → false) then fade out
+  updateLoopBox(VIZ.deletePos, VIZ.deletePos);
+  hideLoopBoxDelayed(1200);
 
   // temp=2 (node 3, index 2), prev=1 (node 2, index 1)
   var ti = DMID_SEQ_STATE.tempIdx;  // 2
@@ -2928,7 +3015,93 @@ var posInputEl = document.getElementById('posInput');
 if (posInputEl) {
   posInputEl.addEventListener('change', function () {
     if (mode === 'delete-middle') {
-      switchMode('delete-middle');
+      validateAndSwitchDeleteMiddle();
     }
   });
+}
+
+// ── posInput validation toast ────────────────────────────────────
+function showPosToast(msg, isError) {
+  var existing = document.getElementById('vizPosToast');
+  if (existing) existing.remove();
+
+  var toast = document.createElement('div');
+  toast.id = 'vizPosToast';
+  toast.style.cssText = [
+    'position:absolute',
+    'top:50%',
+    'left:50%',
+    'transform:translate(-50%,-50%)',
+    'z-index:9999',
+    'background:' + (isError ? '#fff1f0' : '#f0f7ff'),
+    'border:1.5px solid ' + (isError ? '#fca5a5' : '#93c5fd'),
+    'border-radius:14px',
+    'padding:20px 28px',
+    'text-align:center',
+    'box-shadow:0 8px 32px rgba(0,0,0,0.13)',
+    'max-width:280px',
+    'font-family:inherit',
+    'pointer-events:none'
+  ].join(';');
+
+  toast.innerHTML =
+    '<div style="font-size:28px;margin-bottom:8px">' + (isError ? '\u26A0\uFE0F' : '\u2139\uFE0F') + '</div>' +
+    '<div style="font-weight:600;font-size:14px;color:#1e293b;margin-bottom:6px">' + msg.title + '</div>' +
+    '<div style="font-size:13px;color:#64748b;line-height:1.5">' + msg.body + '</div>';
+
+  var canvas = document.getElementById('animCanvas');
+  if (canvas) {
+    canvas.style.position = canvas.style.position || 'relative';
+    canvas.appendChild(toast);
+  } else {
+    document.body.appendChild(toast);
+  }
+
+  toast.style.opacity = '0';
+  toast.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translate(-50%,-50%) scale(1)';
+    });
+  });
+
+  setTimeout(function () {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%,-50%) scale(0.95)';
+    setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 250);
+  }, 2800);
+}
+
+// ── posInput validation guard (replaces bare switchMode call) ────
+function validateAndSwitchDeleteMiddle() {
+  var posInput = document.getElementById('posInput');
+  if (!posInput || posInput.value === '') {
+    switchMode('delete-middle');
+    return;
+  }
+  var pos = parseInt(posInput.value);
+  var lastIdx = VIZ.initialList.length - 1;   // 3 for a 4-node list
+
+  if (!isNaN(pos) && pos === 0) {
+    showPosToast(
+      { title: 'Use \u201cDelete at Beginning\u201d',
+        body:  'Position 0 removes the first node.\nSwitch to <strong>Delete at Beginning</strong> for that operation.' },
+      true
+    );
+    posInput.value = '';
+    return;
+  }
+
+  if (!isNaN(pos) && pos >= lastIdx) {
+    showPosToast(
+      { title: 'Use \u201cDelete at End\u201d',
+        body:  'Position ' + pos + ' is the last node.\nSwitch to <strong>Delete at End</strong> for that operation.' },
+      true
+    );
+    posInput.value = '';
+    return;
+  }
+
+  switchMode('delete-middle');
 }

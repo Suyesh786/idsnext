@@ -136,17 +136,18 @@
       </div>
     </div>
 
-    <div id="posInputRow" class="viz-input-row" style="display: none;">
-        <label id="vizPosLabel">Enter position</label>
-        <input 
-            id="posInput" 
-            type="number" 
-            placeholder="3"
-            min="0"
-            class="viz-value-input"
-        />
+    <div id="posInputRow" class="viz-value-input-row" style="display: none;">
+    <div class="viz-value-input-wrap">
+        <label class="viz-value-label" for="posInput" id="vizPosLabel">Enter position</label>
+        <input
+        type="number"
+        id="posInput"
+        class="viz-value-input"
+        placeholder="e.g. 2"
+        min="0"
+        >
     </div>
-
+    </div>
     <!-- Canvas area -->
     <div class="viz-anim-canvas" id="animCanvas">
 
@@ -201,10 +202,13 @@
         <div class="viz-ptr-addr viz-ptr-addr-ptr" id="ptrAddr">NULL</div>
       </div>
 
-      <!-- Main list -->
+    <!-- Main list -->
       <div class="viz-list-row" id="listRow">
         <!-- Nodes rendered by JS -->
       </div>
+
+      <!-- Loop condition box — shown only during delete-middle traversal -->
+      <div id="loopCheckBox" class="viz-loop-box"></div>
 
     </div>
 
