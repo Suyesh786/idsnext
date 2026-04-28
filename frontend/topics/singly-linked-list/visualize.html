@@ -60,9 +60,9 @@
     <span class="viz-op-pill-icon">−</span>
     Delete at End
   </button>
-  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-position" onclick="switchMode('delete-position')">
+  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-middle" onclick="switchMode('delete-middle')">
     <span class="viz-op-pill-icon">−</span>
-    Delete at Position
+    Delete at Middle
   </button>
 </nav>
 
@@ -134,6 +134,17 @@
           max="999"
         >
       </div>
+    </div>
+
+    <div id="posInputRow" class="viz-input-row" style="display: none;">
+        <label id="vizPosLabel">Enter position</label>
+        <input 
+            id="posInput" 
+            type="number" 
+            placeholder="3"
+            min="0"
+            class="viz-value-input"
+        />
     </div>
 
     <!-- Canvas area -->

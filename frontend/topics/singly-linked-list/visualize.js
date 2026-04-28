@@ -14,7 +14,7 @@ var MODE_LABELS = {
   'insert-position':  'Insert at Position',
   'delete-beginning': 'Delete at Beginning',
   'delete-end':       'Delete at End',
-  'delete-position':  'Delete at Position'
+  'delete-middle':    'Delete at Middle'
 };
 
 // ── Code HTML templates per mode ────────────────────────────────
@@ -107,6 +107,29 @@ var CODE_TEMPLATES = {
     { line: 'ie_tail',   cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;tail = newNode;' },
     { line: 0, html: '&nbsp;&nbsp;}' },
     { line: 0, html: '}' }
+  ],
+  // NEW — delete-middle code template
+  'delete-middle': [
+    { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Node structure</span>' },
+    { line: 0, html: '<span class="c-kw">struct</span> Node {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-type">int</span> data;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* next;' },
+    { line: 0, html: '};' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-type">void</span> <span class="c-fn">deleteAtMiddle</span>(<span class="c-type">int</span> pos) {' },
+    { line: 'dm_init_temp', cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* temp = head;' },
+    { line: 'dm_init_prev', cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* prev = <span class="c-kw">NULL</span>;' },
+    { line: 'dm_init_i',   cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-type">int</span> i = 0;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 'dm_while',    cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">while</span> (i &lt; pos) {' },
+    { line: 'dm_prev_eq',  cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;prev = temp;' },
+    { line: 'dm_temp_next',cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;temp = temp-&gt;next;' },
+    { line: 'dm_i_inc',    cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;i++;' },
+    { line: 'dm_while_end',cls: 'viz-highlightable', html: '&nbsp;&nbsp;}' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 'dm_relink',   cls: 'viz-highlightable', html: '&nbsp;&nbsp;prev-&gt;next = temp-&gt;next;' },
+    { line: 'dm_free',     cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-fn">free</span>(temp);' },
+    { line: 0, html: '}' }
   ]
 };
 
@@ -129,8 +152,10 @@ function renderCodePanel(m) {
 }
 
 function switchMode(newMode) {
-  if (newMode === mode) return;
+  if (newMode === mode && newMode !== 'delete-middle') return;
   mode = newMode;
+  var posRow = document.getElementById('posInputRow');
+  if (posRow) posRow.style.display = 'none';
 
   // Update pill button states
   var pills = document.querySelectorAll('.viz-op-pill');
@@ -235,6 +260,42 @@ if (inputEl && inputEl.value !== '') {
 
     buildList(VIZ.initialList, false, 0);
     applyStep(0);
+
+    } else if (newMode === 'delete-middle') {
+    if (posRow) posRow.style.display = 'flex';
+    var posInput = document.getElementById('posInput');
+    var pos = 2; // default
+
+    if (posInput && posInput.value !== '') {
+        pos = parseInt(posInput.value);
+        if (isNaN(pos) || pos < 1 || pos > VIZ.initialList.length - 2) pos = 2;
+    }
+
+    // store globally
+    VIZ.deletePos = pos;
+
+    // Rebuild dynamic sequences based on pos
+    DMID_SEQ = buildDeleteMiddleSeq(pos);
+    var dynamicLabels = buildDeleteMiddleStepLabels(pos);
+    DELETE_MIDDLE_STEPS = buildDeleteMiddleSteps(pos);
+
+    var overlay = document.getElementById('comingSoonOverlay');
+    if (overlay) overlay.classList.remove('visible');
+    var inputRow = document.getElementById('valueInputRow');
+    if (inputRow) inputRow.style.display = 'none';
+    renderCodePanel('delete-middle');
+    VIZ.totalSteps = DELETE_MIDDLE_STEPS.length - 1;
+    if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
+    rebuildStepList(dynamicLabels);
+    rebuildDots(VIZ.totalSteps);
+    VIZ.deleteList = VIZ.initialList.slice();
+    DMID_SEQ_STATE.seqIdx  = 0;
+    DMID_SEQ_STATE.tempIdx = 0;
+    DMID_SEQ_STATE.prevIdx = -1;
+    DMID_SEQ_STATE.iVal    = 0;
+    buildList(VIZ.deleteList, false, 0);
+    applyStep(0);
+
 
     } else {
     var overlay = document.getElementById('comingSoonOverlay');
@@ -350,6 +411,189 @@ var INSERT_END_STEPS = [
     conceptText: '\u2705 Done! insertAtEnd is O(1) only because we maintain a tail pointer.'
   }
 ];
+
+// NEW — Delete at Middle step labels
+// We fix pos=2 (delete node with value 3, index 2 in [1,2,3,4])
+// Loop runs 2 iterations: i=0→prev=null,temp=1  i=1→prev=1,temp=2 ... wait
+// pos=2: iterations i=0 (prev=node1,temp=node2), i=1 (prev=node2,temp=node3) → delete node3
+
+var DMID_SEQ_STATE = {
+  seqIdx:   0,
+  tempIdx:  0,
+  prevIdx: -1,
+  iVal:     0
+};
+
+// ── Delete at Middle — dynamic builders ─────────────────────────
+// These replace the old static arrays. Called from switchMode each time pos changes.
+
+var DMID_SEQ = [];           // populated by buildDeleteMiddleSeq(pos)
+var DELETE_MIDDLE_STEPS = []; // populated by buildDeleteMiddleSteps(pos)
+
+function buildDeleteMiddleSeq(pos) {
+  var seq = ['init'];
+  for (var i = 0; i < pos; i++) {
+    seq.push('while_check_' + i);
+    seq.push('prev_move_' + i);
+    seq.push('temp_move_' + i);
+    seq.push('i_inc_' + i);
+  }
+  seq.push('loop_end');
+  seq.push('relink');
+  seq.push('free_node');
+  return seq;
+}
+
+function buildDeleteMiddleStepLabels(pos) {
+  var labels = ['Initialize temp, prev, i'];
+  for (var i = 0; i < pos; i++) {
+    labels.push('Check while (i < pos)');
+    labels.push('prev = temp  [iteration ' + (i + 1) + ']');
+    labels.push('temp = temp\u2192next  [iteration ' + (i + 1) + ']');
+    labels.push('i++  [iteration ' + (i + 1) + ']');
+  }
+  labels.push('Loop exits \u2014 temp at target node');
+  labels.push('prev\u2192next = temp\u2192next');
+  labels.push('free(temp) \u2014 node deleted');
+  return labels;
+}
+
+function buildDeleteMiddleSteps(pos) {
+  var list = VIZ.initialList;
+  var targetValue = list[pos] !== undefined ? list[pos] : '?';
+  var prevValue   = pos > 0 ? list[pos - 1] : 'NULL';
+  var totalSteps  = pos * 4 + 3; // 4 sub-steps per iteration + init + loopEnd + relink + free
+
+  var steps = [];
+
+  // Step 0: initial state
+  steps.push({
+    codeLine: null,
+    animStatus: 'Ready',
+    animStatusClass: '',
+    explainStepNum: 'Initial State',
+    explainTitle: 'Starting Point',
+    explainText: 'We have a linked list: <strong>1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong>.<br><br>Goal: delete the node at position <strong>' + pos + '</strong> (value ' + targetValue + ').',
+    whatBody: 'HEAD points to node 1. We call <code>deleteAtMiddle(' + pos + ')</code>.',
+    conceptText: '\uD83D\uDCA1 Middle deletion requires traversal to find the target node.'
+  });
+
+  // Step 1: init
+  steps.push({
+    codeLine: 'dm_init_temp',
+    animStatus: 'Initializing\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 1 of ' + totalSteps,
+    explainTitle: 'Initialize Pointers',
+    explainText: '<code>struct Node* temp = head;</code><br><code>struct Node* prev = NULL;</code><br><code>int i = 0;</code><br><br><strong>temp</strong> starts at node 1. <strong>prev</strong> is NULL. <strong>i</strong> = 0.',
+    whatBody: '<strong>temp</strong> appears above node 1. <strong>prev</strong> is NULL. Counter i = 0.',
+    conceptText: '\uD83D\uDCCC prev trails one step behind temp so we can relink when we find the target.'
+  });
+
+  var stepNum = 2;
+
+  // Loop iterations
+  for (var iter = 0; iter < pos; iter++) {
+    var tempNodeVal = list[iter];
+    var nextNodeVal = list[iter + 1];
+
+    // while check
+    steps.push({
+      codeLine: 'dm_while',
+      animStatus: 'Checking loop\u2026',
+      animStatusClass: 'status-running',
+      explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+      explainTitle: 'Check: i < pos?',
+      explainText: '<code>while (i &lt; pos)</code><br><br>i = <strong>' + iter + '</strong>, pos = <strong>' + pos + '</strong>. ' + iter + ' &lt; ' + pos + ' \u2714 Enter loop.',
+      whatBody: 'Condition is true. Entering iteration ' + (iter + 1) + '.',
+      conceptText: '\uD83D\uDD04 We loop until i reaches pos, moving both prev and temp forward each iteration.'
+    });
+    stepNum++;
+
+    // prev = temp
+    steps.push({
+      codeLine: 'dm_prev_eq',
+      animStatus: 'prev = temp\u2026',
+      animStatusClass: 'status-running',
+      explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+      explainTitle: 'prev = temp  [iter ' + (iter + 1) + ']',
+      explainText: '<code>prev = temp;</code><br><br>prev now points to node <strong>' + tempNodeVal + '</strong>.',
+      whatBody: '<strong>prev</strong> moves below node ' + tempNodeVal + '.',
+      conceptText: '\uD83D\uDC49 Only prev moves this click. temp stays on node ' + tempNodeVal + '.'
+    });
+    stepNum++;
+
+    // temp = temp->next
+    steps.push({
+      codeLine: 'dm_temp_next',
+      animStatus: 'temp advances\u2026',
+      animStatusClass: 'status-running',
+      explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+      explainTitle: 'temp = temp\u2192next  [iter ' + (iter + 1) + ']',
+      explainText: '<code>temp = temp-&gt;next;</code><br><br>temp jumps from node ' + tempNodeVal + ' to node <strong>' + nextNodeVal + '</strong>.',
+      whatBody: '<strong>temp</strong> slides to node ' + nextNodeVal + '. prev stays on node ' + tempNodeVal + '.',
+      conceptText: iter === pos - 1
+        ? '\uD83C\uDFAF temp is now at our target node (position ' + pos + ', value ' + targetValue + ')!'
+        : '\uD83D\uDC49 Only temp moves this click.'
+    });
+    stepNum++;
+
+    // i++
+    steps.push({
+      codeLine: 'dm_i_inc',
+      animStatus: 'i++\u2026',
+      animStatusClass: 'status-running',
+      explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+      explainTitle: 'i++  [iter ' + (iter + 1) + ']',
+      explainText: '<code>i++;</code><br><br>i is now <strong>' + (iter + 1) + '</strong>.',
+      whatBody: 'Counter i incremented to ' + (iter + 1) + '. ' + (iter + 1 < pos ? 'Still less than pos (' + pos + ').' : 'i == pos, so loop will exit.'),
+      conceptText: iter + 1 < pos
+        ? '\uD83D\uDD04 i = ' + (iter + 1) + ', pos = ' + pos + '. ' + (pos - iter - 1) + ' more iteration(s) needed.'
+        : '\u23F9\uFE0F i = ' + pos + ' = pos. Loop exits on next check.'
+    });
+    stepNum++;
+  }
+
+  // loop end
+  steps.push({
+    codeLine: 'dm_while_end',
+    animStatus: 'Loop exits\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+    explainTitle: 'Loop Exits',
+    explainText: '<code>i &lt; pos</code> is false (' + pos + ' &lt; ' + pos + '). Loop exits.<br><br><strong>temp</strong> = node ' + targetValue + ' (target). <strong>prev</strong> = node ' + prevValue + '.',
+    whatBody: 'temp highlights on node ' + targetValue + '. prev rests on node ' + prevValue + '. Ready to delete.',
+    conceptText: '\uD83C\uDFAF prev\u2192next = temp\u2192next will bypass node ' + targetValue + ' completely.'
+  });
+  stepNum++;
+
+  // relink
+  steps.push({
+    codeLine: 'dm_relink',
+    animStatus: 'Relinking\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+    explainTitle: 'prev\u2192next = temp\u2192next',
+    explainText: '<code>prev-&gt;next = temp-&gt;next;</code><br><br>Node ' + prevValue + '\u2019s next now points to node ' + (list[pos + 1] || 'NULL') + ', bypassing node ' + targetValue + '.',
+    whatBody: 'Node ' + prevValue + '\u2019s next field flashes and updates. The target node is bypassed.',
+    conceptText: '\u26A0\uFE0F Do this BEFORE free \u2014 after free, temp\u2192next is invalid!'
+  });
+  stepNum++;
+
+  // free
+  steps.push({
+    codeLine: 'dm_free',
+    animStatus: 'Complete \u2713',
+    animStatusClass: 'status-complete',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+    explainTitle: 'free(temp)',
+    explainText: '<code>free(temp);</code><br><br>Node ' + targetValue + '\u2019s memory is released back to the OS.',
+    whatBody: 'Node ' + targetValue + ' fades and shrinks away. Deletion complete.',
+    conceptText: '\u2705 deleteAtMiddle takes O(n) time \u2014 traversal was needed to find position ' + pos + '.'
+  });
+
+  return steps;
+}
 
 function rebuildStepList(labels) {
   var list = document.getElementById('stepList');
@@ -983,6 +1227,7 @@ function applyStep(idx) {
   (mode === 'delete-beginning') ? DELETE_STEPS :
   (mode === 'delete-end') ? DELETE_END_STEPS :
   (mode === 'insert-end') ? INSERT_END_STEPS :
+  (mode === 'delete-middle') ? DELETE_MIDDLE_STEPS :
   STEPS;
   var step = stepArr[idx];
   if (!step) return;
@@ -1010,15 +1255,17 @@ function applyStep(idx) {
   if (VIZ.el.btnPrev) VIZ.el.btnPrev.disabled = (idx === 0);
   if (VIZ.el.btnNext) VIZ.el.btnNext.disabled = (idx === VIZ.totalSteps);
 
-    if (mode === 'delete-beginning') {
+  if (mode === 'delete-beginning') {
     runDeleteAnimation(idx);
-    } else if (mode === 'delete-end') {
+  } else if (mode === 'delete-end') {
     runDeleteAtEndStep(idx);
-    } else if (mode === 'insert-end') {
-    runInsertEndAnimation(idx);   // 🔥 NEW
-    } else {
+  } else if (mode === 'insert-end') {
+    runInsertEndAnimation(idx);
+  } else if (mode === 'delete-middle') {
+    runDeleteMiddleAnimation(idx);
+  } else {
     runAnimation(idx);
-    }
+  }
 }
 
 function runInsertEndAnimation(step) {
@@ -1906,10 +2153,12 @@ function vizNext() {
 
 function vizPrev() {
   if (VIZ.currentStep <= 0) return;
-  if (mode === 'delete-end') {
-    // Restore DEND_SEQ_STATE for the previous step
-    var prevIdx = VIZ.currentStep - 2; // seqIdx = step - 1
+if (mode === 'delete-end') {
+    var prevIdx = VIZ.currentStep - 2;
     dend_restoreStateForSeq(prevIdx);
+  }
+  if (mode === 'delete-middle') {
+    dmid_restoreStateForSeq(VIZ.currentStep - 2);
   }
   applyStep(VIZ.currentStep - 1);
 }
@@ -1954,9 +2203,15 @@ function vizReset() {
   var tp2 = VIZ.el.tailPointer;
   if (hp) hp.style.opacity = '1';
   if (tp2) tp2.style.opacity = '1';
-  if (mode === 'delete-beginning' || mode === 'delete-end') {
+if (mode === 'delete-beginning' || mode === 'delete-end' || mode === 'delete-middle') {
     VIZ.deleteList = VIZ.initialList.slice();
     buildList(VIZ.deleteList, false, 0);
+  }
+  if (mode === 'delete-middle') {
+    DMID_SEQ_STATE.seqIdx  = 0;
+    DMID_SEQ_STATE.tempIdx = 0;
+    DMID_SEQ_STATE.prevIdx = -1;
+    DMID_SEQ_STATE.iVal    = 0;
   }
   if (mode === 'delete-end') {
     DEND_SEQ_STATE.seqIdx = 0;
@@ -2363,6 +2618,299 @@ function dend_updateTail() {
 var DEND_TRAV = { tempIdx: 0, ptrIdx: -1, timer: null };
 
 // ═══════════════════════════════════════════════════════════════
+//  DELETE AT MIDDLE ANIMATIONS — micro-step engine
+// ═══════════════════════════════════════════════════════════════
+function runDeleteMiddleAnimation(step) {
+  if (step === 0) {
+    dmid_initial();
+    return;
+  }
+  var seqIdx = step - 1;  // 0-based into DMID_SEQ
+  var seqKey = DMID_SEQ[seqIdx];
+  if (!seqKey) return;
+
+  DMID_SEQ_STATE.seqIdx = seqIdx;
+  dmid_runSeqStep(seqKey);
+}
+
+function dmid_runSeqStep(key) {
+  if (key === 'init')      { dmid_initPtrs();  return; }
+  if (key === 'loop_end')  { dmid_loopEnd();   return; }
+  if (key === 'relink')    { dmid_relink();    return; }
+  if (key === 'free_node') { dmid_freeNode();  return; }
+
+  // Dynamic: while_check_N, prev_move_N, temp_move_N, i_inc_N
+  var parts = key.split('_');
+  var n = parseInt(parts[parts.length - 1], 10);  // the iteration number
+
+  if (key.indexOf('while_check_') === 0) { dmid_whileCheck();      return; }
+  if (key.indexOf('prev_move_')   === 0) { dmid_prevMove(n);       return; }
+  if (key.indexOf('temp_move_')   === 0) { dmid_tempMove(n + 1);   return; }
+  if (key.indexOf('i_inc_')       === 0) { dmid_iInc(n + 1);       return; }
+}
+
+// Restore state when navigating backwards
+function dmid_restoreStateForSeq(seqIdx) {
+  if (seqIdx < 0) {
+    DMID_SEQ_STATE.tempIdx = 0;
+    DMID_SEQ_STATE.prevIdx = -1;
+    DMID_SEQ_STATE.iVal    = 0;
+    DMID_SEQ_STATE.seqIdx  = seqIdx;
+    return;
+  }
+  // Rebuild state by replaying the sequence up to seqIdx
+  var tempIdx = 0, prevIdx = -1, iVal = 0;
+  for (var i = 0; i <= seqIdx; i++) {
+    var k = DMID_SEQ[i];
+    if (!k) break;
+    if (k.indexOf('prev_move_') === 0) { prevIdx = tempIdx; }
+    if (k.indexOf('temp_move_') === 0) { tempIdx = prevIdx + 1; }
+    if (k.indexOf('i_inc_')     === 0) { iVal++; }
+  }
+  DMID_SEQ_STATE.tempIdx = tempIdx;
+  DMID_SEQ_STATE.prevIdx = prevIdx;
+  DMID_SEQ_STATE.iVal    = iVal;
+  DMID_SEQ_STATE.seqIdx  = seqIdx;
+}
+
+function dmid_initial() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  hideTempPointer();
+  hidePtrPointer();
+  hideCurve();
+  hideNewNode();
+  DMID_SEQ_STATE.tempIdx = 0;
+  DMID_SEQ_STATE.prevIdx = -1;
+  DMID_SEQ_STATE.iVal    = 0;
+  PTR.headIndex = 0;
+  PTR.tailIndex = VIZ.initialList.length - 1;
+  buildList(VIZ.deleteList, false, 0);
+}
+
+function dmid_initPtrs() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  DMID_SEQ_STATE.tempIdx = 0;
+  DMID_SEQ_STATE.prevIdx = -1;
+  DMID_SEQ_STATE.iVal    = 0;
+  buildList(VIZ.deleteList, false, 0);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      dmid_highlightNodes(0, -1);
+      showTempBelowNode(0);
+      showPtrNull();
+    });
+  });
+}
+
+function dmid_whileCheck() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  buildList(VIZ.deleteList, false, 0);
+
+  var ti = DMID_SEQ_STATE.tempIdx;
+  var pi = DMID_SEQ_STATE.prevIdx;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      dmid_highlightNodes(ti, pi);
+      showTempBelowNode(ti);
+      if (pi >= 0) {
+        showPtrBelowNode(pi);
+      } else {
+        showPtrNull();
+      }
+    });
+  });
+}
+
+function dmid_prevMove(newPrevIdx) {
+  VIZ.deleteList = VIZ.initialList.slice();
+  buildList(VIZ.deleteList, false, 0);
+
+  DMID_SEQ_STATE.prevIdx = newPrevIdx;
+  var ti = DMID_SEQ_STATE.tempIdx;
+  var pi = DMID_SEQ_STATE.prevIdx;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      dmid_highlightNodes(ti, pi);
+      showTempBelowNode(ti);
+      showPtrBelowNode(pi);
+    });
+  });
+}
+
+function dmid_tempMove(newTempIdx) {
+  VIZ.deleteList = VIZ.initialList.slice();
+  buildList(VIZ.deleteList, false, 0);
+
+  DMID_SEQ_STATE.tempIdx = newTempIdx;
+  var ti = DMID_SEQ_STATE.tempIdx;
+  var pi = DMID_SEQ_STATE.prevIdx;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      dmid_highlightNodes(ti, pi);
+      showTempBelowNode(ti);
+      if (pi >= 0) {
+        showPtrBelowNode(pi);
+      } else {
+        showPtrNull();
+      }
+    });
+  });
+}
+
+function dmid_iInc(newI) {
+  // Just re-render current pointer positions; highlight the i++ line
+  VIZ.deleteList = VIZ.initialList.slice();
+  buildList(VIZ.deleteList, false, 0);
+  DMID_SEQ_STATE.iVal = newI;
+
+  var ti = DMID_SEQ_STATE.tempIdx;
+  var pi = DMID_SEQ_STATE.prevIdx;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      dmid_highlightNodes(ti, pi);
+      showTempBelowNode(ti);
+      if (pi >= 0) {
+        showPtrBelowNode(pi);
+      } else {
+        showPtrNull();
+      }
+    });
+  });
+}
+
+function dmid_loopEnd() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  buildList(VIZ.deleteList, false, 0);
+
+  // temp=2 (node 3, index 2), prev=1 (node 2, index 1)
+  var ti = DMID_SEQ_STATE.tempIdx;  // 2
+  var pi = DMID_SEQ_STATE.prevIdx;  // 1
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      dmid_highlightNodes(ti, pi);
+      showTempBelowNode(ti);
+      showPtrBelowNode(pi);
+    });
+  });
+}
+
+function dmid_relink() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  buildList(VIZ.deleteList, false, 0);
+
+  var ti = DMID_SEQ_STATE.tempIdx;  // 2 (target node)
+  var pi = DMID_SEQ_STATE.prevIdx;  // 1 (node before target)
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var row = VIZ.el.listRow;
+      if (!row) return;
+      var wraps = row.querySelectorAll('.viz-node-wrap');
+
+      dmid_highlightNodes(ti, pi);
+      showTempBelowNode(ti);
+      showPtrBelowNode(pi);
+
+      // Flash prev node's next field to show new address (node after target)
+      if (wraps[pi]) {
+        var pn = wraps[pi].querySelector('.viz-node');
+        if (pn) pn.classList.add('viz-node-ptr-highlight');
+        var nextField = pn ? pn.querySelector('.viz-node-next') : null;
+        if (nextField && PTR.nodeList[ti + 1]) {
+          nextField.style.transition = 'background 0.3s ease, color 0.3s ease';
+          nextField.style.background = 'rgba(255,130,0,0.18)';
+          nextField.style.color      = '#f97316';
+          nextField.textContent      = PTR.nodeList[ti + 1].address;
+          setTimeout(function () {
+            nextField.style.background = '';
+            nextField.style.color      = '';
+          }, 900);
+        }
+      }
+    });
+  });
+}
+
+function dmid_freeNode() {
+  VIZ.deleteList = VIZ.initialList.slice();
+  buildList(VIZ.deleteList, false, 0);
+
+  var ti = DMID_SEQ_STATE.tempIdx;  // 2
+  var pi = DMID_SEQ_STATE.prevIdx;  // 1
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var row = VIZ.el.listRow;
+      if (!row) return;
+      var wraps = row.querySelectorAll('.viz-node-wrap');
+
+      showTempBelowNode(ti);
+      showPtrBelowNode(pi);
+      dmid_highlightNodes(ti, pi);
+
+      var targetWrap = wraps[ti];
+      var targetNode = targetWrap ? targetWrap.querySelector('.viz-node') : null;
+      if (targetNode) targetNode.classList.add('viz-node-temp-highlight');
+
+      setTimeout(function () {
+        hideTempPointer();
+
+        if (targetWrap) {
+          targetWrap.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.4,0,0.2,1), max-width 0.45s ease';
+          targetWrap.style.opacity    = '0';
+          targetWrap.style.transform  = 'scale(0.6)';
+          targetWrap.style.maxWidth   = targetWrap.offsetWidth + 'px';
+
+          var prevSib = targetWrap.previousSibling;
+          if (prevSib && prevSib.classList && prevSib.classList.contains('viz-arrow')) {
+            prevSib.style.transition = 'opacity 0.35s ease';
+            prevSib.style.opacity    = '0';
+          }
+          setTimeout(function () {
+            targetWrap.style.maxWidth = '0px';
+            targetWrap.style.overflow = 'hidden';
+
+            // After node fades, rebuild final list without deleted node
+            setTimeout(function () {
+              var finalList = VIZ.initialList.slice();
+              finalList.splice(DMID_SEQ_STATE.tempIdx, 1); // remove node at tempIdx
+              buildList(finalList, true, 0);
+              hidePtrPointer();
+              hideTempPointer();
+            }, 300);
+          }, 100);
+        }
+      }, 350);
+    });
+  });
+}
+
+// Highlight temp and prev nodes by index
+function dmid_highlightNodes(tempIdx, prevIdx) {
+  var row = VIZ.el.listRow;
+  if (!row) return;
+  var wraps = row.querySelectorAll('.viz-node-wrap');
+  for (var i = 0; i < wraps.length; i++) {
+    var n = wraps[i].querySelector('.viz-node');
+    if (n) n.classList.remove('viz-node-temp-highlight', 'viz-node-ptr-highlight');
+  }
+  if (prevIdx >= 0 && wraps[prevIdx]) {
+    var pn = wraps[prevIdx].querySelector('.viz-node');
+    if (pn) pn.classList.add('viz-node-ptr-highlight');
+  }
+  if (tempIdx >= 0 && wraps[tempIdx]) {
+    var tn = wraps[tempIdx].querySelector('.viz-node');
+    if (tn) tn.classList.add('viz-node-temp-highlight');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  KEYBOARD SHORTCUTS
 // ═══════════════════════════════════════════════════════════════
 document.addEventListener('keydown', function (e) {
@@ -2374,3 +2922,13 @@ document.addEventListener('keydown', function (e) {
     case 'r': case 'R':                                       vizReset();        break;
   }
 });
+
+// ── posInput change listener ─────────────────────────────────────
+var posInputEl = document.getElementById('posInput');
+if (posInputEl) {
+  posInputEl.addEventListener('change', function () {
+    if (mode === 'delete-middle') {
+      switchMode('delete-middle');
+    }
+  });
+}
