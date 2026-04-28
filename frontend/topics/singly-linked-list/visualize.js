@@ -85,6 +85,28 @@ var CODE_TEMPLATES = {
     { line: 'de_null_link', cls: 'viz-highlightable', html: '&nbsp;&nbsp;ptr-&gt;next = <span class="c-kw">NULL</span>;' },
     { line: 'de_tail',      cls: 'viz-highlightable', html: '&nbsp;&nbsp;tail = ptr;' },
     { line: 0, html: '}' }
+  ],
+  // NEW — insert-end code template
+   'insert-end': [
+    { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Node structure</span>' },
+    { line: 0, html: '<span class="c-kw">struct</span> Node {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-type">int</span> data;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* next;' },
+    { line: 0, html: '};' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-type">void</span> <span class="c-fn">insertAtEnd</span>(<span class="c-type">int</span> value) {' },
+    { line: 'ie_malloc', cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* newNode = (<span class="c-kw">struct</span> Node*)' },
+    { line: 'ie_malloc', cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">malloc</span>(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> Node));' },
+    { line: 'ie_data', cls: 'viz-highlightable', html: '&nbsp;&nbsp;newNode-&gt;data = value;' },
+    { line: 'ie_next', cls: 'viz-highlightable', html: '&nbsp;&nbsp;newNode-&gt;next = <span class="c-kw">NULL</span>;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">if</span> (head == <span class="c-kw">NULL</span>) {' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;head = tail = newNode; <span class="c-comment">// Empty list</span>' },
+    { line: 0, html: '&nbsp;&nbsp;} <span class="c-kw">else</span> {' },
+    { line: 'ie_link',   cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;tail-&gt;next = newNode;' },
+    { line: 'ie_tail',   cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;tail = newNode;' },
+    { line: 0, html: '&nbsp;&nbsp;}' },
+    { line: 0, html: '}' }
   ]
 };
 
@@ -129,7 +151,15 @@ function switchMode(newMode) {
 
   // Reset animation state
   VIZ.currentStep = 0;
-  VIZ.newValue    = 0;
+  var inputEl = document.getElementById('vizValueInput');
+
+var val = 0;
+if (inputEl && inputEl.value !== '') {
+  val = parseInt(inputEl.value);
+  if (isNaN(val)) val = 0;
+}
+
+  VIZ.newValue = val;
   if (VIZ.el.vizValueInput) VIZ.el.vizValueInput.value = '';
 
   hideCurve();
@@ -183,7 +213,30 @@ function switchMode(newMode) {
     buildList(VIZ.deleteList, false, 0);
     applyStep(0);
 
-  } else {
+  } else if (newMode === 'insert-end') {
+    var overlay = document.getElementById('comingSoonOverlay');
+    if (overlay) overlay.classList.remove('visible');
+
+    var inputRow = document.getElementById('valueInputRow');
+    if (inputRow) inputRow.style.display = '';
+
+    var lbl = document.getElementById('vizValueLabel');
+    if (lbl) lbl.textContent = 'Insert value';
+
+    renderCodePanel('insert-end');
+
+    VIZ.totalSteps = 6;
+    if (VIZ.el.headerStepTotal) {
+        VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
+    }
+
+    rebuildStepList(INSERT_END_STEP_LABELS);
+    rebuildDots(6);
+
+    buildList(VIZ.initialList, false, 0);
+    applyStep(0);
+
+    } else {
     var overlay = document.getElementById('comingSoonOverlay');
     if (overlay) {
       var title = document.getElementById('comingSoonTitle');
@@ -212,6 +265,90 @@ var DELETE_BEGINNING_STEP_LABELS = [
   'Move head: head = head\u2192next',
   'Free temp node',
   'Final arrangement'
+];
+
+// NEW — Insert at End step labels
+var INSERT_END_STEP_LABELS = [
+  'Allocate memory (malloc)',
+  'Assign value', 
+  'set next = NULL',
+  'tail\u2192next = newNode',
+  'tail = newNode',
+  'Final rearrangement'
+];
+
+// NEW — Insert at End step definitions
+var INSERT_END_STEPS = [
+  {
+    codeLine: null,
+    animStatus: 'Ready',
+    animStatusClass: '',
+    explainStepNum: 'Initial State',
+    explainTitle: 'Starting Point',
+    explainText: 'We have a linked list: <strong>1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong>.<br><br>Goal: insert a new node with value <strong>0</strong> at the very end.',
+    whatBody: 'TAIL points to node 4. We call <code>insertAtEnd(&amp;tail, 0)</code>.',
+    conceptText: '\uD83D\uDCA1 Insert at end is O(1) when you track a TAIL pointer!'
+  },
+  {
+    codeLine: 'ie_malloc',
+    animStatus: 'Allocating\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 1 of 6',
+    explainTitle: 'Allocate Memory',
+    explainText: '<code>malloc(sizeof(struct Node))</code> reserves heap memory for the new node.<br><br>The address is stored in <strong>newNode</strong>.',
+    whatBody: 'A new node appears below the list. Memory is allocated; fields are not yet set.',
+    conceptText: '\uD83E\uDDE0 malloc returns a raw void* \u2014 we cast it to struct Node*.'
+  },
+  {
+    codeLine: 'ie_data',
+    animStatus: 'Assigning value\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 2 of 6',
+    explainTitle: 'Assign Value',
+    explainText: '<code>newNode-&gt;data = value;</code> stores our value in the node\'s data field.',
+    whatBody: 'The new node\'s data field now shows the inserted value. The next field is still uninitialized (<strong>?</strong>).',
+    conceptText: '\uD83D\uDCDD data is set first \u2014 next pointer is not yet initialized.'
+  },
+  {
+    codeLine: 'ie_next',
+    animStatus: 'Setting NULL\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 3 of 6',
+    explainTitle: 'Set next = NULL',
+    explainText: '<code>newNode-&gt;next = NULL;</code> marks this node as the future last node.',
+    whatBody: 'The next field changes from <strong>?</strong> to <strong>NULL</strong>. This node is ready to become the new tail.',
+    conceptText: '\uD83D\uDCDD Always initialize next = NULL for the new tail node!'
+  },
+  {
+    codeLine: 'ie_link',
+    animStatus: 'Linking\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 4 of 6',
+    explainTitle: 'tail\u2192next = newNode',
+    explainText: '<code>tail-&gt;next = newNode;</code> makes the current last node (4) point to the new node.<br><br>The existing list is now extended.',
+    whatBody: 'An arrow draws from node 4\u2019s next field to the new node. Chain: 1 \u2192 2 \u2192 3 \u2192 4 \u2192 0.',
+    conceptText: '\u26A0\uFE0F Do this BEFORE moving tail \u2014 otherwise you lose the link to the new node!'
+  },
+  {
+    codeLine: 'ie_tail',
+    animStatus: 'Updating TAIL\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 5 of 6',
+    explainTitle: 'tail = newNode',
+    explainText: '<code>tail = newNode;</code> advances the TAIL pointer to the newly inserted node.',
+    whatBody: 'TAIL slides from node 4 to the new node. It is now the official last node.',
+    conceptText: '\uD83C\uDFAF TAIL always points to the last node so future insertions stay O(1).'
+  },
+  {
+    codeLine: null,
+    animStatus: 'Complete \u2713',
+    animStatusClass: 'status-complete',
+    explainStepNum: 'Step 6 of 6',
+    explainTitle: 'Final Arrangement',
+    explainText: 'The function returns. List is now:<br><strong>1 \u2192 2 \u2192 3 \u2192 4 \u2192 0 \u2192 NULL</strong><br><br>The new node is the new tail.',
+    whatBody: 'All nodes snap into a clean horizontal row. Insertion complete in O(1) time.',
+    conceptText: '\u2705 Done! insertAtEnd is O(1) only because we maintain a tail pointer.'
+  }
 ];
 
 function rebuildStepList(labels) {
@@ -842,7 +979,11 @@ function positionHead(headIdx, total) {
 // ═══════════════════════════════════════════════════════════════
 function applyStep(idx) {
   VIZ.currentStep = idx;
-  var stepArr = (mode === 'delete-beginning') ? DELETE_STEPS : (mode === 'delete-end') ? DELETE_END_STEPS : STEPS;
+  var stepArr =
+  (mode === 'delete-beginning') ? DELETE_STEPS :
+  (mode === 'delete-end') ? DELETE_END_STEPS :
+  (mode === 'insert-end') ? INSERT_END_STEPS :
+  STEPS;
   var step = stepArr[idx];
   if (!step) return;
 
@@ -869,12 +1010,26 @@ function applyStep(idx) {
   if (VIZ.el.btnPrev) VIZ.el.btnPrev.disabled = (idx === 0);
   if (VIZ.el.btnNext) VIZ.el.btnNext.disabled = (idx === VIZ.totalSteps);
 
-  if (mode === 'delete-beginning') {
+    if (mode === 'delete-beginning') {
     runDeleteAnimation(idx);
-  } else if (mode === 'delete-end') {
+    } else if (mode === 'delete-end') {
     runDeleteAtEndStep(idx);
-  } else {
+    } else if (mode === 'insert-end') {
+    runInsertEndAnimation(idx);   // 🔥 NEW
+    } else {
     runAnimation(idx);
+    }
+}
+
+function runInsertEndAnimation(step) {
+  switch (step) {
+    case 0: ie_initial();      break;
+    case 1: ie_malloc();       break;
+    case 2: ie_assign_data();  break;
+    case 3: ie_assign_null();  break;
+    case 4: ie_link();         break;
+    case 5: ie_tail();         break;
+    case 6: ie_final();        break;
   }
 }
 
@@ -974,7 +1129,7 @@ function anim_malloc() {
   VIZ.el.newNodeEl.className      = 'viz-node viz-node-new';
   VIZ.el.newNodeLabel.textContent = 'newNode';
   var nextField = document.getElementById('newNodeNextField');
-  if (nextField) nextField.textContent = 'NULL';
+  if (nextField) nextField.textContent = '?';
   wrap.style.bottom    = '68px';
   wrap.style.left      = '50%';
   wrap.style.transform = 'translateX(-50%)';
@@ -1199,6 +1354,262 @@ function anim_rearrange() {
     var fullList = [VIZ.newValue].concat(VIZ.initialList);
     setTimeout(function () { buildList(fullList, true, 0); }, 80);
   }, 440);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INSERT AT END ANIMATIONS
+// ═══════════════════════════════════════════════════════════════
+
+// Step 0
+function ie_initial() {
+  buildList(VIZ.initialList, false, 0);
+  hideNewNode();
+  hideCurve();
+}
+
+// Step 1 — malloc
+function ie_malloc() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+
+  VIZ.el.newNodeData.textContent = '?';
+  VIZ.el.newNodeLabel.textContent = 'newNode';
+  VIZ.el.newNodeEl.className = 'viz-node viz-node-new';
+
+  var nextField = document.getElementById('newNodeNextField');
+  if (nextField) nextField.textContent = '?';
+  if (nextField) {
+    nextField.style.background = '';
+    nextField.style.color = '';
+  }
+
+  wrap.style.bottom = '60px';
+  wrap.style.left = '50%';
+  wrap.style.transform = 'translateX(-50%)';
+
+  wrap.classList.remove('visible');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => wrap.classList.add('visible'));
+  });
+}
+
+// Step 2 — assign value
+// Step 2 — assign data value only (next stays '?')
+function ie_assign_data() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+
+  // Keep node visible, data shows '?' initially then animates to value
+  VIZ.el.newNodeData.textContent = '?';
+  VIZ.el.newNodeLabel.textContent = 'newNode';
+
+  var nextField = document.getElementById('newNodeNextField');
+  if (nextField) nextField.textContent = '?';  // still uninitialized
+
+  wrap.style.bottom = '60px';
+  wrap.style.left = '50%';
+  wrap.style.transform = 'translateX(-50%)';
+  wrap.classList.add('visible');
+
+  // Animate data field updating to the actual value
+  setTimeout(function () {
+    VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+    VIZ.el.newNodeEl.classList.add('viz-node-linked');
+  }, 100);
+}
+
+// Step 3 — set next = NULL (data already shows value)
+function ie_assign_null() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+
+  // Data already set from previous step
+  VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+  VIZ.el.newNodeLabel.textContent = 'newNode';
+  VIZ.el.newNodeEl.classList.add('viz-node-linked');
+
+  wrap.style.bottom = '60px';
+  wrap.style.left = '50%';
+  wrap.style.transform = 'translateX(-50%)';
+  wrap.classList.add('visible');
+
+  // Animate next field: '?' → 'NULL' with a flash
+  var nextField = document.getElementById('newNodeNextField');
+  if (nextField) {
+    nextField.textContent = '?';  // show old state first
+    setTimeout(function () {
+      nextField.style.transition = 'background 0.25s ease, color 0.25s ease';
+      nextField.style.background = 'rgba(255,130,0,0.18)';
+      nextField.style.color = '#f97316';
+      nextField.textContent = 'NULL';
+      setTimeout(function () {
+        nextField.style.background = '';
+        nextField.style.color = '';
+      }, 700);
+    }, 120);
+  }
+}
+
+// Step 3 — LINK (🔥 MAIN ARROW LOGIC)
+// Step 3 — LINK (FIXED PATH)
+function ie_link() {
+  buildList(VIZ.initialList, false, 0);
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+
+  wrap.classList.add('visible');
+  VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+
+  var svg  = VIZ.el.curveSvg;
+  var path = VIZ.el.curvePath;
+  if (!svg || !path) return;
+
+  var oldDot = svg.querySelector('.viz-travel-dot');
+  if (oldDot) oldDot.parentNode.removeChild(oldDot);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+
+      var canvas = document.getElementById('animCanvas');
+      if (!canvas) return;
+      var canvasRect = canvas.getBoundingClientRect();
+
+      var wraps    = VIZ.el.listRow.querySelectorAll('.viz-node-wrap');
+      var lastWrap = wraps[wraps.length - 1];
+      var lastNode = lastWrap ? lastWrap.querySelector('.viz-node') : null;
+      if (!lastNode) return;
+
+      var lastRect = lastNode.getBoundingClientRect();
+
+      var startX = lastRect.right - canvasRect.left;
+      var startY = lastRect.top + lastRect.height / 2 - canvasRect.top;
+
+      var newRect = VIZ.el.newNodeEl.getBoundingClientRect();
+
+      var endX = newRect.left - canvasRect.left;
+      var endY = newRect.top + newRect.height / 2 - canvasRect.top;
+
+      // 🔥 GEOMETRY FIX
+      var rightBump = 20;
+      var midY      = startY + 55;   // goes DOWN first
+      var overshoot = 30;
+
+      var x0 = startX;
+      var y0 = startY;
+
+      var x1 = startX + rightBump; // → right first
+      var y1 = startY;
+
+      var x2 = x1;
+      var y2 = midY;
+
+      var x3 = endX - overshoot; // ← pass beyond node
+      var y3 = midY;
+
+      var x4 = x3;
+      var y4 = endY;
+
+      var x5 = endX;
+      var y5 = endY;
+
+      var r = 8;
+
+      var d = [
+        'M', x0, y0,
+        'L', x1, y1,
+        'L', x2, y2 - r,
+        'Q', x2, y2, x2 - r, y2,
+        'L', x3 + r, y3,
+        'Q', x3, y3, x3, y3 + r,
+        'L', x4, y4 - r,
+        'Q', x4, y4, x4 + r, y4,
+        'L', x5, y5
+      ].join(' ');
+
+      path.setAttribute('d', d);
+      svg.classList.add('visible');
+
+      var len = path.getTotalLength();
+
+      path.style.transition = 'none';
+      path.style.strokeDasharray = len + 'px';
+      path.style.strokeDashoffset = len + 'px';
+
+      requestAnimationFrame(function () {
+        path.style.transition = 'stroke-dashoffset 0.9s ease';
+        path.style.strokeDashoffset = '0px';
+      });
+
+    });
+  });
+}
+
+// Step 4 — move tail
+// Step 4 — UPDATE TAIL (FIXED CLEANUP)
+function ie_tail() {
+
+  // ❗ DO NOT rebuild list yet (keep animation state)
+
+  var svg  = VIZ.el.curveSvg;
+  var path = VIZ.el.curvePath;
+
+  // 🔥 1. REMOVE PATH SMOOTHLY
+  if (svg && path) {
+    var len;
+    try { len = path.getTotalLength(); } catch (e) { len = 500; }
+
+    path.style.transition = 'stroke-dashoffset 0.35s ease';
+    path.style.strokeDashoffset = len + 'px';
+
+    setTimeout(function () {
+      svg.classList.remove('visible');
+    }, 350);
+  }
+
+  // 🔥 2. HIDE FLOATING NODE
+  setTimeout(function () {
+    hideNewNode();
+  }, 200);
+
+  // 🔥 3. SLIGHT DELAY BEFORE NEXT STEP LOOK
+  setTimeout(function () {
+  // 🔥 include new node immediately
+  var updatedList = VIZ.initialList.concat([VIZ.newValue]);
+
+  buildList(updatedList, false, 0);
+  positionPointers();
+  }, 220);
+}
+
+// Step 5 — final
+// Step 5 — FINAL STATE (CLEAN)
+function ie_final() {
+
+  // 🔥 1. HARD CLEAN EVERYTHING
+  hideCurve();
+  hideNewNode();
+
+  // 🔥 2. BUILD FINAL LIST (WITH NEW VALUE)
+  var finalList = VIZ.initialList.concat([VIZ.newValue]);
+  buildList(finalList, true, 0);
+
+  // 🔥 3. FIX POINTERS (HEAD + TAIL)
+  positionPointers();
+
+  // 🔥 4. OPTIONAL SMALL STABILITY DELAY
+  requestAnimationFrame(function () {
+    // ensures layout is stable (no flicker)
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════
