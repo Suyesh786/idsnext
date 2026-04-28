@@ -1884,17 +1884,18 @@ function resetHeadStyle() {
 //  CONTROLS  (onclick targets in HTML)
 // ═══════════════════════════════════════════════════════════════
 function readInputValue() {
-  if (mode !== 'insert-beginning') return;
   var input = VIZ.el.vizValueInput;
   var raw = input ? input.value.trim() : '';
   var val = (raw === '' || isNaN(Number(raw))) ? 0 : Number(raw);
   VIZ.newValue = val;
-  // Refresh dynamic text in STEPS that reference the value
-  STEPS[0].explainText = 'We start with a linked list containing nodes <strong>1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong>.<br><br>Our goal: insert a new node with value <strong>' + val + '</strong> at the very beginning.';
-  STEPS[0].whatBody    = 'The HEAD pointer currently points to node 1. We call <code>insertAtBeginning(&amp;head, ' + val + ')</code>.';
-  STEPS[2].explainText = '<code>newNode-&gt;data = val;</code> writes our value (<strong>' + val + '</strong>) into the data field of the new node.';
-  STEPS[2].whatBody    = 'The new node\'s data field now shows "' + val + '". The next pointer is still uninitialised.';
-  STEPS[5].explainText = 'The function returns. The linked list is now:<br><strong>' + val + ' \u2192 1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong><br><br>Node ' + val + ' is the new head of the list.';
+
+  if (mode === 'insert-beginning') {
+    STEPS[0].explainText = 'We start with a linked list containing nodes <strong>1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong>.<br><br>Our goal: insert a new node with value <strong>' + val + '</strong> at the very beginning.';
+    STEPS[0].whatBody    = 'The HEAD pointer currently points to node 1. We call <code>insertAtBeginning(&amp;head, ' + val + ')</code>.';
+    STEPS[2].explainText = '<code>newNode-&gt;data = val;</code> writes our value (<strong>' + val + '</strong>) into the data field of the new node.';
+    STEPS[2].whatBody    = 'The new node\'s data field now shows "' + val + '". The next pointer is still uninitialised.';
+    STEPS[5].explainText = 'The function returns. The linked list is now:<br><strong>' + val + ' \u2192 1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong><br><br>Node ' + val + ' is the new head of the list.';
+  }
 }
 
 function vizNext() {
