@@ -1830,6 +1830,15 @@ function ie_assign_null() {
 function ie_link() {
   buildList(VIZ.initialList, false, 0);
 
+  // ── FIX: immediately update tail node's next label NULL → newNode address ──
+  var wrapsNow = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+  if (wrapsNow.length > 0) {
+    var lastWrapNow = wrapsNow[wrapsNow.length - 1];
+    var lastNextEl  = lastWrapNow ? lastWrapNow.querySelector('.viz-node-next') : null;
+    if (lastNextEl) lastNextEl.textContent = NEW_NODE_ADDR;
+  }
+  // ────────────────────────────────────────────────────────────────────────────
+
   var wrap = VIZ.el.newNodeWrap;
   if (!wrap) return;
 
