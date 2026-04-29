@@ -2861,6 +2861,8 @@ function dmid_initial() {
   hideCurve();
   hideNewNode();
   hideLoopBox();
+  var svgBypassClean = document.getElementById('dmid-bypass-svg');
+  if (svgBypassClean) svgBypassClean.style.display = 'none';
   DMID_SEQ_STATE.tempIdx = 0;
   DMID_SEQ_STATE.prevIdx = -1;
   DMID_SEQ_STATE.iVal    = 0;
@@ -2997,8 +2999,21 @@ function dmid_relink() {
   VIZ.deleteList = VIZ.initialList.slice();
   buildList(VIZ.deleteList, false, 0);
 
-  var ti = DMID_SEQ_STATE.tempIdx;  // 2 (target node)
-  var pi = DMID_SEQ_STATE.prevIdx;  // 1 (node before target)
+  var ti = DMID_SEQ_STATE.tempIdx;  // target node (being deleted)
+  var pi = DMID_SEQ_STATE.prevIdx;  // node before target
+
+  // ── STEP 1: Immediately fade out prev→temp arrow ──────────────────────────
+  requestAnimationFrame(function () {
+    var row = VIZ.el.listRow;
+    if (row) {
+      var arrows = row.querySelectorAll('.viz-arrow');
+      // arrow[pi] sits between node[pi] and node[ti]
+      if (arrows[pi]) {
+        arrows[pi].style.transition = 'opacity 0.25s ease';
+        arrows[pi].style.opacity    = '0';
+      }
+    }
+  });
 
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
@@ -3010,22 +3025,134 @@ function dmid_relink() {
       showTempBelowNode(ti);
       showPtrBelowNode(pi);
 
-      // Flash prev node's next field to show new address (node after target)
+      // ── STEP 2: Flash prev node's next field ─────────────────────────────
+      var newNextAddr = PTR.nodeList[ti + 1] ? PTR.nodeList[ti + 1].address : 'NULL';
       if (wraps[pi]) {
         var pn = wraps[pi].querySelector('.viz-node');
         if (pn) pn.classList.add('viz-node-ptr-highlight');
         var nextField = pn ? pn.querySelector('.viz-node-next') : null;
-        if (nextField && PTR.nodeList[ti + 1]) {
+        if (nextField) {
           nextField.style.transition = 'background 0.3s ease, color 0.3s ease';
           nextField.style.background = 'rgba(255,130,0,0.18)';
           nextField.style.color      = '#f97316';
-          nextField.textContent      = PTR.nodeList[ti + 1].address;
+          nextField.textContent      = newNextAddr;
           setTimeout(function () {
             nextField.style.background = '';
             nextField.style.color      = '';
           }, 900);
         }
       }
+
+      // ── STEP 3: Draw bypass arc prev → temp->next (skipping temp) ────────
+      var canvas = document.getElementById('animCanvas');
+      if (!canvas) return;
+
+      var prevWrap   = wraps[pi];
+      var prevEl     = prevWrap   ? prevWrap.querySelector('.viz-node')   : null;
+      var targetWrap = wraps[ti + 1];
+      var targetEl   = targetWrap ? targetWrap.querySelector('.viz-node') : null;
+      if (!prevEl || !targetEl) return;
+
+      var canvasRect = canvas.getBoundingClientRect();
+      var pRect  = prevEl.getBoundingClientRect();
+      var tRect  = targetEl.getBoundingClientRect();
+
+      var startX = pRect.right  - canvasRect.left;
+      var startY = pRect.top + pRect.height / 2 - canvasRect.top;
+      var endX   = tRect.left   - canvasRect.left;
+      var endY   = tRect.top + tRect.height / 2 - canvasRect.top;
+
+      // Arc curves UP above the nodes to visually "jump over" temp
+      var midX  = (startX + endX) / 2;
+      var liftY = Math.min(startY, endY) - 55;  // arc peak above nodes
+      var cp1x  = startX + 40;
+      var cp1y  = liftY;
+      var cp2x  = endX   - 40;
+      var cp2y  = liftY;
+
+      var d = 'M ' + startX + ' ' + startY
+        + ' C ' + cp1x + ' ' + cp1y + ', ' + cp2x + ' ' + cp2y + ', ' + endX + ' ' + endY;
+
+      // Reuse or create dedicated bypass SVG
+      var svgBypass  = document.getElementById('dmid-bypass-svg');
+      var pathBypass;
+      if (!svgBypass) {
+        svgBypass = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svgBypass.id = 'dmid-bypass-svg';
+        svgBypass.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:10;';
+
+        var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        var marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+        marker.setAttribute('id', 'arrowhead-bypass');
+        marker.setAttribute('markerWidth', '10');
+        marker.setAttribute('markerHeight', '7');
+        marker.setAttribute('refX', '10');
+        marker.setAttribute('refY', '3.5');
+        marker.setAttribute('orient', 'auto');
+        var poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        poly.setAttribute('points', '0 0, 10 3.5, 0 7');
+        poly.setAttribute('fill', '#f97316');
+        marker.appendChild(poly);
+        defs.appendChild(marker);
+        svgBypass.appendChild(defs);
+
+        pathBypass = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathBypass.setAttribute('fill', 'none');
+        pathBypass.setAttribute('stroke', '#f97316');
+        pathBypass.setAttribute('stroke-width', '2.5');
+        pathBypass.setAttribute('marker-end', 'url(#arrowhead-bypass)');
+        svgBypass.appendChild(pathBypass);
+
+        canvas.style.position = canvas.style.position || 'relative';
+        canvas.appendChild(svgBypass);
+      } else {
+        pathBypass = svgBypass.querySelector('path');
+        // Clear old dot
+        var oldDotB = svgBypass.querySelector('.viz-travel-dot');
+        if (oldDotB) oldDotB.parentNode.removeChild(oldDotB);
+      }
+
+      pathBypass.setAttribute('d', d);
+      svgBypass.style.display = '';
+
+      var lenB;
+      try { lenB = pathBypass.getTotalLength(); } catch (e) { lenB = 300; }
+      if (!lenB || lenB < 1) lenB = 300;
+
+      pathBypass.style.transition       = 'none';
+      pathBypass.style.strokeDasharray  = lenB + 'px';
+      pathBypass.style.strokeDashoffset = lenB + 'px';
+
+      // Animated travel dot
+      var dotB = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dotB.setAttribute('r', '5');
+      dotB.setAttribute('fill', '#f97316');
+      dotB.classList.add('viz-travel-dot');
+      dotB.style.filter = 'drop-shadow(0 0 4px rgba(249,115,22,0.7))';
+      svgBypass.appendChild(dotB);
+
+      var durB = 650;
+      var t0B  = null;
+      function animDotB(ts) {
+        if (!t0B) t0B = ts;
+        var p = Math.min((ts - t0B) / durB, 1);
+        var e = p < 0.5 ? 2*p*p : 1 - Math.pow(-2*p+2, 2)/2;
+        try {
+          var pt = pathBypass.getPointAtLength(e * lenB);
+          dotB.setAttribute('cx', pt.x);
+          dotB.setAttribute('cy', pt.y);
+        } catch(err) {}
+        if (p < 1) { requestAnimationFrame(animDotB); }
+        else { setTimeout(function () { if (dotB.parentNode) dotB.parentNode.removeChild(dotB); }, 150); }
+      }
+
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          pathBypass.style.transition       = 'stroke-dashoffset 0.65s cubic-bezier(0.4,0,0.2,1)';
+          pathBypass.style.strokeDashoffset = '0px';
+          requestAnimationFrame(animDotB);
+        });
+      });
     });
   });
 }
@@ -3033,6 +3160,10 @@ function dmid_relink() {
 function dmid_freeNode() {
   VIZ.deleteList = VIZ.initialList.slice();
   buildList(VIZ.deleteList, false, 0);
+
+  // Hide bypass arc from previous relink step
+  var svgBypassF = document.getElementById('dmid-bypass-svg');
+  if (svgBypassF) svgBypassF.style.display = 'none';
 
   var ti = DMID_SEQ_STATE.tempIdx;  // 2
   var pi = DMID_SEQ_STATE.prevIdx;  // 1
@@ -3124,6 +3255,7 @@ function buildInsertMiddleStepLabels(pos) {
     labels.push('Check for loop (i = ' + i + ')');
     labels.push('temp = temp\u2192next  [iteration ' + (i + 1) + ']');
   }
+  labels.push('for loop exits (i = ' + (pos - 1) + ' \u2265 ' + (pos - 1) + ')');
   labels.push('newNode\u2192next = temp\u2192next');
   labels.push('temp\u2192next = newNode');
   labels.push('Final rearrangement');
@@ -3137,7 +3269,7 @@ function buildInsertMiddleSteps(pos) {
   var val      = VIZ.newValue;
   // total sub-steps: 0(initial) + 1(malloc) + 2(data) + 3(initTemp) + 2*(pos-1) loop + link_next + link_temp + final
   var loopIters = pos - 1;
-  var totalSteps = 3 + loopIters * 2 + 3;
+  var totalSteps = 3 + loopIters * 2 + 1 + 3;  // +1 for false exit check
 
   var steps = [];
 
@@ -3217,6 +3349,19 @@ function buildInsertMiddleSteps(pos) {
       conceptText: '\uD83D\uDC49 Only temp moves this click. One step closer to the target.'
     });
   }
+
+  // false loop exit check
+  stepNum++;
+  steps.push({
+    codeLine: 'im_for',
+    animStatus: 'Loop exits\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+    explainTitle: 'for: i = ' + (pos - 1) + ' < ' + (pos - 1) + '? \u2718',
+    explainText: '<code>for (i = 0; i &lt; pos - 1; i++)</code><br><br>i = <strong>' + (pos - 1) + '</strong>, pos\u22121 = <strong>' + (pos - 1) + '</strong>. \u2718 Condition false \u2014 exit loop.',
+    whatBody: 'Loop condition is false. temp is now at position ' + (pos - 1) + ', just before the insertion point.',
+    conceptText: '\uD83D\uDEAA Loop exits after exactly pos\u22121 iterations. temp is in the right place.'
+  });
 
   // link_next
   stepNum++;
@@ -3373,6 +3518,8 @@ function buildInsertMiddleSequence(pos) {
     seq.push('loop_check_' + i);
     seq.push('temp_move_' + i);
   }
+  // Final false check — shows i = pos-1 < pos-1 ✗ so user sees why loop exited
+  seq.push('loop_check_' + (pos - 1));
   seq.push('link_next');
   seq.push('link_temp');
   seq.push('final');
@@ -3450,7 +3597,7 @@ function imid_tempMove(newTempIdx) {
   buildList(VIZ.initialList, false, 0);
   IMID_SEQ_STATE.tempIdx = newTempIdx;
   IMID_SEQ_STATE.iVal    = newTempIdx;
-  hideLoopBox();
+  // Keep loop box visible — we're still inside the loop body
 
   var wrap = VIZ.el.newNodeWrap;
   if (wrap) {
