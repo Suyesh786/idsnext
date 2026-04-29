@@ -47,9 +47,9 @@
     <span class="viz-op-pill-icon">+</span>
     Insert at End
   </button>
-  <button class="viz-op-pill" data-mode="insert-position" onclick="switchMode('insert-position')">
+  <button class="viz-op-pill" data-mode="insert-middle" onclick="switchMode('insert-middle')">
     <span class="viz-op-pill-icon">+</span>
-    Insert at Position
+    Insert at Middle
   </button>
   <div class="viz-op-pill-divider"></div>
   <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-beginning" onclick="switchMode('delete-beginning')">
@@ -92,10 +92,10 @@
     <!-- Complexity hint -->
     <div class="viz-complexity-bar">
       <span class="viz-complexity-label">Time Complexity</span>
-      <span class="viz-complexity-val">O(1)</span>
+      <span class="viz-complexity-val" id="timeComplexityVal">O(1)</span>
       <span class="viz-complexity-sep">·</span>
       <span class="viz-complexity-label">Space</span>
-      <span class="viz-complexity-val">O(1)</span>
+      <span class="viz-complexity-val" id="spaceComplexityVal">O(1)</span>
     </div>
   </section>
 

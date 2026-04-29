@@ -11,7 +11,7 @@ var mode = 'insert-beginning';
 var MODE_LABELS = {
   'insert-beginning': 'Insert at Beginning',
   'insert-end':       'Insert at End',
-  'insert-position':  'Insert at Position',
+  'insert-middle':    'Insert at Middle',
   'delete-beginning': 'Delete at Beginning',
   'delete-end':       'Delete at End',
   'delete-middle':    'Delete at Middle'
@@ -108,7 +108,29 @@ var CODE_TEMPLATES = {
     { line: 0, html: '&nbsp;&nbsp;}' },
     { line: 0, html: '}' }
   ],
-  // NEW — delete-middle code template
+  // NEW — insert-middle code template
+  'insert-middle': [
+    { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Node structure</span>' },
+    { line: 0, html: '<span class="c-kw">struct</span> Node {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-type">int</span> data;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* next;' },
+    { line: 0, html: '};' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-type">void</span> <span class="c-fn">insertAtMiddle</span>(<span class="c-type">int</span> pos, <span class="c-type">int</span> value) {' },
+    { line: 'im_malloc',    cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* newNode = (<span class="c-kw">struct</span> Node*)' },
+    { line: 'im_malloc',    cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">malloc</span>(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> Node));' },
+    { line: 'im_data',      cls: 'viz-highlightable', html: '&nbsp;&nbsp;newNode-&gt;data = value;' },
+    { line: 'im_init_temp', cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> Node* temp = head;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 'im_for',       cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">for</span> (<span class="c-type">int</span> i = 0; i &lt; pos - 1; i++) {' },
+    { line: 'im_temp_next', cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;temp = temp-&gt;next;' },
+    { line: 'im_for_end',   cls: 'viz-highlightable', html: '&nbsp;&nbsp;}' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 'im_link_next', cls: 'viz-highlightable', html: '&nbsp;&nbsp;newNode-&gt;next = temp-&gt;next;' },
+    { line: 'im_link_temp', cls: 'viz-highlightable', html: '&nbsp;&nbsp;temp-&gt;next = newNode;' },
+    { line: 0, html: '}' }
+  ],
+  // delete-middle code template
   'delete-middle': [
     { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Node structure</span>' },
     { line: 0, html: '<span class="c-kw">struct</span> Node {' },
@@ -152,7 +174,7 @@ function renderCodePanel(m) {
 }
 
 function switchMode(newMode) {
-  if (newMode === mode && newMode !== 'delete-middle') return;
+  if (newMode === mode && newMode !== 'delete-middle' && newMode !== 'insert-middle') return;
   mode = newMode;
   var posRow = document.getElementById('posInputRow');
   if (posRow) posRow.style.display = 'none';
@@ -305,20 +327,61 @@ if (inputEl && inputEl.value !== '') {
     applyStep(0);
 
 
-    } else {
+    } else if (newMode === 'insert-middle') {
+    if (posRow) posRow.style.display = 'flex';
+    var posInput = document.getElementById('posInput');
+    var pos = 2; // default
+
+    if (posInput && posInput.value !== '') {
+      pos = parseInt(posInput.value);
+      if (isNaN(pos) || pos < 1 || pos > VIZ.initialList.length - 2) pos = 2;
+    }
+
+    VIZ.insertPos = pos;
+
+    IMID_SEQ = buildInsertMiddleSequence(pos);
+    var imidLabels = buildInsertMiddleStepLabels(pos);
+    INSERT_MIDDLE_STEPS = buildInsertMiddleSteps(pos);
+
     var overlay = document.getElementById('comingSoonOverlay');
-    if (overlay) {
+    if (overlay) overlay.classList.remove('visible');
+    var inputRow = document.getElementById('valueInputRow');
+    if (inputRow) inputRow.style.display = '';
+    var lbl = document.getElementById('vizValueLabel');
+    if (lbl) lbl.textContent = 'Insert value';
+
+    renderCodePanel('insert-middle');
+    VIZ.totalSteps = INSERT_MIDDLE_STEPS.length - 1;
+    if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
+    rebuildStepList(imidLabels);
+    rebuildDots(VIZ.totalSteps);
+
+    IMID_SEQ_STATE.seqIdx  = 0;
+    IMID_SEQ_STATE.tempIdx = 0;
+    IMID_SEQ_STATE.iVal    = 0;
+
+    buildList(VIZ.initialList, false, 0);
+    applyStep(0);
+
+  } else {
+    var overlay2 = document.getElementById('comingSoonOverlay');
+    if (overlay2) {
       var title = document.getElementById('comingSoonTitle');
       var text  = document.getElementById('comingSoonText');
       if (title) title.textContent = MODE_LABELS[newMode] + ' \u2014 Coming Soon';
       if (text)  text.innerHTML = 'This operation is being built.<br>Switch back to <strong>Insert at Beginning</strong> to explore the working animation.';
-      overlay.classList.add('visible');
+      overlay2.classList.add('visible');
     }
-    var inputRow = document.getElementById('valueInputRow');
-    if (inputRow) inputRow.style.display = 'none';
+    var inputRow2 = document.getElementById('valueInputRow');
+    if (inputRow2) inputRow2.style.display = 'none';
     buildList(VIZ.initialList, false, 0);
     applyStep(0);
   }
+
+  // Update complexity bar
+  var O_N_MODES = { 'delete-end': true, 'delete-middle': true, 'insert-middle': true };
+  var timeVal = document.getElementById('timeComplexityVal');
+  if (timeVal) timeVal.textContent = O_N_MODES[newMode] ? 'O(n)' : 'O(1)';
 }
 
 var INSERT_BEGINNING_STEP_LABELS = [
@@ -1133,7 +1196,7 @@ function buildList(values, withEnter, headIdx) {
     wrap.appendChild(node);
     wrap.appendChild(addrEl);
 
-    if (mode === 'delete-middle') {
+    if (mode === 'delete-middle' || mode === 'insert-middle') {
       var posLabel = document.createElement('div');
       posLabel.className = 'viz-pos-label';
       posLabel.textContent = i;
@@ -1272,6 +1335,7 @@ function applyStep(idx) {
   (mode === 'delete-end') ? DELETE_END_STEPS :
   (mode === 'insert-end') ? INSERT_END_STEPS :
   (mode === 'delete-middle') ? DELETE_MIDDLE_STEPS :
+  (mode === 'insert-middle') ? INSERT_MIDDLE_STEPS :
   STEPS;
   var step = stepArr[idx];
   if (!step) return;
@@ -1307,6 +1371,8 @@ function applyStep(idx) {
     runInsertEndAnimation(idx);
   } else if (mode === 'delete-middle') {
     runDeleteMiddleAnimation(idx);
+  } else if (mode === 'insert-middle') {
+    runInsertMiddleAnimation(idx);
   } else {
     runAnimation(idx);
   }
@@ -2998,6 +3064,561 @@ function dmid_highlightNodes(tempIdx, prevIdx) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  INSERT AT MIDDLE — state, sequence builder, steps, animation
+// ═══════════════════════════════════════════════════════════════
+
+var IMID_SEQ = [];
+var INSERT_MIDDLE_STEPS = [];
+
+var IMID_SEQ_STATE = {
+  seqIdx:  0,
+  tempIdx: 0,
+  iVal:    0
+};
+
+function buildInsertMiddleStepLabels(pos) {
+  var labels = ['Allocate new node (malloc)'];
+  labels.push('Assign data to newNode');
+  labels.push('Initialize temp = head');
+  for (var i = 0; i < pos - 1; i++) {
+    labels.push('Check for loop (i = ' + i + ')');
+    labels.push('temp = temp\u2192next  [iteration ' + (i + 1) + ']');
+  }
+  labels.push('newNode\u2192next = temp\u2192next');
+  labels.push('temp\u2192next = newNode');
+  labels.push('Final rearrangement');
+  return labels;
+}
+
+function buildInsertMiddleSteps(pos) {
+  var list = VIZ.initialList;
+  var afterVal = list[pos] !== undefined ? list[pos] : '?';
+  var tempVal  = pos > 0 ? list[pos - 1] : list[0];
+  var val      = VIZ.newValue;
+  // total sub-steps: 0(initial) + 1(malloc) + 2(data) + 3(initTemp) + 2*(pos-1) loop + link_next + link_temp + final
+  var loopIters = pos - 1;
+  var totalSteps = 3 + loopIters * 2 + 3;
+
+  var steps = [];
+
+  // 0: initial state
+  steps.push({
+    codeLine: null,
+    animStatus: 'Ready',
+    animStatusClass: '',
+    explainStepNum: 'Initial State',
+    explainTitle: 'Starting Point',
+    explainText: 'We have a linked list: <strong>1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong>.<br><br>Goal: insert a new node with value <strong>' + val + '</strong> at position <strong>' + pos + '</strong>.',
+    whatBody: 'HEAD points to node 1. We call <code>insertAtMiddle(' + pos + ', ' + val + ')</code>.',
+    conceptText: '\uD83D\uDCA1 Middle insertion requires O(n) traversal to reach the target position.'
+  });
+
+  // 1: malloc
+  steps.push({
+    codeLine: 'im_malloc',
+    animStatus: 'Allocating\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 1 of ' + totalSteps,
+    explainTitle: 'Allocate Memory',
+    explainText: '<code>malloc(sizeof(struct Node))</code> reserves heap memory for the new node.',
+    whatBody: 'A new node appears below the list. Memory is allocated; fields are not yet set.',
+    conceptText: '\uD83E\uDDE0 malloc returns a raw void* \u2014 we cast it to struct Node*.'
+  });
+
+  // 2: assign data
+  steps.push({
+    codeLine: 'im_data',
+    animStatus: 'Assigning data\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 2 of ' + totalSteps,
+    explainTitle: 'Assign Data',
+    explainText: '<code>newNode-&gt;data = value;</code> stores our value in the new node.',
+    whatBody: 'The new node\u2019s data field now shows <strong>' + val + '</strong>.',
+    conceptText: '\uD83D\uDCDD data is set first \u2014 the next pointer comes after traversal.'
+  });
+
+  // 3: init temp
+  steps.push({
+    codeLine: 'im_init_temp',
+    animStatus: 'Initializing\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step 3 of ' + totalSteps,
+    explainTitle: 'temp = head',
+    explainText: '<code>struct Node* temp = head;</code><br><br><strong>temp</strong> starts at node 1.',
+    whatBody: '<strong>temp</strong> pointer appears above node 1. We will walk it to position ' + (pos - 1) + '.',
+    conceptText: '\uD83D\uDCCC temp will traverse (pos\u22121) steps to land just before the insertion point.'
+  });
+
+  var stepNum = 3;
+
+  // loop iterations
+  for (var i = 0; i < pos - 1; i++) {
+    stepNum++;
+    steps.push({
+      codeLine: 'im_for',
+      animStatus: 'Checking loop\u2026',
+      animStatusClass: 'status-running',
+      explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+      explainTitle: 'for: i = ' + i + ' < ' + (pos - 1) + '?',
+      explainText: '<code>for (i = 0; i &lt; pos - 1; i++)</code><br><br>i = <strong>' + i + '</strong>, pos\u22121 = <strong>' + (pos - 1) + '</strong>. \u2714 Enter loop.',
+      whatBody: 'Loop condition is true. temp will advance one step.',
+      conceptText: '\uD83D\uDD04 We loop pos\u22121 times so temp lands on the node just before insertion point.'
+    });
+
+    stepNum++;
+    steps.push({
+      codeLine: 'im_temp_next',
+      animStatus: 'temp advances\u2026',
+      animStatusClass: 'status-running',
+      explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+      explainTitle: 'temp = temp\u2192next  [iter ' + (i + 1) + ']',
+      explainText: '<code>temp = temp-&gt;next;</code><br><br>temp moves from node <strong>' + list[i] + '</strong> to node <strong>' + list[i + 1] + '</strong>.',
+      whatBody: '<strong>temp</strong> slides to node ' + list[i + 1] + '.',
+      conceptText: '\uD83D\uDC49 Only temp moves this click. One step closer to the target.'
+    });
+  }
+
+  // link_next
+  stepNum++;
+  steps.push({
+    codeLine: 'im_link_next',
+    animStatus: 'Linking newNode\u2192next\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+    explainTitle: 'newNode\u2192next = temp\u2192next',
+    explainText: '<code>newNode-&gt;next = temp-&gt;next;</code><br><br>newNode will point to the node currently after temp (value <strong>' + afterVal + '</strong>).',
+    whatBody: 'An arrow draws from newNode to node ' + afterVal + '. Chain is not yet broken.',
+    conceptText: '\u26A0\uFE0F Do this BEFORE temp\u2192next = newNode \u2014 otherwise you lose the rest of the list!'
+  });
+
+  // link_temp
+  stepNum++;
+  steps.push({
+    codeLine: 'im_link_temp',
+    animStatus: 'Linking temp\u2192next\u2026',
+    animStatusClass: 'status-running',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+    explainTitle: 'temp\u2192next = newNode',
+    explainText: '<code>temp-&gt;next = newNode;</code><br><br>Node at temp (value <strong>' + tempVal + '</strong>) now points to newNode.',
+    whatBody: 'Node ' + tempVal + '\u2019s next field updates to point to newNode. The splice is complete.',
+    conceptText: '\uD83C\uDFAF Two pointer reassignments complete the insertion without losing any nodes.'
+  });
+
+  // final
+  stepNum++;
+  var finalList = list.slice();
+  finalList.splice(pos, 0, val);
+  steps.push({
+    codeLine: null,
+    animStatus: 'Complete \u2713',
+    animStatusClass: 'status-complete',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalSteps,
+    explainTitle: 'Final Arrangement',
+    explainText: 'Insertion complete! List is now:<br><strong>' + finalList.join(' \u2192 ') + ' \u2192 NULL</strong>',
+    whatBody: 'All nodes snap into a clean horizontal row with the new node in position.',
+    conceptText: '\u2705 Done! insertAtMiddle is O(n) \u2014 traversal was needed to find the position.'
+  });
+
+  return steps;
+}
+
+// ── Insert at Middle animation engine ───────────────────────────
+function runInsertMiddleAnimation(step) {
+  if (step === 0) {
+    imid_initial();
+    return;
+  }
+  var seqIdx = step - 1;
+  var seqKey = IMID_SEQ[seqIdx];
+  if (!seqKey) return;
+
+  IMID_SEQ_STATE.seqIdx = seqIdx;
+  imid_runSeqStep(seqKey);
+}
+
+function imid_runSeqStep(key) {
+  if (key === 'init')      { imid_malloc();    return; }
+
+  var parts = key.split('_');
+  var n = parseInt(parts[parts.length - 1], 10);
+
+  if (key.indexOf('loop_check_') === 0) { imid_loopCheck(n);     return; }
+  if (key.indexOf('temp_move_')  === 0) { imid_tempMove(n + 1);  return; }
+  if (key === 'link_next')              { imid_linkNext();        return; }
+  if (key === 'link_temp')              { imid_linkTemp();        return; }
+  if (key === 'final')                  { imid_final();           return; }
+}
+
+// Restore pointer state when navigating backwards
+function imid_restoreStateForSeq(seqIdx) {
+  if (seqIdx < 0) {
+    IMID_SEQ_STATE.tempIdx = 0;
+    IMID_SEQ_STATE.iVal    = 0;
+    IMID_SEQ_STATE.seqIdx  = seqIdx;
+    return;
+  }
+  var tempIdx = 0, iVal = 0;
+  for (var i = 0; i <= seqIdx; i++) {
+    var k = IMID_SEQ[i];
+    if (!k) break;
+    if (k.indexOf('temp_move_') === 0) { tempIdx++; iVal++; }
+  }
+  IMID_SEQ_STATE.tempIdx = tempIdx;
+  IMID_SEQ_STATE.iVal    = iVal;
+  IMID_SEQ_STATE.seqIdx  = seqIdx;
+}
+
+function imid_initial() {
+  hideTempPointer();
+  hideCurve();
+  hideNewNode();
+  hideLoopBox();
+  IMID_SEQ_STATE.tempIdx = 0;
+  IMID_SEQ_STATE.iVal    = 0;
+  PTR.headIndex = 0;
+  PTR.tailIndex = VIZ.initialList.length - 1;
+  buildList(VIZ.initialList, false, 0);
+}
+
+// Steps 1–3 are data-only (no seqKey loop) but map to seqKey 'init'
+// We split them: step1=malloc, step2=assignData, step3=initTemp from applyStep idx.
+// The IMID_SEQ only starts at step 4 onwards (loop checks).
+// So we handle steps 1,2,3 by checking step index in runInsertMiddleAnimation.
+
+function imid_malloc() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  hideTempPointer();
+  hideLoopBox();
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+  VIZ.el.newNodeData.textContent  = '?';
+  VIZ.el.newNodeEl.className      = 'viz-node viz-node-new';
+  VIZ.el.newNodeLabel.textContent = 'newNode';
+  var nextField = document.getElementById('newNodeNextField');
+  if (nextField) nextField.textContent = '?';
+  wrap.style.bottom    = '68px';
+  wrap.style.left      = '50%';
+  wrap.style.transform = 'translateX(-50%)';
+  wrap.classList.remove('visible');
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () { wrap.classList.add('visible'); });
+  });
+}
+
+// The IMID_SEQ 'init' maps to step index 1 (malloc).
+// Steps 2 (data) and 3 (initTemp) are handled by direct index checks.
+// We override runInsertMiddleAnimation to handle this properly:
+(function () {
+  var _orig = runInsertMiddleAnimation;
+  runInsertMiddleAnimation = function (step) {
+    if (step === 0) { imid_initial();    return; }
+    if (step === 1) { imid_malloc();     return; }
+    if (step === 2) { imid_assignData(); return; }
+    if (step === 3) { imid_initTemp();   return; }
+    // Steps 4+ map into IMID_SEQ starting at index 0
+    var seqIdx = step - 4;
+    var seqKey = IMID_SEQ[seqIdx];
+    if (!seqKey) return;
+    IMID_SEQ_STATE.seqIdx = seqIdx;
+    imid_runSeqStep(seqKey);
+  };
+})();
+
+// Rebuild sequence to exclude 'init' (handled by direct step routing)
+function buildInsertMiddleSequence(pos) {
+  var seq = [];
+  for (var i = 0; i < pos - 1; i++) {
+    seq.push('loop_check_' + i);
+    seq.push('temp_move_' + i);
+  }
+  seq.push('link_next');
+  seq.push('link_temp');
+  seq.push('final');
+  return seq;
+}
+
+function imid_assignData() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  hideTempPointer();
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+  wrap.style.bottom    = '68px';
+  wrap.style.left      = '50%';
+  wrap.style.transform = 'translateX(-50%)';
+  wrap.classList.add('visible');
+
+  setTimeout(function () {
+    VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+    VIZ.el.newNodeEl.className = 'viz-node viz-node-new viz-node-linked';
+    VIZ.el.newNodeEl.style.transition = 'transform 0.2s cubic-bezier(0.34,1.56,0.64,1)';
+    VIZ.el.newNodeEl.style.transform  = 'scale(1.12)';
+    setTimeout(function () { VIZ.el.newNodeEl.style.transform = 'scale(1)'; }, 210);
+  }, 80);
+}
+
+function imid_initTemp() {
+  buildList(VIZ.initialList, false, 0);
+  IMID_SEQ_STATE.tempIdx = 0;
+  IMID_SEQ_STATE.iVal    = 0;
+  hideLoopBox();
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+  wrap.style.bottom    = '68px';
+  wrap.style.left      = '50%';
+  wrap.style.transform = 'translateX(-50%)';
+  wrap.classList.add('visible');
+  VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+  VIZ.el.newNodeEl.className = 'viz-node viz-node-new viz-node-linked';
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      imid_highlightNode(0);
+      showTempBelowNode(0);
+    });
+  });
+}
+
+function imid_loopCheck(i) {
+  buildList(VIZ.initialList, false, 0);
+  updateLoopBox(i, VIZ.insertPos - 1);
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (wrap) {
+    wrap.style.bottom    = '68px';
+    wrap.style.left      = '50%';
+    wrap.style.transform = 'translateX(-50%)';
+    wrap.classList.add('visible');
+    VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+    VIZ.el.newNodeEl.className = 'viz-node viz-node-new viz-node-linked';
+  }
+
+  var ti = IMID_SEQ_STATE.tempIdx;
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      imid_highlightNode(ti);
+      showTempBelowNode(ti);
+    });
+  });
+}
+
+function imid_tempMove(newTempIdx) {
+  buildList(VIZ.initialList, false, 0);
+  IMID_SEQ_STATE.tempIdx = newTempIdx;
+  IMID_SEQ_STATE.iVal    = newTempIdx;
+  hideLoopBox();
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (wrap) {
+    wrap.style.bottom    = '68px';
+    wrap.style.left      = '50%';
+    wrap.style.transform = 'translateX(-50%)';
+    wrap.classList.add('visible');
+    VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+    VIZ.el.newNodeEl.className = 'viz-node viz-node-new viz-node-linked';
+  }
+
+  var ti = IMID_SEQ_STATE.tempIdx;
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      imid_highlightNode(ti);
+      showTempBelowNode(ti);
+    });
+  });
+}
+
+function imid_linkNext() {
+  buildList(VIZ.initialList, false, 0);
+  hideLoopBox();
+
+  var ti = IMID_SEQ_STATE.tempIdx;  // node just before insertion point
+  var nextAddr = PTR.nodeList[ti + 1] ? PTR.nodeList[ti + 1].address : 'NULL';
+
+  // Update newNode next field to show the address of node after temp
+  var nextField = document.getElementById('newNodeNextField');
+  if (nextField) {
+    nextField.style.transition = 'background 0.3s ease, color 0.3s ease';
+    nextField.style.background = 'rgba(59,108,255,0.18)';
+    nextField.style.color      = '#3b6cff';
+    nextField.textContent      = nextAddr;
+    setTimeout(function () {
+      nextField.style.background = '';
+      nextField.style.color      = '';
+    }, 900);
+  }
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (wrap) {
+    wrap.style.bottom    = '68px';
+    wrap.style.left      = '50%';
+    wrap.style.transform = 'translateX(-50%)';
+    wrap.classList.add('visible');
+    VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+    VIZ.el.newNodeEl.className = 'viz-node viz-node-new viz-node-linked';
+  }
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      imid_highlightNode(ti);
+      showTempBelowNode(ti);
+
+      // Draw curve from newNode → node after temp
+      var canvas = document.getElementById('animCanvas');
+      var svg    = VIZ.el.curveSvg;
+      var path   = VIZ.el.curvePath;
+      if (!canvas || !svg || !path) return;
+
+      var canvasRect = canvas.getBoundingClientRect();
+      var newNodeEl  = VIZ.el.newNodeEl;
+      var newRect    = newNodeEl ? newNodeEl.getBoundingClientRect() : null;
+      if (!newRect) return;
+
+      var row   = VIZ.el.listRow;
+      var wraps = row ? row.querySelectorAll('.viz-node-wrap') : [];
+      var targetWrap = wraps[ti + 1];
+      var targetEl   = targetWrap ? targetWrap.querySelector('.viz-node') : null;
+      if (!targetEl) return;
+
+      var tRect  = targetEl.getBoundingClientRect();
+      var startX = newRect.right  - canvasRect.left;
+      var startY = newRect.top + newRect.height / 2 - canvasRect.top;
+      var endX   = tRect.left  - canvasRect.left;
+      var endY   = tRect.top + tRect.height / 2 - canvasRect.top;
+
+      var cp1x = startX + 70;
+      var cp1y = startY - 50;
+      var cp2x = endX   - 50;
+      var cp2y = endY   + 120;
+
+      var d = 'M ' + startX + ' ' + startY
+        + ' C ' + cp1x + ' ' + cp1y + ', ' + cp2x + ' ' + cp2y + ', ' + endX + ' ' + endY;
+
+      path.setAttribute('d', d);
+      svg.classList.add('visible');
+
+      var len;
+      try { len = path.getTotalLength(); } catch (e) { len = 400; }
+      if (!len || len < 1) len = 400;
+
+      path.style.transition       = 'none';
+      path.style.strokeDasharray  = len + 'px';
+      path.style.strokeDashoffset = len + 'px';
+
+      var oldDot = svg.querySelector('.viz-travel-dot');
+      if (oldDot) oldDot.parentNode.removeChild(oldDot);
+
+      var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('r', '5');
+      dot.setAttribute('fill', '#3b6cff');
+      dot.classList.add('viz-travel-dot');
+      dot.style.filter = 'drop-shadow(0 0 4px rgba(59,108,255,0.7))';
+      svg.appendChild(dot);
+
+      var duration = 700;
+      var startTime = null;
+      function animDot(ts) {
+        if (!startTime) startTime = ts;
+        var p = Math.min((ts - startTime) / duration, 1);
+        var e = p < 0.5 ? 2*p*p : 1 - Math.pow(-2*p+2,2)/2;
+        try { var pt = path.getPointAtLength(e * len); dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y); } catch(err){}
+        if (p < 1) { requestAnimationFrame(animDot); }
+        else { setTimeout(function(){ if(dot.parentNode) dot.parentNode.removeChild(dot); }, 150); }
+      }
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          path.style.transition       = 'stroke-dashoffset 0.7s cubic-bezier(0.4,0,0.2,1)';
+          path.style.strokeDashoffset = '0px';
+          requestAnimationFrame(animDot);
+        });
+      });
+    });
+  });
+}
+
+function imid_linkTemp() {
+  buildList(VIZ.initialList, false, 0);
+
+  var ti = IMID_SEQ_STATE.tempIdx;
+
+  var wrap = VIZ.el.newNodeWrap;
+  if (wrap) {
+    wrap.style.bottom    = '68px';
+    wrap.style.left      = '50%';
+    wrap.style.transform = 'translateX(-50%)';
+    wrap.classList.add('visible');
+    VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+    VIZ.el.newNodeEl.className = 'viz-node viz-node-new viz-node-linked';
+  }
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var row   = VIZ.el.listRow;
+      if (!row) return;
+      var wraps = row.querySelectorAll('.viz-node-wrap');
+
+      imid_highlightNode(ti);
+      showTempBelowNode(ti);
+
+      // Flash temp node's next field to show newNode address
+      if (wraps[ti]) {
+        var tn = wraps[ti].querySelector('.viz-node');
+        if (tn) tn.classList.add('viz-node-temp-highlight');
+        var nextField = tn ? tn.querySelector('.viz-node-next') : null;
+        if (nextField) {
+          nextField.style.transition = 'background 0.3s ease, color 0.3s ease';
+          nextField.style.background = 'rgba(255,130,0,0.18)';
+          nextField.style.color      = '#f97316';
+          nextField.textContent      = NEW_NODE_ADDR;
+          setTimeout(function () {
+            nextField.style.background = '';
+            nextField.style.color      = '';
+          }, 900);
+        }
+      }
+    });
+  });
+}
+
+function imid_final() {
+  hideCurve();
+  hideTempPointer();
+  hideLoopBox();
+
+  var pos = VIZ.insertPos;
+  var val = VIZ.newValue;
+  var finalList = VIZ.initialList.slice();
+  finalList.splice(pos, 0, val);
+
+  buildList(finalList, true, 0);
+  PTR.tailIndex = finalList.length - 1;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      positionPointers();
+      hideNewNode();
+    });
+  });
+}
+
+function imid_highlightNode(idx) {
+  var row = VIZ.el.listRow;
+  if (!row) return;
+  var wraps = row.querySelectorAll('.viz-node-wrap');
+  for (var i = 0; i < wraps.length; i++) {
+    var n = wraps[i].querySelector('.viz-node');
+    if (n) n.classList.remove('viz-node-temp-highlight', 'viz-node-ptr-highlight');
+  }
+  if (idx >= 0 && wraps[idx]) {
+    var tn = wraps[idx].querySelector('.viz-node');
+    if (tn) tn.classList.add('viz-node-temp-highlight');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  KEYBOARD SHORTCUTS
 // ═══════════════════════════════════════════════════════════════
 document.addEventListener('keydown', function (e) {
@@ -3016,6 +3637,8 @@ if (posInputEl) {
   posInputEl.addEventListener('change', function () {
     if (mode === 'delete-middle') {
       validateAndSwitchDeleteMiddle();
+    } else if (mode === 'insert-middle') {
+      validateAndSwitchInsertMiddle();
     }
   });
 }
@@ -3104,4 +3727,37 @@ function validateAndSwitchDeleteMiddle() {
   }
 
   switchMode('delete-middle');
+}
+
+// ── posInput validation guard for insert-middle ──────────────────
+function validateAndSwitchInsertMiddle() {
+  var posInput = document.getElementById('posInput');
+  if (!posInput || posInput.value === '') {
+    switchMode('insert-middle');
+    return;
+  }
+  var pos = parseInt(posInput.value);
+  var lastIdx = VIZ.initialList.length - 1;
+
+  if (!isNaN(pos) && pos <= 0) {
+    showPosToast(
+      { title: 'Use \u201cInsert at Beginning\u201d',
+        body:  'Position 0 inserts at the front.\nSwitch to <strong>Insert at Beginning</strong> for that operation.' },
+      true
+    );
+    posInput.value = '';
+    return;
+  }
+
+  if (!isNaN(pos) && pos >= lastIdx + 1) {
+    showPosToast(
+      { title: 'Use \u201cInsert at End\u201d',
+        body:  'Position ' + pos + ' inserts at the tail.\nSwitch to <strong>Insert at End</strong> for that operation.' },
+      true
+    );
+    posInput.value = '';
+    return;
+  }
+
+  switchMode('insert-middle');
 }
