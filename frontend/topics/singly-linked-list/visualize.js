@@ -334,10 +334,19 @@ if (inputEl && inputEl.value !== '') {
 
     if (posInput && posInput.value !== '') {
       pos = parseInt(posInput.value);
-      if (isNaN(pos) || pos < 1 || pos > VIZ.initialList.length - 2) pos = 2;
+      if (isNaN(pos)) pos = 2;
+      // clamp: pos<=0 → insert at beginning position 1; pos>=length → insert at end position length-1
+      pos = Math.max(1, Math.min(pos, VIZ.initialList.length - 1));
     }
 
     VIZ.insertPos = pos;
+
+    // Read value input before building steps so VIZ.newValue is current
+    var valInputEl = document.getElementById('vizValueInput');
+    if (valInputEl && valInputEl.value !== '') {
+      var parsedVal = parseInt(valInputEl.value);
+      VIZ.newValue = isNaN(parsedVal) ? 0 : parsedVal;
+    }
 
     IMID_SEQ = buildInsertMiddleSequence(pos);
     var imidLabels = buildInsertMiddleStepLabels(pos);
@@ -2253,6 +2262,25 @@ function readInputValue() {
     STEPS[2].whatBody    = 'The new node\'s data field now shows "' + val + '". The next pointer is still uninitialised.';
     STEPS[5].explainText = 'The function returns. The linked list is now:<br><strong>' + val + ' \u2192 1 \u2192 2 \u2192 3 \u2192 4 \u2192 NULL</strong><br><br>Node ' + val + ' is the new head of the list.';
   }
+
+  if (mode === 'insert-middle') {
+    var posInputEl2 = document.getElementById('posInput');
+    var pos2 = VIZ.insertPos || 2;
+    if (posInputEl2 && posInputEl2.value !== '') {
+      var parsedPos2 = parseInt(posInputEl2.value);
+      if (!isNaN(parsedPos2)) {
+        pos2 = Math.max(1, Math.min(parsedPos2, VIZ.initialList.length - 1));
+      }
+    }
+    VIZ.insertPos = pos2;
+    IMID_SEQ = buildInsertMiddleSequence(pos2);
+    var imidLabels2 = buildInsertMiddleStepLabels(pos2);
+    INSERT_MIDDLE_STEPS = buildInsertMiddleSteps(pos2);
+    VIZ.totalSteps = INSERT_MIDDLE_STEPS.length - 1;
+    if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
+    rebuildStepList(imidLabels2);
+    rebuildDots(VIZ.totalSteps);
+  }
 }
 
 function vizNext() {
@@ -3737,27 +3765,14 @@ function validateAndSwitchInsertMiddle() {
     return;
   }
   var pos = parseInt(posInput.value);
-  var lastIdx = VIZ.initialList.length - 1;
-
-  if (!isNaN(pos) && pos <= 0) {
-    showPosToast(
-      { title: 'Use \u201cInsert at Beginning\u201d',
-        body:  'Position 0 inserts at the front.\nSwitch to <strong>Insert at Beginning</strong> for that operation.' },
-      true
-    );
-    posInput.value = '';
+  if (isNaN(pos)) {
+    switchMode('insert-middle');
     return;
   }
-
-  if (!isNaN(pos) && pos >= lastIdx + 1) {
-    showPosToast(
-      { title: 'Use \u201cInsert at End\u201d',
-        body:  'Position ' + pos + ' inserts at the tail.\nSwitch to <strong>Insert at End</strong> for that operation.' },
-      true
-    );
-    posInput.value = '';
-    return;
+  // Clamp: pos<=0 → 1 (near beginning), pos>=length → length-1 (near end)
+  var clamped = Math.max(1, Math.min(pos, VIZ.initialList.length - 1));
+  if (clamped !== pos) {
+    posInput.value = clamped;
   }
-
   switchMode('insert-middle');
 }
