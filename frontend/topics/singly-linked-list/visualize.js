@@ -2224,6 +2224,9 @@ function hideCurve() {
   path.style.transition       = 'none';
   path.style.strokeDasharray  = '1000px';
   path.style.strokeDashoffset = '1000px';
+  // Also hide the second curve used for temp→newNode in insert-middle step 18
+  var svg2 = document.getElementById('imid-temp-curve-svg');
+  if (svg2) svg2.style.display = 'none';
 }
 
 function resetHeadStyle() {
@@ -3572,6 +3575,21 @@ function imid_linkTemp() {
 
   var ti = IMID_SEQ_STATE.tempIdx;
 
+  // ── Remove the DOM arrow between temp (ti) and oldNext (ti+1) ──
+  // buildList interleaves: wrap[0], arrow[0], wrap[1], arrow[1], ...
+  // The arrow between node ti and ti+1 is the (ti)-th viz-arrow element.
+  requestAnimationFrame(function () {
+    var row = VIZ.el.listRow;
+    if (row) {
+      var arrows = row.querySelectorAll('.viz-arrow');
+      // arrows[ti] is between node[ti] and node[ti+1]
+      if (arrows[ti]) {
+        arrows[ti].style.transition = 'opacity 0.25s ease';
+        arrows[ti].style.opacity = '0';
+      }
+    }
+  });
+
   var wrap = VIZ.el.newNodeWrap;
   if (wrap) {
     wrap.style.bottom    = '68px';
@@ -3582,6 +3600,40 @@ function imid_linkTemp() {
     VIZ.el.newNodeEl.className = 'viz-node viz-node-new viz-node-linked';
   }
 
+  // ── PRE-DRAW: Ensure newNode→oldNext is visible before animation starts ──
+  // buildList() above resets DOM positions, so we must re-establish the curve
+  // immediately (no animation) so there's no gap before temp→newNode draws.
+  requestAnimationFrame(function () {
+    var svg  = VIZ.el.curveSvg;
+    var path = VIZ.el.curvePath;
+    var canvas = document.getElementById('animCanvas');
+    if (svg && path && canvas) {
+      var canvasRect = canvas.getBoundingClientRect();
+      var newNodeEl  = VIZ.el.newNodeEl;
+      var newRect    = newNodeEl ? newNodeEl.getBoundingClientRect() : null;
+      var row0   = VIZ.el.listRow;
+      var wraps0 = row0 ? row0.querySelectorAll('.viz-node-wrap') : [];
+      var targetWrap = wraps0[IMID_SEQ_STATE.tempIdx + 1];
+      var targetEl   = targetWrap ? targetWrap.querySelector('.viz-node') : null;
+      if (newRect && targetEl) {
+        var tRect0 = targetEl.getBoundingClientRect();
+        var sx = newRect.right  - canvasRect.left;
+        var sy = newRect.top + newRect.height / 2 - canvasRect.top;
+        var ex = tRect0.left  - canvasRect.left;
+        var ey = tRect0.top + tRect0.height / 2 - canvasRect.top;
+        var c1x = sx + 70, c1y = sy - 50, c2x = ex - 50, c2y = ey + 120;
+        var d0 = 'M ' + sx + ' ' + sy + ' C ' + c1x + ' ' + c1y + ', ' + c2x + ' ' + c2y + ', ' + ex + ' ' + ey;
+        path.setAttribute('d', d0);
+        path.style.transition       = 'none';
+        path.style.strokeDasharray  = 'none';
+        path.style.strokeDashoffset = '0px';
+        svg.classList.add('visible');
+      }
+    }
+  });
+
+  // ── Draw temp→newNode using a SEPARATE second curve element ──
+  // The first curve (curveSvg/curvePath = newNode→oldNext) must NOT be touched.
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
       var row   = VIZ.el.listRow;
@@ -3607,6 +3659,112 @@ function imid_linkTemp() {
           }, 900);
         }
       }
+
+      // Draw animated curve from temp node → newNode using a second SVG
+      var canvas = document.getElementById('animCanvas');
+      if (!canvas) return;
+
+      var newNodeEl = VIZ.el.newNodeEl;
+      var newRect   = newNodeEl ? newNodeEl.getBoundingClientRect() : null;
+      if (!newRect) return;
+
+      var tempWrap = wraps[ti];
+      var tempEl   = tempWrap ? tempWrap.querySelector('.viz-node') : null;
+      if (!tempEl) return;
+
+      var canvasRect = canvas.getBoundingClientRect();
+      var tRect  = tempEl.getBoundingClientRect();
+      var startX = tRect.right  - canvasRect.left;
+      var startY = tRect.top + tRect.height / 2 - canvasRect.top;
+      var endX   = newRect.left - canvasRect.left;
+      var endY   = newRect.top  + newRect.height / 2 - canvasRect.top;
+
+      var cp1x = startX + 50;
+      var cp1y = startY + 60;
+      var cp2x = endX   - 50;
+      var cp2y = endY   - 60;
+
+      var d = 'M ' + startX + ' ' + startY
+        + ' C ' + cp1x + ' ' + cp1y + ', ' + cp2x + ' ' + cp2y + ', ' + endX + ' ' + endY;
+
+      // Reuse or create a dedicated second SVG for temp→newNode curve
+      var svg2  = document.getElementById('imid-temp-curve-svg');
+      var path2;
+      if (!svg2) {
+        svg2 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg2.id = 'imid-temp-curve-svg';
+        svg2.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;';
+        path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        var defs2 = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        var marker2 = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+        marker2.setAttribute('id', 'arrowhead-orange');
+        marker2.setAttribute('markerWidth', '10');
+        marker2.setAttribute('markerHeight', '7');
+        marker2.setAttribute('refX', '10');
+        marker2.setAttribute('refY', '3.5');
+        marker2.setAttribute('orient', 'auto');
+        var poly2 = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        poly2.setAttribute('points', '0 0, 10 3.5, 0 7');
+        poly2.setAttribute('fill', '#f97316');
+        marker2.appendChild(poly2);
+        defs2.appendChild(marker2);
+        svg2.appendChild(defs2);
+        path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path2.setAttribute('fill', 'none');
+        path2.setAttribute('stroke', '#f97316');
+        path2.setAttribute('stroke-width', '2.5');
+        path2.setAttribute('marker-end', 'url(#arrowhead-orange)');
+        svg2.appendChild(path2);
+        canvas.style.position = canvas.style.position || 'relative';
+        canvas.appendChild(svg2);
+      } else {
+        path2 = svg2.querySelector('path');
+      }
+
+      path2.setAttribute('d', d);
+      svg2.style.display = '';
+
+      var len2;
+      try { len2 = path2.getTotalLength(); } catch (e) { len2 = 300; }
+      if (!len2 || len2 < 1) len2 = 300;
+
+      path2.style.transition       = 'none';
+      path2.style.strokeDasharray  = len2 + 'px';
+      path2.style.strokeDashoffset = len2 + 'px';
+
+      // Remove leftover travel dot from second svg
+      var oldDot2 = svg2.querySelector('.viz-travel-dot');
+      if (oldDot2) oldDot2.parentNode.removeChild(oldDot2);
+
+      var dot2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot2.setAttribute('r', '5');
+      dot2.setAttribute('fill', '#f97316');
+      dot2.classList.add('viz-travel-dot');
+      dot2.style.filter = 'drop-shadow(0 0 4px rgba(249,115,22,0.7))';
+      svg2.appendChild(dot2);
+
+      var duration = 600;
+      var startTime2 = null;
+      function animDot2(ts) {
+        if (!startTime2) startTime2 = ts;
+        var p = Math.min((ts - startTime2) / duration, 1);
+        var e = p < 0.5 ? 2*p*p : 1 - Math.pow(-2*p+2, 2)/2;
+        try {
+          var pt = path2.getPointAtLength(e * len2);
+          dot2.setAttribute('cx', pt.x);
+          dot2.setAttribute('cy', pt.y);
+        } catch(err) {}
+        if (p < 1) { requestAnimationFrame(animDot2); }
+        else { setTimeout(function () { if (dot2.parentNode) dot2.parentNode.removeChild(dot2); }, 150); }
+      }
+
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          path2.style.transition       = 'stroke-dashoffset 0.6s cubic-bezier(0.4,0,0.2,1)';
+          path2.style.strokeDashoffset = '0px';
+          requestAnimationFrame(animDot2);
+        });
+      });
     });
   });
 }
@@ -3615,6 +3773,9 @@ function imid_final() {
   hideCurve();
   hideTempPointer();
   hideLoopBox();
+  // Clean up second curve (temp→newNode) drawn in imid_linkTemp
+  var svg2 = document.getElementById('imid-temp-curve-svg');
+  if (svg2) svg2.style.display = 'none';
 
   var pos = VIZ.insertPos;
   var val = VIZ.newValue;
