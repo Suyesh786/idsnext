@@ -515,6 +515,13 @@
   background: linear-gradient(135deg, #eef3ff 0%, #dce9ff 100%);
   box-shadow: 0 2px 8px rgba(79,140,255,0.10);
   flex-shrink: 0;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.sll-node-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(29,78,216,0.16);
+  border-color: #60a5fa;
 }
 
 .sll-node-tail {
@@ -566,50 +573,99 @@
 
 /* ─── DLL-specific chain diagram pieces ─────────────────────── */
 
-/* DLL node box variant — slightly wider for prev+next chips */
+/* DLL static chain node — horizontal [PREV | DATA | NEXT] */
 .dll-node-box {
+  flex-direction: row !important;
+  align-items: stretch !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Prev section — green */
+.dll-node-prev {
+  display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 6px 12px 4px;
-  gap: 4px;
-  min-width: 56px;
+  justify-content: center;
+  padding: 6px 8px;
+  gap: 2px;
+  background: linear-gradient(135deg, #f0fff4 0%, #d4f5de 100%);
+  border-right: 1.5px solid rgba(46,125,50,0.2);
+  min-width: 50px;
 }
 
-.dll-node-box .sll-node-data {
-  border-right: none;
-  border-bottom: 1.5px solid rgba(79,140,255,0.2);
-  width: 100%;
-  text-align: center;
-  padding: 6px 10px;
-}
-
-.dll-node-ptrs {
+/* Data section — neutral/bold, visually dominant */
+.dll-node-data-cell {
   display: flex;
-  gap: 4px;
   align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #eef3ff 0%, #dce9ff 100%);
+  border-left: 1.5px solid rgba(79,140,255,0.2);
+  border-right: 1.5px solid rgba(79,140,255,0.2);
+  min-width: 36px;
 }
 
-.dll-ptr-chip {
-  font-size: 8.5px;
+.dll-node-data-val {
+  font-size: 17px;
   font-weight: 700;
-  padding: 2px 5px;
-  border-radius: 4px;
-  letter-spacing: 0.3px;
+  color: #1d4ed8;
+  font-family: 'Courier New', monospace;
+  line-height: 1;
 }
 
-.dll-prev-chip {
-  background: #d4f5de;
-  color: #2e7d32;
+.sll-node-tail .dll-node-data-cell {
+  background: linear-gradient(135deg, #f3f0ff 0%, #e8e0ff 100%);
 }
 
-.dll-next-chip {
-  background: #e8e0ff;
+.sll-node-tail .dll-node-data-val {
   color: #4527a0;
 }
 
-.dll-null-chip {
+/* Next section — purple */
+.dll-node-next {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  gap: 2px;
+  background: linear-gradient(135deg, #f3f0ff 0%, #e8e0ff 100%);
+  border-left: 1.5px solid rgba(69,39,160,0.2);
+  min-width: 50px;
+}
+
+/* Shared label style */
+.dll-node-cell-label {
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1;
+}
+
+.dll-node-prev .dll-node-cell-label { color: #2e7d32; }
+.dll-node-next .dll-node-cell-label { color: #4527a0; }
+
+.dll-node-cell-val {
+  font-size: 8px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  line-height: 1;
+  text-align: center;
+  word-break: break-all;
+}
+
+.dll-node-prev .dll-node-cell-val { color: #2e7d32; }
+.dll-node-next .dll-node-cell-val { color: #4527a0; }
+
+.dll-node-cell-null {
+  color: #c62828 !important;
   background: #fff0f0;
-  color: #c62828;
+  padding: 1px 3px;
+  border-radius: 2px;
 }
 
 /* Double arrow between DLL nodes (shows → above and ← below) */
@@ -1363,7 +1419,7 @@
 /* ─── DLL Node Element ───────────────────────────────────────── */
 .sll-node-el {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: stretch;
   flex-shrink: 0;
   border-radius: 10px;
@@ -1371,14 +1427,27 @@
   border: 1.5px solid #93c5fd;
   background: linear-gradient(135deg, #eef3ff 0%, #dce9ff 100%);
   box-shadow: 0 2px 8px rgba(79,140,255,0.10);
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
   position: relative;
-  min-width: 60px;
+  min-width: 140px;
 }
 
 .sll-node-el:hover {
   transform: translateY(-2px) scale(1.03);
   box-shadow: 0 6px 16px rgba(29,78,216,0.18);
+  border-color: #60a5fa;
+}
+
+.sll-node-el:hover .sll-node-val {
+  background: linear-gradient(135deg, #dce9ff 0%, #c7d9ff 100%);
+}
+
+.sll-node-el:hover .dll-ptr-cell.dll-prev-cell {
+  background: linear-gradient(135deg, #d4f5de 0%, #bbf0cc 100%);
+}
+
+.sll-node-el:hover .dll-ptr-cell.dll-next-cell {
+  background: linear-gradient(135deg, #e8e0ff 0%, #d8ccff 100%);
 }
 
 .sll-node-el.node-highlight {
@@ -1418,53 +1487,68 @@
   100% { transform: scale(0) translateY(-30px); opacity: 0; }
 }
 
-/* ─── DLL Node Internals ─────────────────────────────────────── */
+/* ─── DLL Node Internals — horizontal [PREV | DATA | NEXT] ──── */
 
-/* Value row */
+/* DATA cell (middle) — value display, visually dominant */
 .sll-node-val {
+  order: 2;
   padding: 8px 14px;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   color: #1d4ed8;
   font-family: 'Courier New', monospace;
-  border-bottom: 1.5px solid rgba(79,140,255,0.2);
+  border-left: 1.5px solid rgba(79,140,255,0.25);
+  border-right: 1.5px solid rgba(79,140,255,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
+  min-width: 44px;
+  background: linear-gradient(135deg, #eef3ff 0%, #dce9ff 100%);
+  transition: background 0.22s ease;
+  flex-shrink: 0;
 }
 
-/* Pointer row (prev | next) — shows both pointers side by side */
+/* Pointer row — becomes a display:contents to let children
+   participate in the parent flexbox row */
 .dll-ptr-row {
-  display: flex;
-  align-items: stretch;
-  min-height: 32px;
+  display: contents;
 }
 
-.dll-ptr-cell {
-  flex: 1;
+/* PREV cell (left) — green tint */
+.dll-ptr-cell.dll-prev-cell {
+  order: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3px 6px;
-  gap: 1px;
+  padding: 5px 8px;
+  gap: 2px;
+  background: linear-gradient(135deg, #f0fff4 0%, #d4f5de 100%);
+  border-right: 1.5px solid rgba(46,125,50,0.2);
+  min-width: 48px;
+  flex-shrink: 0;
 }
 
-.dll-ptr-cell.dll-prev-cell {
-  background: rgba(212, 245, 222, 0.5);
-  border-right: 1px solid rgba(46,125,50,0.15);
-}
-
+/* NEXT cell (right) — purple tint */
 .dll-ptr-cell.dll-next-cell {
-  background: rgba(232, 224, 255, 0.5);
+  order: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+  gap: 2px;
+  background: linear-gradient(135deg, #f3f0ff 0%, #e8e0ff 100%);
+  border-left: 1.5px solid rgba(69,39,160,0.2);
+  min-width: 48px;
+  flex-shrink: 0;
 }
 
 .dll-ptr-cell-label {
-  font-size: 7.5px;
+  font-size: 7px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
   line-height: 1;
 }
 
@@ -1472,22 +1556,24 @@
 .dll-next-cell .dll-ptr-cell-label { color: #4527a0; }
 
 .dll-ptr-cell-val {
-  font-size: 8.5px;
+  font-size: 8px;
   font-weight: 600;
   font-family: 'Courier New', monospace;
   line-height: 1;
+  text-align: center;
+  word-break: break-all;
 }
 
 .dll-prev-cell .dll-ptr-cell-val { color: #2e7d32; }
 .dll-next-cell .dll-ptr-cell-val { color: #4527a0; }
 
 .dll-ptr-null {
-  font-size: 7.5px;
+  font-size: 7px;
   font-weight: 700;
   color: #c62828;
   font-family: 'Courier New', monospace;
   background: #fff0f0;
-  padding: 1px 2px;
+  padding: 1px 3px;
   border-radius: 2px;
   line-height: 1;
 }
