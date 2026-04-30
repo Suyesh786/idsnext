@@ -2150,7 +2150,7 @@
     min-width: 70px;
   }
 }
-/* ── Visualize Card (matches SLL) ── */
+/* ── Glassmorphism Visualize Card ─────────────────────────── */
 .visualize-card {
   display: flex;
   align-items: center;
@@ -2237,6 +2237,7 @@
   line-height: 1;
 }
 
+/* Ripple (kept for JS compat) */
 .visualize-btn-ripple {
   position: absolute;
   inset: 0;
@@ -2250,7 +2251,12 @@
   background: rgba(255,255,255,0.18);
 }
 
+/* Mobile: subtitle wraps/hides */
 @media (max-width: 600px) {
+  .section-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
   .visualize-card {
     padding: 8px 12px;
     gap: 8px;
@@ -2260,8 +2266,20 @@
     min-width: 0;
     box-sizing: border-box;
   }
-  .vc-text { min-width: 0; flex: 1; }
-  .vc-sub { display: none; }
-  .vc-title { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .vc-arrow { flex-shrink: 0; }
+  .vc-text {
+    min-width: 0;
+    flex: 1;
+  }
+  .vc-sub {
+    display: none;
+  }
+  .vc-title {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vc-arrow {
+    flex-shrink: 0;
+  }
 }
