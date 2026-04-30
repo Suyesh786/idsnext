@@ -974,3 +974,16 @@ function dllReset() {
 }
 
 /* ─── End of DLL Simulator ───────────────────────────────────── */
+/* ── Visualizer ── */
+function openVisualizer() {
+  const btn = document.querySelector(".visualize-card");
+  if (btn) {
+    btn.classList.add("ripple-active");
+    setTimeout(() => btn.classList.remove("ripple-active"), 300);
+  }
+  document.body.style.transition = "opacity 0.2s ease";
+  document.body.style.opacity = "0";
+  setTimeout(() => {
+    window.location.href = "doubly-visualize.html";
+  }, 180);
+}
