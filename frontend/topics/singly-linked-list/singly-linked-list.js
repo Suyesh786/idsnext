@@ -946,7 +946,7 @@ function sllReset() {
    Opens visualize.html with a smooth fade-out transition.
 ──────────────────────────────────────────────────────────────── */
 function openVisualizer() {
-  const btn = document.querySelector(".visualize-code-btn");
+  const btn = document.querySelector(".visualize-card");
 
   // Ripple glow
   if (btn) {

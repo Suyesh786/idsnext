@@ -357,11 +357,16 @@
       <div class="section-header">
         <span class="section-number">04</span>
         <h2 class="section-title">Implementation in C</h2>
-        <button class="visualize-code-btn" onclick="openVisualizer()">
-          <span class="visualize-btn-icon">🔍</span>
-          <span>Visualize Code</span>
+        <div class="visualize-card" onclick="openVisualizer()" role="button" tabindex="0"
+             onkeydown="if(event.key==='Enter'||event.key===' ')openVisualizer()">
+          <div class="vc-icon">✨</div>
+          <div class="vc-text">
+            <div class="vc-title">Visualize Code</div>
+            <div class="vc-sub">Watch step-by-step execution with animations</div>
+          </div>
+          <div class="vc-arrow">→</div>
           <span class="visualize-btn-ripple"></span>
-        </button>
+        </div>
       </div>
 
       <div class="impl-tabs">
