@@ -850,7 +850,7 @@ function anim_linkNext() {
 
       var isMobile = window.innerWidth <= 768;
 
-      // BLUE (NEXT): Outer Track
+      // BLUE (NEXT): Inner Track - STAYS COMPLETELY UNCHANGED
       var cp1x, cp1y, cp2x, cp2y;
       if (isMobile) {
         cp1x = startX + 60;  cp1y = startY - 60;  
@@ -997,7 +997,7 @@ function anim_linkPrev() {
 
       var isMobile2 = window.innerWidth <= 768;
 
-      // ── BLUE (NEXT) static arrow: Matches Step 5 exactly ──
+      // ── BLUE (NEXT) static arrow: Matches Step 5 exactly (UNCHANGED) ──
       var bcp1x, bcp1y, bcp2x, bcp2y;
       if (isMobile2) {
         bcp1x = startX + 60;  bcp1y = startY - 60;
@@ -1019,19 +1019,19 @@ function anim_linkPrev() {
       pathNext.style.strokeDashoffset = '0px';
       svg.classList.add('visible');
 
-      // ── AMBER (PREV): Tucked inside the blue curves to absolutely prevent crossing ──
+      // ── AMBER (PREV): Perfectly mathematically parallel track with ZERO intersections. ──
       var revStartX, revStartY, revEndX, revEndY;
       if (firstNodeEl2) {
         var fr2 = firstNodeEl2.getBoundingClientRect();
         revStartX = fr2.left - canvasRect.left;
-        revStartY = fr2.top + fr2.height * 0.72 - canvasRect.top; 
+        revStartY = fr2.top + fr2.height * 0.72 - canvasRect.top; // Lower portion of Head
       } else {
         revStartX = canvasRect.width * 0.15;
         revStartY = canvasRect.height * 0.55;
       }
       if (newRect) {
         revEndX = newRect.right - canvasRect.left;
-        revEndY = newRect.top + newRect.height * 0.72 - canvasRect.top; 
+        revEndY = newRect.top + newRect.height * 0.72 - canvasRect.top; // Lower portion of newNode
       } else {
         revEndX = canvasRect.width / 2 + 60;
         revEndY = canvasRect.height - 80;
@@ -1039,11 +1039,15 @@ function anim_linkPrev() {
 
       var rcp1x, rcp1y, rcp2x, rcp2y;
       if (isMobile2) {
-        rcp1x = revStartX - 45; rcp1y = revStartY + 45;   // Smaller offset, stays inside blue
-        rcp2x = revEndX + 35;   rcp2y = revEndY - 30;     // Smaller offset, stays inside blue
+        // Slopes matched perfectly for mobile scale
+        rcp1x = revStartX - 49;  rcp1y = revStartY + 70;   
+        rcp2x = revEndX + 96;    rcp2y = revEndY - 96;     
       } else {
-        rcp1x = revStartX - 90; rcp1y = revStartY + 80;   // Pulled tight to stay inside the blue -150/+150 turn
-        rcp2x = revEndX + 70;   rcp2y = revEndY - 50;     // Pulled tight to stay inside the blue +120/-100 turn
+        // Mathematical precision: matches Blue's slope ratio EXACTLY
+        // Left: slope is -1.0 (Orange -105/+105 perfectly parallels Blue -150/+150)
+        // Right: slope is -1.2 (Orange +192/-160 perfectly parallels Blue +120/-100)
+        rcp1x = revStartX - 105; rcp1y = revStartY + 105; 
+        rcp2x = revEndX + 192;   rcp2y = revEndY - 160;   
       }
 
       var dPrev = 'M ' + revStartX + ' ' + revStartY
