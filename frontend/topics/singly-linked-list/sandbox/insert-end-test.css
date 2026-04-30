@@ -1,351 +1,252 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap');
+/* ─── dll-simulator.css ────────────────────────────────────────
+   Adds DLL-specific simulator styles.
+   All base simulator classes (.simulator-card, .sim-btn,
+   .sim-status, .sim-stats, .sll-ptr-tag, etc.) are shared
+   with doubly-linked-list.css and do NOT need repeating here.
+   This file only adds what's new for the DLL node visual.
+──────────────────────────────────────────────────────────────── */
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #f0f4ff;
-  --surface: #ffffff;
-  --border: #d6e0f5;
-  --node-bg: #ffffff;
-  --node-border: #b8c9f0;
-  --node-next-bg: #eef2ff;
-  --head-color: #4b7bec;
-  --tail-color: #20bf6b;
-  --arrow-color: #00c8ff;
-  --accent: #4361ee;
-  --text: #1a2340;
-  --muted: #6b7a99;
-  --code-bg: #1a1f36;
-  --code-text: #a9b8e8;
-  --code-hl: #4361ee;
-  --new-node-border: #4361ee;
-  --new-node-bg: #eef2ff;
-  --radius: 12px;
-  --node-radius: 10px;
-}
-
-body {
-  background: var(--bg);
-  font-family: 'DM Sans', sans-serif;
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
+/* ══════════════════════════════════════════════════════════════
+   DLL NODE CONTAINER
+   Taller than SLL — each node has 3 cells (prev | data | next)
+   so the row needs more vertical room.
+══════════════════════════════════════════════════════════════ */
+.dll-sim-container {
+  min-height: 108px;   /* SLL = 88px; DLL nodes taller */
   align-items: center;
-  justify-content: center;
 }
 
-.page {
-  width: 880px;
-  max-width: 98vw;
-  background: var(--surface);
-  border-radius: 20px;
-  box-shadow: 0 8px 48px rgba(67,97,238,0.10), 0 2px 8px rgba(0,0,0,0.06);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-/* TOP BAR */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 28px;
-  border-bottom: 1.5px solid var(--border);
-  background: var(--surface);
-}
-.title-group { display: flex; align-items: center; gap: 10px; }
-.icon { font-size: 1.3rem; }
-.title { font-size: 1rem; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
-.step-badge {
-  font-size: 0.78rem; font-weight: 600;
-  background: #fff7e0; color: #c8860a;
-  border: 1.5px solid #f5c842;
-  border-radius: 20px; padding: 3px 14px;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* CODE PANEL */
-.code-panel {
-  background: var(--code-bg);
-  padding: 16px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.82rem;
-}
-.code-line {
-  color: var(--code-text);
-  padding: 3px 10px;
-  border-radius: 5px;
-  transition: background 0.3s, color 0.3s;
-  opacity: 0.45;
-}
-.code-line.active {
-  background: rgba(67,97,238,0.22);
-  color: #e0e8ff;
-  opacity: 1;
-}
-
-/* STAGE */
-.stage {
-  position: relative;
-  min-height: 320px;
-  padding: 40px 28px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  overflow: visible;
-}
-
-.arrow-svg {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 10;
-  overflow: visible;
-}
-
-/* LIST ROW */
-.list-row {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  position: relative;
-  z-index: 2;
-}
-
-/* NODE */
-.node-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-}
-
-.pointer-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
-  background: #dbeafe;
-  color: #1d4ed8;
-  border-radius: 5px;
-  padding: 1px 7px;
-  margin-bottom: 2px;
-  white-space: nowrap;
-}
-.pointer-label.tail-lbl {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.pointer-addr {
-  font-size: 0.65rem;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--muted);
-  margin-bottom: 2px;
-}
-
-.pointer-arrow {
-  font-size: 1rem;
-  color: #4b7bec;
-  line-height: 1;
-  margin-bottom: 3px;
-}
-.pointer-arrow.tail-arr { color: #20bf6b; }
-
-.node-box {
-  display: flex;
+/* ══════════════════════════════════════════════════════════════
+   DLL NODE ELEMENT  — three-cell layout
+   [prev cell] | [data cell] | [next cell]
+   Inherits .sll-node-el for border, shadow, animation classes.
+══════════════════════════════════════════════════════════════ */
+.dll-node-el {
+  flex-direction: row;
   align-items: stretch;
-  border: 2px solid var(--node-border);
-  border-radius: var(--node-radius);
-  background: var(--node-bg);
-  overflow: hidden;
-  min-width: 110px;
-  box-shadow: 0 2px 8px rgba(67,97,238,0.07);
-  transition: box-shadow 0.3s, border-color 0.3s;
+  min-height: 72px;
 }
 
-.node-box.highlighted {
-  border-color: #4361ee;
-  box-shadow: 0 0 0 3px rgba(67,97,238,0.18), 0 2px 8px rgba(67,97,238,0.12);
-}
-
-.node-box.tail-highlighted {
-  border-color: #20bf6b;
-  box-shadow: 0 0 0 3px rgba(32,191,107,0.18);
-}
-
-.node-data {
-  padding: 10px 16px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--text);
-  border-right: 1.5px solid var(--node-border);
-  min-width: 42px;
-  text-align: center;
-  background: #f5f8ff;
-}
-
-.node-next {
-  padding: 10px 10px;
-  font-size: 0.72rem;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--muted);
-  background: var(--node-next-bg);
+/* ── Shared pointer cell base ─────────────────────────────── */
+.dll-node-prev-cell,
+.dll-node-next-cell {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
+  padding: 6px 9px;
+  background: rgba(255, 255, 255, 0.45);
   min-width: 52px;
 }
 
-.node-addr-below {
-  font-size: 0.65rem;
-  font-family: 'JetBrains Mono', monospace;
-  color: #aab4cc;
-  margin-top: 5px;
+/* prev cell — teal tint to distinguish from next */
+.dll-node-prev-cell {
+  background: rgba(0, 150, 136, 0.07);
+  border-right: 1.5px solid rgba(0, 121, 107, 0.18);
 }
 
-/* CONNECTOR ARROWS between nodes */
-.conn-arrow {
-  display: flex;
-  align-items: center;
-  padding: 0 2px;
-  color: #93a8d4;
-  font-size: 1.2rem;
-  font-weight: 300;
-  flex-shrink: 0;
-  z-index: 2;
-  position: relative;
+/* next cell — purple tint, mirrors SLL's next cell */
+.dll-node-next-cell {
+  background: rgba(255, 255, 255, 0.45);
+  border-left: 1.5px solid rgba(79, 140, 255, 0.18);
 }
 
-/* NULL box */
-.null-box {
-  background: #f0f4ff;
-  border: 2px dashed #b8c9f0;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 0.8rem;
-  font-family: 'JetBrains Mono', monospace;
-  color: #93a8d4;
-  font-weight: 600;
-}
-
-/* NEW NODE AREA */
-.new-node-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 64px;
-  opacity: 0;
-  transform: scale(0.85) translateY(10px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  position: relative;
-  z-index: 2;
-}
-.new-node-area.visible {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-.node-box.new-node {
-  border-color: var(--new-node-border);
-  border-width: 2.5px;
-  background: var(--new-node-bg);
-  min-width: 120px;
-}
-.node-box.new-node .node-data {
-  background: #e8edff;
-  color: #2d3a8c;
-  border-right-color: #c5cff8;
-}
-.node-box.new-node .node-next {
-  background: #eef2ff;
-  color: var(--muted);
-}
-
-.node-addr {
-  font-size: 0.65rem;
-  font-family: 'JetBrains Mono', monospace;
-  color: #aab4cc;
-  margin-top: 5px;
-}
-.node-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
-  background: #fff3cd;
-  color: #856404;
-  border-radius: 5px;
-  padding: 2px 10px;
-  margin-top: 5px;
-}
-
-/* DESCRIPTION */
-.desc-panel {
-  background: #f5f8ff;
-  border-top: 1.5px solid var(--border);
-  padding: 14px 28px;
-  font-size: 0.875rem;
-  color: var(--muted);
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-}
-#descText { transition: opacity 0.3s; }
-
-/* CONTROLS */
-.controls {
+/* ── Data cell (centre) ───────────────────────────────────── */
+.dll-node-val-cell {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 18px 28px 8px;
-}
-.btn {
-  border: none; cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem; font-weight: 600;
-  border-radius: 10px;
-  padding: 10px 24px;
-  transition: background 0.2s, transform 0.1s, opacity 0.2s;
-}
-.btn:active { transform: scale(0.96); }
-.btn-reset { background: #f0f4ff; color: #4361ee; border: 1.5px solid #d6e0f5; }
-.btn-prev  { background: #f0f4ff; color: #4361ee; border: 1.5px solid #d6e0f5; }
-.btn-next  { background: #4361ee; color: #fff; }
-.btn-play  { background: #1a1f36; color: #fff; min-width: 100px; }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-/* DOTS */
-.dots {
-  display: flex; justify-content: center; gap: 8px;
-  padding: 8px 0 20px;
-}
-.dot {
-  width: 9px; height: 9px; border-radius: 50%;
-  background: #d6e0f5;
-  transition: background 0.3s, width 0.3s;
-  display: inline-block;
-}
-.dot.active { background: #4361ee; width: 24px; border-radius: 5px; }
-
-/* ANIMATED PATH */
-.anim-path {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  transition: stroke-dashoffset 1.2s ease-in-out;
-}
-.anim-path.drawn {
-  stroke-dashoffset: 0;
+  padding: 10px 14px;
+  border-left:  1.5px solid rgba(79, 140, 255, 0.2);
+  border-right: 1.5px solid rgba(79, 140, 255, 0.2);
+  min-width: 44px;
 }
 
-/* Tail pointer transition */
-.tail-transition {
-  transition: all 0.6s cubic-bezier(0.4,0,0.2,1);
+.dll-node-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1d4ed8;
+  font-family: 'Courier New', monospace;
+}
+
+/* ── Pointer labels (prev / next) ─────────────────────────── */
+.dll-ptr-label {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1;
+}
+
+/* ── Pointer value text ───────────────────────────────────── */
+.dll-ptr-val {
+  font-size: 9px;
+  font-weight: 600;
+  color: #4527a0;
+  font-family: 'Courier New', monospace;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* prev pointer value — teal color */
+.dll-prev-color { color: #00796b; }
+
+/* NULL pointer — red pill, same as SLL */
+.dll-ptr-null {
+  font-size: 8px;
+  font-weight: 700;
+  color: #c62828;
+  font-family: 'Courier New', monospace;
+  background: #fff0f0;
+  padding: 1px 3px;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NODE STATE OVERRIDES
+   Redefine on .dll-node-el so they beat .sll-node-el specificity.
+══════════════════════════════════════════════════════════════ */
+.dll-node-el.node-new {
+  border-color: #4caf50;
+  background: linear-gradient(135deg, #e8f9ee 0%, #d4f5de 100%);
+  animation: sll-node-appear 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.dll-node-el.node-del {
+  border-color: #ef9a9a;
+  background: linear-gradient(135deg, #fff0f0 0%, #ffcdd2 100%);
+  animation: sll-node-vanish 0.4s cubic-bezier(0.4, 0, 0.8, 0.4) forwards;
+}
+
+.dll-node-el.node-highlight {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #fff8e8 0%, #fde68a 100%);
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.25), 0 4px 12px rgba(245,158,11,0.2);
+}
+
+.dll-node-el.node-traversed {
+  border-color: #a78bfa;
+  background: linear-gradient(135deg, #f3f0ff 0%, #e8e0ff 100%);
+  box-shadow: 0 0 0 3px rgba(167,139,250,0.25), 0 4px 12px rgba(124,58,237,0.15);
+}
+
+.dll-node-el.node-position-highlight {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #fff8e8 0%, #fde68a 100%);
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.3), 0 4px 14px rgba(245,158,11,0.25);
+}
+
+.dll-node-el.node-insert-target {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.25), 0 4px 14px rgba(16,185,129,0.18);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BIDIRECTIONAL CONNECTOR  — shows → and ← stacked
+   Sits between nodes. Width is compact so chain stays readable.
+══════════════════════════════════════════════════════════════ */
+.dll-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0 5px;
+  flex-shrink: 0;
+}
+
+.dll-arrow-next {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--blue);
+  line-height: 1;
+}
+
+.dll-arrow-prev {
+  font-size: 15px;
+  font-weight: 700;
+  color: #00796b;   /* teal — matches prev cell tint */
+  line-height: 1;
+}
+
+/* First connector: → only (NULL → head) */
+.dll-connector-first .dll-arrow-next { font-size: 14px; opacity: 0.7; }
+
+/* Last connector: → only (tail → NULL) */
+.dll-connector-last .dll-arrow-next { font-size: 14px; opacity: 0.7; }
+
+/* Appear animation for new connectors */
+.dll-connector.arrow-new {
+  animation: arrow-appear 0.35s ease forwards;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NULL CAPS  — shown at both ends of the chain
+══════════════════════════════════════════════════════════════ */
+.dll-null-cap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #c62828;
+  background: #fff0f0;
+  border: 1.5px solid #ffcdd2;
+  border-radius: 7px;
+  font-family: 'Courier New', monospace;
+  flex-shrink: 0;
+}
+
+.dll-null-left  { margin-right: 0; }
+.dll-null-right { margin-left: 0; }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .dll-sim-container {
+    min-height: 96px;
+  }
+
+  .dll-node-prev-cell,
+  .dll-node-next-cell {
+    min-width: 40px;
+    padding: 5px 6px;
+  }
+
+  .dll-node-val-cell {
+    padding: 8px 10px;
+    min-width: 36px;
+  }
+
+  .dll-node-val { font-size: 13px; }
+
+  .dll-ptr-val  { font-size: 8px; }
+  .dll-ptr-null { font-size: 7.5px; }
+  .dll-ptr-label { font-size: 7px; }
+
+  .dll-arrow-next,
+  .dll-arrow-prev { font-size: 12px; }
+
+  .dll-null-cap { font-size: 9px; padding: 4px 7px; }
+}
+
+@media (max-width: 480px) {
+  .dll-node-prev-cell,
+  .dll-node-next-cell {
+    min-width: 32px;
+    padding: 4px 5px;
+  }
+
+  .dll-node-val-cell {
+    padding: 6px 8px;
+    min-width: 30px;
+  }
+
+  .dll-node-val { font-size: 12px; }
 }

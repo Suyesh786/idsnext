@@ -1,406 +1,757 @@
-'use strict';
+/* ══════════════════════════════════════════════════════════════
+   DOUBLY LINKED LIST SIMULATOR  —  dll-simulator.js
+   ──────────────────────────────────────────────────────────────
+   Architecture mirrors singly-linked-list.js exactly.
+   KEY DIFFERENCE: every node carries BOTH prev AND next.
+   All insert / delete operations maintain both links.
+   Rendering shows NULL ← [prev|data|next] ↔ … ↔ NULL
+   ──────────────────────────────────────────────────────────────
+   Internal state
+     dllNodes[id] = { id, value, prev: id|null, next: id|null }
+     dllHead      = id of first node (its prev === null)
+     dllTail      = id of last node  (its next === null)
+   DOM ids use prefix "dll" to avoid collisions with SLL page.
+══════════════════════════════════════════════════════════════ */
 
-// ─── DATA ────────────────────────────────────────────────────────────────────
-const NODES = [
-  { data: 1, addr: '0x101', next: '0x102' },
-  { data: 2, addr: '0x102', next: '0x103' },
-  { data: 3, addr: '0x103', next: '0x104' },
-  { data: 4, addr: '0x104', next: 'NULL'  },
-];
-const NEW_NODE = { data: 0, addr: '0x100', next: 'NULL' };
-const TOTAL_STEPS = 4;
+const DLL_MAX_SIZE  = 8;
+const DLL_VAL_MIN   = -999;
+const DLL_VAL_MAX   = 999;
 
-const STEP_DESCS = [
-  'Initial linked list with 4 nodes. HEAD points to node 1 (0x101). TAIL points to node 4 (0x104).',
-  'A new node is created with value 0 at address 0x100. Its next pointer is set to NULL.',
-  'tail→next = newNode — The next field of node 4 (current tail) is updated to point to the new node at 0x100.',
-  'tail = newNode — The TAIL pointer moves from node 4 to the new node (0x100).',
-  'List rearrangement complete! The new node joins the main row: 1 → 2 → 3 → 4 → 0 → NULL.',
-];
+let dllNodes     = {};    // id → { id, value, prev, next }
+let dllHead      = null;
+let dllTail      = null;
+let dllSize      = 0;
+let dllOpCount   = 0;
+let dllAnimating = false;
+let dllIdSeq     = 0;
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let currentStep = 0;
-let playing = false;
-let playTimer = null;
+function dllNewId() { return "d" + (++dllIdSeq); }
 
-// ─── ELEMENTS ────────────────────────────────────────────────────────────────
-const listRow     = document.getElementById('listRow');
-const newNodeArea = document.getElementById('newNodeArea');
-const newNodeNext = document.getElementById('newNodeNext');
-const descText    = document.getElementById('descText');
-const stepBadge   = document.getElementById('stepBadge');
-const btnNext     = document.getElementById('btnNext');
-const btnPrev     = document.getElementById('btnPrev');
-const btnPlay     = document.getElementById('btnPlay');
-const btnReset    = document.getElementById('btnReset');
-const dots        = document.querySelectorAll('.dot');
-const animPath    = document.getElementById('animPath');
-const arrowSvg    = document.getElementById('arrowSvg');
-const stage       = document.getElementById('stage');
+/* ─── Position input toggle ──────────────────────────────────── */
+function dllEnablePosInput(enable) {
+  const el = document.getElementById("dllPosInput");
+  if (el) el.disabled = !enable;
+}
 
-const CODE_IDS = ['code0','code1','code2','code3','code4'];
+function dllHandleInsertAtPosition() {
+  const posInput = document.getElementById("dllPosInput");
+  if (!posInput) return;
+  if (posInput.disabled) {
+    dllEnablePosInput(true);
+    posInput.focus();
+    dllSetStatus("Position input enabled — enter a position and click 'At Position' again.", "info");
+    return;
+  }
+  dllInsertAtPosition();
+}
 
-// ─── BUILD INITIAL LIST ───────────────────────────────────────────────────────
-function buildList(includeFinal = false) {
-  listRow.innerHTML = '';
+/* ─── Status helpers ─────────────────────────────────────────── */
+function dllSetStatus(msg, type = "") {
+  const bar = document.getElementById("dllStatus");
+  const txt = document.getElementById("dllStatusText");
+  if (!bar || !txt) return;
+  bar.className = "sim-status";
+  if (type) bar.classList.add(`status-${type}`);
+  txt.textContent = msg;
+}
 
-  const allNodes = includeFinal
-    ? [...NODES, NEW_NODE]
-    : NODES;
+function dllUpdateStats() {
+  const sizeEl = document.getElementById("dllStatSize");
+  const headEl = document.getElementById("dllStatHead");
+  const tailEl = document.getElementById("dllStatTail");
+  const opsEl  = document.getElementById("dllStatOps");
+  if (sizeEl) sizeEl.textContent = dllSize;
+  if (headEl) headEl.textContent = dllHead !== null ? dllNodes[dllHead].value : "—";
+  if (tailEl) tailEl.textContent = dllTail !== null ? dllNodes[dllTail].value : "—";
+  if (opsEl)  opsEl.textContent  = dllOpCount;
+}
 
-  allNodes.forEach((n, i) => {
-    const isHead = i === 0;
-    const isTail = includeFinal ? i === allNodes.length - 1 : i === NODES.length - 1;
+function dllUpdateEmptyState() {
+  const empty = document.getElementById("dllEmptyState");
+  if (!empty) return;
+  empty.style.display = dllSize === 0 ? "flex" : "none";
+}
 
-    const wrap = document.createElement('div');
-    wrap.className = 'node-wrap';
-    wrap.id = `nodeWrap${i}`;
+/* ─── Input validation ───────────────────────────────────────── */
+function dllGetInputValue() {
+  const input = document.getElementById("dllInput");
+  if (!input) return null;
+  const raw = input.value.trim();
+  if (raw === "" || isNaN(Number(raw))) {
+    dllSetStatus("⚠ Please enter a valid number.", "error");
+    input.focus();
+    return null;
+  }
+  const val = parseInt(raw, 10);
+  if (val < DLL_VAL_MIN || val > DLL_VAL_MAX) {
+    dllSetStatus(`⚠ Value out of range. Use ${DLL_VAL_MIN} to ${DLL_VAL_MAX}.`, "error");
+    input.focus();
+    return null;
+  }
+  return val;
+}
 
-    // HEAD label
-    if (isHead) {
-      wrap.innerHTML += `
-        <div class="pointer-label">HEAD</div>
-        <div class="pointer-addr">${n.addr}</div>
-        <div class="pointer-arrow">↓</div>`;
+function dllGetPositionValue() {
+  const input = document.getElementById("dllPosInput");
+  if (!input) return null;
+  const raw = input.value.trim();
+  if (raw === "" || isNaN(Number(raw))) {
+    dllSetStatus("⚠ Please enter a valid position (0-based index).", "error");
+    input.focus();
+    return null;
+  }
+  const pos = parseInt(raw, 10);
+  if (pos < 0) {
+    dllSetStatus("⚠ Position must be 0 or greater.", "error");
+    input.focus();
+    return null;
+  }
+  if (pos > dllSize) {
+    dllSetStatus(`⚠ Position ${pos} out of range. Valid: 0 to ${dllSize}.`, "error");
+    input.focus();
+    return null;
+  }
+  return pos;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DOM RENDERING — builds horizontal bidirectional chain
+   ──────────────────────────────────────────────────────────────
+   Layout per node:
+     NULL← | [prev | data | next] | ↔ | [prev | data | next] | →NULL
+   Left NULL shown before head, right NULL shown after tail.
+   Between nodes: a bidirectional ↔ arrow connector.
+══════════════════════════════════════════════════════════════ */
+function dllRenderList(newNodeId = null) {
+  const container = document.getElementById("dllSimContainer");
+  if (!container) return;
+
+  // Clear all except empty-state placeholder
+  Array.from(container.children).forEach(child => {
+    if (!child.classList.contains("sim-empty-state")) child.remove();
+  });
+
+  dllUpdateEmptyState();
+  if (dllSize === 0) {
+    dllUpdatePointerLabels([], {});
+    return;
+  }
+
+  // Walk head → tail
+  const orderedIds = [];
+  let cur = dllHead;
+  while (cur !== null) {
+    orderedIds.push(cur);
+    cur = dllNodes[cur].next;
+  }
+
+  const domNodes = {}; // id → node DOM element
+
+  // ── NULL cap on left (prev of head)
+  const leftNull = document.createElement("div");
+  leftNull.className = "dll-null-cap dll-null-left";
+  leftNull.textContent = "NULL";
+  container.appendChild(leftNull);
+
+  // ── Left arrow pointing right from NULL to head
+  const leftArrow = document.createElement("div");
+  leftArrow.className = "dll-connector dll-connector-first";
+  leftArrow.innerHTML = `<span class="dll-arrow-next">→</span>`;
+  container.appendChild(leftArrow);
+
+  orderedIds.forEach((id, idx) => {
+    const node   = dllNodes[id];
+    const isLast = (id === dllTail);
+    const isFirst = (id === dllHead);
+
+    // ── Node element: [prev | value | next]
+    const el = document.createElement("div");
+    el.className = "sll-node-el dll-node-el";
+    el.dataset.id = id;
+
+    if (id === newNodeId) {
+      el.classList.add("node-new");
+      setTimeout(() => el.classList.remove("node-new"), 500);
     }
 
-    // TAIL label (only on current tail; updated later)
-    if (isTail) {
-      wrap.innerHTML += `
-        <div class="pointer-label tail-lbl" id="tailLabel">TAIL</div>
-        <div class="pointer-addr" id="tailAddr">${n.addr}</div>
-        <div class="pointer-arrow tail-arr" id="tailArrow">↓</div>`;
-    } else if (!isHead) {
-      // Spacer so nodes align
-      wrap.innerHTML += `<div style="height:${isHead ? 0 : 54}px"></div>`;
-    }
+    // prev pointer display
+    const prevPtrDisplay = isFirst
+      ? `<span class="dll-ptr-null">NULL</span>`
+      : `<span class="dll-ptr-val dll-prev-color">← ${dllNodes[node.prev].value}</span>`;
 
-    // Node box
-    const nextDisplay = includeFinal
-      ? (i < allNodes.length - 1 ? allNodes[i+1].addr : 'NULL')
-      : (i < NODES.length - 1 ? NODES[i+1].addr : 'NULL');
+    // next pointer display
+    const nextPtrDisplay = isLast
+      ? `<span class="dll-ptr-null">NULL</span>`
+      : `<span class="dll-ptr-val">→ ${dllNodes[node.next].value}</span>`;
 
-    const nodeId = `node${i}`;
-    wrap.innerHTML += `
-      <div class="node-box ${isTail ? 'tail-highlighted' : ''}" id="${nodeId}">
-        <div class="node-data">${n.data}</div>
-        <div class="node-next" id="nodeNext${i}">${nextDisplay}</div>
+    el.innerHTML = `
+      <div class="dll-node-prev-cell">
+        <span class="dll-ptr-label">prev</span>
+        ${prevPtrDisplay}
       </div>
-      <div class="node-addr-below">${n.addr}</div>`;
+      <div class="dll-node-val-cell">
+        <span class="dll-node-val">${node.value}</span>
+      </div>
+      <div class="dll-node-next-cell">
+        <span class="dll-ptr-label">next</span>
+        ${nextPtrDisplay}
+      </div>
+    `;
 
-    listRow.appendChild(wrap);
+    container.appendChild(el);
+    domNodes[id] = el;
 
-    // Connector arrow (between nodes)
-    if (i < allNodes.length - 1) {
-      const arr = document.createElement('div');
-      arr.className = 'conn-arrow';
-      arr.innerHTML = '→';
-      listRow.appendChild(arr);
+    if (!isLast) {
+      // ── Bidirectional ↔ connector between nodes
+      const conn = document.createElement("div");
+      conn.className = "dll-connector";
+      if (id === newNodeId) conn.classList.add("arrow-new");
+      conn.innerHTML = `
+        <span class="dll-arrow-next">→</span>
+        <span class="dll-arrow-prev">←</span>
+      `;
+      container.appendChild(conn);
     }
   });
 
-  // NULL at end
-  const nullBox = document.createElement('div');
-  nullBox.className = 'conn-arrow';
-  nullBox.innerHTML = '→';
-  listRow.appendChild(nullBox);
+  // ── Right arrow + NULL cap after tail
+  const rightArrow = document.createElement("div");
+  rightArrow.className = "dll-connector dll-connector-last";
+  rightArrow.innerHTML = `<span class="dll-arrow-next">→</span>`;
+  container.appendChild(rightArrow);
 
-  const nb = document.createElement('div');
-  nb.className = 'null-box';
-  nb.id = 'nullBox';
-  nb.textContent = 'NULL';
-  listRow.appendChild(nb);
-}
+  const rightNull = document.createElement("div");
+  rightNull.className = "dll-null-cap dll-null-right";
+  rightNull.textContent = "NULL";
+  container.appendChild(rightNull);
 
-// ─── RESET ────────────────────────────────────────────────────────────────────
-function reset() {
-  currentStep = 0;
-  stopPlay();
-  clearArrow();
-  newNodeArea.classList.remove('visible');
-  newNodeNext.textContent = 'NULL';
-  document.getElementById('newNodeAddr').textContent = NEW_NODE.addr;
-  buildList(false);
-  updateUI();
-}
-
-// ─── STEP LOGIC ──────────────────────────────────────────────────────────────
-function goToStep(s) {
-  if (s < 0 || s > TOTAL_STEPS) return;
-  currentStep = s;
-  applyStep();
-  updateUI();
-}
-
-function applyStep() {
-  clearArrow();
-
-  // Highlight code
-  CODE_IDS.forEach((id, i) => {
-    document.getElementById(id).classList.toggle('active', i === currentStep);
-  });
-
-  switch (currentStep) {
-    case 0: stepInit();    break;
-    case 1: stepCreate();  break;
-    case 2: stepLink();    break;
-    case 3: stepTail();    break;
-    case 4: stepFinal();   break;
-  }
-
-  descText.textContent = STEP_DESCS[currentStep];
-}
-
-function stepInit() {
-  buildList(false);
-  newNodeArea.classList.remove('visible');
-}
-
-function stepCreate() {
-  buildList(false);
-  newNodeArea.classList.remove('visible');
+  // HEAD / TAIL floating labels
   requestAnimationFrame(() => {
-    newNodeArea.classList.add('visible');
+    dllUpdatePointerLabels(orderedIds, domNodes);
   });
 }
 
-function stepLink() {
-  buildList(false);
-  newNodeArea.classList.add('visible');
+/* ─── HEAD / TAIL floating pointer tags ──────────────────────── */
+function dllUpdatePointerLabels(orderedIds, domNodes) {
+  const ptrContainer = document.getElementById("dllPtrIndicators");
+  const simContainer = document.getElementById("dllSimContainer");
+  if (!ptrContainer || !simContainer) return;
 
-  // Update tail node's next field
-  const tailNextEl = document.getElementById(`nodeNext${NODES.length - 1}`);
-  if (tailNextEl) {
-    tailNextEl.textContent = NEW_NODE.addr;
-    tailNextEl.style.color = '#4361ee';
-    tailNextEl.style.fontWeight = '700';
+  ptrContainer.innerHTML = "";
+  if (!orderedIds || orderedIds.length === 0) return;
+
+  const headId = orderedIds[0];
+  const tailId = orderedIds[orderedIds.length - 1];
+  if (!domNodes) return;
+
+  const ptrRect = ptrContainer.getBoundingClientRect();
+
+  function makeTag(label, cls) {
+    const tag = document.createElement("div");
+    tag.className = `sll-ptr-tag ${cls}`;
+    tag.innerHTML = `
+      <span class="sll-ptr-tag-label">${label}</span>
+      <span class="sll-ptr-tag-arrow">↓</span>
+    `;
+    return tag;
   }
 
-  // Highlight tail node
-  const tailNode = document.getElementById(`node${NODES.length - 1}`);
-  if (tailNode) tailNode.classList.add('highlighted');
-
-  // Draw the curved arrow
-  requestAnimationFrame(() => drawCurvedArrow());
-}
-
-function stepTail() {
-  buildList(false);
-  newNodeArea.classList.add('visible');
-
-  // Keep next pointer updated
-  const tailNextEl = document.getElementById(`nodeNext${NODES.length - 1}`);
-  if (tailNextEl) {
-    tailNextEl.textContent = NEW_NODE.addr;
-    tailNextEl.style.color = '#4361ee';
-    tailNextEl.style.fontWeight = '700';
+  const headEl = domNodes[headId];
+  if (headEl) {
+    const r   = headEl.getBoundingClientRect();
+    const tag = makeTag("HEAD", "ptr-head");
+    tag.style.position = "absolute";
+    tag.style.left = (r.left - ptrRect.left + r.width / 2 - 20) + "px";
+    tag.style.bottom = "0";
+    ptrContainer.appendChild(tag);
   }
 
-  // Move TAIL pointer to new node visually
-  const oldTailLabel = document.getElementById('tailLabel');
-  const oldTailAddr  = document.getElementById('tailAddr');
-  const oldTailArrow = document.getElementById('tailArrow');
-  if (oldTailLabel) oldTailLabel.style.display = 'none';
-  if (oldTailAddr)  oldTailAddr.style.display  = 'none';
-  if (oldTailArrow) oldTailArrow.style.display = 'none';
-
-  // Remove tail highlight from node 4
-  const tailNode = document.getElementById(`node${NODES.length - 1}`);
-  if (tailNode) tailNode.classList.remove('tail-highlighted');
-
-  // Add TAIL pointer above new node
-  const nnArea = newNodeArea;
-  nnArea.classList.add('visible');
-
-  let tailEl = document.getElementById('newTailLabel');
-  if (!tailEl) {
-    tailEl = document.createElement('div');
-    tailEl.id = 'newTailLabel';
-    tailEl.innerHTML = `
-      <div class="pointer-label tail-lbl">TAIL</div>
-      <div class="pointer-addr">${NEW_NODE.addr}</div>
-      <div class="pointer-arrow tail-arr">↓</div>`;
-    tailEl.style.display = 'flex';
-    tailEl.style.flexDirection = 'column';
-    tailEl.style.alignItems = 'center';
-    tailEl.style.marginBottom = '4px';
-    tailEl.style.opacity = '0';
-    tailEl.style.transition = 'opacity 0.5s ease';
-    nnArea.insertBefore(tailEl, nnArea.firstChild);
-  }
-  requestAnimationFrame(() => { tailEl.style.opacity = '1'; });
-
-  // Highlight new node
-  const newNodeBox = document.querySelector('.new-node');
-  if (newNodeBox) {
-    newNodeBox.style.borderColor = '#20bf6b';
-    newNodeBox.style.boxShadow = '0 0 0 3px rgba(32,191,107,0.18)';
+  const tailEl = domNodes[tailId];
+  if (tailEl) {
+    const r   = tailEl.getBoundingClientRect();
+    const tag = makeTag("TAIL", "ptr-tail");
+    tag.style.position = "absolute";
+    tag.style.left = headId === tailId
+      ? (r.left - ptrRect.left + r.width / 2 + 30) + "px"
+      : (r.left - ptrRect.left + r.width / 2 - 20) + "px";
+    tag.style.bottom = "0";
+    ptrContainer.appendChild(tag);
   }
 }
 
-function stepFinal() {
-  // Rebuild with final node included inline
-  buildList(true);
-  newNodeArea.classList.remove('visible');
+/* ══════════════════════════════════════════════════════════════
+   INSERT AT BEGINNING — O(1)
+   Pointer changes: newNode.next = head; head.prev = newNode; head = newNode
+══════════════════════════════════════════════════════════════ */
+function dllInsertBeginning() {
+  if (dllAnimating) return;
 
-  // Flash the last node
-  const lastNode = document.getElementById(`node${NODES.length}`);
-  if (lastNode) {
-    lastNode.classList.add('highlighted');
-    setTimeout(() => lastNode.classList.remove('highlighted'), 1200);
+  const val = dllGetInputValue();
+  if (val === null) return;
+
+  if (dllSize >= DLL_MAX_SIZE) {
+    dllSetStatus(`⚠ List is full! Maximum size is ${DLL_MAX_SIZE}.`, "error");
+    return;
   }
+
+  dllAnimating = true;
+  const id = dllNewId();
+
+  // Wire prev/next
+  dllNodes[id] = { id, value: val, prev: null, next: dllHead };
+
+  if (dllHead === null) {
+    dllHead = id;
+    dllTail = id;
+  } else {
+    dllNodes[dllHead].prev = id;   // ← key DLL step: old head's prev → new node
+    dllHead = id;
+  }
+  dllSize++;
+  dllOpCount++;
+
+  document.getElementById("dllInput").value = "";
+  document.getElementById("dllInput").focus();
+
+  dllRenderList(id);
+  dllUpdateStats();
+  dllSetStatus(`✓ Inserted ${val} at beginning. newNode→next = old head; old head→prev = newNode.`, "success");
+
+  setTimeout(() => { dllAnimating = false; }, 500);
 }
 
-// ─── CURVED ARROW ─────────────────────────────────────────────────────────────
-// ─── STRAIGHT RECTANGULAR PATH ────────────────────────────────────────────────
-//
-//  Shape (5 segments, 4 sharp 90° corners):
-//
-//  node4 ──────────┐        (1) right from node4
-//                  │        (2) down to midpoint between rows
-//       ┌──────────┘        (3) left, overshooting node0 by ~30px
-//       │                   (4) down to node0 vertical center
-//       └──→ [node 0]       (5) right into node0, arrowhead →
-//
-function drawCurvedArrow() {
-  const svgRect = arrowSvg.getBoundingClientRect();
+/* ══════════════════════════════════════════════════════════════
+   INSERT AT END — O(1) with tail pointer
+   Pointer changes: tail.next = newNode; newNode.prev = tail; tail = newNode
+══════════════════════════════════════════════════════════════ */
+function dllInsertEnd() {
+  if (dllAnimating) return;
 
-  const tailNodeEl = document.getElementById(`node${NODES.length - 1}`);
-  if (!tailNodeEl) return;
-  const tailRect = tailNodeEl.getBoundingClientRect();
+  const val = dllGetInputValue();
+  if (val === null) return;
 
-  const newNodeBox = document.querySelector('#newNodeArea .node-box');
-  if (!newNodeBox) return;
-  const nnRect = newNodeBox.getBoundingClientRect();
+  if (dllSize >= DLL_MAX_SIZE) {
+    dllSetStatus(`⚠ List is full! Maximum size is ${DLL_MAX_SIZE}.`, "error");
+    return;
+  }
 
-  const ox = svgRect.left;
-  const oy = svgRect.top;
+  dllAnimating = true;
+  const id = dllNewId();
 
-  // START: right edge of node4, vertically centered
-  const sx = tailRect.right - ox + 4;
-  const sy = tailRect.top + tailRect.height / 2 - oy;
+  dllNodes[id] = { id, value: val, prev: dllTail, next: null };
 
-  // END: left edge of node0, vertically centered → arrowhead points right
-  const ex = nnRect.left - ox - 2;
-  const ey = nnRect.top + nnRect.height / 2 - oy;
+  if (dllTail === null) {
+    dllHead = id;
+    dllTail = id;
+  } else {
+    // Flash old tail to show connection
+    const oldTailEl = document.querySelector(`[data-id="${dllTail}"]`);
+    if (oldTailEl) {
+      oldTailEl.classList.add("node-highlight");
+      setTimeout(() => oldTailEl.classList.remove("node-highlight"), 260);
+    }
+    dllNodes[dllTail].next = id;  // ← old tail's next → new node
+    dllTail = id;
+  }
+  dllSize++;
+  dllOpCount++;
 
-  // Corner 1 x: how far right before turning down
-  const rightX = sx + 40;
+  document.getElementById("dllInput").value = "";
+  document.getElementById("dllInput").focus();
 
-  // Corner 1→2 y / Corner 2→3 y: midpoint between list row bottom and new node top
-  const listBottom = tailRect.bottom - oy;
-  const newNodeTop = nnRect.top - oy;
-  const midY = listBottom + (newNodeTop - listBottom) / 2;
+  setTimeout(() => {
+    dllRenderList(id);
+    dllUpdateStats();
+    dllSetStatus(`✓ Inserted ${val} at end. old tail→next = newNode; newNode→prev = old tail. O(1).`, "success");
+    setTimeout(() => { dllAnimating = false; }, 500);
+  }, 280);
+}
 
-  // Corner 3 x: overshoot node0 left edge by 30px
-  const overshootX = nnRect.left - ox - 30;
+/* ══════════════════════════════════════════════════════════════
+   INSERT AT POSITION — O(n) traversal, O(1) wiring
+   Pointer changes (4 links total):
+     newNode.next = curr.next
+     newNode.prev = curr
+     curr.next.prev = newNode   (if curr.next exists)
+     curr.next = newNode
+══════════════════════════════════════════════════════════════ */
+function dllInsertAtPosition() {
+  if (dllAnimating) return;
 
-  // Corner 3→4 y / Corner 4→5 y: same as node0 center
-  // (already = ey)
+  const val = dllGetInputValue();
+  if (val === null) return;
 
-  // 5-segment path: right → down → left (overshoot) → down → right
-  const d = [
-    `M ${sx} ${sy}`,          // start at node4 right-center
-    `L ${rightX} ${sy}`,      // (1) go right
-    `L ${rightX} ${midY}`,    // (2) go down to midpoint
-    `L ${overshootX} ${midY}`,// (3) go left, past node0 by 30px
-    `L ${overshootX} ${ey}`,  // (4) go down to node0 center level
-    `L ${ex} ${ey}`,          // (5) go right → arrowhead at node0 left-center
-  ].join(' ');
+  const pos = dllGetPositionValue();
+  if (pos === null) return;
 
-  animPath.setAttribute('d', d);
+  if (dllSize >= DLL_MAX_SIZE) {
+    dllSetStatus(`⚠ List is full! Maximum size is ${DLL_MAX_SIZE}.`, "error");
+    return;
+  }
 
-  const length = animPath.getTotalLength();
-  animPath.style.transition = 'none';
-  animPath.style.strokeDasharray  = `${length}`;
-  animPath.style.strokeDashoffset = `${length}`;
+  if (pos === 0) { dllInsertBeginning(); return; }
+  if (pos === dllSize) { dllInsertEnd(); return; }
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      animPath.style.transition = 'stroke-dashoffset 1.1s ease-in-out';
-      animPath.style.strokeDashoffset = '0';
+  dllAnimating = true;
+
+  const orderedIds = [];
+  let cur = dllHead;
+  while (cur !== null) { orderedIds.push(cur); cur = dllNodes[cur].next; }
+
+  let step = 0;
+
+  function traverseToPos() {
+    if (step >= pos) {
+      // Clear traversal highlights
+      orderedIds.forEach(id => {
+        const el = document.querySelector(`[data-id="${id}"]`);
+        if (el) el.classList.remove("node-position-highlight", "node-insert-target");
+      });
+
+      const prevId  = orderedIds[pos - 1];
+      const nextId  = dllNodes[prevId].next;  // could be null if pos==size, handled above
+      const newId   = dllNewId();
+
+      // Wire all 4 pointers
+      dllNodes[newId]  = { id: newId, value: val, prev: prevId, next: nextId };
+      dllNodes[prevId].next = newId;
+      if (nextId !== null) {
+        dllNodes[nextId].prev = newId;  // ← key DLL step: successor's prev
+      } else {
+        dllTail = newId;
+      }
+
+      dllSize++;
+      dllOpCount++;
+
+      document.getElementById("dllInput").value   = "";
+      document.getElementById("dllPosInput").value = "";
+
+      setTimeout(() => {
+        dllRenderList(newId);
+        dllUpdateStats();
+        dllSetStatus(
+          `✓ Inserted ${val} at position ${pos}. 4 pointers updated: newNode.prev/next + neighbors.prev/next.`,
+          "success"
+        );
+        setTimeout(() => { dllAnimating = false; }, 500);
+      }, 120);
+      return;
+    }
+
+    const el = document.querySelector(`[data-id="${orderedIds[step]}"]`);
+    if (el) {
+      el.classList.add("node-position-highlight");
+      if (step === pos - 1) setTimeout(() => el.classList.add("node-insert-target"), 150);
+    }
+    dllSetStatus(`Traversing… index ${step} (value: ${dllNodes[orderedIds[step]].value})`, "info");
+    step++;
+    setTimeout(traverseToPos, 350);
+  }
+
+  dllSetStatus(`Traversing to position ${pos}…`, "info");
+  traverseToPos();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DELETE AT BEGINNING — O(1)
+   Pointer changes: head = head.next; new head.prev = NULL
+══════════════════════════════════════════════════════════════ */
+function dllDeleteBeginning() {
+  if (dllAnimating) return;
+  if (dllSize === 0) { dllSetStatus("⚠ List is empty — nothing to delete.", "error"); return; }
+
+  dllAnimating = true;
+
+  const targetId = dllHead;
+  const headEl   = document.querySelector(`[data-id="${targetId}"]`);
+
+  if (headEl) headEl.classList.add("node-highlight");
+  dllSetStatus(`Highlighting head node (value: ${dllNodes[targetId].value})…`, "info");
+
+  setTimeout(() => {
+    if (headEl) { headEl.classList.remove("node-highlight"); headEl.classList.add("node-del"); }
+
+    setTimeout(() => {
+      const deletedVal = dllNodes[targetId].value;
+      const newHead    = dllNodes[targetId].next;
+
+      dllHead = newHead;
+      if (newHead !== null) {
+        dllNodes[newHead].prev = null;  // ← key DLL step: new head's prev = NULL
+      } else {
+        dllTail = null;  // list became empty
+      }
+
+      delete dllNodes[targetId];
+      dllSize--;
+      dllOpCount++;
+
+      dllRenderList();
+      dllUpdateStats();
+      dllSetStatus(`✓ Deleted head (value: ${deletedVal}). New head→prev set to NULL.`, "success");
+      dllAnimating = false;
+    }, 420);
+  }, 320);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DELETE AT END — O(1) with tail pointer  ← DLL advantage!
+   In SLL this is O(n); in DLL tail.prev gives new tail instantly.
+   Pointer changes: tail = tail.prev; new tail.next = NULL
+══════════════════════════════════════════════════════════════ */
+function dllDeleteEnd() {
+  if (dllAnimating) return;
+  if (dllSize === 0) { dllSetStatus("⚠ List is empty — nothing to delete.", "error"); return; }
+
+  dllAnimating = true;
+
+  if (dllSize === 1) {
+    const targetId = dllHead;
+    const el = document.querySelector(`[data-id="${targetId}"]`);
+    if (el) el.classList.add("node-highlight");
+    dllSetStatus(`Highlighting only node (value: ${dllNodes[targetId].value})…`, "info");
+
+    setTimeout(() => {
+      if (el) { el.classList.remove("node-highlight"); el.classList.add("node-del"); }
+      setTimeout(() => {
+        const deletedVal = dllNodes[targetId].value;
+        dllHead = null; dllTail = null;
+        delete dllNodes[targetId];
+        dllSize--;
+        dllOpCount++;
+        dllRenderList();
+        dllUpdateStats();
+        dllSetStatus(`✓ Deleted tail (value: ${deletedVal}). List is now empty.`, "success");
+        dllAnimating = false;
+      }, 420);
+    }, 320);
+    return;
+  }
+
+  // DLL advantage: tail.prev gives us the new tail directly — no traversal!
+  const targetId  = dllTail;
+  const newTailId = dllNodes[dllTail].prev;  // ← O(1) because DLL
+
+  const tailEl = document.querySelector(`[data-id="${targetId}"]`);
+  if (tailEl) tailEl.classList.add("node-highlight");
+  dllSetStatus(
+    `Found tail via tail pointer (value: ${dllNodes[targetId].value}). DLL: O(1) delete — no traversal needed!`,
+    "info"
+  );
+
+  setTimeout(() => {
+    if (tailEl) { tailEl.classList.remove("node-highlight"); tailEl.classList.add("node-del"); }
+
+    setTimeout(() => {
+      const deletedVal = dllNodes[targetId].value;
+      dllNodes[newTailId].next = null;  // ← new tail's next = NULL
+      dllTail = newTailId;
+      delete dllNodes[targetId];
+      dllSize--;
+      dllOpCount++;
+
+      dllRenderList();
+      dllUpdateStats();
+      dllSetStatus(
+        `✓ Deleted tail (value: ${deletedVal}). Used tail→prev to find new tail. O(1) — DLL advantage!`,
+        "success"
+      );
+      dllAnimating = false;
+    }, 420);
+  }, 340);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DELETE BY VALUE — O(n) search, O(1) unlink
+   DLL advantage: once found, no need to track predecessor —
+   target.prev is already available.
+   Pointer changes:
+     target.prev.next = target.next   (if prev exists)
+     target.next.prev = target.prev   (if next exists)
+══════════════════════════════════════════════════════════════ */
+function dllDeleteByValue() {
+  if (dllAnimating) return;
+
+  const val = dllGetInputValue();
+  if (val === null) return;
+
+  if (dllSize === 0) { dllSetStatus("⚠ List is empty — nothing to delete.", "error"); return; }
+
+  // Find target
+  const orderedIds = [];
+  let cur = dllHead;
+  while (cur !== null) { orderedIds.push(cur); cur = dllNodes[cur].next; }
+
+  let targetId = null;
+  let foundAt  = -1;
+  for (let i = 0; i < orderedIds.length; i++) {
+    if (dllNodes[orderedIds[i]].value === val) {
+      targetId = orderedIds[i];
+      foundAt  = i;
+      break;
+    }
+  }
+
+  if (targetId === null) {
+    dllSetStatus(`⚠ Value ${val} not found in the list.`, "error");
+    return;
+  }
+
+  dllAnimating = true;
+  let step = 0;
+
+  function traverseToTarget() {
+    if (step > foundAt) {
+      // Clear highlights
+      orderedIds.forEach(id => {
+        const el = document.querySelector(`[data-id="${id}"]`);
+        if (el) el.classList.remove("node-position-highlight");
+      });
+
+      const targetEl = document.querySelector(`[data-id="${targetId}"]`);
+      if (targetEl) {
+        targetEl.classList.remove("node-position-highlight");
+        targetEl.classList.add("node-highlight");
+      }
+
+      setTimeout(() => {
+        if (targetEl) { targetEl.classList.remove("node-highlight"); targetEl.classList.add("node-del"); }
+
+        setTimeout(() => {
+          const prevId = dllNodes[targetId].prev;
+          const nextId = dllNodes[targetId].next;
+
+          // Relink prev side
+          if (prevId !== null) {
+            dllNodes[prevId].next = nextId;
+          } else {
+            dllHead = nextId;  // deleted head
+          }
+
+          // Relink next side — DLL advantage: we already have nextId
+          if (nextId !== null) {
+            dllNodes[nextId].prev = prevId;  // ← key DLL step: no separate prev tracking needed
+          } else {
+            dllTail = prevId;  // deleted tail
+          }
+
+          delete dllNodes[targetId];
+          dllSize--;
+          dllOpCount++;
+
+          document.getElementById("dllInput").value = "";
+
+          dllRenderList();
+          dllUpdateStats();
+          dllSetStatus(
+            `✓ Deleted value ${val} (index ${foundAt}). Used target→prev directly — no separate predecessor search.`,
+            "success"
+          );
+          dllAnimating = false;
+        }, 420);
+      }, 300);
+      return;
+    }
+
+    const el = document.querySelector(`[data-id="${orderedIds[step]}"]`);
+    if (el) {
+      if (step > 0) {
+        const prevEl = document.querySelector(`[data-id="${orderedIds[step - 1]}"]`);
+        if (prevEl) prevEl.classList.remove("node-position-highlight");
+      }
+      el.classList.add("node-position-highlight");
+    }
+
+    const isTarget = orderedIds[step] === targetId;
+    dllSetStatus(
+      isTarget
+        ? `✓ Found value ${val} at index ${step}!`
+        : `Searching… index ${step}: ${dllNodes[orderedIds[step]].value} ≠ ${val}`,
+      isTarget ? "success" : "info"
+    );
+
+    step++;
+    setTimeout(traverseToTarget, 330);
+  }
+
+  dllSetStatus(`Searching for value ${val}…`, "info");
+  traverseToTarget();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TRAVERSE — highlight nodes one by one (forward, head → tail)
+══════════════════════════════════════════════════════════════ */
+function dllTraverse() {
+  if (dllAnimating) return;
+  if (dllSize === 0) { dllSetStatus("⚠ List is empty — nothing to traverse.", "error"); return; }
+
+  dllAnimating = true;
+
+  const orderedIds = [];
+  let cur = dllHead;
+  while (cur !== null) { orderedIds.push(cur); cur = dllNodes[cur].next; }
+
+  const domEls = orderedIds.map(id => document.querySelector(`[data-id="${id}"]`));
+  const values = orderedIds.map(id => dllNodes[id].value);
+  let i = 0;
+
+  function highlightNext() {
+    if (i > 0 && domEls[i - 1]) domEls[i - 1].classList.remove("node-traversed");
+    if (i >= domEls.length) {
+      dllSetStatus(`Traversal complete (forward): NULL ← [ ${values.join(" ↔ ")} ] → NULL`, "info");
+      dllAnimating = false;
+      return;
+    }
+    if (domEls[i]) domEls[i].classList.add("node-traversed");
+    dllSetStatus(
+      `Visiting node ${i + 1}/${orderedIds.length}: value = ${values[i]}  (following next →)`,
+      "info"
+    );
+    i++;
+    setTimeout(highlightNext, 320);
+  }
+
+  highlightNext();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESET — clear entire list
+══════════════════════════════════════════════════════════════ */
+function dllReset() {
+  if (dllAnimating) return;
+  if (dllSize === 0) { dllSetStatus("List is already empty.", ""); return; }
+
+  dllAnimating = true;
+
+  const container = document.getElementById("dllSimContainer");
+  if (container) {
+    Array.from(container.children).forEach(child => {
+      if (!child.classList.contains("sim-empty-state")) {
+        child.style.transition = "opacity 0.22s ease, transform 0.22s ease";
+        child.style.opacity    = "0";
+        child.style.transform  = "scale(0.8)";
+      }
     });
-  });
-}
-
-function clearArrow() {
-  animPath.setAttribute('d', '');
-  animPath.style.strokeDasharray = '0';
-  animPath.style.strokeDashoffset = '0';
-  animPath.style.transition = 'none';
-  // remove injected tail label
-  const el = document.getElementById('newTailLabel');
-  if (el) el.remove();
-  // restore new node style
-  const newNodeBox = document.querySelector('.new-node');
-  if (newNodeBox) {
-    newNodeBox.style.borderColor = '';
-    newNodeBox.style.boxShadow = '';
   }
+
+  setTimeout(() => {
+    dllNodes   = {};
+    dllHead    = null;
+    dllTail    = null;
+    dllSize    = 0;
+    dllOpCount = 0;
+    dllIdSeq   = 0;
+
+    dllEnablePosInput(false);
+    const posInput = document.getElementById("dllPosInput");
+    if (posInput) posInput.value = "";
+
+    dllRenderList();
+    dllUpdateStats();
+    dllSetStatus("List reset. Ready for a new sequence.", "info");
+    dllAnimating = false;
+  }, 260);
 }
 
-// ─── UI UPDATE ────────────────────────────────────────────────────────────────
-function updateUI() {
-  stepBadge.textContent = `Step ${currentStep} / ${TOTAL_STEPS}`;
-
-  dots.forEach((d, i) => {
-    d.classList.toggle('active', i === currentStep);
-  });
-
-  btnPrev.disabled = currentStep === 0;
-  btnNext.disabled = currentStep === TOTAL_STEPS;
-  btnPlay.textContent = playing ? '⏸ Pause' : '▶ Play';
-}
-
-// ─── AUTO PLAY ────────────────────────────────────────────────────────────────
-function startPlay() {
-  playing = true;
-  updateUI();
-  function tick() {
-    if (currentStep < TOTAL_STEPS) {
-      goToStep(currentStep + 1);
-      playTimer = setTimeout(tick, 2000);
-    } else {
-      stopPlay();
-    }
-  }
-  playTimer = setTimeout(tick, 600);
-}
-
-function stopPlay() {
-  playing = false;
-  clearTimeout(playTimer);
-  playTimer = null;
-  updateUI();
-}
-
-// ─── EVENTS ──────────────────────────────────────────────────────────────────
-btnNext.addEventListener('click', () => {
-  stopPlay();
-  if (currentStep < TOTAL_STEPS) goToStep(currentStep + 1);
-});
-
-btnPrev.addEventListener('click', () => {
-  stopPlay();
-  if (currentStep > 0) goToStep(currentStep - 1);
-});
-
-btnPlay.addEventListener('click', () => {
-  if (playing) { stopPlay(); }
-  else {
-    if (currentStep === TOTAL_STEPS) goToStep(0);
-    startPlay();
-  }
-});
-
-btnReset.addEventListener('click', reset);
-
-dots.forEach(d => {
-  d.addEventListener('click', () => {
-    stopPlay();
-    goToStep(parseInt(d.dataset.i));
-  });
-});
-
-// ─── INIT ────────────────────────────────────────────────────────────────────
-reset();
+/* ─── End of DLL Simulator ───────────────────────────────────── */
