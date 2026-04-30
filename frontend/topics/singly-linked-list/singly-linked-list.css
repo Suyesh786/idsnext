@@ -2025,14 +2025,33 @@
 
 /* Mobile: subtitle wraps/hides */
 @media (max-width: 600px) {
+  .section-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
   .visualize-card {
-    padding: 9px 12px;
-    gap: 9px;
+    padding: 8px 12px;
+    gap: 8px;
+    margin-left: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .vc-text {
+    min-width: 0;
+    flex: 1;
   }
   .vc-sub {
     display: none;
   }
   .vc-title {
     font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vc-arrow {
+    flex-shrink: 0;
   }
 }
