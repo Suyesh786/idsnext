@@ -410,7 +410,25 @@ document.addEventListener('DOMContentLoaded', function () {
   renderCodePanel('insert-beginning');
   buildList(VIZ.initialList, false, 0);
   applyStep(0);
+  if (window.innerWidth <= 768) { shrinkArrowheadsMobile(); }
 });
+
+function shrinkArrowheadsMobile() {
+  var blue  = document.getElementById('arrowHead');
+  var amber = document.getElementById('arrowHeadPrev');
+  [blue, amber].forEach(function(m, i) {
+    if (!m) return;
+    m.setAttribute('markerWidth',  '7');
+    m.setAttribute('markerHeight', '6');
+    m.setAttribute('refX', '6.5');
+    m.setAttribute('refY', '3');
+    var p = m.querySelector('path');
+    if (p) {
+      p.setAttribute('d', 'M0,0 L0,6 L7,3 z');
+      p.setAttribute('fill', i === 0 ? '#3b6cff' : '#f59e0b');
+    }
+  });
+}
 
 function cacheElements() {
   function q(id) { return document.getElementById(id); }
@@ -582,19 +600,20 @@ function positionPointers() {
   if (!wraps || wraps.length === 0) return;
 
   var canvasRect = canvas.getBoundingClientRect();
+  var scrollLeft = canvas.scrollLeft || 0;
 
   var hIdx  = Math.min(PTR.headIndex, wraps.length - 1);
   var hWrap = wraps[hIdx];
   var hNode = hWrap.querySelector('.viz-node');
   var hRect = (hNode || hWrap).getBoundingClientRect();
-  var hCx   = hRect.left + hRect.width / 2 - canvasRect.left;
+  var hCx   = hRect.left + hRect.width / 2 - canvasRect.left + scrollLeft;
   var hTopY = hRect.top - canvasRect.top - hp.getBoundingClientRect().height - 4;
 
   var tIdx  = Math.min(PTR.tailIndex, wraps.length - 1);
   var tWrap = wraps[tIdx];
   var tNode = tWrap.querySelector('.viz-node');
   var tRect = (tNode || tWrap).getBoundingClientRect();
-  var tCx   = tRect.left + tRect.width / 2 - canvasRect.left;
+  var tCx   = tRect.left + tRect.width / 2 - canvasRect.left + scrollLeft;
   var tTopY = tRect.top - canvasRect.top - tp.getBoundingClientRect().height - 4;
 
   if (hIdx === tIdx) {
@@ -640,8 +659,9 @@ function positionHeadOnNewNode() {
   if (!canvas || !hp || !nodeEl) return;
 
   var canvasRect = canvas.getBoundingClientRect();
+  var scrollLeft = canvas.scrollLeft || 0;
   var nodeRect   = nodeEl.getBoundingClientRect();
-  var cx         = nodeRect.left + nodeRect.width / 2 - canvasRect.left;
+  var cx         = nodeRect.left + nodeRect.width / 2 - canvasRect.left + scrollLeft;
   var topY       = nodeRect.top  - canvasRect.top - hp.getBoundingClientRect().height - 4;
 
   hp.style.top       = topY + 'px';
@@ -1291,9 +1311,33 @@ function endNewNodePosition() {
   var wrap = VIZ.el.newNodeWrap;
   if (!wrap) return;
   var isMobile = window.innerWidth <= 768;
-  wrap.style.bottom    = isMobile ? '14px' : '68px';
-  wrap.style.left      = isMobile ? '72%' : '78%';
-  wrap.style.transform = 'translateX(-50%)';
+
+  if (isMobile) {
+    // On mobile: position newNode directly below the tail node
+    var canvas = document.getElementById('animCanvas');
+    var listRow = VIZ.el.listRow;
+    var wraps = listRow ? listRow.querySelectorAll('.viz-node-wrap') : [];
+    var tailWrap = wraps.length > 0 ? wraps[wraps.length - 1] : null;
+    var tailNodeEl = tailWrap ? tailWrap.querySelector('.viz-node') : null;
+
+    if (canvas && tailNodeEl) {
+      var canvasRect = canvas.getBoundingClientRect();
+      var tailRect   = tailNodeEl.getBoundingClientRect();
+      // Centre of tail node relative to canvas (accounting for scroll)
+      var tailCentreX = (tailRect.left + tailRect.right) / 2 - canvasRect.left + canvas.scrollLeft;
+      wrap.style.bottom    = '14px';
+      wrap.style.left      = tailCentreX + 'px';
+      wrap.style.transform = 'translateX(-50%)';
+    } else {
+      wrap.style.bottom    = '14px';
+      wrap.style.left      = '72%';
+      wrap.style.transform = 'translateX(-50%)';
+    }
+  } else {
+    wrap.style.bottom    = '68px';
+    wrap.style.left      = '78%';
+    wrap.style.transform = 'translateX(-50%)';
+  }
 }
 
 function animEnd_initial() {
@@ -1302,6 +1346,27 @@ function animEnd_initial() {
   hideCurve();
   // Reset newNodeAddr label back to default for insert-end
   if (VIZ.el.newNodeAddr) VIZ.el.newNodeAddr.textContent = END_NEW_NODE_ADDR;
+}
+
+// Mobile-only: scroll animCanvas to reveal newNode after layout settles
+function scrollCanvasToNewNodeMobile() {
+  if (window.innerWidth > 768) return;
+  setTimeout(function () {
+    requestAnimationFrame(function () {
+      var canvas = document.getElementById('animCanvas');
+      var newNodeEl = VIZ.el.newNodeEl;
+      if (canvas && newNodeEl) {
+        var canvasRect = canvas.getBoundingClientRect();
+        var nodeRect   = newNodeEl.getBoundingClientRect();
+        var scrollTarget = canvas.scrollLeft + (nodeRect.right - canvasRect.right) + 40;
+        if (scrollTarget > canvas.scrollLeft) {
+          canvas.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+          // Reposition HEAD/TAIL pointers after scroll settles
+          setTimeout(function () { positionPointers(); }, 350);
+        }
+      }
+    });
+  }, 60);
 }
 
 function animEnd_malloc() {
@@ -1321,7 +1386,10 @@ function animEnd_malloc() {
   endNewNodePosition();
   wrap.classList.remove('visible');
   requestAnimationFrame(function () {
-    requestAnimationFrame(function () { wrap.classList.add('visible'); });
+    requestAnimationFrame(function () {
+      wrap.classList.add('visible');
+      scrollCanvasToNewNodeMobile();
+    });
   });
 }
 
@@ -1334,6 +1402,7 @@ function animEnd_assignData() {
 
   endNewNodePosition();
   wrap.classList.add('visible');
+  scrollCanvasToNewNodeMobile();
   if (VIZ.el.newNodePrevField) VIZ.el.newNodePrevField.textContent = '?';
   if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent = '?';
 
@@ -1359,6 +1428,7 @@ function animEnd_setNextNull() {
 
   endNewNodePosition();
   wrap.classList.add('visible');
+  scrollCanvasToNewNodeMobile();
 
   var nextField = VIZ.el.newNodeNextField;
   if (nextField) {
@@ -1390,6 +1460,7 @@ function animEnd_checkNull() {
 
   endNewNodePosition();
   wrap.classList.add('visible');
+  scrollCanvasToNewNodeMobile();
 
   // Pulse TAIL pointer
   var tp = VIZ.el.tailPointer;
@@ -1404,6 +1475,7 @@ function animEnd_checkNull() {
 var END_CURVE_GEOM = null;
 
 // Step 5: tail->next = newNode (blue arrow from tail's NEXT to newNode)
+// Step 5: tail->next = newNode (blue arrow from tail's NEXT to newNode)
 function animEnd_linkNext() {
   buildList(VIZ.initialList, false, 0);
 
@@ -1412,6 +1484,7 @@ function animEnd_linkNext() {
 
   endNewNodePosition();
   wrap.classList.add('visible');
+  scrollCanvasToNewNodeMobile();
 
   VIZ.el.newNodeData.textContent = String(VIZ.newValue);
   VIZ.el.newNodeEl.className = 'viz-node viz-dll-node viz-node-new viz-node-linked';
@@ -1448,6 +1521,7 @@ function animEnd_linkNext() {
       var canvas = document.getElementById('animCanvas');
       if (!canvas) return;
       var canvasRect = canvas.getBoundingClientRect();
+      var scrollLeft = canvas.scrollLeft || 0;
       var newNodeEl  = VIZ.el.newNodeEl;
       var newRect    = newNodeEl ? newNodeEl.getBoundingClientRect() : null;
 
@@ -1456,7 +1530,7 @@ function animEnd_linkNext() {
       var startX, startY;
       if (tailNodeEl) {
         var tr = tailNodeEl.getBoundingClientRect();
-        startX = tr.right  - canvasRect.left;
+        startX = tr.right  - canvasRect.left + scrollLeft;
         startY = tr.top + tr.height * 0.28 - canvasRect.top;
       } else {
         startX = canvasRect.width * 0.75;
@@ -1466,7 +1540,7 @@ function animEnd_linkNext() {
       // Target: LEFT side of newNode (upper portion)
       var endX, endY;
       if (newRect) {
-        endX = newRect.left  - canvasRect.left;
+        endX = newRect.left  - canvasRect.left + scrollLeft;
         endY = newRect.top + newRect.height * 0.28 - canvasRect.top;
       } else {
         endX = canvasRect.width * 0.85;
@@ -1478,11 +1552,11 @@ function animEnd_linkNext() {
       // Blue bezier: arc UP from tail-right to newNode-left
       var cp1x, cp1y, cp2x, cp2y;
       if (isMobile) {
-        cp1x = startX + 50;  cp1y = startY - 60;
-        cp2x = endX - 50;    cp2y = endY - 60;
+        cp1x = startX + 100; cp1y = startY + 50;
+        cp2x = endX - 80;    cp2y = endY - 50;
       } else {
-        cp1x = startX + 100; cp1y = startY - 110;
-        cp2x = endX - 100;   cp2y = endY - 110;
+        cp1x = startX + 200; cp1y = startY + 80;  // Wider push to the right
+        cp2x = endX - 160;   cp2y = endY - 80;    // Smoother sweep into the left
       }
 
       var d = 'M ' + startX + ' ' + startY
@@ -1539,7 +1613,8 @@ function animEnd_linkNext() {
   });
 }
 
-// Step 6: newNode->prev = tail (amber arrow from newNode back to tail)
+// Step 6: newNode->prev = tail (ORANGE — strictly parallel train track, zero intersections)
+// Step 6: newNode->prev = tail (ORANGE — parallel above blue, inside on second turn)
 function animEnd_linkPrev() {
   buildList(VIZ.initialList, false, 0);
 
@@ -1548,170 +1623,129 @@ function animEnd_linkPrev() {
 
   endNewNodePosition();
   wrap.classList.add('visible');
+  scrollCanvasToNewNodeMobile();
 
   VIZ.el.newNodeData.textContent = String(VIZ.newValue);
   VIZ.el.newNodeEl.className = 'viz-node viz-dll-node viz-node-new viz-node-linked';
   if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent = 'NULL';
 
-  // Update tail node's next field (keep it showing)
   var listRow = VIZ.el.listRow;
   var wraps = listRow ? listRow.querySelectorAll('.viz-node-wrap') : [];
   var tailWrap = wraps.length > 0 ? wraps[wraps.length - 1] : null;
+
   if (tailWrap) {
     var tailNextEl = tailWrap.querySelector('.viz-node-next');
     if (tailNextEl) tailNextEl.textContent = END_NEW_NODE_ADDR;
   }
 
-  // Update newNode's prev field
   var tailAddr = PTR.nodeList.length > 0 ? PTR.nodeList[PTR.nodeList.length - 1].address : 'NULL';
   var prevField = VIZ.el.newNodePrevField;
+
   if (prevField) {
     prevField.textContent = '?';
     setTimeout(function () {
       prevField.style.transition = 'background 0.25s ease, color 0.25s ease';
       prevField.style.background = 'rgba(245,158,11,0.25)';
-      prevField.style.color      = '#d97706';
-      prevField.textContent      = tailAddr;
+      prevField.style.color = '#d97706';
+      prevField.textContent = tailAddr;
       setTimeout(function () {
         prevField.style.background = '';
-        prevField.style.color      = '';
+        prevField.style.color = '';
       }, 900);
     }, 120);
   }
 
-  var svg      = VIZ.el.curveSvg;
-  var pathNext = VIZ.el.curvePath;
+  var svg = VIZ.el.curveSvg;
   var pathPrev = VIZ.el.curvePathPrev;
-  if (!svg || !pathNext || !pathPrev) return;
+  if (!svg || !pathPrev) return;
 
   var oldDot = svg.querySelector('.viz-travel-dot');
   if (oldDot) oldDot.parentNode.removeChild(oldDot);
 
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
+
       var canvas = document.getElementById('animCanvas');
       if (!canvas) return;
+
       var canvasRect = canvas.getBoundingClientRect();
-      var newNodeEl  = VIZ.el.newNodeEl;
-      var newRect    = newNodeEl ? newNodeEl.getBoundingClientRect() : null;
+      var scrollLeft = canvas.scrollLeft || 0;
+      var newRect = VIZ.el.newNodeEl.getBoundingClientRect();
       var tailNodeEl = tailWrap ? tailWrap.querySelector('.viz-node') : null;
+      var tr = tailNodeEl.getBoundingClientRect();
 
-      // Blue (NEXT) static: tail-right (upper) → newNode-left (upper) — same as step 5
-      var startX, startY, endX, endY;
-      if (tailNodeEl) {
-        var tr = tailNodeEl.getBoundingClientRect();
-        startX = tr.right - canvasRect.left;
-        startY = tr.top + tr.height * 0.28 - canvasRect.top;
-      } else {
-        startX = canvasRect.width * 0.75;
-        startY = canvasRect.height * 0.38;
-      }
-      if (newRect) {
-        endX = newRect.left  - canvasRect.left;
-        endY = newRect.top + newRect.height * 0.28 - canvasRect.top;
-      } else {
-        endX = canvasRect.width * 0.85;
-        endY = canvasRect.height - 100;
-      }
+      // START: left side of newNode, below centre
+      var startX = newRect.left  - canvasRect.left + scrollLeft;
+      var startY = newRect.top   + newRect.height * 0.72 - canvasRect.top;
 
+      // END: right side of tail, below centre
+      var endX = tr.right - canvasRect.left + scrollLeft;
+      var endY = tr.top   + tr.height * 0.72 - canvasRect.top;
+
+      // Mirror blue S-shape reversed + above (mobile/desktop)
       var isMobile = window.innerWidth <= 768;
-
-      var bcp1x, bcp1y, bcp2x, bcp2y;
+      var cp1x, cp1y, cp2x, cp2y;
       if (isMobile) {
-        bcp1x = startX + 50;  bcp1y = startY - 60;
-        bcp2x = endX - 50;    bcp2y = endY - 60;
+        cp1x = startX - 112; cp1y = startY - 105;
+        cp2x = endX   + 108; cp2y = endY   + 10;
       } else {
-        bcp1x = startX + 100; bcp1y = startY - 110;
-        bcp2x = endX - 100;   bcp2y = endY - 110;
+        cp1x = startX - 195; cp1y = startY - 120;
+        cp2x = endX   + 185; cp2y = endY   + 40;
       }
 
-      var dNext = 'M ' + startX + ' ' + startY
-        + ' C ' + bcp1x + ' ' + bcp1y + ', ' + bcp2x + ' ' + bcp2y + ', ' + endX + ' ' + endY;
+      var d = 'M ' + startX + ' ' + startY +
+              ' C ' + cp1x + ' ' + cp1y + ', ' +
+              cp2x + ' ' + cp2y + ', ' +
+              endX + ' ' + endY;
 
-      pathNext.setAttribute('d', dNext);
-      var lenNext;
-      try { lenNext = pathNext.getTotalLength(); } catch(e) { lenNext = 500; }
-      if (!lenNext || lenNext < 1) lenNext = 500;
-      pathNext.style.transition       = 'none';
-      pathNext.style.strokeDasharray  = lenNext + 'px';
-      pathNext.style.strokeDashoffset = '0px';
-      svg.classList.add('visible');
+      pathPrev.setAttribute('d', d);
 
-      // Amber (PREV): newNode-right (lower) → tail-right (lower) — below the blue arc
-      var revStartX, revStartY, revEndX, revEndY;
-      if (newRect) {
-        revStartX = newRect.left  - canvasRect.left;
-        revStartY = newRect.top + newRect.height * 0.72 - canvasRect.top;
-      } else {
-        revStartX = canvasRect.width * 0.85;
-        revStartY = canvasRect.height - 80;
-      }
-      if (tailNodeEl) {
-        var tr2 = tailNodeEl.getBoundingClientRect();
-        revEndX = tr2.right - canvasRect.left;
-        revEndY = tr2.top + tr2.height * 0.72 - canvasRect.top;
-      } else {
-        revEndX = canvasRect.width * 0.75;
-        revEndY = canvasRect.height * 0.55;
-      }
+      var len;
+      try { len = pathPrev.getTotalLength(); } catch (e) { len = 500; }
 
-      // Amber arc below (lower control points) — parallel offset from blue
-      var rcp1x, rcp1y, rcp2x, rcp2y;
-      if (isMobile) {
-        rcp1x = revStartX - 50; rcp1y = revStartY + 60;
-        rcp2x = revEndX   + 50; rcp2y = revEndY   + 60;
-      } else {
-        rcp1x = revStartX - 100; rcp1y = revStartY + 110;
-        rcp2x = revEndX   + 100; rcp2y = revEndY   + 110;
-      }
+      pathPrev.style.transition = 'none';
+      pathPrev.style.strokeDasharray = len + 'px';
+      pathPrev.style.strokeDashoffset = len + 'px';
+      pathPrev.style.opacity = '1';
 
-      var dPrev = 'M ' + revStartX + ' ' + revStartY
-        + ' C ' + rcp1x + ' ' + rcp1y + ', ' + rcp2x + ' ' + rcp2y + ', ' + revEndX + ' ' + revEndY;
+      var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('r', '5');
+      dot.setAttribute('fill', '#f59e0b');
+      dot.classList.add('viz-travel-dot');
+      svg.appendChild(dot);
 
-      pathPrev.setAttribute('d', dPrev);
-      var lenPrev;
-      try { lenPrev = pathPrev.getTotalLength(); } catch(e) { lenPrev = 500; }
-      if (!lenPrev || lenPrev < 1) lenPrev = 500;
+      var duration = 850;
+      var startTime = null;
 
-      pathPrev.style.transition       = 'none';
-      pathPrev.style.strokeDasharray  = lenPrev + 'px';
-      pathPrev.style.strokeDashoffset = lenPrev + 'px';
-      pathPrev.style.opacity          = '1';
-
-      var dot2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      dot2.setAttribute('r', '5');
-      dot2.setAttribute('fill', '#f59e0b');
-      dot2.classList.add('viz-travel-dot');
-      dot2.style.filter = 'drop-shadow(0 0 4px rgba(245,158,11,0.8))';
-      svg.appendChild(dot2);
-
-      var duration2  = 850;
-      var startTime2 = null;
-
-      function animateDot2(ts) {
-        if (!startTime2) startTime2 = ts;
-        var elapsed  = ts - startTime2;
-        var progress = Math.min(elapsed / duration2, 1);
-        var eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      function animate(ts) {
+        if (!startTime) startTime = ts;
+        var progress = Math.min((ts - startTime) / duration, 1);
+        var eased = progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
         try {
-          var pt = pathPrev.getPointAtLength(eased * lenPrev);
-          dot2.setAttribute('cx', pt.x);
-          dot2.setAttribute('cy', pt.y);
-        } catch (err) {}
+          var pt = pathPrev.getPointAtLength(eased * len);
+          dot.setAttribute('cx', pt.x);
+          dot.setAttribute('cy', pt.y);
+        } catch (e) {}
         if (progress < 1) {
-          requestAnimationFrame(animateDot2);
+          requestAnimationFrame(animate);
         } else {
-          setTimeout(function () { if (dot2.parentNode) dot2.parentNode.removeChild(dot2); }, 150);
+          setTimeout(function () {
+            if (dot.parentNode) dot.parentNode.removeChild(dot);
+          }, 150);
         }
       }
 
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          pathPrev.style.transition       = 'stroke-dashoffset ' + (duration2 / 1000) + 's cubic-bezier(0.4,0,0.2,1)';
+          pathPrev.style.transition =
+            'stroke-dashoffset ' + (duration / 1000) + 's cubic-bezier(0.4,0,0.2,1)';
           pathPrev.style.strokeDashoffset = '0px';
-          requestAnimationFrame(animateDot2);
+          requestAnimationFrame(animate);
         });
       });
+
     });
   });
 }
