@@ -905,15 +905,20 @@ function highlightCode(activeLine) {
     all[k].classList.add('viz-line-dim');
   }
   var targets = document.querySelectorAll('.viz-code-line[data-line="' + activeLine + '"]');
+  var scrolled = false;
   for (var j = 0; j < targets.length; j++) {
     targets[j].classList.remove('viz-line-dim');
     targets[j].classList.add('viz-line-active');
-    if (targets[j].classList.contains('viz-highlightable')) {
+    if (!scrolled && targets[j].classList.contains('viz-highlightable')) {
       var codeBlock = targets[j].closest('.viz-code-block');
       if (codeBlock) {
-        var lineTop = targets[j].offsetTop;
-        var blockH  = codeBlock.clientHeight;
-        codeBlock.scrollTop = lineTop - blockH / 2 + targets[j].clientHeight / 2;
+        // Align active line just under the "C Code" header
+        const HEADER_OFFSET = 10;
+        codeBlock.scrollTo({ 
+          top: targets[j].offsetTop - HEADER_OFFSET, 
+          behavior: 'smooth' 
+        });
+        scrolled = true;
       }
     }
   }

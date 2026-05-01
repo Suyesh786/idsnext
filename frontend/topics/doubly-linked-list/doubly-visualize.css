@@ -282,6 +282,7 @@
   overflow-y: auto;
   overflow-x: auto;
   padding: 14px 0;
+  position: relative;
 }
 
 .viz-code-block::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -1245,13 +1246,14 @@
   .viz-op-selector-bar { padding: 8px 14px; gap: 5px; }
   .viz-op-pill { padding: 5px 11px; font-size: 11.5px; gap: 4px; }
   .viz-main { grid-template-columns: 1fr; padding: 10px 10px 20px; gap: 10px; overflow: visible; height: auto; }
-  .viz-anim-panel { order: 1; min-height: 400px; position: relative; }
+  .viz-anim-panel { order: 1; min-height: 520px; position: relative; }
   .viz-code-panel { order: 2; }
   .viz-explain-panel { order: 3; }
-  .viz-scroll-container { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
-  .viz-anim-canvas { min-height: 250px; overflow: visible; padding: 20px 16px 14px; align-items: flex-start; justify-content: flex-start; }
-  .viz-list-row { min-width: max-content; position: relative; top: unset; left: unset; transform: none; margin: 60px auto 24px; flex-shrink: 0; }
-  .viz-head-pointer, .viz-tail-pointer { top: 12px !important; z-index: 10; }
+  .viz-scroll-container { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; height: 100%; }
+  .viz-anim-canvas { min-height: 160px; min-width: 600px; overflow: visible; padding: 12px 16px 10px; }
+  .viz-list-row { min-width: max-content; position: relative; top: unset; left: unset; transform: none; margin: 52px 12px 12px; flex-shrink: 0; }
+  /* Let JS positionPointers() set top — do NOT override with !important */
+  .viz-head-pointer, .viz-tail-pointer { z-index: 10; }
   .viz-node { transform: scale(0.82); transform-origin: center top; }
   .viz-node-data { font-size: 13px; padding: 9px 10px; min-width: 28px; }
   .viz-node-prev, .viz-node-next { font-size: 7px; padding: 0 4px; min-width: 36px; }
@@ -1263,12 +1265,12 @@
   .viz-progress-dots { gap: 5px; }
   .viz-dot { width: 6px; height: 6px; }
   .viz-dot.viz-dot-active { width: 14px; }
+  /* Req 1: animation container slightly smaller */
+  .viz-anim-panel { padding: 0; }
+  /* Req 2: code panel scrollable with bounded height */
+  .viz-code-block { max-height: 260px; overflow-y: auto; }
   .viz-new-node-wrap {
     bottom: 12px !important;
-  }
-  .viz-anim-canvas {
-    min-height: 320px;
-    padding-bottom: 90px;
   }
   .viz-loop-box {
     position: relative;
@@ -1277,7 +1279,7 @@
     left: auto;
     transform: none;
     display: block;
-    margin: 148px auto 0;
+    margin: 8px auto 0;
     width: fit-content;
     max-width: 92%;
     padding: 6px 14px;
