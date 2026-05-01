@@ -136,7 +136,10 @@
     </div>
 
     <!-- Canvas area -->
+    <div class="viz-scroll-container" id="animScrollContainer">
     <div class="viz-anim-canvas" id="animCanvas">
+    
+      <div id="loopCheckBox" class="viz-loop-box"></div>
 
       <!-- HEAD pointer -->
       <div class="viz-head-pointer" id="headPointer">
@@ -178,7 +181,7 @@
               stroke="#3b6cff" stroke-width="2.5"
               fill="none" marker-end="url(#arrowHead)"
               stroke-dasharray="1000" stroke-dashoffset="1000"/>
-        <!-- PREV arrow (amber): old head → newNode (back-link) -->
+      <!-- PREV arrow (amber): old head → newNode (back-link) -->
         <path id="curvePathPrev" d=""
               stroke="#f59e0b" stroke-width="2"
               fill="none" marker-end="url(#arrowHeadPrev)"
@@ -186,12 +189,20 @@
               opacity="0"/>
       </svg>
 
+      <!-- TEMP pointer label -->
+      <div class="viz-temp-pointer" id="tempPointer" style="display:none">
+        <div class="viz-ptr-label viz-ptr-label-temp">temp</div>
+        <div class="viz-ptr-addr viz-ptr-addr-temp" id="tempAddr">0x101</div>
+        <div class="viz-ptr-arrow viz-ptr-arrow-temp">↓</div>
+      </div>
+
       <!-- Main list -->
       <div class="viz-list-row" id="listRow">
         <!-- Nodes rendered by JS -->
       </div>
 
     </div>
+    </div><!-- /.viz-scroll-container -->
 
     <!-- Controls -->
     <div class="viz-controls">

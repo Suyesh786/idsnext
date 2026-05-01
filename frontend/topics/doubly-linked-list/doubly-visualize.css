@@ -447,12 +447,36 @@
   box-shadow: 0 0 0 3px rgba(59,108,255,0.12);
 }
 
+/* Scroll wrapper — whole canvas scrolls as one unit */
+.viz-scroll-container {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  height: 100%;
+  scroll-behavior: smooth;
+  min-height: 0;
+}
+
+.viz-scroll-container::-webkit-scrollbar { height: 4px; }
+.viz-scroll-container::-webkit-scrollbar-track { background: transparent; }
+.viz-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--blue-mid, #c0d4ff);
+  border-radius: 99px;
+}
+
 /* Canvas */
 .viz-anim-canvas {
-  flex: 1;
+  min-width: 900px;
+  width: 100%;
+  height: 100%;
   position: relative;
   overflow: visible;
-  min-height: 0;
+}
+
+/* SVG must not clip curves */
+.viz-anim-canvas svg {
+  overflow: visible;
 }
 
 /* HEAD pointer chip */
@@ -515,16 +539,18 @@
 .viz-ptr-addr-tail  { color: #16a34a; }
 .viz-ptr-arrow-tail { color: #16a34a; }
 
-/* Linked list row */
+/* Linked list row — NO independent scroll; parent container scrolls */
 .viz-list-row {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 12px;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   transition: left 0.45s cubic-bezier(0.4,0,0.2,1), transform 0.45s cubic-bezier(0.4,0,0.2,1);
+  overflow: visible;
+  white-space: nowrap;
 }
 
 /* ═══ DLL NODE: [PREV | DATA | NEXT] ══════════════════════════ */
@@ -1124,6 +1150,60 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Loop condition box ─────────────────── */
+.viz-loop-box {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 9px 20px;
+  border-radius: 10px;
+  background: #f5f7ff;
+  border: 1.5px solid #cfd7ff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+  z-index: 100;
+}
+
+.viz-loop-box.active {
+  opacity: 1;
+}
+
+.viz-loop-box.state-change {
+  animation: loopBoxPulse 0.32s ease;
+}
+
+@keyframes loopBoxPulse {
+  0%   { transform: translateX(-50%) scale(1);    }
+  40%  { transform: translateX(-50%) scale(1.07); }
+  100% { transform: translateX(-50%) scale(1);    }
+}
+
+.viz-loop-box.loop-true {
+  background: #edfbf2;
+  border-color: #34c759;
+  color: #1a6b30;
+}
+
+.viz-loop-box.loop-false {
+  background: #fdeaea;
+  border-color: #ff4d4f;
+  color: #a8071a;
+}
+
+@keyframes loopBoxPulseMobile {
+  0%   { transform: scale(1);    }
+  40%  { transform: scale(1.07); }
+  100% { transform: scale(1);    }
+}
+
 /* ═══ RESPONSIVE ════════════════════════════════════════════════ */
 @media (max-width: 1200px) {
   .viz-main {
@@ -1168,7 +1248,8 @@
   .viz-anim-panel { order: 1; min-height: 400px; position: relative; }
   .viz-code-panel { order: 2; }
   .viz-explain-panel { order: 3; }
-  .viz-anim-canvas { min-height: 250px; overflow-x: auto; overflow-y: visible; -webkit-overflow-scrolling: touch; padding: 20px 16px 14px; align-items: flex-start; justify-content: flex-start; }
+  .viz-scroll-container { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+  .viz-anim-canvas { min-height: 250px; overflow: visible; padding: 20px 16px 14px; align-items: flex-start; justify-content: flex-start; }
   .viz-list-row { min-width: max-content; position: relative; top: unset; left: unset; transform: none; margin: 60px auto 24px; flex-shrink: 0; }
   .viz-head-pointer, .viz-tail-pointer { top: 12px !important; z-index: 10; }
   .viz-node { transform: scale(0.82); transform-origin: center top; }
@@ -1189,4 +1270,70 @@
     min-height: 320px;
     padding-bottom: 90px;
   }
+  .viz-loop-box {
+    position: relative;
+    bottom: auto;
+    top: auto;
+    left: auto;
+    transform: none;
+    display: block;
+    margin: 148px auto 0;
+    width: fit-content;
+    max-width: 92%;
+    padding: 6px 14px;
+    font-size: 11.5px;
+    border-radius: 8px;
+    white-space: nowrap;
+    z-index: 5;
+  }
+  .viz-loop-box.state-change {
+    animation: loopBoxPulseMobile 0.32s ease;
+  }
+}
+/* ═══ TEMP POINTER (Delete/Middle operations) ══════════════════════ */
+.viz-temp-pointer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  margin-top: 0px;   /* push it UP */
+
+  transition: left 0.32s cubic-bezier(0.4,0,0.2,1),
+              top  0.32s cubic-bezier(0.4,0,0.2,1),
+              opacity 0.25s ease;
+  z-index: 11;
+  pointer-events: none;
+}
+
+.viz-ptr-label-temp {
+  color: #dc2626;
+  background: #fff1f1;
+  border-color: #fca5a5;
+}
+
+.viz-ptr-addr-temp {
+  color: #dc2626;
+  background: #fff1f1;
+  border-color: #fca5a5;
+}
+
+.viz-ptr-arrow-temp {
+  font-size: 16px;
+  color: #dc2626;
+  text-align: center;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+/* ── Node highlight for temp pointer target ── */
+.viz-node.viz-node-temp-highlight {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.18), 0 6px 20px rgba(220,38,38,0.2) !important;
+  animation: temp-node-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes temp-node-glow {
+  0% { box-shadow: 0 0 0 3px rgba(220,38,38,0.18), 0 6px 20px rgba(220,38,38,0.2); }
+  50% { box-shadow: 0 0 0 5px rgba(220,38,38,0.35), 0 8px 25px rgba(220,38,38,0.3); }
+  100% { box-shadow: 0 0 0 3px rgba(220,38,38,0.18), 0 6px 20px rgba(220,38,38,0.2); }
 }
