@@ -962,7 +962,11 @@ function updateDots(idx) {
 // ═══════════════════════════════════════════════════════════════
 function hideNewNode() {
   var wrap = VIZ.el.newNodeWrap;
-  if (wrap) wrap.classList.remove('visible');
+  if (wrap) {
+    wrap.classList.remove('visible');
+    var nullWrap = wrap.querySelector('.viz-new-node-null-wrap');
+    if (nullWrap) nullWrap.parentNode.removeChild(nullWrap);
+  }
 }
 
 function hideCurve() {
@@ -1554,6 +1558,53 @@ function endNewNodePosition() {
   }
 }
 
+function attachNewNodeNull(fade) {
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+  var nullWrap = wrap.querySelector('.viz-new-node-null-wrap');
+  if (!nullWrap) {
+    nullWrap = document.createElement('div');
+    nullWrap.className = 'viz-new-node-null-wrap';
+    nullWrap.style.cssText = 'position:absolute; left:100%; top:0; display:flex; align-items:flex-start; opacity:0; transition:opacity 0.3s ease';
+    
+    var fa = document.createElement('div');
+    fa.className = 'viz-arrow';
+    fa.style.marginTop = '9px';
+    fa.innerHTML = '<span class="viz-arrow-fwd">\u2192</span><span class="viz-arrow-bck" style="visibility:hidden">\u2190</span>';
+    
+    var nu = document.createElement('div');
+    nu.className = 'viz-null';
+    nu.style.marginTop = '9px';
+    nu.textContent = 'NULL';
+    
+    nullWrap.appendChild(fa);
+    nullWrap.appendChild(nu);
+    wrap.appendChild(nullWrap);
+  }
+  if (fade) {
+    requestAnimationFrame(function() { requestAnimationFrame(function() { nullWrap.style.opacity = '1'; }); });
+  } else {
+    nullWrap.style.opacity = '1';
+  }
+}
+
+function fadeOldTailNull(fade) {
+  var listRow = VIZ.el.listRow;
+  if (!listRow) return;
+  var oldTailNull = listRow.querySelector('.viz-null');
+  var listArrows = listRow.querySelectorAll('.viz-arrow');
+  var oldTailArrow = listArrows.length > 0 ? listArrows[listArrows.length - 1] : null;
+  
+  if (oldTailArrow) {
+    if (fade) oldTailArrow.style.transition = 'opacity 0.3s ease';
+    oldTailArrow.style.opacity = '0';
+  }
+  if (oldTailNull) {
+    if (fade) oldTailNull.style.transition = 'opacity 0.3s ease';
+    oldTailNull.style.opacity = '0';
+  }
+}
+
 function animEnd_initial() {
   buildList(VIZ.initialList, false, 0);
   hideNewNode();
@@ -1627,8 +1678,21 @@ function animEnd_malloc() {
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
       wrap.classList.add('visible');
+      scrollToRightEnd();
       scrollCanvasToNewNodeMobile();
     });
+  });
+}
+
+function scrollToRightEnd() {
+  const container = document.querySelector('.viz-scroll-container') 
+                   || document.getElementById('animCanvas')?.parentElement;
+
+  if (!container) return;
+
+  container.scrollTo({
+    left: container.scrollWidth,
+    behavior: 'smooth'
   });
 }
 
@@ -1681,6 +1745,7 @@ function animEnd_setNextNull() {
         nextField.style.background = '';
         nextField.style.color      = '';
       }, 700);
+      attachNewNodeNull(true);
     }, 120);
   }
 }
@@ -1700,6 +1765,7 @@ function animEnd_checkNull() {
   endNewNodePosition();
   wrap.classList.add('visible');
   scrollCanvasToNewNodeMobile();
+  attachNewNodeNull(false);
 
   // Pulse TAIL pointer
   var tp = VIZ.el.tailPointer;
@@ -1723,6 +1789,8 @@ function animEnd_linkNext() {
   endNewNodePosition();
   wrap.classList.add('visible');
   scrollCanvasToNewNodeMobile();
+  attachNewNodeNull(false);
+  fadeOldTailNull(true);
 
   VIZ.el.newNodeData.textContent = String(VIZ.newValue);
   VIZ.el.newNodeEl.className = 'viz-node viz-dll-node viz-node-new viz-node-linked';
@@ -1861,6 +1929,8 @@ function animEnd_linkPrev() {
   endNewNodePosition();
   wrap.classList.add('visible');
   scrollCanvasToNewNodeMobile();
+  attachNewNodeNull(false);
+  fadeOldTailNull(false);
 
   VIZ.el.newNodeData.textContent = String(VIZ.newValue);
   VIZ.el.newNodeEl.className = 'viz-node viz-dll-node viz-node-new viz-node-linked';
@@ -2502,6 +2572,30 @@ function midLinkSetup() {
     PTR.nodeList[VIZ.insertPos - 2] ? PTR.nodeList[VIZ.insertPos - 2].address : '?';
 }
 
+function fadeOutMidLink(arrowIndex, isForward, instant) {
+  var listRow = VIZ.el.listRow;
+  if (!listRow) return;
+  var arrows = listRow.querySelectorAll('.viz-arrow');
+  if (arrowIndex >= 0 && arrowIndex < arrows.length) {
+    var arrowEl = arrows[arrowIndex];
+    var targetSpan = arrowEl.querySelector(isForward ? '.viz-arrow-fwd' : '.viz-arrow-bck');
+    if (targetSpan) {
+      if (!instant) {
+        targetSpan.style.transition = 'opacity 0.3s ease';
+      } else {
+        targetSpan.style.transition = 'none';
+      }
+      targetSpan.style.opacity = '0';
+      if (instant) targetSpan.style.visibility = 'hidden';
+      else {
+        setTimeout(function() {
+          targetSpan.style.visibility = 'hidden';
+        }, 300);
+      }
+    }
+  }
+}
+
 function animMid_link1() {
   buildList(VIZ.initialList, false, 0);
   hideLoopBox();
@@ -2679,6 +2773,8 @@ function animMid_link3() {
   wrap.classList.add('visible');
   placeTempPointerOnNode(VIZ.insertPos - 2);
 
+  fadeOutMidLink(VIZ.insertPos - 2, false, false); // fade out BACKWARD link
+
   var svg = VIZ.el.curveSvg;
   if (!svg) return;
   var old = svg.querySelectorAll('.viz-mid-link');
@@ -2778,6 +2874,9 @@ function animMid_link4() {
   midPositionNewNode(wrap);
   wrap.classList.add('visible');
   placeTempPointerOnNode(VIZ.insertPos - 2);
+
+  fadeOutMidLink(VIZ.insertPos - 2, false, true);  // instantly hide backward link
+  fadeOutMidLink(VIZ.insertPos - 2, true, false);  // fade out FORWARD link
 
   var svg = VIZ.el.curveSvg;
   if (!svg) return;
