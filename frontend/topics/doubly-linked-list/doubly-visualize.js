@@ -73,8 +73,9 @@ var CODE_TEMPLATES = {
     { line: 0, html: '}' }
   ],
   'insert-middle': [
-    { line: 0, html: '<span class="c-kw">#include</span> &lt;stdio.h&gt;' },
-    { line: 0, html: '<span class="c-kw">#include</span> &lt;stdlib.h&gt;' },
+    { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Insert at middle of a DLL</span>' },
+    { line: 0, html: '<span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>' },
+    { line: 0, html: '<span class="c-pp">#include</span> <span class="c-str">&lt;stdlib.h&gt;</span>' },
     { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
     { line: 0, html: '<span class="c-kw">struct</span> node {' },
     { line: 0, html: '&nbsp;&nbsp;<span class="c-type">int</span> data;' },
@@ -82,44 +83,15 @@ var CODE_TEMPLATES = {
     { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* next;' },
     { line: 0, html: '};' },
     { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
-    { line: 0, html: '<span class="c-kw">struct</span> node* head = <span class="c-kw">NULL</span>;' },
-    { line: 0, html: '<span class="c-kw">struct</span> node* tail = <span class="c-kw">NULL</span>;' },
-    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
     { line: 0, html: '<span class="c-type">void</span> <span class="c-fn">insertAtMiddle</span>(<span class="c-type">int</span> data, <span class="c-type">int</span> pos) {' },
-    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* newnode = (<span class="c-kw">struct</span> node*)<span class="c-fn">malloc</span>(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> node));' },
+    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* newnode = (<span class="c-kw">struct</span> node*)' },
+    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">malloc</span>(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> node));' },
     { line: 2, cls: 'viz-highlightable', html: '&nbsp;&nbsp;newnode-&gt;data = data;' },
     { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
-    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">if</span> (pos == 1) {' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;newnode-&gt;prev = <span class="c-kw">NULL</span>;' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;newnode-&gt;next = head;' },
-    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">if</span> (head != <span class="c-kw">NULL</span>)' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;head-&gt;prev = newnode;' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">else</span>' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tail = newnode;' },
-    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;head = newnode;' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span>;' },
-    { line: 0, html: '&nbsp;&nbsp;}' },
-    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
     { line: 3, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* temp = head;' },
-    { line: 4, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">for</span> (<span class="c-type">int</span> i = 1; i &lt; pos - 1 &amp;&amp; temp != <span class="c-kw">NULL</span>; i++) {' },
+    { line: 4, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">for</span> (<span class="c-type">int</span> i = 1; i &lt; pos - 1; i++) {' },
     { line: 5, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;temp = temp-&gt;next;' },
     { line: 6, cls: 'viz-highlightable', html: '&nbsp;&nbsp;}' },
-    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
-    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">if</span> (temp == <span class="c-kw">NULL</span>) {' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">printf</span>(<span class="c-str">"Invalid position\n"</span>);' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">free</span>(newnode);' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span>;' },
-    { line: 0, html: '&nbsp;&nbsp;}' },
-    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
-    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">if</span> (temp-&gt;next == <span class="c-kw">NULL</span>) {' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;newnode-&gt;next = <span class="c-kw">NULL</span>;' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;newnode-&gt;prev = temp;' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;temp-&gt;next = newnode;' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;tail = newnode;' },
-    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span>;' },
-    { line: 0, html: '&nbsp;&nbsp;}' },
     { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
     { line: 7, cls: 'viz-highlightable', html: '&nbsp;&nbsp;newnode-&gt;next = temp-&gt;next;' },
     { line: 8, cls: 'viz-highlightable', html: '&nbsp;&nbsp;newnode-&gt;prev = temp;' },
@@ -183,12 +155,19 @@ function switchMode(newMode) {
     if (inputRow) inputRow.style.display = '';
     var lbl = document.getElementById('vizValueLabel');
     if (lbl) lbl.textContent = 'Insert value';
+
+    var posWrap = document.getElementById('posInputWrap');
+    if (posWrap) posWrap.style.display = (newMode === 'insert-middle') ? '' : 'none';
+
+    var confirmBtn = document.getElementById('vizConfirmBtn');
+    if (confirmBtn) confirmBtn.style.display = '';
+
     renderCodePanel(newMode);
 
     var labels;
     // FIX #5: totalSteps = 10 for middle (STEPS_MIDDLE has indices 0..10 = 11 entries, 10 steps)
     if (newMode === 'insert-middle') {
-      VIZ.totalSteps = 10;
+      VIZ.totalSteps = 11;
       labels = INSERT_MIDDLE_STEP_LABELS;
     } else {
       VIZ.totalSteps = 7;
@@ -211,6 +190,8 @@ function switchMode(newMode) {
     }
     var inputRow2 = document.getElementById('valueInputRow');
     if (inputRow2) inputRow2.style.display = 'none';
+    var confirmBtn2 = document.getElementById('vizConfirmBtn');
+    if (confirmBtn2) confirmBtn2.style.display = 'none';
     buildList(VIZ.initialList, false, 0);
     applyStep(0);
   }
@@ -242,7 +223,7 @@ var INSERT_END_STEP_LABELS = [
   'tail = newNode (done!)'
 ];
 
-// FIX #5: 10 labels matching STEPS_MIDDLE indices 1..10
+// FIX #5: 11 labels matching STEPS_MIDDLE indices 1..11
 var INSERT_MIDDLE_STEP_LABELS = [
   'Allocate memory (malloc)',
   'Assign data value',
@@ -253,7 +234,8 @@ var INSERT_MIDDLE_STEP_LABELS = [
   'newNode\u2192next = temp\u2192next',
   'newNode\u2192prev = temp',
   'temp\u2192next\u2192prev = newNode',
-  'temp\u2192next = newNode'
+  'temp\u2192next = newNode',
+  'Node inserted! List updated'
 ];
 
 var STEPS_MIDDLE = [
@@ -280,7 +262,7 @@ var STEPS_MIDDLE = [
   {
     codeLine: 4, animStatus: 'Traversing\u2026', animStatusClass: 'status-running',
     explainStepNum: 'Step 4 of 10', explainTitle: 'Check loop condition',
-    explainText: 'We check if i < pos - 1. Here i=1 and pos=3. 1 < 2 is True.', whatBody: '', conceptText: ''
+    explainText: 'We check if i < pos - 1. Here i=1 and pos={{POS}}. 1 < {{POS_MINUS_1}} is {{LOOP_TRUE}}.', whatBody: '', conceptText: ''
   },
   {
     codeLine: 5, animStatus: 'Traversing\u2026', animStatusClass: 'status-running',
@@ -290,7 +272,7 @@ var STEPS_MIDDLE = [
   {
     codeLine: 4, animStatus: 'Traversing\u2026', animStatusClass: 'status-running',
     explainStepNum: 'Step 6 of 10', explainTitle: 'Check loop condition',
-    explainText: 'We check if i < pos - 1. Now i=2 and pos=3. 2 < 2 is False. The loop exits.', whatBody: '', conceptText: ''
+    explainText: 'We check if i < pos - 1. Now i=2 and pos={{POS}}. 2 < {{POS_MINUS_1}} is {{LOOP_FALSE}}. The loop exits.', whatBody: '', conceptText: ''
   },
   {
     codeLine: 7, animStatus: 'Linking\u2026', animStatusClass: 'status-running',
@@ -309,8 +291,13 @@ var STEPS_MIDDLE = [
   },
   {
     codeLine: 10, animStatus: 'Complete \u2713', animStatusClass: 'status-complete',
-    explainStepNum: 'Step 10 of 10', explainTitle: 'temp\u2192next = newNode',
+    explainStepNum: 'Step 10 of 11', explainTitle: 'temp\u2192next = newNode',
     explainText: 'Finally, point temp\'s NEXT pointer to the new node.', whatBody: '', conceptText: ''
+  },
+  {
+    codeLine: null, animStatus: 'Inserted! \u2713', animStatusClass: 'status-complete',
+    explainStepNum: 'Step 11 of 11', explainTitle: 'Insertion Complete!',
+    explainText: 'The new node is now part of the list at position {{POS}}. The list is fully doubly-linked again.', whatBody: '', conceptText: '\u2705 Insert at middle is O(n) — traversal needed to find position.'
   }
 ];
 
@@ -534,6 +521,7 @@ var VIZ = {
   playDelay: 2000,
   initialList: [1, 2, 3, 4],
   newValue: 0,
+  insertPos: 3,
   el: {}
 };
 
@@ -607,7 +595,10 @@ function cacheElements() {
     whatBody:        q('whatBody'),
     conceptText:     q('conceptText'),
     vizValueInput:   q('vizValueInput'),
-    newNodeAddr:     q('newNodeAddr')
+    vizPosInput:     q('vizPosInput'),
+    posInputWrap:    q('posInputWrap'),
+    newNodeAddr:     q('newNodeAddr'),
+    vizConfirmBtn:   q('vizConfirmBtn')
   };
   if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
 
@@ -616,6 +607,23 @@ function cacheElements() {
     VIZ.el.vizValueInput.addEventListener('input', function () {
       var v = parseInt(VIZ.el.vizValueInput.value);
       VIZ.newValue = isNaN(v) ? 0 : v;
+    });
+    // Keyboard Enter → confirm
+    VIZ.el.vizValueInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') vizConfirmValues();
+    });
+  }
+
+  // Listen for position input changes
+  if (VIZ.el.vizPosInput) {
+    VIZ.el.vizPosInput.addEventListener('input', function () {
+      var p = parseInt(VIZ.el.vizPosInput.value);
+      // Store raw 0-based; vizConfirmValues will convert
+      VIZ.insertPos = isNaN(p) || p < 0 ? 2 : p + 1;
+    });
+    // Keyboard Enter → confirm
+    VIZ.el.vizPosInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') vizConfirmValues();
     });
   }
 }
@@ -702,8 +710,22 @@ function buildList(values, withEnter, headIdx) {
     addrEl.className = 'viz-node-addr';
     addrEl.textContent = nodeObj.address;
 
+    var idxEl = document.createElement('div');
+    idxEl.className = 'viz-node-index';
+    idxEl.textContent = i;
+    idxEl.style.cssText = [
+      'text-align:center',
+      'font-size:11px',
+      'font-weight:500',
+      'color:#94a3b8',
+      'margin-top:6px',
+      'letter-spacing:0.02em',
+      'user-select:none'
+    ].join(';');
+
     wrap.appendChild(node);
     wrap.appendChild(addrEl);
+    wrap.appendChild(idxEl);
     row.appendChild(wrap);
 
     if (i < PTR.nodeList.length - 1) {
@@ -827,10 +849,20 @@ function applyStep(idx) {
   if (VIZ.el.headerStepNum) VIZ.el.headerStepNum.textContent = idx;
 
   animateCardUpdate(function () {
+    var pos = VIZ.insertPos;
+    var posM1 = pos - 1;
+    function resolveTpl(s) {
+      if (!s) return s;
+      return s
+        .replace(/\{\{POS\}\}/g, pos)
+        .replace(/\{\{POS_MINUS_1\}\}/g, posM1)
+        .replace(/\{\{LOOP_TRUE\}\}/g, (1 < posM1) ? 'True' : 'False')
+        .replace(/\{\{LOOP_FALSE\}\}/g, (2 < posM1) ? 'True' : 'False');
+    }
     if (VIZ.el.explainStepNum) VIZ.el.explainStepNum.textContent = step.explainStepNum;
     if (VIZ.el.explainTitle)   VIZ.el.explainTitle.textContent   = step.explainTitle;
-    if (VIZ.el.explainText)    VIZ.el.explainText.innerHTML      = step.explainText;
-    if (VIZ.el.whatBody)       VIZ.el.whatBody.innerHTML         = step.whatBody;
+    if (VIZ.el.explainText)    VIZ.el.explainText.innerHTML      = resolveTpl(step.explainText);
+    if (VIZ.el.whatBody)       VIZ.el.whatBody.innerHTML         = resolveTpl(step.whatBody);
     if (VIZ.el.conceptText)    VIZ.el.conceptText.textContent    = step.conceptText;
   });
 
@@ -985,6 +1017,7 @@ function runAnimation(step) {
       case 8:  animMid_link2();          break;
       case 9:  animMid_link3();          break;
       case 10: animMid_link4();          break;
+      case 11: animMid_rearrange();      break;
     }
     return;
   }
@@ -1025,8 +1058,12 @@ function anim_malloc() {
   if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent = '?';
 
   var isMobile = window.innerWidth <= 768; wrap.style.bottom = isMobile ? '14px' : '68px';
-  wrap.style.left      = '50%';
-  wrap.style.transform = 'translateX(-50%)';
+  if (mode === 'insert-middle') {
+    midPositionNewNode(wrap);
+  } else {
+    wrap.style.left      = '50%';
+    wrap.style.transform = 'translateX(-50%)';
+  }
   wrap.classList.remove('visible');
   requestAnimationFrame(function () {
     requestAnimationFrame(function () { wrap.classList.add('visible'); });
@@ -1043,8 +1080,12 @@ function anim_assignData() {
   if (!wrap) return;
 
   var isMobile = window.innerWidth <= 768; wrap.style.bottom = isMobile ? '14px' : '68px';
-  wrap.style.left      = '50%';
-  wrap.style.transform = 'translateX(-50%)';
+  if (mode === 'insert-middle') {
+    midPositionNewNode(wrap);
+  } else {
+    wrap.style.left      = '50%';
+    wrap.style.transform = 'translateX(-50%)';
+  }
   wrap.classList.add('visible');
 
   if (VIZ.el.newNodePrevField) VIZ.el.newNodePrevField.textContent = '?';
@@ -1519,6 +1560,31 @@ function animEnd_initial() {
   hideCurve();
   // Reset newNodeAddr label back to default for insert-end
   if (VIZ.el.newNodeAddr) VIZ.el.newNodeAddr.textContent = END_NEW_NODE_ADDR;
+  scrollCanvasToEndZone();
+}
+
+// Scroll canvas so tail node + newNode spawn area are both fully visible (insert-end)
+function scrollCanvasToEndZone() {
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var canvas = document.getElementById('animCanvas');
+      var listRow = VIZ.el.listRow;
+      if (!canvas || !listRow) return;
+      var wraps = listRow.querySelectorAll('.viz-node-wrap');
+      var tailWrap = wraps.length > 0 ? wraps[wraps.length - 1] : null;
+      var tailNodeEl = tailWrap ? tailWrap.querySelector('.viz-node') : null;
+      if (!tailNodeEl) return;
+      var canvasRect = canvas.getBoundingClientRect();
+      var tailRect   = tailNodeEl.getBoundingClientRect();
+      // Scroll just enough so tail is fully visible + 200px gap for newNode + padding
+      var overhang = tailRect.right - canvasRect.right;
+      var scrollTarget = canvas.scrollLeft + overhang + 220;
+      if (scrollTarget > canvas.scrollLeft) {
+        canvas.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+        setTimeout(function () { positionPointers(); }, 380);
+      }
+    });
+  });
 }
 
 // Mobile-only: scroll animCanvas to reveal newNode after layout settles
@@ -1944,13 +2010,98 @@ function animEnd_rearrange() {
 }
 
 
+function showToast(msg) {
+  var existing = document.getElementById('vizToast');
+  if (existing) existing.parentNode.removeChild(existing);
+  var toast = document.createElement('div');
+  toast.id = 'vizToast';
+  toast.textContent = msg;
+  toast.style.cssText = [
+    'position:fixed', 'bottom:32px', 'left:50%',
+    'transform:translateX(-50%)',
+    'background:#1e293b', 'color:#fff',
+    'font-family:var(--font,"DM Sans",sans-serif)',
+    'font-size:13px', 'font-weight:600',
+    'padding:10px 20px', 'border-radius:10px',
+    'box-shadow:0 4px 20px rgba(0,0,0,0.25)',
+    'z-index:9999', 'opacity:0',
+    'transition:opacity 0.2s ease',
+    'pointer-events:none', 'white-space:nowrap'
+  ].join(';');
+  document.body.appendChild(toast);
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () { toast.style.opacity = '1'; });
+  });
+  setTimeout(function () {
+    toast.style.opacity = '0';
+    setTimeout(function () {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 220);
+  }, 2800);
+}
+
+function vizConfirmValues() {
+  // Read value
+  var inputEl = VIZ.el.vizValueInput;
+  if (inputEl && inputEl.value !== '') {
+    var v = parseInt(inputEl.value);
+    if (!isNaN(v)) VIZ.newValue = v;
+  }
+
+  // For insert-middle: validate position (0-indexed)
+  if (mode === 'insert-middle') {
+    var posEl = VIZ.el.vizPosInput;
+    var p = posEl && posEl.value !== '' ? parseInt(posEl.value) : VIZ.insertPos;
+
+    var listLen = VIZ.initialList.length; // 4 nodes
+    // Valid 0-based middle range: index 1 .. listLen-2
+    // (index 0 = beginning, index listLen-1 = end, index listLen = after end)
+
+    if (isNaN(p) || p < 0) {
+      showToast('\u26a0\ufe0f Enter a valid index (1 to ' + (listLen - 1) + ')');
+      return;
+    }
+    if (p === 0) {
+      showToast('\u{1F449} Index 0 = Insert at Beginning — use that operation instead!');
+      return;
+    }
+    if (p >= listLen) {
+      showToast('\u{1F449} Index ' + p + ' = Insert at End — use that operation instead!');
+      return;
+    }
+    // Convert 0-based index to internal 1-based pos used by animation logic
+    VIZ.insertPos = p + 1;
+  }
+
+  // Full reset then jump to step 1
+  stopPlay();
+  hideCurve();
+  hideNewNode();
+  hideLoopBox();
+  removeTempPointer();
+  hideTempPointer();
+  buildList(VIZ.initialList, false, 0);
+  VIZ.currentStep = 0;
+  applyStep(1);
+
+  // For insert-end: scroll to show tail + newNode zone after layout settles
+  if (mode === 'insert-end') {
+    setTimeout(scrollCanvasToEndZone, 80);
+  }
+}
+
 function vizNext() {
   if (VIZ.currentStep < VIZ.totalSteps) {
     // Sync newValue from input before step 2 shows it
-    var inputEl = VIZ.el.vizValueInput;
+var inputEl = VIZ.el.vizValueInput;
     if (inputEl && inputEl.value !== '') {
       var v = parseInt(inputEl.value);
       if (!isNaN(v)) VIZ.newValue = v;
+    }
+    if (mode === 'insert-middle' && VIZ.el.vizPosInput && VIZ.el.vizPosInput.value !== '') {
+      var p = parseInt(VIZ.el.vizPosInput.value);
+      // p is 0-based index; convert to internal 1-based pos
+      if (!isNaN(p) && p >= 0) VIZ.insertPos = p + 1;
     }
     applyStep(VIZ.currentStep + 1);
   } else {
@@ -1973,6 +2124,7 @@ function vizReset() {
   VIZ.currentStep = 0;
   VIZ.newValue    = 0;
   if (VIZ.el.vizValueInput) VIZ.el.vizValueInput.value = '';
+  if (VIZ.el.vizPosInput) VIZ.el.vizPosInput.value = '';
   hideCurve();
   hideLoopBox();
   removeTempPointer();  // FIX #2: cleans dynamic TEMP_PTR_EL
@@ -2150,6 +2302,71 @@ function placeTempPointerOnNode(nodeIndex) {
 //  INSERT-AT-MIDDLE ANIMATION FUNCTIONS
 // ═══════════════════════════════════════════════════════════════
 
+// Places newNodeWrap dynamically between temp node (insertPos-2) and next node (insertPos-1)
+// Matches the slight rightward bias that looks good at position=2.
+// Also auto-scrolls canvas right when insertPos is near the tail.
+function midPositionNewNode(wrap) {
+  if (!wrap) return;
+  var isMobile = window.innerWidth <= 768;
+  wrap.style.bottom = isMobile ? '14px' : '68px';
+  wrap.style.transform = '';
+
+  var canvas = document.getElementById('animCanvas');
+  var listRow = VIZ.el.listRow;
+  if (!canvas || !listRow) {
+    // Fallback
+    wrap.style.left = '50%';
+    wrap.style.transform = 'translateX(-50%)';
+    return;
+  }
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = listRow.querySelectorAll('.viz-node-wrap');
+      var tempWrap = wraps[VIZ.insertPos - 2]; // node BEFORE insertion point
+      var nextWrap = wraps[VIZ.insertPos - 1]; // node AFTER insertion point
+      if (!tempWrap || !nextWrap) {
+        wrap.style.left = '50%';
+        wrap.style.transform = 'translateX(-50%)';
+        return;
+      }
+
+      var canvasRect = canvas.getBoundingClientRect();
+      var scrollLeft = canvas.scrollLeft || 0;
+
+      var tempNode = tempWrap.querySelector('.viz-node');
+      var nextNode = nextWrap.querySelector('.viz-node');
+      var tempRect = tempNode.getBoundingClientRect();
+      var nextRect = nextNode.getBoundingClientRect();
+
+      // Centre of gap between the two nodes
+      var tempCentreX = tempRect.left + tempRect.width / 2 - canvasRect.left + scrollLeft;
+      var nextCentreX = nextRect.left + nextRect.width / 2 - canvasRect.left + scrollLeft;
+      var gapCentreX  = (tempCentreX + nextCentreX) / 2;
+
+      // Same rightward bias as position=2 naturally has (~30px toward next node)
+      var BIAS = 30;
+      var targetX = gapCentreX + BIAS;
+
+      wrap.style.left      = targetX + 'px';
+      wrap.style.transform = 'translateX(-50%)';
+
+      // Auto-scroll canvas right if insertion is near tail (insertPos >= 3)
+      if (VIZ.insertPos >= 3) {
+        var newWrapEl = wrap.querySelector('.viz-node');
+        if (newWrapEl) {
+          var newRect2 = newWrapEl.getBoundingClientRect();
+          var canvasRight = canvasRect.right;
+          if (newRect2.right + 80 > canvasRight) {
+            canvas.scrollTo({ left: canvas.scrollLeft + (newRect2.right + 80 - canvasRight), behavior: 'smooth' });
+            setTimeout(function () { positionPointers(); }, 350);
+          }
+        }
+      }
+    });
+  });
+}
+
 function animMid_initTemp() {
   buildList(VIZ.initialList, false, 0);
   hideCurve();
@@ -2163,8 +2380,7 @@ function animMid_initTemp() {
   if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent = '?';
 
   var isMobile = window.innerWidth <= 768; wrap.style.bottom = isMobile ? '14px' : '68px';
-  wrap.style.left      = '50%';
-  wrap.style.transform = 'translateX(-50%)';
+  midPositionNewNode(wrap);
   wrap.classList.add('visible');
 
   // FIX #4: place temp pointer after rAF so DOM is painted (handled inside placeTempPointerOnNode)
@@ -2173,7 +2389,7 @@ function animMid_initTemp() {
 
 function animMid_loopCheckTrue() {
   animMid_initTemp();
-  updateLoopBox(1, 3);
+  updateLoopBox(1, VIZ.insertPos);
 }
 
 function animMid_tempMove() {
@@ -2189,12 +2405,11 @@ function animMid_tempMove() {
   if (VIZ.el.newNodePrevField) VIZ.el.newNodePrevField.textContent = '?';
   if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent = '?';
   var isMobile = window.innerWidth <= 768; wrap.style.bottom = isMobile ? '14px' : '68px';
-  wrap.style.left      = '50%';
-  wrap.style.transform = 'translateX(-50%)';
+  midPositionNewNode(wrap);
   wrap.classList.add('visible');
 
-  updateLoopBox(1, 3);
-  placeTempPointerOnNode(1);
+  updateLoopBox(1, VIZ.insertPos);
+  placeTempPointerOnNode(VIZ.insertPos - 2);
 }
 
 function animMid_loopCheckFalse() {
@@ -2208,24 +2423,107 @@ function animMid_loopCheckFalse() {
   if (VIZ.el.newNodePrevField) VIZ.el.newNodePrevField.textContent = '?';
   if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent = '?';
   var isMobile = window.innerWidth <= 768; wrap.style.bottom = isMobile ? '14px' : '68px';
-  wrap.style.left      = '50%';
-  wrap.style.transform = 'translateX(-50%)';
+  midPositionNewNode(wrap);
   wrap.classList.add('visible');
 
-  placeTempPointerOnNode(1);
-  updateLoopBox(2, 3);
+  placeTempPointerOnNode(VIZ.insertPos - 2);
+  updateLoopBox(2, VIZ.insertPos);
 }
 
-// FIX #3: all mid-link arrow fns now compute coords canvas-relative with scrollLeft correction
-function animMid_link1() {
-  animMid_loopCheckFalse();
-  setTimeout(hideLoopBox, 400);
+// Shared helper: animate a mid-link path with traveling dot (same style as insert-beginning)
+function animateMidPath(svg, path, color, onComplete) {
+  var len;
+  try { len = path.getTotalLength(); } catch(e) { len = 600; }
+  if (!len || len < 1) len = 600;
 
+  path.style.transition       = 'none';
+  path.style.strokeDasharray  = len + 'px';
+  path.style.strokeDashoffset = len + 'px';
+
+  var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  dot.setAttribute('r', '5');
+  dot.setAttribute('fill', color);
+  dot.classList.add('viz-travel-dot');
+  var shadowColor = color === '#3b6cff' ? 'rgba(59,108,255,0.75)' : 'rgba(245,158,11,0.75)';
+  dot.style.filter = 'drop-shadow(0 0 5px ' + shadowColor + ')';
+  svg.appendChild(dot);
+
+  var duration  = 850;
+  var startTime = null;
+
+  function animateDot(ts) {
+    if (!startTime) startTime = ts;
+    var progress = Math.min((ts - startTime) / duration, 1);
+    var eased = progress < 0.5
+      ? 2 * progress * progress
+      : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+    try {
+      var pt = path.getPointAtLength(eased * len);
+      dot.setAttribute('cx', pt.x);
+      dot.setAttribute('cy', pt.y);
+    } catch(e) {}
+    if (progress < 1) {
+      requestAnimationFrame(animateDot);
+    } else {
+      setTimeout(function () {
+        if (dot.parentNode) dot.parentNode.removeChild(dot);
+        if (onComplete) onComplete();
+      }, 150);
+    }
+  }
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      path.style.transition       = 'stroke-dashoffset ' + (duration / 1000) + 's cubic-bezier(0.4,0,0.2,1)';
+      path.style.strokeDashoffset = '0px';
+      requestAnimationFrame(animateDot);
+    });
+  });
+}
+
+// Shared state setup for all link steps (no chain calls, no hideCurve)
+function midLinkSetup() {
+  buildList(VIZ.initialList, false, 0);
+  hideLoopBox();
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+  VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+  VIZ.el.newNodeEl.className = 'viz-node viz-dll-node viz-node-new viz-node-linked';
+  var isMobile = window.innerWidth <= 768;
+  wrap.style.bottom = isMobile ? '14px' : '68px';
+  midPositionNewNode(wrap);
+  wrap.classList.add('visible');
+  placeTempPointerOnNode(VIZ.insertPos - 2);
+
+  // Restore field values from previous steps
+  if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent =
+    PTR.nodeList[VIZ.insertPos - 1] ? PTR.nodeList[VIZ.insertPos - 1].address : '?';
+  if (VIZ.el.newNodePrevField) VIZ.el.newNodePrevField.textContent =
+    PTR.nodeList[VIZ.insertPos - 2] ? PTR.nodeList[VIZ.insertPos - 2].address : '?';
+}
+
+function animMid_link1() {
+  buildList(VIZ.initialList, false, 0);
+  hideLoopBox();
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+  VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+  VIZ.el.newNodeEl.className = 'viz-node viz-dll-node viz-node-new viz-node-linked';
+  if (VIZ.el.newNodePrevField) VIZ.el.newNodePrevField.textContent = '?';
+  if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent = '?';
+  var isMobile = window.innerWidth <= 768;
+  wrap.style.bottom = isMobile ? '14px' : '68px';
+  midPositionNewNode(wrap);
+  wrap.classList.add('visible');
+  placeTempPointerOnNode(VIZ.insertPos - 2);
+
+  // Clear any existing mid-link paths from previous visits to this step
   var svg = VIZ.el.curveSvg;
   if (!svg) return;
+  var old = svg.querySelectorAll('.viz-mid-link');
+  for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+  svg.classList.add('visible');
 
-  // 1. PERFECTLY SCALED ARROWHEAD
-  // We must redefine the viewBox and the path so it scales uniformly, not squished.
   var arrowHead = document.getElementById('arrowHead');
   if (arrowHead) {
     arrowHead.setAttribute('viewBox', '0 0 10 10');
@@ -2234,9 +2532,7 @@ function animMid_link1() {
     arrowHead.setAttribute('refX', '8');
     arrowHead.setAttribute('refY', '5');
     var p = arrowHead.querySelector('path');
-    if (p) {
-      p.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
-    }
+    if (p) p.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
   }
 
   requestAnimationFrame(function () {
@@ -2245,35 +2541,21 @@ function animMid_link1() {
       if (!canvas) return;
       var canvasRect = canvas.getBoundingClientRect();
       var scrollLeft = canvas.scrollLeft || 0;
-
       var listRow = VIZ.el.listRow;
       var wraps = listRow ? listRow.querySelectorAll('.viz-node-wrap') : [];
-      var nextNodeWrap = wraps[2];
-
+      var nextNodeWrap = wraps[VIZ.insertPos - 1];
       if (!VIZ.el.newNodeEl || !nextNodeWrap) return;
 
-      // 2. PRECISE START/END LOCATIONS
-      // Measure the exact blue node boxes, ignoring any text labels below them
-      const newRect = VIZ.el.newNodeEl.getBoundingClientRect(); 
+      const newRect  = VIZ.el.newNodeEl.getBoundingClientRect();
       const nextNodeEl = nextNodeWrap.querySelector('.viz-node');
       const nextRect = nextNodeEl.getBoundingClientRect();
 
-      // Set to 0.20 (20% from top) to guarantee it sits clearly above the center
       const startX = newRect.right - canvasRect.left + scrollLeft;
       const startY = newRect.top + (newRect.height * 0.20) - canvasRect.top;
-
-      const endX = nextRect.left - canvasRect.left + scrollLeft;
-      const endY = nextRect.top + (nextRect.height * 0.20) - canvasRect.top;
-
-      // 3. THE TRUE 'S' SHAPE CONTROL POINTS
-      // CP1 pushes right to start the bottom hook of the S
-      const cp1x = startX + 30;
-      const cp1y = startY - 50;
-
-      // CP2 pulls left (without crossing the midline) to form the top hook of the S
-      const cp2x = endX - 60;
-      const cp2y = endY + 50;
-
+      const endX   = nextRect.left - canvasRect.left + scrollLeft;
+      const endY   = nextRect.top + (nextRect.height * 0.20) - canvasRect.top;
+      const cp1x = startX + 30; const cp1y = startY - 50;
+      const cp2x = endX - 60;   const cp2y = endY + 50;
       const d = `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`;
 
       var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -2283,44 +2565,39 @@ function animMid_link1() {
       path.setAttribute('stroke-width', '2');
       path.setAttribute('fill', 'none');
       path.setAttribute('marker-end', 'url(#arrowHead)');
-      path.setAttribute('stroke-dasharray', '1000');
-      path.setAttribute('stroke-dashoffset', '1000');
       svg.appendChild(path);
-      svg.classList.add('visible');
 
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          path.style.transition = 'stroke-dashoffset 0.6s ease-out';
-          path.setAttribute('stroke-dashoffset', '0');
-          if (VIZ.el.newNodeNextField) {
-            VIZ.el.newNodeNextField.textContent = PTR.nodeList[2] ? PTR.nodeList[2].address : '0x103';
-          }
-        });
+      animateMidPath(svg, path, '#3b6cff', function () {
+        if (VIZ.el.newNodeNextField)
+          VIZ.el.newNodeNextField.textContent = PTR.nodeList[VIZ.insertPos - 1] ? PTR.nodeList[VIZ.insertPos - 1].address : '0x103';
       });
     });
   });
 }
 
 function animMid_link2() {
-  animMid_link1(); // ensure previous step renders
+  // Restore state: list + newNode + keep link1 path, add link2 path only
+  buildList(VIZ.initialList, false, 0);
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+  VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+  VIZ.el.newNodeEl.className = 'viz-node viz-dll-node viz-node-new viz-node-linked';
+  if (VIZ.el.newNodePrevField) VIZ.el.newNodePrevField.textContent = '?';
+  if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent =
+    PTR.nodeList[VIZ.insertPos - 1] ? PTR.nodeList[VIZ.insertPos - 1].address : '?';
+  var isMobile = window.innerWidth <= 768;
+  wrap.style.bottom = isMobile ? '14px' : '68px';
+  midPositionNewNode(wrap);
+  wrap.classList.add('visible');
+  placeTempPointerOnNode(VIZ.insertPos - 2);
 
   var svg = VIZ.el.curveSvg;
   if (!svg) return;
 
-  // 1. PERFECTLY SCALED AMBER ARROWHEAD
-  // Fix the amber arrowhead using the same proportional viewBox mapping
-  var arrowHeadPrev = document.getElementById('arrowHeadPrev');
-  if (arrowHeadPrev) {
-    arrowHeadPrev.setAttribute('viewBox', '0 0 10 10');
-    arrowHeadPrev.setAttribute('markerWidth', '5');
-    arrowHeadPrev.setAttribute('markerHeight', '5');
-    arrowHeadPrev.setAttribute('refX', '8');
-    arrowHeadPrev.setAttribute('refY', '5');
-    var p = arrowHeadPrev.querySelector('path');
-    if (p) {
-      p.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
-    }
-  }
+  // Remove all mid-link paths and redraw link1 as static + animate link2
+  var old = svg.querySelectorAll('.viz-mid-link');
+  for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+  svg.classList.add('visible');
 
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
@@ -2328,84 +2605,85 @@ function animMid_link2() {
       if (!canvas) return;
       var canvasRect = canvas.getBoundingClientRect();
       var scrollLeft = canvas.scrollLeft || 0;
-
       var listRow = VIZ.el.listRow;
       var wraps = listRow ? listRow.querySelectorAll('.viz-node-wrap') : [];
-      var tempWrap = wraps[1]; // temp node (node index 1)
-      var newNodeWrap = VIZ.el.newNodeWrap;
+      var nextNodeWrap = wraps[VIZ.insertPos - 1];
+      var tempWrap     = wraps[VIZ.insertPos - 2];
+      if (!VIZ.el.newNodeEl || !nextNodeWrap || !tempWrap) return;
 
-      if (!VIZ.el.newNodeEl || !tempWrap) return;
-
-      // 2. PRECISE START/END LOCATIONS
-      // Measure exact node boxes
-      const newRect = VIZ.el.newNodeEl.getBoundingClientRect();
+      const newRect    = VIZ.el.newNodeEl.getBoundingClientRect();
+      const nextNodeEl = nextNodeWrap.querySelector('.viz-node');
+      const nextRect   = nextNodeEl.getBoundingClientRect();
       const tempNodeEl = tempWrap.querySelector('.viz-node');
-      const tempRect = tempNodeEl.getBoundingClientRect();
+      const tempRect   = tempNodeEl.getBoundingClientRect();
 
-      // Set to 0.80 (80% from top) to guarantee it sits clearly below the center
-      // START: Left side of newNode
-      const startX = newRect.left - canvasRect.left + scrollLeft;
-      const startY = newRect.top + (newRect.height * 0.80) - canvasRect.top;
+      // --- Draw link1 static (already completed) ---
+      var arrowHead = document.getElementById('arrowHead');
+      if (arrowHead) {
+        arrowHead.setAttribute('viewBox','0 0 10 10'); arrowHead.setAttribute('markerWidth','5');
+        arrowHead.setAttribute('markerHeight','5'); arrowHead.setAttribute('refX','8'); arrowHead.setAttribute('refY','5');
+        var ap = arrowHead.querySelector('path'); if (ap) ap.setAttribute('d','M 0 0 L 10 5 L 0 10 z');
+      }
+      (function() {
+        const sx = newRect.right - canvasRect.left + scrollLeft;
+        const sy = newRect.top + (newRect.height * 0.20) - canvasRect.top;
+        const ex = nextRect.left - canvasRect.left + scrollLeft;
+        const ey = nextRect.top + (nextRect.height * 0.20) - canvasRect.top;
+        var p1 = document.createElementNS('http://www.w3.org/2000/svg','path');
+        p1.setAttribute('class','viz-mid-link');
+        p1.setAttribute('d',`M ${sx} ${sy} C ${sx+30} ${sy-50}, ${ex-60} ${ey+50}, ${ex} ${ey}`);
+        p1.setAttribute('stroke','#3b6cff'); p1.setAttribute('stroke-width','2');
+        p1.setAttribute('fill','none'); p1.setAttribute('marker-end','url(#arrowHead)');
+        svg.appendChild(p1);
+      })();
 
-      // END: Right side of temp node
-      const endX = tempRect.right - canvasRect.left + scrollLeft;
-      const endY = tempRect.top + (tempRect.height * 0.80) - canvasRect.top;
+      // --- Animate link2 ---
+      var arrowHeadPrev = document.getElementById('arrowHeadPrev');
+      if (arrowHeadPrev) {
+        arrowHeadPrev.setAttribute('viewBox','0 0 10 10'); arrowHeadPrev.setAttribute('markerWidth','5');
+        arrowHeadPrev.setAttribute('markerHeight','5'); arrowHeadPrev.setAttribute('refX','8'); arrowHeadPrev.setAttribute('refY','5');
+        var ap2 = arrowHeadPrev.querySelector('path'); if (ap2) ap2.setAttribute('d','M 0 0 L 10 5 L 0 10 z');
+      }
+      const sx2 = newRect.left - canvasRect.left + scrollLeft;
+      const sy2 = newRect.top + (newRect.height * 0.80) - canvasRect.top;
+      const ex2 = tempRect.right - canvasRect.left + scrollLeft;
+      const ey2 = tempRect.top + (tempRect.height * 0.80) - canvasRect.top;
+      var p2 = document.createElementNS('http://www.w3.org/2000/svg','path');
+      p2.setAttribute('class','viz-mid-link');
+      p2.setAttribute('d',`M ${sx2} ${sy2} C ${sx2-80} ${sy2-50}, ${ex2+30} ${ey2+50}, ${ex2} ${ey2}`);
+      p2.setAttribute('stroke','#f59e0b'); p2.setAttribute('stroke-width','2');
+      p2.setAttribute('fill','none'); p2.setAttribute('marker-end','url(#arrowHeadPrev)');
+      svg.appendChild(p2);
 
-      // 3. THE TRUE 'S' SHAPE CONTROL POINTS (Mirrored)
-      // CP1 pushes LEFT to start the bottom hook of the S and sweeps upward
-      const cp1x = startX - 80;
-      const cp1y = startY - 50;
-
-      // CP2 pulls RIGHT to form the top hook of the S, approaching temp's right side cleanly
-      const cp2x = endX + 30;
-      const cp2y = endY + 50;
-
-      const d = `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`;
-
-      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('class', 'viz-mid-link');
-      path.setAttribute('d', d);
-      path.setAttribute('stroke', '#f59e0b'); // Amber color for prev links
-      path.setAttribute('stroke-width', '2');
-      path.setAttribute('fill', 'none');
-      path.setAttribute('marker-end', 'url(#arrowHeadPrev)');
-      path.setAttribute('stroke-dasharray', '1000');
-      path.setAttribute('stroke-dashoffset', '1000');
-      svg.appendChild(path);
-
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          path.style.transition = 'stroke-dashoffset 0.6s ease-out';
-          path.setAttribute('stroke-dashoffset', '0');
-          if (VIZ.el.newNodePrevField) {
-            VIZ.el.newNodePrevField.textContent = PTR.nodeList[1] ? PTR.nodeList[1].address : '0x102';
-          }
-        });
+      animateMidPath(svg, p2, '#f59e0b', function () {
+        if (VIZ.el.newNodePrevField)
+          VIZ.el.newNodePrevField.textContent = PTR.nodeList[VIZ.insertPos - 2] ? PTR.nodeList[VIZ.insertPos - 2].address : '0x102';
       });
     });
   });
 }
 
 function animMid_link3() {
-  animMid_link2(); // Ensure previous steps render
+  buildList(VIZ.initialList, false, 0);
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+  VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+  VIZ.el.newNodeEl.className = 'viz-node viz-dll-node viz-node-new viz-node-linked';
+  if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent =
+    PTR.nodeList[VIZ.insertPos - 1] ? PTR.nodeList[VIZ.insertPos - 1].address : '?';
+  if (VIZ.el.newNodePrevField) VIZ.el.newNodePrevField.textContent =
+    PTR.nodeList[VIZ.insertPos - 2] ? PTR.nodeList[VIZ.insertPos - 2].address : '?';
+  var isMobile = window.innerWidth <= 768;
+  wrap.style.bottom = isMobile ? '14px' : '68px';
+  midPositionNewNode(wrap);
+  wrap.classList.add('visible');
+  placeTempPointerOnNode(VIZ.insertPos - 2);
 
   var svg = VIZ.el.curveSvg;
   if (!svg) return;
-
-  // 1. PERFECTLY SCALED AMBER ARROWHEAD
-  // Ensure the amber arrowhead uses the same clean scaling logic
-  var arrowHeadPrev = document.getElementById('arrowHeadPrev');
-  if (arrowHeadPrev) {
-    arrowHeadPrev.setAttribute('viewBox', '0 0 10 10');
-    arrowHeadPrev.setAttribute('markerWidth', '5');
-    arrowHeadPrev.setAttribute('markerHeight', '5');
-    arrowHeadPrev.setAttribute('refX', '8');
-    arrowHeadPrev.setAttribute('refY', '5');
-    var p = arrowHeadPrev.querySelector('path');
-    if (p) {
-      p.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
-    }
-  }
+  var old = svg.querySelectorAll('.viz-mid-link');
+  for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+  svg.classList.add('visible');
 
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
@@ -2413,82 +2691,99 @@ function animMid_link3() {
       if (!canvas) return;
       var canvasRect = canvas.getBoundingClientRect();
       var scrollLeft = canvas.scrollLeft || 0;
-
       var listRow = VIZ.el.listRow;
       var wraps = listRow ? listRow.querySelectorAll('.viz-node-wrap') : [];
-      var newNodeWrap = VIZ.el.newNodeWrap;
-      var nextNodeWrap = wraps[2]; // temp->next node (node index 2)
+      var nextNodeWrap = wraps[VIZ.insertPos - 1];
+      var tempWrap     = wraps[VIZ.insertPos - 2];
+      if (!VIZ.el.newNodeEl || !nextNodeWrap || !tempWrap) return;
 
-      if (!VIZ.el.newNodeEl || !nextNodeWrap) return;
-
-      // 2. PRECISE START/END LOCATIONS
-      const newRect = VIZ.el.newNodeEl.getBoundingClientRect();
+      const newRect    = VIZ.el.newNodeEl.getBoundingClientRect();
       const nextNodeEl = nextNodeWrap.querySelector('.viz-node');
-      const nextRect = nextNodeEl.getBoundingClientRect();
+      const nextRect   = nextNodeEl.getBoundingClientRect();
+      const tempNodeEl = tempWrap.querySelector('.viz-node');
+      const tempRect   = tempNodeEl.getBoundingClientRect();
 
-      // START: Left side of temp->next node, below the center (80% from top)
-      const startX = nextRect.left - canvasRect.left + scrollLeft;
-      const startY = nextRect.top + (nextRect.height * 0.80) - canvasRect.top;
+      // Static link1 (blue)
+      var arrowHead = document.getElementById('arrowHead');
+      if (arrowHead) {
+        arrowHead.setAttribute('viewBox','0 0 10 10'); arrowHead.setAttribute('markerWidth','5');
+        arrowHead.setAttribute('markerHeight','5'); arrowHead.setAttribute('refX','8'); arrowHead.setAttribute('refY','5');
+        var ap = arrowHead.querySelector('path'); if (ap) ap.setAttribute('d','M 0 0 L 10 5 L 0 10 z');
+      }
+      (function() {
+        const sx = newRect.right - canvasRect.left + scrollLeft;
+        const sy = newRect.top + (newRect.height * 0.20) - canvasRect.top;
+        const ex = nextRect.left - canvasRect.left + scrollLeft;
+        const ey = nextRect.top + (nextRect.height * 0.20) - canvasRect.top;
+        var p1 = document.createElementNS('http://www.w3.org/2000/svg','path');
+        p1.setAttribute('class','viz-mid-link');
+        p1.setAttribute('d',`M ${sx} ${sy} C ${sx+30} ${sy-50}, ${ex-60} ${ey+50}, ${ex} ${ey}`);
+        p1.setAttribute('stroke','#3b6cff'); p1.setAttribute('stroke-width','2');
+        p1.setAttribute('fill','none'); p1.setAttribute('marker-end','url(#arrowHead)');
+        svg.appendChild(p1);
+      })();
 
-      // END: Right side of newNode, below the center (80% from top)
-      const endX = newRect.right - canvasRect.left + scrollLeft;
-      const endY = newRect.top + (newRect.height * 0.80) - canvasRect.top;
+      // Static link2 (amber)
+      var arrowHeadPrev = document.getElementById('arrowHeadPrev');
+      if (arrowHeadPrev) {
+        arrowHeadPrev.setAttribute('viewBox','0 0 10 10'); arrowHeadPrev.setAttribute('markerWidth','5');
+        arrowHeadPrev.setAttribute('markerHeight','5'); arrowHeadPrev.setAttribute('refX','8'); arrowHeadPrev.setAttribute('refY','5');
+        var ap2 = arrowHeadPrev.querySelector('path'); if (ap2) ap2.setAttribute('d','M 0 0 L 10 5 L 0 10 z');
+      }
+      (function() {
+        const sx = newRect.left - canvasRect.left + scrollLeft;
+        const sy = newRect.top + (newRect.height * 0.80) - canvasRect.top;
+        const ex = tempRect.right - canvasRect.left + scrollLeft;
+        const ey = tempRect.top + (tempRect.height * 0.80) - canvasRect.top;
+        var p2 = document.createElementNS('http://www.w3.org/2000/svg','path');
+        p2.setAttribute('class','viz-mid-link');
+        p2.setAttribute('d',`M ${sx} ${sy} C ${sx-80} ${sy-50}, ${ex+30} ${ey+50}, ${ex} ${ey}`);
+        p2.setAttribute('stroke','#f59e0b'); p2.setAttribute('stroke-width','2');
+        p2.setAttribute('fill','none'); p2.setAttribute('marker-end','url(#arrowHeadPrev)');
+        svg.appendChild(p2);
+      })();
 
-      // 3. THE TRUE 'S' SHAPE CONTROL POINTS
-      // CP1 pushes LEFT and DOWN to begin the top hook of the S
-      const cp1x = startX - 10;
-      const cp1y = startY + 30;
+      // Animate link3 (amber, nextNode -> newNode)
+      const sx3 = nextRect.left - canvasRect.left + scrollLeft;
+      const sy3 = nextRect.top + (nextRect.height * 0.80) - canvasRect.top;
+      const ex3 = newRect.right - canvasRect.left + scrollLeft;
+      const ey3 = newRect.top + (newRect.height * 0.80) - canvasRect.top;
+      var p3 = document.createElementNS('http://www.w3.org/2000/svg','path');
+      p3.setAttribute('class','viz-mid-link');
+      p3.setAttribute('d',`M ${sx3} ${sy3} C ${sx3-10} ${sy3+30}, ${ex3+70} ${ey3-50}, ${ex3} ${ey3}`);
+      p3.setAttribute('stroke','#f59e0b'); p3.setAttribute('stroke-width','2');
+      p3.setAttribute('fill','none'); p3.setAttribute('marker-end','url(#arrowHeadPrev)');
+      svg.appendChild(p3);
 
-      // CP2 pushes RIGHT and UP from the target to form the bottom hook of the S
-      const cp2x = endX + 70;
-      const cp2y = endY - 50;
-
-      const d = `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`;
-
-      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('class', 'viz-mid-link');
-      path.setAttribute('d', d);
-      path.setAttribute('stroke', '#f59e0b'); // Amber color for prev links
-      path.setAttribute('stroke-width', '2');
-      path.setAttribute('fill', 'none');
-      path.setAttribute('marker-end', 'url(#arrowHeadPrev)');
-      path.setAttribute('stroke-dasharray', '1000');
-      path.setAttribute('stroke-dashoffset', '1000');
-      svg.appendChild(path);
-
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          path.style.transition = 'stroke-dashoffset 0.6s ease-out';
-          path.setAttribute('stroke-dashoffset', '0');
-          
-          // Update the text field inside the node visually
-          var prevField = nextNodeEl.querySelector('.viz-node-prev');
-          if (prevField) prevField.textContent = NEW_NODE_ADDR;
-        });
+      animateMidPath(svg, p3, '#f59e0b', function () {
+        var prevField = nextNodeEl.querySelector('.viz-node-prev');
+        if (prevField) prevField.textContent = NEW_NODE_ADDR;
       });
     });
   });
 }
 
 function animMid_link4() {
-  animMid_link3(); // Ensure previous steps render
+  buildList(VIZ.initialList, false, 0);
+  var wrap = VIZ.el.newNodeWrap;
+  if (!wrap) return;
+  VIZ.el.newNodeData.textContent = String(VIZ.newValue);
+  VIZ.el.newNodeEl.className = 'viz-node viz-dll-node viz-node-new viz-node-linked';
+  if (VIZ.el.newNodeNextField) VIZ.el.newNodeNextField.textContent =
+    PTR.nodeList[VIZ.insertPos - 1] ? PTR.nodeList[VIZ.insertPos - 1].address : '?';
+  if (VIZ.el.newNodePrevField) VIZ.el.newNodePrevField.textContent =
+    PTR.nodeList[VIZ.insertPos - 2] ? PTR.nodeList[VIZ.insertPos - 2].address : '?';
+  var isMobile = window.innerWidth <= 768;
+  wrap.style.bottom = isMobile ? '14px' : '68px';
+  midPositionNewNode(wrap);
+  wrap.classList.add('visible');
+  placeTempPointerOnNode(VIZ.insertPos - 2);
 
   var svg = VIZ.el.curveSvg;
   if (!svg) return;
-
-  // 1. PERFECTLY SCALED BLUE ARROWHEAD
-  var arrowHead = document.getElementById('arrowHead');
-  if (arrowHead) {
-    arrowHead.setAttribute('viewBox', '0 0 10 10');
-    arrowHead.setAttribute('markerWidth', '5');
-    arrowHead.setAttribute('markerHeight', '5');
-    arrowHead.setAttribute('refX', '8');
-    arrowHead.setAttribute('refY', '5');
-    var p = arrowHead.querySelector('path');
-    if (p) {
-      p.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
-    }
-  }
+  var old = svg.querySelectorAll('.viz-mid-link');
+  for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+  svg.classList.add('visible');
 
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
@@ -2496,66 +2791,118 @@ function animMid_link4() {
       if (!canvas) return;
       var canvasRect = canvas.getBoundingClientRect();
       var scrollLeft = canvas.scrollLeft || 0;
-
       var listRow = VIZ.el.listRow;
       var wraps = listRow ? listRow.querySelectorAll('.viz-node-wrap') : [];
-      var tempWrap = wraps[1]; // temp node (node index 1)
-      var newNodeWrap = VIZ.el.newNodeWrap;
+      var nextNodeWrap = wraps[VIZ.insertPos - 1];
+      var tempWrap     = wraps[VIZ.insertPos - 2];
+      if (!VIZ.el.newNodeEl || !nextNodeWrap || !tempWrap) return;
 
-      if (!VIZ.el.newNodeEl || !tempWrap) return;
-
-      // 2. PRECISE START/END LOCATIONS
+      const newRect    = VIZ.el.newNodeEl.getBoundingClientRect();
+      const nextNodeEl = nextNodeWrap.querySelector('.viz-node');
+      const nextRect   = nextNodeEl.getBoundingClientRect();
       const tempNodeEl = tempWrap.querySelector('.viz-node');
-      const tempRect = tempNodeEl.getBoundingClientRect();
-      const newRect = VIZ.el.newNodeEl.getBoundingClientRect();
+      const tempRect   = tempNodeEl.getBoundingClientRect();
 
-      // START: Right side of temp node, above the center (20% from top)
-      const startX = tempRect.right - canvasRect.left + scrollLeft;
-      const startY = tempRect.top + (tempRect.height * 0.20) - canvasRect.top;
+      // Arrowheads
+      var arrowHead = document.getElementById('arrowHead');
+      if (arrowHead) {
+        arrowHead.setAttribute('viewBox','0 0 10 10'); arrowHead.setAttribute('markerWidth','5');
+        arrowHead.setAttribute('markerHeight','5'); arrowHead.setAttribute('refX','8'); arrowHead.setAttribute('refY','5');
+        var ap = arrowHead.querySelector('path'); if (ap) ap.setAttribute('d','M 0 0 L 10 5 L 0 10 z');
+      }
+      var arrowHeadPrev = document.getElementById('arrowHeadPrev');
+      if (arrowHeadPrev) {
+        arrowHeadPrev.setAttribute('viewBox','0 0 10 10'); arrowHeadPrev.setAttribute('markerWidth','5');
+        arrowHeadPrev.setAttribute('markerHeight','5'); arrowHeadPrev.setAttribute('refX','8'); arrowHeadPrev.setAttribute('refY','5');
+        var ap2 = arrowHeadPrev.querySelector('path'); if (ap2) ap2.setAttribute('d','M 0 0 L 10 5 L 0 10 z');
+      }
 
-      // END: Left side of newNode, above the center (20% from top)
-      const endX = newRect.left - canvasRect.left + scrollLeft;
-      const endY = newRect.top + (newRect.height * 0.20) - canvasRect.top;
+      // Static link1 (blue)
+      (function() {
+        const sx = newRect.right - canvasRect.left + scrollLeft;
+        const sy = newRect.top + (newRect.height * 0.20) - canvasRect.top;
+        const ex = nextRect.left - canvasRect.left + scrollLeft;
+        const ey = nextRect.top + (nextRect.height * 0.20) - canvasRect.top;
+        var p1 = document.createElementNS('http://www.w3.org/2000/svg','path');
+        p1.setAttribute('class','viz-mid-link');
+        p1.setAttribute('d',`M ${sx} ${sy} C ${sx+30} ${sy-50}, ${ex-60} ${ey+50}, ${ex} ${ey}`);
+        p1.setAttribute('stroke','#3b6cff'); p1.setAttribute('stroke-width','2');
+        p1.setAttribute('fill','none'); p1.setAttribute('marker-end','url(#arrowHead)');
+        svg.appendChild(p1);
+      })();
 
-      // 3. THE CORRECT DOWNWARD 'S' SHAPE CONTROL POINTS
-      // CP1 pushes RIGHT and DOWN (+) to directly head towards the gap
-      const cp1x = startX + 60;
-      const cp1y = startY + 50;
+      // Static link2 (amber)
+      (function() {
+        const sx = newRect.left - canvasRect.left + scrollLeft;
+        const sy = newRect.top + (newRect.height * 0.80) - canvasRect.top;
+        const ex = tempRect.right - canvasRect.left + scrollLeft;
+        const ey = tempRect.top + (tempRect.height * 0.80) - canvasRect.top;
+        var p2 = document.createElementNS('http://www.w3.org/2000/svg','path');
+        p2.setAttribute('class','viz-mid-link');
+        p2.setAttribute('d',`M ${sx} ${sy} C ${sx-80} ${sy-50}, ${ex+30} ${ey+50}, ${ex} ${ey}`);
+        p2.setAttribute('stroke','#f59e0b'); p2.setAttribute('stroke-width','2');
+        p2.setAttribute('fill','none'); p2.setAttribute('marker-end','url(#arrowHeadPrev)');
+        svg.appendChild(p2);
+      })();
 
-      // CP2 pushes LEFT and UP (-) from the target so the arrow drops smoothly INTO the left side
-      const cp2x = endX - 50;
-      const cp2y = endY - 50;
+      // Static link3 (amber)
+      (function() {
+        const sx = nextRect.left - canvasRect.left + scrollLeft;
+        const sy = nextRect.top + (nextRect.height * 0.80) - canvasRect.top;
+        const ex = newRect.right - canvasRect.left + scrollLeft;
+        const ey = newRect.top + (newRect.height * 0.80) - canvasRect.top;
+        var p3 = document.createElementNS('http://www.w3.org/2000/svg','path');
+        p3.setAttribute('class','viz-mid-link');
+        p3.setAttribute('d',`M ${sx} ${sy} C ${sx-10} ${sy+30}, ${ex+70} ${ey-50}, ${ex} ${ey}`);
+        p3.setAttribute('stroke','#f59e0b'); p3.setAttribute('stroke-width','2');
+        p3.setAttribute('fill','none'); p3.setAttribute('marker-end','url(#arrowHeadPrev)');
+        // Also restore prev field on next node
+        var prevField = nextNodeEl.querySelector('.viz-node-prev');
+        if (prevField) prevField.textContent = NEW_NODE_ADDR;
+        svg.appendChild(p3);
+      })();
 
-      const d = `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`;
+      // Animate link4 (blue, temp -> newNode)
+      const sx4 = tempRect.right - canvasRect.left + scrollLeft;
+      const sy4 = tempRect.top + (tempRect.height * 0.20) - canvasRect.top;
+      const ex4 = newRect.left - canvasRect.left + scrollLeft;
+      const ey4 = newRect.top + (newRect.height * 0.20) - canvasRect.top;
+      var p4 = document.createElementNS('http://www.w3.org/2000/svg','path');
+      p4.setAttribute('class','viz-mid-link');
+      p4.setAttribute('d',`M ${sx4} ${sy4} C ${sx4+60} ${sy4+50}, ${ex4-50} ${ey4-50}, ${ex4} ${ey4}`);
+      p4.setAttribute('stroke','#3b6cff'); p4.setAttribute('stroke-width','2');
+      p4.setAttribute('fill','none'); p4.setAttribute('marker-end','url(#arrowHead)');
+      svg.appendChild(p4);
 
-      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('class', 'viz-mid-link');
-      path.setAttribute('d', d);
-      path.setAttribute('stroke', '#3b6cff'); // Blue color for next links
-      path.setAttribute('stroke-width', '2');
-      path.setAttribute('fill', 'none');
-      path.setAttribute('marker-end', 'url(#arrowHead)');
-      path.setAttribute('stroke-dasharray', '1000');
-      path.setAttribute('stroke-dashoffset', '1000');
-      svg.appendChild(path);
-
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          path.style.transition = 'stroke-dashoffset 0.6s ease-out';
-          path.setAttribute('stroke-dashoffset', '0');
-          
-          // Update the text field inside the node visually
-          if (tempNodeEl) {
-            var nextField = tempNodeEl.querySelector('.viz-node-next');
-            if (nextField) nextField.textContent = NEW_NODE_ADDR;
-          }
-        });
+      animateMidPath(svg, p4, '#3b6cff', function () {
+        var nextField = tempNodeEl.querySelector('.viz-node-next');
+        if (nextField) nextField.textContent = NEW_NODE_ADDR;
       });
     });
   });
 }
 
-// ── Temp pointer helpers (cached VIZ.el.tempPointer — HTML-resident) ────────
+// ── Step 11: node snaps into list — final rearrange ────────────
+function animMid_rearrange() {
+  // Don't chain link4 — just clean up and rebuild
+  setTimeout(function () {
+    hideCurve();
+    removeTempPointer();
+    hideTempPointer();
+    hideLoopBox();
+    hideNewNode();
+
+    // Build final list with new node inserted at VIZ.insertPos
+    var pos = VIZ.insertPos;
+    var finalList = VIZ.initialList.slice(0, pos - 1)
+      .concat([VIZ.newValue])
+      .concat(VIZ.initialList.slice(pos - 1));
+
+    setTimeout(function () {
+      buildList(finalList, true, 0);
+    }, 80);
+  }, 700);
+}
 // FIX #1: showTempPointerOnNode renamed/replaced by placeTempPointerOnNode above.
 // hideTempPointer kept for cached el cleanup on reset/switchMode.
 function hideTempPointer() {

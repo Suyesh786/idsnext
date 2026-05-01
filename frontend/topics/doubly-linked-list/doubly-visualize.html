@@ -133,6 +133,21 @@
           max="999"
         >
       </div>
+
+      <div class="viz-value-input-wrap" id="posInputWrap" style="display:none">
+        <label class="viz-value-label" for="vizPosInput">Position</label>
+        <input
+          type="number"
+          id="vizPosInput"
+          class="viz-value-input"
+          placeholder="e.g. 2"
+          min="1"
+          max="99"
+        >
+      </div>
+      <button class="viz-confirm-btn" id="vizConfirmBtn" onclick="vizConfirmValues()">
+        ↵ Enter
+      </button>
     </div>
 
     <!-- Canvas area -->
