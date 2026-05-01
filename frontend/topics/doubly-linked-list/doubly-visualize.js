@@ -72,6 +72,37 @@ var CODE_TEMPLATES = {
     { line: 0, html: '&nbsp;&nbsp;}' },
     { line: 0, html: '}' }
   ],
+  'delete-beginning': [
+    { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Delete at beginning of DLL</span>' },
+    { line: 0, html: '<span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>' },
+    { line: 0, html: '<span class="c-pp">#include</span> <span class="c-str">&lt;stdlib.h&gt;</span>' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-kw">struct</span> node {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-type">int</span> data;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* prev;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* next;' },
+    { line: 0, html: '};' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-type">void</span> <span class="c-fn">deleteAtBeginning</span>() {' },
+    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">if</span> (head == <span class="c-kw">NULL</span>) {' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">printf</span>(<span class="c-str">"List is empty.\\n"</span>);' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span>;' },
+    { line: 0, html: '&nbsp;&nbsp;}' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 2, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">if</span> (head-&gt;next == <span class="c-kw">NULL</span>) {' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">free</span>(head);' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;head = tail = <span class="c-kw">NULL</span>;' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span>;' },
+    { line: 0, html: '&nbsp;&nbsp;}' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 3, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* temp = head;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 4, cls: 'viz-highlightable', html: '&nbsp;&nbsp;head = head-&gt;next;' },
+    { line: 5, cls: 'viz-highlightable', html: '&nbsp;&nbsp;head-&gt;prev = <span class="c-kw">NULL</span>;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 6, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-fn">free</span>(temp);' },
+    { line: 0, html: '}' }
+  ],
   'insert-middle': [
     { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Insert at middle of a DLL</span>' },
     { line: 0, html: '<span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>' },
@@ -148,30 +179,37 @@ function switchMode(newMode) {
   removeTempPointer();
   hideTempPointer();
 
-  if (newMode === 'insert-beginning' || newMode === 'insert-end' || newMode === 'insert-middle') {
+  if (newMode === 'insert-beginning' || newMode === 'insert-end' || newMode === 'insert-middle' || newMode === 'delete-beginning') {
     var overlay = document.getElementById('comingSoonOverlay');
     if (overlay) overlay.classList.remove('visible');
-    var inputRow = document.getElementById('valueInputRow');
-    if (inputRow) inputRow.style.display = '';
-    var lbl = document.getElementById('vizValueLabel');
-    if (lbl) lbl.textContent = 'Insert value';
-
-    var posWrap = document.getElementById('posInputWrap');
-    if (posWrap) posWrap.style.display = (newMode === 'insert-middle') ? '' : 'none';
-
-    var confirmBtn = document.getElementById('vizConfirmBtn');
-    if (confirmBtn) confirmBtn.style.display = '';
 
     renderCodePanel(newMode);
 
     var labels;
-    // FIX #5: totalSteps = 10 for middle (STEPS_MIDDLE has indices 0..10 = 11 entries, 10 steps)
     if (newMode === 'insert-middle') {
       VIZ.totalSteps = 11;
       labels = INSERT_MIDDLE_STEP_LABELS;
+    } else if (newMode === 'delete-beginning') {
+      VIZ.totalSteps = 6;
+      labels = DELETE_BEGINNING_STEP_LABELS;
     } else {
       VIZ.totalSteps = 7;
       labels = (newMode === 'insert-end') ? INSERT_END_STEP_LABELS : INSERT_BEGINNING_STEP_LABELS;
+    }
+
+    // Show/hide input row depending on operation
+    var inputRow = document.getElementById('valueInputRow');
+    var confirmBtn = document.getElementById('vizConfirmBtn');
+    var posWrap = document.getElementById('posInputWrap');
+    if (newMode === 'delete-beginning') {
+      if (inputRow) inputRow.style.display = 'none';
+      if (confirmBtn) confirmBtn.style.display = 'none';
+    } else {
+      if (inputRow) inputRow.style.display = '';
+      if (confirmBtn) confirmBtn.style.display = '';
+      var lbl = document.getElementById('vizValueLabel');
+      if (lbl) lbl.textContent = 'Insert value';
+      if (posWrap) posWrap.style.display = (newMode === 'insert-middle') ? '' : 'none';
     }
 
     if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
@@ -236,6 +274,67 @@ var INSERT_MIDDLE_STEP_LABELS = [
   'temp\u2192next\u2192prev = newNode',
   'temp\u2192next = newNode',
   'Node inserted! List updated'
+];
+
+var DELETE_BEGINNING_STEP_LABELS = [
+  'Check: head == NULL?',
+  'Check: only one node?',
+  'temp = head',
+  'head = head\u2192next',
+  'head\u2192prev = NULL',
+  'free(temp) \u2014 node removed!'
+];
+
+var STEPS_DELETE_BEG = [
+  {
+    codeLine: null, animStatus: 'Ready', animStatusClass: '',
+    explainStepNum: 'Initial State', explainTitle: 'Starting Point',
+    explainText: 'We have a doubly linked list: <strong>1 \u21c4 2 \u21c4 3 \u21c4 4 \u21c4 NULL</strong>.<br><br>Goal: delete the <strong>first node</strong> (node 1) from the beginning.',
+    whatBody: 'HEAD points to node 1. TAIL points to node 4. We call <code>deleteAtBeginning()</code>.',
+    conceptText: '\uD83D\uDCA1 Delete at beginning is O(1) \u2014 no traversal needed!'
+  },
+  {
+    codeLine: 1, animStatus: 'Checking head\u2026', animStatusClass: 'status-running',
+    explainStepNum: 'Step 1 of 6', explainTitle: 'Check: head == NULL?',
+    explainText: '<code>if (head == NULL)</code> \u2014 is the list empty?<br><br>Our list has 4 nodes, so <strong>head != NULL</strong>. We proceed.',
+    whatBody: 'HEAD is not NULL \u2014 list has nodes. Skip the empty-list branch.',
+    conceptText: '\uD83D\uDD17 Always guard against deleting from an empty list!'
+  },
+  {
+    codeLine: 2, animStatus: 'Checking size\u2026', animStatusClass: 'status-running',
+    explainStepNum: 'Step 2 of 6', explainTitle: 'Check: only one node?',
+    explainText: '<code>if (head-&gt;next == NULL)</code> \u2014 is there only one node?<br><br>Our list has 4 nodes, so <strong>head\u2192next != NULL</strong>. We take the multi-node path.',
+    whatBody: 'head\u2192next points to node 2 \u2014 list has multiple nodes. Proceed to full delete.',
+    conceptText: '\u26A0\uFE0F Single-node case needs special handling: both head and tail must become NULL.'
+  },
+  {
+    codeLine: 3, animStatus: 'Saving temp\u2026', animStatusClass: 'status-running',
+    explainStepNum: 'Step 3 of 6', explainTitle: 'temp = head',
+    explainText: '<code>struct node* temp = head;</code> \u2014 save a reference to the current head node so we can free it after relinking.<br><br>Without this, we\u2019d lose the pointer after moving head.',
+    whatBody: 'A <strong>temp</strong> pointer (red) appears above node 1, pointing to the node we are about to remove.',
+    conceptText: '\uD83D\uDCCC Always save the node to delete BEFORE moving head \u2014 otherwise you leak memory!'
+  },
+  {
+    codeLine: 4, animStatus: 'Moving HEAD\u2026', animStatusClass: 'status-running',
+    explainStepNum: 'Step 4 of 6', explainTitle: 'head = head\u2192next',
+    explainText: '<code>head = head-&gt;next;</code> \u2014 advance HEAD to the second node (node 2).<br><br>Node 2 will become the new first node of the list.',
+    whatBody: 'HEAD pointer slides from node 1 to node 2. Node 2 is now the new head.',
+    conceptText: '\u27A1\uFE0F HEAD pointer moves forward by one node.'
+  },
+  {
+    codeLine: 5, animStatus: 'Clearing prev\u2026', animStatusClass: 'status-running',
+    explainStepNum: 'Step 5 of 6', explainTitle: 'head\u2192prev = NULL',
+    explainText: '<code>head-&gt;prev = NULL;</code> \u2014 the new head (node 2) still has its PREV pointing back to node 1.<br><br>We must clear it to NULL \u2014 the first node must never have a backward link.',
+    whatBody: 'The PREV field of node 2 flashes and updates to <strong>NULL</strong>. The backward link to node 1 is removed.',
+    conceptText: '\uD83D\uDCCC First node\u2019s prev is always NULL \u2014 it\u2019s the left boundary of the list!'
+  },
+  {
+    codeLine: 6, animStatus: 'Complete \u2713', animStatusClass: 'status-complete',
+    explainStepNum: 'Step 6 of 6', explainTitle: 'free(temp) \u2014 done!',
+    explainText: '<code>free(temp);</code> \u2014 release the memory of the old head node (node 1).<br><br>List is now: <strong>2 \u21c4 3 \u21c4 4 \u21c4 NULL</strong>',
+    whatBody: 'Node 1 fades out and is removed. HEAD now points to node 2. Deletion complete in O(1).',
+    conceptText: '\u2705 Delete at beginning complete! No traversal needed \u2014 just pointer updates and free().'
+  }
 ];
 
 var STEPS_MIDDLE = [
@@ -842,7 +941,7 @@ function positionHeadOnNewNode() {
 // ═══════════════════════════════════════════════════════════════
 function applyStep(idx) {
   VIZ.currentStep = idx;
-  var stepArr = (mode === 'insert-end') ? STEPS_END : (mode === 'insert-middle') ? STEPS_MIDDLE : STEPS;
+  var stepArr = (mode === 'insert-end') ? STEPS_END : (mode === 'insert-middle') ? STEPS_MIDDLE : (mode === 'delete-beginning') ? STEPS_DELETE_BEG : STEPS;
   var step = stepArr[idx];
   if (!step) return;
 
@@ -1000,6 +1099,18 @@ function resetHeadStyle() {
 //  MAIN ANIMATION DISPATCHER
 // ═══════════════════════════════════════════════════════════════
 function runAnimation(step) {
+  if (mode === 'delete-beginning') {
+    switch (step) {
+      case 0: animDelBeg_initial();     break;
+      case 1: animDelBeg_checkEmpty();  break;
+      case 2: animDelBeg_checkOne();    break;
+      case 3: animDelBeg_setTemp();     break;
+      case 4: animDelBeg_moveHead();    break;
+      case 5: animDelBeg_clearPrev();   break;
+      case 6: animDelBeg_free();        break;
+    }
+    return;
+  }
   if (mode === 'insert-end') {
     switch (step) {
       case 0: animEnd_initial();      break;
@@ -3007,6 +3118,204 @@ function animMid_rearrange() {
     }, 80);
   }, 700);
 }
+// ═══════════════════════════════════════════════════════════════
+//  DELETE-AT-BEGINNING ANIMATION FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+
+// Helper: list without first node
+function delBegFinalList() { return VIZ.initialList.slice(1); }
+
+function animDelBeg_initial() {
+  buildList(VIZ.initialList, false, 0);
+  hideNewNode();
+  hideCurve();
+  removeTempPointer();
+  hideTempPointer();
+  hideLoopBox();
+}
+
+function animDelBeg_checkEmpty() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  removeTempPointer();
+  hideTempPointer();
+  // Pulse HEAD to show we're evaluating it
+  var hp = VIZ.el.headPointer;
+  if (hp) {
+    hp.style.transition = 'transform 0.15s ease';
+    hp.style.transform  = 'translateX(-50%) scale(1.2)';
+    setTimeout(function () { hp.style.transform = 'translateX(-50%) scale(1)'; }, 300);
+  }
+  // Show condition box
+  var box = document.getElementById('loopCheckBox');
+  if (box) {
+    box.classList.remove('loop-true','loop-false','state-change');
+    void box.offsetWidth;
+    box.innerHTML = 'head == NULL &nbsp;\u2192&nbsp; <span style="font-weight:700">\u2717 FALSE \u2014 list has nodes</span>';
+    box.classList.add('active','loop-false','state-change');
+  }
+}
+
+function animDelBeg_checkOne() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  removeTempPointer();
+  hideTempPointer();
+  // Show condition box
+  var box = document.getElementById('loopCheckBox');
+  if (box) {
+    box.classList.remove('loop-true','loop-false','state-change');
+    void box.offsetWidth;
+    box.innerHTML = 'head\u2192next == NULL &nbsp;\u2192&nbsp; <span style="font-weight:700">\u2717 FALSE \u2014 multiple nodes</span>';
+    box.classList.add('active','loop-false','state-change');
+  }
+}
+
+function animDelBeg_setTemp() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  hideLoopBox();
+  // Place temp on node 0 (the head node)
+  placeTempPointerOnNode(0);
+  // Also highlight head node 0 as "to be deleted"
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps[0]) {
+        var nodeEl = wraps[0].querySelector('.viz-node');
+        if (nodeEl) {
+          nodeEl.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
+          nodeEl.style.boxShadow = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)';
+          nodeEl.style.borderColor = '#ef4444';
+        }
+      }
+    });
+  });
+}
+
+// Smoothly slides the HEAD pointer to a given node index, matching the
+// same cubic-bezier transition used by placeTempPointerOnNode for temp.
+function animateHeadToNode(nodeIndex) {
+  var canvas = document.getElementById('animCanvas');
+  var row    = VIZ.el.listRow;
+  var hp     = VIZ.el.headPointer;
+  if (!canvas || !row || !hp) return;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = row.querySelectorAll('.viz-node-wrap');
+      var wrap  = wraps[nodeIndex];
+      if (!wrap) return;
+
+      var canvasRect = canvas.getBoundingClientRect();
+      var scrollLeft = canvas.scrollLeft || 0;
+      var hNode      = wrap.querySelector('.viz-node');
+      var hRect      = (hNode || wrap).getBoundingClientRect();
+      var hCx        = hRect.left + hRect.width / 2 - canvasRect.left + scrollLeft;
+      var hTopY      = hRect.top  - canvasRect.top  - hp.getBoundingClientRect().height - 4;
+
+      // Enable smooth slide (same easing as temp pointer)
+      hp.style.transition = 'left 0.45s cubic-bezier(0.4,0,0.2,1), top 0.45s cubic-bezier(0.4,0,0.2,1)';
+      hp.style.top        = hTopY + 'px';
+      hp.style.left       = hCx   + 'px';
+      hp.style.transform  = 'translateX(-50%)';
+
+      PTR.headIndex = nodeIndex;
+      if (VIZ.el.headAddr) VIZ.el.headAddr.textContent = PTR.nodeList[nodeIndex] ? PTR.nodeList[nodeIndex].address : '\u2014';
+
+      // Remove transition after animation so positionPointers() stays instant elsewhere
+      setTimeout(function () { hp.style.transition = ''; }, 500);
+    });
+  });
+}
+
+function animDelBeg_moveHead() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  hideLoopBox();
+  // Keep temp on node 0
+  placeTempPointerOnNode(0);
+  // Highlight node 0 as pending deletion
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps[0]) {
+        var nodeEl = wraps[0].querySelector('.viz-node');
+        if (nodeEl) {
+          nodeEl.style.boxShadow = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)';
+          nodeEl.style.borderColor = '#ef4444';
+        }
+      }
+      // Smoothly slide HEAD pointer from node 0 → node 1
+      animateHeadToNode(1);
+    });
+  });
+}
+
+function animDelBeg_clearPrev() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  hideLoopBox();
+  // Keep temp on node 0
+  placeTempPointerOnNode(0);
+  // Keep node 0 highlighted red
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps[0]) {
+        var nodeEl = wraps[0].querySelector('.viz-node');
+        if (nodeEl) {
+          nodeEl.style.boxShadow = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)';
+          nodeEl.style.borderColor = '#ef4444';
+        }
+      }
+      // HEAD already at node 1 — keep it there (no animation needed, just ensure position)
+      animateHeadToNode(1);
+      // Fade out the ← backward arrow between node 0 and node 1
+      var listRow = VIZ.el.listRow;
+      if (listRow) {
+        var arrows = listRow.querySelectorAll('.viz-arrow');
+        var firstArrow = arrows[0];
+        if (firstArrow) {
+          var bckSpan = firstArrow.querySelector('.viz-arrow-bck');
+          if (bckSpan) {
+            bckSpan.style.transition = 'opacity 0.4s ease';
+            bckSpan.style.opacity = '0';
+          }
+        }
+      }
+      // Flash node 1 PREV field: existing addr → NULL
+      if (wraps[1]) {
+        var prevEl = wraps[1].querySelector('.viz-node-prev');
+        if (prevEl) {
+          setTimeout(function () {
+            prevEl.style.transition = 'background 0.25s ease, color 0.25s ease';
+            prevEl.style.background = 'rgba(245,158,11,0.25)';
+            prevEl.style.color      = '#d97706';
+            prevEl.textContent      = 'NULL';
+            setTimeout(function () {
+              prevEl.style.background = '';
+              prevEl.style.color      = '';
+            }, 800);
+          }, 150);
+        }
+      }
+    });
+  });
+}
+
+function animDelBeg_free() {
+  hideCurve();
+  hideLoopBox();
+  removeTempPointer();
+  hideTempPointer();
+  // Build final list (without node 0) with enter animation
+  var finalList = delBegFinalList();
+  setTimeout(function () {
+    buildList(finalList, true, 0);
+  }, 80);
+}
+
 // FIX #1: showTempPointerOnNode renamed/replaced by placeTempPointerOnNode above.
 // hideTempPointer kept for cached el cleanup on reset/switchMode.
 function hideTempPointer() {
