@@ -289,12 +289,12 @@
           </g>
 
           <!-- Circular back arrow — arc below nodes -->
-          <path d="M 605 130 Q 340 185 85 130" stroke="#e53e3e" stroke-width="2.5" fill="none" stroke-dasharray="6,3" id="circularArc"/>
+          <path d="M 605 100 C 640 100, 640 160, 570 160 L 60 160 C 10 160, 10 100, 20 100" stroke="#4f8cff" stroke-width="2" fill="none" id="circularArc"/>
           <!-- Arrowhead pointing to head -->
-          <polygon points="78,125 85,135 92,125" fill="#e53e3e"/>
+          <polygon points="20,95 30,100 20,105" fill="#4f8cff"/>
 
           <!-- "Points to HEAD" label on arc -->
-          <text x="340" y="195" text-anchor="middle" font-size="11" fill="#c62828" font-weight="700" font-family="DM Sans, sans-serif">Last node → HEAD (no NULL!)</text>
+          <text x="340" y="150" text-anchor="middle" font-size="11" fill="#4f8cff" font-weight="700" font-family="DM Sans, sans-serif">Last node → HEAD (no NULL!)</text>
         </svg>
       </div>
     </section>
@@ -609,10 +609,58 @@
       </div>
     </section>
 
-    <!-- ── SECTION 8: Advantages ── -->
+    <!-- ── SECTION 8: Implementation in C ── -->
     <section class="lesson-section">
       <div class="section-header">
         <span class="section-number">08</span>
+        <h2 class="section-title">Implementation in C</h2>
+      </div>
+
+      <div class="code-block-wrap" style="margin-bottom: 24px;">
+        <div class="code-block-label">C — Complete Implementation</div>
+        <pre class="code-block"><span class="kw">#include</span> &lt;stdio.h&gt;
+<span class="kw">#include</span> &lt;stdlib.h&gt;
+
+<span class="kw">struct</span> node {
+    <span class="kw">int</span> data;
+    <span class="kw">struct</span> node* next;
+};
+
+<span class="kw">struct</span> node* head = NULL;
+
+<span class="kw">void</span> insert(<span class="kw">int</span> data) {
+    <span class="kw">struct</span> node* newnode = (<span class="kw">struct</span> node*)malloc(<span class="kw">sizeof</span>(<span class="kw">struct</span> node));
+    newnode-&gt;data = data;
+
+    <span class="kw">if</span> (head == NULL) {
+        newnode-&gt;next = newnode;
+        head = newnode;
+        <span class="kw">return</span>;
+    }
+
+    <span class="kw">struct</span> node* temp = head;
+    <span class="kw">while</span> (temp-&gt;next != head) {
+        temp = temp-&gt;next;
+    }
+
+    temp-&gt;next = newnode;
+    newnode-&gt;next = head;
+}</pre>
+      </div>
+
+      <button class="mark-complete-btn" onclick="window.location.href='../singly-circular-linked-list-visualize.html'" style="display: inline-flex; margin-top: 10px;">
+        <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+          <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+        </svg>
+        <span class="btn-label">Visualize Code</span>
+      </button>
+    </section>
+
+    <!-- ── SECTION 9: Advantages ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">09</span>
         <h2 class="section-title">Advantages</h2>
       </div>
 
@@ -635,10 +683,10 @@
       </div>
     </section>
 
-    <!-- ── SECTION 9: Disadvantages ── -->
+    <!-- ── SECTION 10: Disadvantages ── -->
     <section class="lesson-section">
       <div class="section-header">
-        <span class="section-number">09</span>
+        <span class="section-number">10</span>
         <h2 class="section-title">Disadvantages</h2>
       </div>
 
@@ -661,10 +709,10 @@
       </div>
     </section>
 
-    <!-- ── SECTION 10: Applications ── -->
+    <!-- ── SECTION 11: Applications ── -->
     <section class="lesson-section">
       <div class="section-header">
-        <span class="section-number">10</span>
+        <span class="section-number">11</span>
         <h2 class="section-title">Real-World Applications</h2>
       </div>
 
