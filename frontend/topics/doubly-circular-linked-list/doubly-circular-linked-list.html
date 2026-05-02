@@ -163,22 +163,22 @@
         Every node in a doubly circular linked list contains three distinct fields. There are absolutely no NULL pointers anywhere in a populated list.
       </p>
 
-      <div class="sll-node-anatomy">
+      <div class="dcll-anatomy-wrap">
         <div class="anatomy-label">Node Structure</div>
-        <div class="anatomy-body">
-          <div class="anatomy-cell anatomy-prev">
-            <span class="anatomy-cell-label">prev</span>
-            <span class="anatomy-cell-val">← tail</span>
+        <div class="dcll-anatomy-node">
+          <div class="dcll-anatomy-cell dcll-anatomy-prev">
+            <span class="anatomy-cell-label">PREV</span>
+            <span class="anatomy-cell-val dcll-prev-val">← tail</span>
           </div>
           <div class="anatomy-divider"></div>
-          <div class="anatomy-cell anatomy-data">
-            <span class="anatomy-cell-label">data</span>
-            <span class="anatomy-cell-val">42</span>
+          <div class="dcll-anatomy-cell dcll-anatomy-data">
+            <span class="anatomy-cell-label">DATA</span>
+            <span class="anatomy-cell-val dcll-data-val">42</span>
           </div>
           <div class="anatomy-divider"></div>
-          <div class="anatomy-cell anatomy-next">
-            <span class="anatomy-cell-label">next</span>
-            <span class="anatomy-cell-val">→ head</span>
+          <div class="dcll-anatomy-cell dcll-anatomy-next">
+            <span class="anatomy-cell-label">NEXT</span>
+            <span class="anatomy-cell-val dcll-next-val">→ head</span>
           </div>
         </div>
         <div class="anatomy-caption">The node contains prev, data, and next fields.</div>
@@ -724,23 +724,26 @@
         </div>
 
         <!-- Linked List Visualizer -->
-        <div class="sll-visualizer">
+        <div class="sll-visualizer dcll-visualizer-wrap">
 
-          
-          <!-- SVG for Circular Arcs -->
-          <svg id="dcllArcSvg" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; overflow: visible;">
-             <path id="dcllArcPathNext" fill="none" stroke="#4f8cff" stroke-width="2.5" stroke-dasharray="4,4" marker-end="url(#arrowheadNext)"/>
-             <path id="dcllArcPathPrev" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="4,4" marker-end="url(#arrowheadPrev)"/>
-             <defs>
-               <marker id="arrowheadNext" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                 <polygon points="0 0, 10 3.5, 0 7" fill="#4f8cff"/>
-               </marker>
-               <marker id="arrowheadPrev" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                 <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b"/>
-               </marker>
-             </defs>
+          <!-- SVG for Circular Arcs — overlays entire visualizer -->
+          <svg id="dcllArcSvg" class="dcll-arc-svg" aria-hidden="true">
+            <defs>
+              <marker id="arrowheadNext" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#4f8cff"/>
+              </marker>
+              <marker id="arrowheadPrev" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b"/>
+              </marker>
+            </defs>
+            <path id="dcllArcPathNext" fill="none" stroke="#4f8cff" stroke-width="2.5" stroke-dasharray="5,4" marker-end="url(#arrowheadNext)"/>
+            <path id="dcllArcPathPrev" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="5,4" marker-end="url(#arrowheadPrev)"/>
           </svg>
-<!-- Pointer labels row (HEAD / TAIL) -->
+
+          <!-- Prev arc label (above) -->
+          <div class="dcll-arc-top-label">← prev (head → tail)</div>
+
+          <!-- Pointer labels row (HEAD / TAIL) -->
           <div class="sll-ptr-indicators" id="dllPtrIndicators">
             <!-- dynamically populated -->
           </div>
@@ -756,6 +759,9 @@
               <p>List is empty</p>
             </div>
           </div>
+
+          <!-- Next arc label (below) -->
+          <div class="dcll-arc-bottom-label">next → (tail → head)</div>
 
           <!-- Stats -->
           <div class="sim-stats">

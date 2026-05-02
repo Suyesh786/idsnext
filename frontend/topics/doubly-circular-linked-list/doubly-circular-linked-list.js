@@ -80,16 +80,17 @@ const MAX_LIST_SIZE = 8;
 const VALUE_MIN     = -999;
 const VALUE_MAX     = 999;
 
-let nodes   = {};   
-let head    = null; 
-let tail    = null; 
-let size    = 0;
-let opCount = 0;
+let nodes     = {};
+let head      = null;
+let tail      = null;
+let size      = 0;
+let opCount   = 0;
 let animating = false;
 let nodeIdSeq = 0;
 
 function newId() { return "n" + (++nodeIdSeq); }
 
+/* ─── Status ─────────────────────────────────────────────────── */
 function setStatus(msg, type = "") {
   const bar = document.getElementById("simStatus");
   const txt = document.getElementById("simStatusText");
@@ -99,6 +100,7 @@ function setStatus(msg, type = "") {
   txt.textContent = msg;
 }
 
+/* ─── Stats panel ────────────────────────────────────────────── */
 function updateStats() {
   const sizeEl = document.getElementById("statSize");
   const headEl = document.getElementById("statHead");
@@ -110,35 +112,45 @@ function updateStats() {
   if (opsEl)  opsEl.textContent  = opCount;
 }
 
+/* ─── Empty state ────────────────────────────────────────────── */
 function updateEmptyState() {
   const empty = document.getElementById("simEmptyState");
   if (!empty) return;
   empty.style.display = size === 0 ? "flex" : "none";
 }
 
+/* ─── Input validation ───────────────────────────────────────── */
 function getInputValue() {
   const input = document.getElementById("simInput");
   if (!input) return null;
   const raw = input.value.trim();
   if (raw === "" || isNaN(Number(raw))) { setStatus("⚠ Enter a valid number.", "error"); return null; }
-  return parseInt(raw, 10);
+  const val = parseInt(raw, 10);
+  if (val < VALUE_MIN || val > VALUE_MAX) { setStatus(`⚠ Value must be ${VALUE_MIN}–${VALUE_MAX}.`, "error"); return null; }
+  return val;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   RENDER — SLL-style horizontal nodes
+══════════════════════════════════════════════════════════════ */
 function renderList(newNodeId = null, deleteNodeId = null) {
   const container = document.getElementById("dllSimContainer");
   if (!container) return;
 
+  // Remove all non-empty-state children
   Array.from(container.children).forEach(child => {
     if (!child.classList.contains("sim-empty-state")) child.remove();
   });
 
   updateEmptyState();
+
   if (size === 0) {
-    updatePointerLabels([]);
-    updatedcllArc();
+    updatePointerLabels([], {});
+    updateArc();
     return;
   }
 
+  // Build ordered ID list
   const orderedIds = [];
   let cur = head;
   if (cur !== null) {
@@ -152,50 +164,80 @@ function renderList(newNodeId = null, deleteNodeId = null) {
     const isFirst = (id === head);
     const isLast  = (id === tail);
 
+    // ── Node element ──────────────────────────────────────────
     const el = document.createElement("div");
-    el.className = "dcll-node-horizontal sll-node-el"; 
+    el.className = "sll-node-el dcll-node-el";
     el.dataset.id = id;
 
-    if (id === newNodeId) { el.classList.add("node-new"); setTimeout(() => el.classList.remove("node-new"), 500); }
-    if (id === deleteNodeId) { el.classList.add("node-del"); }
+    if (id === newNodeId) {
+      el.classList.add("node-new");
+      setTimeout(() => el.classList.remove("node-new"), 500);
+    }
+    if (id === deleteNodeId) {
+      el.classList.add("node-del");
+    }
 
-    const prevDisplay = isFirst
-      ? `<span style="color: #d97706; font-weight: bold; font-size:11px;">← TAIL</span>`
-      : `<span style="color: #666; font-size:11px;">← ${nodes[node.prev] ? nodes[node.prev].value : ""}</span>`;
+    // PREV cell
+    const prevCell = document.createElement("div");
+    prevCell.className = "dcll-ptr-cell dcll-prev-cell";
+    const prevLabel = document.createElement("span");
+    prevLabel.className = "dcll-ptr-label";
+    prevLabel.textContent = "prev";
+    const prevVal = document.createElement("span");
+    prevVal.className = "dcll-ptr-val";
+    if (isFirst) {
+      prevVal.innerHTML = `<span class="dcll-circ-tag dcll-circ-tail">← TAIL</span>`;
+    } else {
+      prevVal.textContent = "← " + nodes[node.prev].value;
+    }
+    prevCell.appendChild(prevLabel);
+    prevCell.appendChild(prevVal);
 
-    const nextDisplay = isLast
-      ? `<span style="color: #2e7d32; font-weight: bold; font-size:11px;">HEAD →</span>`
-      : `<span style="color: #666; font-size:11px;">${nodes[node.next] ? nodes[node.next].value : ""} →</span>`;
+    // DATA cell
+    const dataCell = document.createElement("div");
+    dataCell.className = "sll-node-val";
+    dataCell.textContent = node.value;
 
-    el.innerHTML = `
-      <div class="dll-ptr-cell dll-prev-cell">
-        <span style="font-size:10px; color:#a0aec0; margin-bottom:2px;">prev</span>
-        ${prevDisplay}
-      </div>
-      <div class="sll-node-val">${node.value}</div>
-      <div class="dll-ptr-cell dll-next-cell">
-        <span style="font-size:10px; color:#a0aec0; margin-bottom:2px;">next</span>
-        ${nextDisplay}
-      </div>
-    `;
+    // NEXT cell
+    const nextCell = document.createElement("div");
+    nextCell.className = "dcll-ptr-cell dcll-next-cell";
+    const nextLabel = document.createElement("span");
+    nextLabel.className = "dcll-ptr-label";
+    nextLabel.textContent = "next";
+    const nextVal = document.createElement("span");
+    nextVal.className = "dcll-ptr-val";
+    if (isLast) {
+      nextVal.innerHTML = `<span class="dcll-circ-tag dcll-circ-head">HEAD →</span>`;
+    } else {
+      nextVal.textContent = nodes[node.next].value + " →";
+    }
+    nextCell.appendChild(nextLabel);
+    nextCell.appendChild(nextVal);
+
+    el.appendChild(prevCell);
+    el.appendChild(dataCell);
+    el.appendChild(nextCell);
 
     container.appendChild(el);
     domNodes[id] = el;
 
+    // ── Double arrows between nodes ───────────────────────────
     if (!isLast) {
       const arrows = document.createElement("div");
-      arrows.className = "dll-sim-arrows";
-      arrows.innerHTML = `<span class="dll-fwd-sim-arrow">→</span><span class="dll-bwd-sim-arrow">←</span>`;
+      arrows.className = "dcll-between-arrows";
+      arrows.innerHTML = `<span class="dcll-fwd-arrow">→</span><span class="dcll-bwd-arrow">←</span>`;
       container.appendChild(arrows);
     }
   });
 
+  // Pointer tags + arcs after layout settles
   requestAnimationFrame(() => {
     updatePointerLabels(orderedIds, domNodes);
-    updatedcllArc();
+    updateArc();
   });
 }
 
+/* ── HEAD / TAIL animated pointer tags above nodes ─────────── */
 function updatePointerLabels(orderedIds, domNodes) {
   const ptrContainer = document.getElementById("dllPtrIndicators");
   if (!ptrContainer) return;
@@ -208,8 +250,15 @@ function updatePointerLabels(orderedIds, domNodes) {
 
   function makeTag(label, cls) {
     const tag = document.createElement("div");
-    tag.className = `sll-ptr-tag ${cls}`;
-    tag.innerHTML = `<span class="sll-ptr-tag-label">${label}</span><span class="sll-ptr-tag-arrow">↓</span>`;
+    tag.className = `dcll-ptr-tag ${cls}`;
+    const lbl = document.createElement("span");
+    lbl.className = "dcll-ptr-tag-label";
+    lbl.textContent = label;
+    const arr = document.createElement("span");
+    arr.className = "dcll-ptr-tag-arrow";
+    arr.textContent = "↓";
+    tag.appendChild(lbl);
+    tag.appendChild(arr);
     return tag;
   }
 
@@ -217,9 +266,7 @@ function updatePointerLabels(orderedIds, domNodes) {
   if (headEl) {
     const headRect = headEl.getBoundingClientRect();
     const headTag  = makeTag("HEAD", "ptr-head");
-    const leftOffset = headRect.left - ptrRect.left + (headRect.width / 2);
-    headTag.style.position = "absolute";
-    headTag.style.left = (leftOffset - 20) + "px";
+    headTag.style.left = (headRect.left - ptrRect.left + headRect.width / 2 - 20) + "px";
     headTag.style.bottom = "0";
     ptrContainer.appendChild(headTag);
   }
@@ -228,84 +275,94 @@ function updatePointerLabels(orderedIds, domNodes) {
   if (tailEl) {
     const tailRect = tailEl.getBoundingClientRect();
     const tailTag  = makeTag("TAIL", "ptr-tail");
-    const leftOffset = tailRect.left - ptrRect.left + (tailRect.width / 2);
-    tailTag.style.position = "absolute";
-    tailTag.style.left = (headId === tailId ? leftOffset + 30 : leftOffset - 20) + "px";
+    const sameNode = (headId === tailId);
+    tailTag.style.left = (tailRect.left - ptrRect.left + tailRect.width / 2 + (sameNode ? 30 : -20)) + "px";
     tailTag.style.bottom = "0";
     ptrContainer.appendChild(tailTag);
   }
 }
 
-function updatedcllArc() {
+/* ══════════════════════════════════════════════════════════════
+   ARC SVG — Next arc BELOW (tail→head), Prev arc ABOVE (head→tail)
+   Matches the Visual Structure diagram in Section 03
+══════════════════════════════════════════════════════════════ */
+function updateArc() {
   const pathNext = document.getElementById("dcllArcPathNext");
   const pathPrev = document.getElementById("dcllArcPathPrev");
   if (!pathNext || !pathPrev) return;
+
   if (size <= 1) {
     pathNext.setAttribute("d", "");
     pathPrev.setAttribute("d", "");
     return;
   }
-  
+
   setTimeout(() => {
+    const svg    = document.getElementById("dcllArcSvg");
     const headEl = document.querySelector(`[data-id="${head}"]`);
     const tailEl = document.querySelector(`[data-id="${tail}"]`);
-    if (!headEl || !tailEl) return;
-    
-    const svg = document.getElementById("dcllArcSvg");
-    const svgRect = svg.getBoundingClientRect();
+    if (!svg || !headEl || !tailEl) return;
+
+    const svgRect  = svg.getBoundingClientRect();
     const headRect = headEl.getBoundingClientRect();
     const tailRect = tailEl.getBoundingClientRect();
-    
-    // NEXT ARC (below nodes: Tail -> Head)
-    const startXNext = tailRect.left + (tailRect.width * 0.8) - svgRect.left;
-    const startYNext = tailRect.bottom - svgRect.top;
-    const endXNext = headRect.left + (headRect.width * 0.8) - svgRect.left;
-    const endYNext = headRect.bottom - svgRect.top;
-    
-    const curveDepthNext = 40 + (size * 5);
-    const dNext = `M ${startXNext} ${startYNext} C ${startXNext} ${startYNext + curveDepthNext}, ${endXNext} ${endYNext + curveDepthNext}, ${endXNext} ${endYNext + 10}`;
+
+    // NEXT ARC — below container: starts at tail-right-bottom, curves down, arrives at head-left-bottom
+    const nextStartX = tailRect.right  - svgRect.left - 14;
+    const nextStartY = tailRect.bottom - svgRect.top;
+    const nextEndX   = headRect.left   - svgRect.left + 14;
+    const nextEndY   = headRect.bottom - svgRect.top;
+    const nextDepth  = 48 + size * 4;
+    const dNext = `M ${nextStartX} ${nextStartY}
+                   C ${nextStartX} ${nextStartY + nextDepth},
+                     ${nextEndX} ${nextEndY + nextDepth},
+                     ${nextEndX} ${nextEndY + 8}`;
     pathNext.setAttribute("d", dNext);
 
-    // PREV ARC (above nodes: Head -> Tail)
-    const startXPrev = headRect.left + (headRect.width * 0.2) - svgRect.left;
-    const startYPrev = headRect.top - svgRect.top;
-    const endXPrev = tailRect.left + (tailRect.width * 0.2) - svgRect.left;
-    const endYPrev = tailRect.top - svgRect.top;
-    
-    const curveDepthPrev = 40 + (size * 5);
-    const dPrev = `M ${startXPrev} ${startYPrev} C ${startXPrev} ${startYPrev - curveDepthPrev}, ${endXPrev} ${endYPrev - curveDepthPrev}, ${endXPrev} ${endYPrev - 10}`;
+    // PREV ARC — above container: starts at head-left-top, curves up, arrives at tail-right-top
+    const prevStartX = headRect.left  - svgRect.left + 14;
+    const prevStartY = headRect.top   - svgRect.top;
+    const prevEndX   = tailRect.right - svgRect.left - 14;
+    const prevEndY   = tailRect.top   - svgRect.top;
+    const prevDepth  = 48 + size * 4;
+    const dPrev = `M ${prevStartX} ${prevStartY}
+                   C ${prevStartX} ${prevStartY - prevDepth},
+                     ${prevEndX} ${prevEndY - prevDepth},
+                     ${prevEndX} ${prevEndY - 8}`;
     pathPrev.setAttribute("d", dPrev);
-  }, 50);
+  }, 60);
 }
 
-window.addEventListener('resize', updatedcllArc);
+window.addEventListener("resize", updateArc);
+
+/* ══════════════════════════════════════════════════════════════
+   OPERATIONS
+══════════════════════════════════════════════════════════════ */
 
 function dcllInsertBeginning() {
   if (animating) return;
   const val = getInputValue();
   if (val === null) return;
-  if (size >= MAX_LIST_SIZE) { setStatus("⚠ List is full!", "error"); return; }
+  if (size >= MAX_LIST_SIZE) { setStatus("⚠ List is full (max 8 nodes).", "error"); return; }
 
   animating = true;
   const id = newId();
-  
+
   if (size === 0) {
     nodes[id] = { id, value: val, prev: id, next: id };
-    head = id;
-    tail = id;
+    head = id; tail = id;
   } else {
     nodes[id] = { id, value: val, prev: tail, next: head };
     nodes[head].prev = id;
     nodes[tail].next = id;
     head = id;
   }
-  
+
   size++; opCount++;
   document.getElementById("simInput").value = "";
-  
   renderList(id);
   updateStats();
-  setStatus(`✓ Inserted ${val} at beginning.`, "success");
+  setStatus(`✓ Inserted ${val} at beginning. New head = ${val}.`, "success");
   setTimeout(() => { animating = false; }, 500);
 }
 
@@ -313,28 +370,26 @@ function dcllInsertEnd() {
   if (animating) return;
   const val = getInputValue();
   if (val === null) return;
-  if (size >= MAX_LIST_SIZE) { setStatus("⚠ List is full!", "error"); return; }
+  if (size >= MAX_LIST_SIZE) { setStatus("⚠ List is full (max 8 nodes).", "error"); return; }
 
   animating = true;
   const id = newId();
 
   if (size === 0) {
     nodes[id] = { id, value: val, prev: id, next: id };
-    head = id;
-    tail = id;
+    head = id; tail = id;
   } else {
     nodes[id] = { id, value: val, prev: tail, next: head };
     nodes[tail].next = id;
     nodes[head].prev = id;
     tail = id;
   }
-  
+
   size++; opCount++;
   document.getElementById("simInput").value = "";
-  
   renderList(id);
   updateStats();
-  setStatus(`✓ Inserted ${val} at end.`, "success");
+  setStatus(`✓ Inserted ${val} at end. New tail = ${val}.`, "success");
   setTimeout(() => { animating = false; }, 500);
 }
 
@@ -342,11 +397,11 @@ function dcllDeleteBeginning() {
   if (animating) return;
   if (size === 0) { setStatus("⚠ List is empty.", "error"); return; }
   animating = true;
-  
+
   const targetId = head;
-  const headEl = document.querySelector(`[data-id="${targetId}"]`);
+  const headEl   = document.querySelector(`[data-id="${targetId}"]`);
   if (headEl) headEl.classList.add("node-highlight");
-  
+
   setTimeout(() => {
     if (headEl) { headEl.classList.remove("node-highlight"); headEl.classList.add("node-del"); }
     setTimeout(() => {
@@ -360,8 +415,9 @@ function dcllDeleteBeginning() {
       }
       delete nodes[targetId];
       size--; opCount++;
-      renderList(); updateStats();
-      setStatus(`✓ Deleted head node (${deletedVal}).`, "success");
+      renderList();
+      updateStats();
+      setStatus(`✓ Deleted head node (${deletedVal}). Head updated.`, "success");
       animating = false;
     }, 420);
   }, 320);
@@ -373,24 +429,25 @@ function dcllDeleteEnd() {
   animating = true;
 
   const targetId = tail;
-  const tailEl = document.querySelector(`[data-id="${targetId}"]`);
+  const tailEl   = document.querySelector(`[data-id="${targetId}"]`);
   if (tailEl) tailEl.classList.add("node-highlight");
-  
+
   setTimeout(() => {
     if (tailEl) { tailEl.classList.remove("node-highlight"); tailEl.classList.add("node-del"); }
     setTimeout(() => {
       const deletedVal = nodes[targetId].value;
       if (size === 1) {
-         head = null; tail = null;
+        head = null; tail = null;
       } else {
-         tail = nodes[targetId].prev;
-         nodes[tail].next = head;
-         nodes[head].prev = tail;
+        tail = nodes[targetId].prev;
+        nodes[tail].next = head;
+        nodes[head].prev = tail;
       }
       delete nodes[targetId];
       size--; opCount++;
-      renderList(); updateStats();
-      setStatus(`✓ Deleted tail node (${deletedVal}).`, "success");
+      renderList();
+      updateStats();
+      setStatus(`✓ Deleted tail node (${deletedVal}). Tail updated.`, "success");
       animating = false;
     }, 420);
   }, 320);
@@ -417,7 +474,7 @@ function dcllTraverse() {
           const el = document.querySelector(`[data-id="${id}"]`);
           if (el) el.classList.remove("node-visited");
         });
-        setStatus("✓ Traversal complete.", "success");
+        setStatus("✓ Traversal complete — visited all " + size + " nodes.", "success");
         opCount++; updateStats();
         animating = false;
       }, 600);
@@ -425,7 +482,7 @@ function dcllTraverse() {
     }
     const el = document.querySelector(`[data-id="${orderedIds[step]}"]`);
     if (el) el.classList.add("node-traverse");
-    setStatus(`Visiting node ${step}: value ${nodes[orderedIds[step]].value}`, "info");
+    setStatus(`Visiting node ${step + 1}/${size}: value = ${nodes[orderedIds[step]].value}`, "info");
     step++;
     setTimeout(visitNext, 500);
   }
@@ -436,6 +493,7 @@ function dcllReset() {
   if (animating) return;
   nodes = {}; head = null; tail = null; size = 0; opCount = 0; nodeIdSeq = 0;
   document.getElementById("simInput").value = "";
-  renderList(); updateStats();
-  setStatus("List reset.", "info");
+  renderList();
+  updateStats();
+  setStatus("List reset. Ready for a new sequence.", "info");
 }

@@ -2405,7 +2405,8 @@
 
 .dll-sim-arrows.arrow-new .dll-fwd-sim-arrow,
 .dll-sim-arrows.arrow-new .dll-bwd-sim-arrow {
-  animation: arrow-app
+  animation: arrow-app 0.4s ease;
+}
 /* ─── DCLL Simulator Node Layout (Horizontal [prev | data | next]) ─── */
 .dcll-node-horizontal {
   display: flex;
@@ -2459,3 +2460,297 @@
 }
 .dll-fwd-sim-arrow { color: #4f8cff; font-weight: bold; }
 .dll-bwd-sim-arrow { color: #f59e0b; font-weight: bold; }
+
+
+/* ══════════════════════════════════════════════════════════════
+   UPDATE 1 — Node Anatomy: compact centered, not full-width
+══════════════════════════════════════════════════════════════ */
+
+/* Remove old full-width stretch from sll-node-anatomy if it appears */
+.sll-node-anatomy { display: none !important; }
+
+.dcll-anatomy-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 28px;
+}
+
+.dcll-anatomy-node {
+  display: flex;
+  align-items: stretch;
+  border: 2px solid var(--blue);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(79,140,255,0.16);
+  background: #fff;
+}
+
+.dcll-anatomy-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 28px;
+  gap: 6px;
+  min-width: 90px;
+}
+
+.dcll-anatomy-prev {
+  background: linear-gradient(135deg, #f0fff4 0%, #dcfce7 100%);
+}
+.dcll-anatomy-data {
+  background: linear-gradient(135deg, #eef3ff 0%, #dce9ff 100%);
+}
+.dcll-anatomy-next {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+}
+
+.dcll-anatomy-cell .anatomy-cell-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dcll-prev-val  { color: #2e7d32 !important; font-size: 14px !important; font-weight: 700 !important; }
+.dcll-data-val  { color: #1d4ed8 !important; font-size: 22px !important; font-weight: 700 !important; font-family: 'Courier New', monospace !important; }
+.dcll-next-val  { color: #4527a0 !important; font-size: 14px !important; font-weight: 700 !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   UPDATE 2 — Simulator: SLL-style with DCLL node (prev|val|next)
+   + animated colored HEAD/TAIL tags + above/below circular arcs
+══════════════════════════════════════════════════════════════ */
+
+/* Visualizer wrapper — must be position:relative for SVG overlay */
+.dcll-visualizer-wrap {
+  position: relative;
+}
+
+/* SVG arc overlay — covers entire visualizer including above/below */
+.dcll-arc-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+}
+
+/* Arc labels */
+.dcll-arc-top-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #d97706;
+  text-align: center;
+  letter-spacing: 0.3px;
+  opacity: 0.8;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dcll-arc-bottom-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #4f8cff;
+  text-align: center;
+  letter-spacing: 0.3px;
+  opacity: 0.8;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── DCLL node element — extends sll-node-el ───────────────── */
+.dcll-node-el {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+}
+
+/* PREV cell — green tint */
+.dcll-ptr-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  gap: 3px;
+  min-width: 52px;
+  flex-shrink: 0;
+}
+
+.dcll-prev-cell {
+  background: linear-gradient(135deg, #f0fff4 0%, #dcfce7 100%);
+  border-right: 1.5px solid rgba(46,125,50,0.18);
+}
+
+/* NEXT cell — purple tint */
+.dcll-next-cell {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  border-left: 1.5px solid rgba(69,39,160,0.18);
+}
+
+.dcll-ptr-label {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1;
+}
+
+.dcll-ptr-val {
+  font-size: 9px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  line-height: 1;
+  color: #555;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.dcll-prev-cell .dcll-ptr-val { color: #2e7d32; }
+.dcll-next-cell .dcll-ptr-val { color: #4527a0; }
+
+/* Circular tags (HEAD/TAIL) inside pointer cells */
+.dcll-circ-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+.dcll-circ-tail {
+  background: rgba(245,158,11,0.15);
+  color: #92400e;
+  border: 1px solid rgba(245,158,11,0.3);
+}
+
+.dcll-circ-head {
+  background: rgba(79,140,255,0.12);
+  color: #1a56db;
+  border: 1px solid rgba(79,140,255,0.25);
+}
+
+/* ── Bidirectional arrows between nodes ────────────────────── */
+.dcll-between-arrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.dcll-fwd-arrow {
+  font-size: 15px;
+  color: #4f8cff;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dcll-bwd-arrow {
+  font-size: 15px;
+  color: #f59e0b;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ── HEAD / TAIL pointer tags above nodes ──────────────────── */
+.sll-ptr-indicators {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  min-height: 36px;
+  position: relative;
+  padding-left: 2px;
+}
+
+.dcll-ptr-tag {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: left 0.32s cubic-bezier(0.34, 1.2, 0.64, 1);
+  pointer-events: none;
+  animation: dcll-tag-pop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes dcll-tag-pop {
+  0%   { transform: scale(0) translateY(8px); opacity: 0; }
+  70%  { transform: scale(1.08) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.dcll-ptr-tag-label {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.dcll-ptr-tag.ptr-head .dcll-ptr-tag-label {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(79,140,255,0.4);
+}
+
+.dcll-ptr-tag.ptr-tail .dcll-ptr-tag-label {
+  background: #d97706;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(217,119,6,0.4);
+}
+
+.dcll-ptr-tag-arrow {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.dcll-ptr-tag.ptr-head .dcll-ptr-tag-arrow { color: var(--blue); }
+.dcll-ptr-tag.ptr-tail .dcll-ptr-tag-arrow { color: #d97706; }
+
+/* ── Node state variants ───────────────────────────────────── */
+.sll-node-el.node-traverse {
+  border-color: #a78bfa !important;
+  background: linear-gradient(135deg, #f3f0ff 0%, #e8e0ff 100%) !important;
+  box-shadow: 0 0 0 3px rgba(167,139,250,0.25), 0 4px 12px rgba(124,58,237,0.15) !important;
+}
+
+.sll-node-el.node-visited {
+  border-color: #6fcf97 !important;
+  background: linear-gradient(135deg, #f0fff4 0%, #d4f5de 100%) !important;
+}
+
+/* Ensure sll-visualizer gap leaves room for arcs */
+.sll-visualizer {
+  gap: 0 !important;
+}
+
+.dcll-visualizer-wrap .sll-ptr-indicators,
+.dcll-visualizer-wrap .sll-sim-container,
+.dcll-visualizer-wrap .dcll-arc-top-label,
+.dcll-visualizer-wrap .dcll-arc-bottom-label,
+.dcll-visualizer-wrap .sim-stats {
+  position: relative;
+  z-index: 6;
+}
+
+.dcll-visualizer-wrap .sll-ptr-indicators { margin-top: 4px; margin-bottom: 2px; }
+.dcll-visualizer-wrap .sll-sim-container  { margin-bottom: 0; }
+.dcll-visualizer-wrap .sim-stats          { margin-top: 12px; }
