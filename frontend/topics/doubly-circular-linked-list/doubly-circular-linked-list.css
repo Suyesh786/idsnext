@@ -1,0 +1,111 @@
+/* ─── DCLL page styles — extends SCLL base styles ────────────── */
+
+/* Reuse all common styles from the singly-circular file */
+@import url('../singly-circular-linked-list/singly-circular-linked-list.css');
+
+/* ─── DCLL-specific overrides & additions ─────────────────────── */
+.dcll-main { padding: 32px 40px; }
+
+/* heading tag colour override for DCLL */
+.lesson-heading-tag {
+  color: var(--purple);
+  background: var(--purple-light, #f3f0ff);
+}
+
+/* ─── DCLL anatomy (3-cell: prev | data | next) ───────────────── */
+.dcll-anatomy {
+  border-color: var(--purple, #7c3aed);
+}
+.dcll-anatomy .anatomy-divider { background: var(--purple, #7c3aed); }
+.anatomy-prev {
+  background: #faf5ff;
+}
+.dcll-anatomy { border: 2px solid var(--purple, #7c3aed); }
+
+/* ─── DCLL chain diagram ──────────────────────────────────────── */
+.dcll-chain-diagram {
+  background: #f8faff;
+  border: 1px solid #dde6fb;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+.dcll-top-label {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 0.4px;
+}
+.dcll-nodes-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: max-content;
+}
+.dcll-head-ptr, .dcll-tail-ptr {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--purple, #7c3aed);
+  white-space: nowrap;
+}
+.dcll-node-box {
+  border: 2px solid var(--purple, #7c3aed);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 80px;
+}
+.dcll-node-prev {
+  background: #faf5ff;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--purple, #7c3aed);
+}
+.dcll-node-data {
+  background: #eef3ff;
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 8px 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--purple, #7c3aed);
+}
+.dcll-node-next {
+  background: #fff8ee;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  text-align: center;
+}
+.dcll-tail-node { border-color: var(--orange); }
+.dcll-tail-node .dcll-node-prev,
+.dcll-tail-node .dcll-node-data,
+.dcll-tail-node .dcll-node-next { border-color: var(--orange); }
+.dcll-tail-node .dcll-node-data { background: #fff8ee; }
+.dcll-circ { color: var(--orange) !important; font-weight: 700 !important; }
+.dcll-arrow {
+  font-size: 22px;
+  color: var(--purple, #7c3aed);
+  font-weight: 700;
+  padding: 0 4px;
+}
+.dcll-back-caption {
+  text-align: center;
+  font-size: 12px;
+  color: var(--orange);
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+/* ─── Responsive overrides ────────────────────────────────────── */
+@media (max-width: 900px) {
+  .dcll-main { padding: 20px 16px; }
+}

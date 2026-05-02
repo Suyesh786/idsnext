@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doubly Circular Linked List | iDS Studio Next</title>
+<meta name="description" content="Learn Doubly Circular Linked List — structure, operations, and C implementation on iDS Studio Next.">
+<link rel="stylesheet" href="../../dashboard/dashboard.css">
+<link rel="stylesheet" href="doubly-circular-linked-list.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon"><img src="../../image/ilogo.png" alt="iDS Studio" class="logo-img"></div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
+  <nav class="menu">
+    <a href="../../dashboard/dashboard.html" class="menu-item">Dashboard</a>
+    <a href="../../learn/learn.html" class="menu-item active">Learn</a>
+    <a href="../../practice/practice.html" class="menu-item">Practice</a>
+    <a href="../../leaderboard/leaderboard.html" class="menu-item">Leaderboard</a>
+  </nav>
+  <div class="spacer"></div>
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        Logout
+      </button>
+    </div>
+  </div>
+</aside>
+
+<main class="main dcll-main">
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <nav class="breadcrumb">
+        <a href="../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 2</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Circular Linked List</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Doubly Circular</span>
+      </nav>
+      <h1 class="lesson-heading">
+        Doubly Circular Linked List
+        <span class="lesson-heading-tag">Circular – Bi-directional</span>
+      </h1>
+    </div>
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- SECTION 1 -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is a Doubly Circular Linked List?</h2>
+      </div>
+      <div class="definition-box">
+        <div class="definition-icon">🔄</div>
+        <div class="definition-body">
+          A <strong>Doubly Circular Linked List</strong> combines the properties of a doubly linked list and a circular linked list.
+          Every node has a <span class="highlight-text">next</span> pointer and a <span class="highlight-text">prev</span> pointer,
+          and the <strong>tail's next</strong> points back to <strong>head</strong> while
+          <strong>head's prev</strong> points back to <strong>tail</strong> — forming a fully circular, bidirectional structure.
+        </div>
+      </div>
+      <p class="lesson-para">
+        This is the most feature-rich of the linked list variants. It supports traversal in both directions,
+        has no NULL terminators in either direction, and enables O(1) insertions at both ends with a tail pointer.
+        The cost is two pointers per node, doubling pointer overhead compared to a singly linked list.
+      </p>
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="analogy-emoji">🎠</div>
+          <h4 class="analogy-title">Carousel (Both Ways)</h4>
+          <p class="analogy-desc">You can step forward or backward between horses, and the last horse connects back to the first — both forward and backward.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🔃</div>
+          <h4 class="analogy-title">Browser History</h4>
+          <p class="analogy-desc">Navigate forward and backward through pages. In a DCLL implementation, the last page's next wraps to the first.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🎡</div>
+          <h4 class="analogy-title">Two-Way Ring</h4>
+          <p class="analogy-desc">Nodes form a ring you can traverse clockwise (next) or counter-clockwise (prev) — never hitting a dead end.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2 -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Structure Visualization</h2>
+      </div>
+      <p class="lesson-para">
+        Each node has three fields: <code class="inline-code">prev</code>, <code class="inline-code">data</code>, and <code class="inline-code">next</code>.
+        The circular invariant means <code class="inline-code">tail-&gt;next == head</code> AND <code class="inline-code">head-&gt;prev == tail</code>.
+      </p>
+
+      <!-- Node anatomy -->
+      <div class="sll-node-anatomy">
+        <div class="anatomy-label">DCLL Node Structure</div>
+        <div class="anatomy-body dcll-anatomy">
+          <div class="anatomy-cell anatomy-prev">
+            <span class="anatomy-cell-label">prev</span>
+            <span class="anatomy-cell-val">← TAIL</span>
+          </div>
+          <div class="anatomy-divider"></div>
+          <div class="anatomy-cell anatomy-data">
+            <span class="anatomy-cell-label">data</span>
+            <span class="anatomy-cell-val">42</span>
+          </div>
+          <div class="anatomy-divider"></div>
+          <div class="anatomy-cell anatomy-next">
+            <span class="anatomy-cell-label">next</span>
+            <span class="anatomy-cell-val">HEAD →</span>
+          </div>
+        </div>
+        <div class="anatomy-caption">Head node: prev points to tail, next points to second node</div>
+      </div>
+
+      <!-- Chain diagram -->
+      <div class="dcll-chain-diagram">
+        <div class="dcll-top-label">← prev &nbsp;&nbsp;&nbsp; next →</div>
+        <div class="dcll-nodes-row">
+          <div class="dcll-head-ptr">HEAD ↓</div>
+          <div class="dcll-node-box">
+            <div class="dcll-node-prev dcll-circ">↩ TAIL</div>
+            <div class="dcll-node-data">10</div>
+            <div class="dcll-node-next">next →</div>
+          </div>
+          <div class="dcll-arrow">⇌</div>
+          <div class="dcll-node-box">
+            <div class="dcll-node-prev">← prev</div>
+            <div class="dcll-node-data">25</div>
+            <div class="dcll-node-next">next →</div>
+          </div>
+          <div class="dcll-arrow">⇌</div>
+          <div class="dcll-node-box dcll-tail-node">
+            <div class="dcll-node-prev">← prev</div>
+            <div class="dcll-node-data">38</div>
+            <div class="dcll-node-next dcll-circ">↩ HEAD</div>
+          </div>
+          <div class="dcll-tail-ptr">↑ TAIL</div>
+        </div>
+        <div class="dcll-back-caption">⇌ head.prev = tail &nbsp;|&nbsp; tail.next = head</div>
+      </div>
+
+      <div class="diagram-row">
+        <div class="diagram-card">
+          <h4 class="diagram-title">Key Properties</h4>
+          <div class="sll-props-list">
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-blue"></span>
+              <span class="sll-prop-text"><strong>Bidirectional</strong> — traverse forward (next) or backward (prev)</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-green"></span>
+              <span class="sll-prop-text"><strong>Fully circular</strong> — no NULL in either direction</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-orange"></span>
+              <span class="sll-prop-text"><strong>Two invariants:</strong> tail-&gt;next == head AND head-&gt;prev == tail</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-purple"></span>
+              <span class="sll-prop-text"><strong>Extra overhead:</strong> 2 pointers per node vs 1 in SLL</span>
+            </div>
+          </div>
+        </div>
+        <div class="diagram-card">
+          <h4 class="diagram-title">vs. Singly Circular LL</h4>
+          <div class="sll-props-list">
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-blue"></span>
+              <span class="sll-prop-text">SCLL: 1 pointer/node &nbsp;|&nbsp; DCLL: 2 pointers/node</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-green"></span>
+              <span class="sll-prop-text">SCLL: forward only &nbsp;|&nbsp; DCLL: forward and backward</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-orange"></span>
+              <span class="sll-prop-text">DCLL: delete without predecessor traversal — O(1) with node reference</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3 -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Operations</h2>
+      </div>
+      <div class="ops-grid">
+        <div class="op-card">
+          <div class="op-badge op-ins-beg">Insert Begin</div>
+          <p class="op-desc">Create node, link it between tail and current head, update head. Both circular invariants must hold.</p>
+          <div class="op-complexity"><span class="complexity-label">Time</span><span class="complexity-value">O(1)</span></div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-ins-end">Insert End</div>
+          <p class="op-desc">Create node, link it after tail and before head, update tail. Circular invariants restored.</p>
+          <div class="op-complexity"><span class="complexity-label">Time</span><span class="complexity-value">O(1)</span></div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-delete">Delete Node</div>
+          <p class="op-desc">Relink predecessor and successor via both next and prev. With a node reference: O(1), otherwise O(n) search.</p>
+          <div class="op-complexity"><span class="complexity-label">Time</span><span class="complexity-value">O(1)/O(n)</span></div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-traverse">Traversal</div>
+          <p class="op-desc">Forward: do-while with next. Backward: do-while with prev. Both stop when curr == head.</p>
+          <div class="op-complexity"><span class="complexity-label">Time</span><span class="complexity-value">O(n)</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4 -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Implementation in C</h2>
+      </div>
+
+      <div class="impl-tabs">
+        <button class="impl-tab active" onclick="switchTab('struct')">Node Structure</button>
+        <button class="impl-tab" onclick="switchTab('insert')">Insert &amp; Delete</button>
+        <button class="impl-tab" onclick="switchTab('display')">Traversal</button>
+      </div>
+
+      <div id="tab-struct" class="impl-panel active">
+        <p class="lesson-para">The node holds three fields: <code class="inline-code">prev</code>, <code class="inline-code">data</code>, <code class="inline-code">next</code>.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — Node Structure</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-kw">#include</span> &lt;stdio.h&gt;
+<span class="c-kw">#include</span> &lt;stdlib.h&gt;
+
+<span class="c-kw">struct</span> Node {
+    <span class="c-kw">struct</span> Node* prev;
+    <span class="c-kw">int</span>          data;
+    <span class="c-kw">struct</span> Node* next;
+};
+
+<span class="c-kw">struct</span> Node* head = NULL;
+<span class="c-kw">struct</span> Node* tail = NULL;
+
+<span class="c-kw">struct</span> Node* createNode(<span class="c-kw">int</span> val) {
+    <span class="c-kw">struct</span> Node* n = (<span class="c-kw">struct</span> Node*)malloc(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> Node));
+    n-&gt;data = val;
+    n-&gt;next = n-&gt;prev = NULL;
+    <span class="c-kw">return</span> n;
+}</pre>
+        </div>
+      </div>
+
+      <div id="tab-insert" class="impl-panel">
+        <p class="lesson-para">Both <code class="inline-code">next</code> and <code class="inline-code">prev</code> links must be maintained. After every operation: <code class="inline-code">tail-&gt;next == head</code> and <code class="inline-code">head-&gt;prev == tail</code>.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — Insert &amp; Delete</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-kw">void</span> insertAtEnd(<span class="c-kw">int</span> val) {
+    <span class="c-kw">struct</span> Node* n = createNode(val);
+    <span class="c-kw">if</span> (head == NULL) {
+        head = tail = n;
+        n-&gt;next = n-&gt;prev = n;   <span class="c-comment">// single node — points to itself</span>
+    } <span class="c-kw">else</span> {
+        n-&gt;prev    = tail;
+        n-&gt;next    = head;
+        tail-&gt;next = n;
+        head-&gt;prev = n;
+        tail       = n;
+    }
+}
+
+<span class="c-kw">void</span> insertAtBeginning(<span class="c-kw">int</span> val) {
+    <span class="c-kw">struct</span> Node* n = createNode(val);
+    <span class="c-kw">if</span> (head == NULL) {
+        head = tail = n;
+        n-&gt;next = n-&gt;prev = n;
+    } <span class="c-kw">else</span> {
+        n-&gt;next    = head;
+        n-&gt;prev    = tail;
+        head-&gt;prev = n;
+        tail-&gt;next = n;
+        head       = n;
+    }
+}
+
+<span class="c-kw">void</span> deleteNode(<span class="c-kw">int</span> val) {
+    <span class="c-kw">if</span> (head == NULL) { printf(<span class="c-str">"Empty.\n"</span>); <span class="c-kw">return</span>; }
+    <span class="c-kw">struct</span> Node* curr = head;
+    <span class="c-kw">do</span> {
+        <span class="c-kw">if</span> (curr-&gt;data == val) <span class="c-kw">break</span>;
+        curr = curr-&gt;next;
+    } <span class="c-kw">while</span> (curr != head);
+
+    <span class="c-kw">if</span> (curr-&gt;data != val) { printf(<span class="c-str">"Not found.\n"</span>); <span class="c-kw">return</span>; }
+
+    <span class="c-kw">if</span> (curr == head &amp;&amp; curr == tail) { head = tail = NULL; }
+    <span class="c-kw">else</span> {
+        curr-&gt;prev-&gt;next = curr-&gt;next;
+        curr-&gt;next-&gt;prev = curr-&gt;prev;
+        <span class="c-kw">if</span> (curr == head) head = curr-&gt;next;
+        <span class="c-kw">if</span> (curr == tail) tail = curr-&gt;prev;
+    }
+    free(curr);
+}</pre>
+        </div>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span>Unlike SLL/SCLL, deletion in DCLL doesn't need a predecessor search — just relink <code class="inline-code">curr-&gt;prev-&gt;next</code> and <code class="inline-code">curr-&gt;next-&gt;prev</code>.</span>
+        </div>
+      </div>
+
+      <div id="tab-display" class="impl-panel">
+        <p class="lesson-para">Can traverse in both directions using the same do-while pattern, just changing <code class="inline-code">curr-&gt;next</code> to <code class="inline-code">curr-&gt;prev</code>.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">C — Forward &amp; Backward Traversal</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre class="code-content"><span class="c-kw">void</span> displayForward() {
+    <span class="c-kw">if</span> (!head) { printf(<span class="c-str">"Empty.\n"</span>); <span class="c-kw">return</span>; }
+    <span class="c-kw">struct</span> Node* curr = head;
+    printf(<span class="c-str">"HEAD → "</span>);
+    <span class="c-kw">do</span> {
+        printf(<span class="c-str">"[%d] ⇌ "</span>, curr-&gt;data);
+        curr = curr-&gt;next;
+    } <span class="c-kw">while</span> (curr != head);
+    printf(<span class="c-str">"(HEAD)\n"</span>);
+}
+
+<span class="c-kw">void</span> displayBackward() {
+    <span class="c-kw">if</span> (!head) { printf(<span class="c-str">"Empty.\n"</span>); <span class="c-kw">return</span>; }
+    <span class="c-kw">struct</span> Node* curr = tail;
+    printf(<span class="c-str">"TAIL → "</span>);
+    <span class="c-kw">do</span> {
+        printf(<span class="c-str">"[%d] ⇌ "</span>, curr-&gt;data);
+        curr = curr-&gt;prev;
+    } <span class="c-kw">while</span> (curr != tail);
+    printf(<span class="c-str">"(TAIL)\n"</span>);
+}</pre>
+        </div>
+      </div>
+
+      <div class="comparison-table-wrap">
+        <h4 class="table-heading">DCLL vs SCLL vs DLL — Comparison</h4>
+        <table class="comparison-table">
+          <thead><tr><th>Feature</th><th>SCLL</th><th>DLL</th><th>DCLL</th></tr></thead>
+          <tbody>
+            <tr><td>Pointers/node</td><td>1 (next)</td><td>2 (prev+next)</td><td>2 (prev+next)</td></tr>
+            <tr><td>Circular</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+            <tr><td>Reverse traversal</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>Delete w/o predecessor</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>NULL terminators</td><td>None</td><td>Both ends</td><td>None</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 5 -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Advantages &amp; Limitations</h2>
+      </div>
+      <div class="analogy-grid">
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">✅</div>
+          <h4 class="analogy-title">Bidirectional Traversal</h4>
+          <p class="analogy-desc">Navigate forward and backward without any extra data structures — ideal for undo/redo, browser history.</p>
+        </div>
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">✅</div>
+          <h4 class="analogy-title">O(1) Delete (by reference)</h4>
+          <p class="analogy-desc">Given a node reference, delete it in O(1) by relinking neighbours — no predecessor search needed.</p>
+        </div>
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">✅</div>
+          <h4 class="analogy-title">Efficient Queue/Deque</h4>
+          <p class="analogy-desc">Supports O(1) insert/delete at both ends — perfect for a double-ended queue (deque).</p>
+        </div>
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">❌</div>
+          <h4 class="analogy-title">2× Pointer Overhead</h4>
+          <p class="analogy-desc">Two pointers per node doubles pointer memory vs SLL. For small data types this is significant.</p>
+        </div>
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">❌</div>
+          <h4 class="analogy-title">Complex Logic</h4>
+          <p class="analogy-desc">Every insert/delete must maintain four pointer assignments instead of two. Bugs from broken invariants cause infinite loops.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6 -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Applications</h2>
+      </div>
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon">↩️</div>
+          <h4 class="app-title">Undo / Redo</h4>
+          <p class="app-desc">Text editors use a doubly circular list to maintain action history — navigate back (prev) to undo, forward (next) to redo.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🌐</div>
+          <h4 class="app-title">Browser Tab Cycling</h4>
+          <p class="app-desc">Ctrl+Tab / Ctrl+Shift+Tab cycle through tabs forward and backward — a DCLL models this naturally.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🎯</div>
+          <h4 class="app-title">LRU Cache</h4>
+          <p class="app-desc">Least-recently-used caches use a DLL (often circular) to maintain order — move accessed items to front in O(1).</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🎵</div>
+          <h4 class="app-title">Media Player Controls</h4>
+          <p class="app-desc">Previous / Next song navigation with loop mode enabled — a DCLL lets you go forward or backward through the playlist circularly.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z" fill="url(#sg2)" opacity="0.18"/>
+        <defs><linearGradient id="sg2" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#4f8cff"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+</main>
+
+<script src="doubly-circular-linked-list.js"></script>
+<link rel="stylesheet" href="../../spark/spark.css">
+<script src="../../spark/spark.js"></script>
+</body>
+</html>

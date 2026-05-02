@@ -260,8 +260,8 @@
             </div>
           </div>
 
-          <!-- Topic 4: Circular Linked List -->
-          <div class="topic-card topic-clickable" onclick="window.location.href='../topics/circular-linked-list/circular-linked-list.html'">
+          <!-- Topic 4: Circular Linked List (expandable) -->
+          <div class="topic-card topic-expandable" id="circularTopicCard" onclick="toggleCircular(event)">
             <div class="topic-icon-wrap icon-orange">
               <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
@@ -270,6 +270,39 @@
             <div class="topic-content">
               <span class="topic-name">Circular Linked List</span>
               <span class="topic-desc">Last node connects back to first</span>
+            </div>
+            <div class="topic-expand-chevron" id="circularChevron">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Circular sub-options (collapsible) -->
+          <div class="topic-sub-list" id="circularSubList">
+            <div class="topic-card topic-clickable topic-sub-item"
+                 onclick="window.location.href='../topics/singly-circular-linked-list/singly-circular-linked-list.html'">
+              <div class="topic-icon-wrap icon-orange">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div class="topic-content">
+                <span class="topic-name">Singly Circular Linked List</span>
+                <span class="topic-desc">One-directional circular loop</span>
+              </div>
+            </div>
+            <div class="topic-card topic-clickable topic-sub-item"
+                 onclick="window.location.href='../topics/doubly-circular-linked-list/doubly-circular-linked-list.html'">
+              <div class="topic-icon-wrap icon-purple">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z"/>
+                </svg>
+              </div>
+              <div class="topic-content">
+                <span class="topic-name">Doubly Circular Linked List</span>
+                <span class="topic-desc">Bidirectional circular loop</span>
+              </div>
             </div>
           </div>
 
@@ -423,6 +456,28 @@ function toggleUnit(headerEl) {
     unitCard.classList.add("unit-expanded");
   }
 }
+
+function toggleCircular(event) {
+  // Prevent the event from triggering when a sub-item is clicked
+  if (event.target.closest(".topic-sub-item")) return;
+
+  const subList  = document.getElementById("circularSubList");
+  const chevron  = document.getElementById("circularChevron");
+  const card     = document.getElementById("circularTopicCard");
+
+  const isOpen = subList.classList.contains("topic-sub-open");
+
+  if (isOpen) {
+    subList.classList.remove("topic-sub-open");
+    chevron.classList.remove("chevron-rotated");
+    card.classList.remove("topic-expanded-state");
+  } else {
+    subList.classList.add("topic-sub-open");
+    chevron.classList.add("chevron-rotated");
+    card.classList.add("topic-expanded-state");
+  }
+}
+
 </script>
 
 <!-- Sidebar toggle logic (learn.js) -->

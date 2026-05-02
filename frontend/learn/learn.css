@@ -236,6 +236,81 @@
   flex-shrink: 0;
 }
 
+/* ─── Expandable topic card (Circular LL) ─────────────────────── */
+.topic-expandable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+/* Chevron on right side of expandable card */
+.topic-expand-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  transition: transform 0.25s ease, color 0.18s ease, background 0.18s ease;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.topic-expandable:hover .topic-expand-chevron {
+  background: var(--orange-light, #fff7ee);
+  color: var(--orange);
+}
+
+/* Rotate chevron when expanded */
+.chevron-rotated {
+  transform: rotate(180deg);
+  color: var(--orange) !important;
+  background: var(--orange-light, #fff7ee) !important;
+}
+
+/* Highlight parent card when open */
+.topic-expanded-state {
+  background: #fff4e8 !important;
+  border-color: var(--orange) !important;
+  box-shadow: 0 4px 16px rgba(249,115,22,0.14) !important;
+}
+
+/* ─── Sub-option list ─────────────────────────────────────────── */
+.topic-sub-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.22s ease,
+              padding 0.22s ease;
+  padding: 0 0 0 22px;  /* indentation */
+  opacity: 0;
+}
+
+.topic-sub-list.topic-sub-open {
+  max-height: 300px;
+  opacity: 1;
+  padding: 8px 0 4px 22px;
+}
+
+/* Sub-items share the same topic-card style + slight visual tweak */
+.topic-sub-item {
+  border-color: #e8d5fc;
+  background: #faf5ff;
+}
+
+.topic-sub-item:hover {
+  background: #f0e8ff !important;
+  border-color: var(--purple) !important;
+  box-shadow: 0 6px 18px rgba(124,58,237,0.14) !important;
+}
+
+.icon-purple { background: var(--purple-light, #f3f0ff); color: var(--purple); }
+
+
 
 /* ═══════════════════════════════════════════════════════════════
    HAMBURGER BUTTON  (shared — used in topbar + desktop sidebar)
