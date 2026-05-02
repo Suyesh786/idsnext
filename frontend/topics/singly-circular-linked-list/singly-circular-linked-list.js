@@ -200,6 +200,32 @@ function initSvgNodeHovers() {
   }, 50);
 })();
 
+/* ─── Implementation Tab Switcher ────────────────────────────── */
+function switchTab(tab) {
+  document.querySelectorAll('.impl-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.impl-panel').forEach(p => p.classList.remove('active'));
+
+  const activeTab   = document.querySelector(`.impl-tab[onclick="switchTab('${tab}')"]`);
+  const activePanel = document.getElementById(`tab-${tab}`);
+
+  if (activeTab)   activeTab.classList.add('active');
+  if (activePanel) activePanel.classList.add('active');
+}
+
+/* ─── Copy Code Button ───────────────────────────────────────── */
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('.code-content');
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {
+    btn.textContent = 'Error';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
+  });
+}
+
 /* ══════════════════════════════════════════════════════════════
    SINGLY CIRCULAR LINKED LIST SIMULATOR
 ══════════════════════════════════════════════════════════════ */
@@ -430,8 +456,8 @@ function updateScllArc() {
   }
   
   setTimeout(() => {
-    const headEl = document.querySelector(\`[data-id="\${head}"]\`);
-    const tailEl = document.querySelector(\`[data-id="\${tail}"]\`);
+    const headEl = document.querySelector(`[data-id="\${head}"]`);
+    const tailEl = document.querySelector(`[data-id="\${tail}"]`);
     if (!headEl || !tailEl) return;
     
     const svg = document.getElementById("scllArcSvg");
@@ -455,7 +481,7 @@ function updateScllArc() {
     const cp2X = endX;
     const cp2Y = endY + curveDepth;
     
-    const d = \`M \${startX} \${startY} C \${cp1X} \${cp1Y}, \${cp2X} \${cp2Y}, \${endX} \${endY + 10}\`;
+    const d = `M \${startX} \${startY} C \${cp1X} \${cp1Y}, \${cp2X} \${cp2Y}, \${endX} \${endY + 10}`;
     path.setAttribute("d", d);
   }, 50);
 }
@@ -466,7 +492,7 @@ function scllInsertBeginning() {
   if (animating) return;
   const val = getInputValue();
   if (val === null) return;
-  if (size >= MAX_LIST_SIZE) { setStatus(\`⚠ List is full! Maximum size is \${MAX_LIST_SIZE}.\`, "error"); return; }
+  if (size >= MAX_LIST_SIZE) { setStatus(`⚠ List is full! Maximum size is \${MAX_LIST_SIZE}.`, "error"); return; }
 
   animating = true;
   const id = newId();
@@ -488,7 +514,7 @@ function scllInsertBeginning() {
 
   renderList(id);
   updateStats();
-  setStatus(\`✓ Inserted \${val} at the beginning.\`, "success");
+  setStatus(`✓ Inserted \${val} at the beginning.`, "success");
 
   setTimeout(() => { animating = false; }, 500);
 }
@@ -497,7 +523,7 @@ function scllInsertEnd() {
   if (animating) return;
   const val = getInputValue();
   if (val === null) return;
-  if (size >= MAX_LIST_SIZE) { setStatus(\`⚠ List is full! Maximum size is \${MAX_LIST_SIZE}.\`, "error"); return; }
+  if (size >= MAX_LIST_SIZE) { setStatus(`⚠ List is full! Maximum size is \${MAX_LIST_SIZE}.`, "error"); return; }
 
   animating = true;
   const id = newId();
@@ -508,7 +534,7 @@ function scllInsertEnd() {
     tail = id;
     nodes[id].next = head;
   } else {
-    const tailEl = document.querySelector(\`[data-id="\${tail}"]\`);
+    const tailEl = document.querySelector(`[data-id="\${tail}"]`);
     if (tailEl) {
       tailEl.classList.add("node-highlight");
       setTimeout(() => tailEl.classList.remove("node-highlight"), 250);
@@ -525,7 +551,7 @@ function scllInsertEnd() {
   setTimeout(() => {
     renderList(id);
     updateStats();
-    setStatus(\`✓ Inserted \${val} at the end (tail pointer — O(1)).\`, "success");
+    setStatus(`✓ Inserted \${val} at the end (tail pointer — O(1)).`, "success");
     setTimeout(() => { animating = false; }, 500);
   }, 280);
 }
@@ -536,7 +562,7 @@ function scllInsertAtPosition() {
   if (val === null) return;
   const pos = getPositionValue();
   if (pos === null) return;
-  if (size >= MAX_LIST_SIZE) { setStatus(\`⚠ List is full! Maximum size is \${MAX_LIST_SIZE}.\`, "error"); return; }
+  if (size >= MAX_LIST_SIZE) { setStatus(`⚠ List is full! Maximum size is \${MAX_LIST_SIZE}.`, "error"); return; }
 
   if (pos === 0) { scllInsertBeginning(); return; }
   if (pos === size) { scllInsertEnd(); return; }
@@ -550,7 +576,7 @@ function scllInsertAtPosition() {
   function traverseToPos() {
     if (step >= pos) {
       orderedIds.forEach(id => {
-        const el = document.querySelector(\`[data-id="\${id}"]\`);
+        const el = document.querySelector(`[data-id="\${id}"]`);
         if (el) el.classList.remove("node-position-highlight");
       });
 
@@ -571,21 +597,21 @@ function scllInsertAtPosition() {
       setTimeout(() => {
         renderList(newNodeId);
         updateStats();
-        setStatus(\`✓ Inserted \${val} at position \${pos}.\`, "success");
+        setStatus(`✓ Inserted \${val} at position \${pos}.`, "success");
         setTimeout(() => { animating = false; }, 500);
       }, 120);
       return;
     }
-    const el = document.querySelector(\`[data-id="\${orderedIds[step]}"]\`);
+    const el = document.querySelector(`[data-id="\${orderedIds[step]}"]`);
     if (el) {
       el.classList.add("node-position-highlight");
       if (step === pos - 1) setTimeout(() => el.classList.add("node-insert-target"), 150);
     }
-    setStatus(\`Traversing… at index \${step}\`, "info");
+    setStatus(`Traversing… at index \${step}`, "info");
     step++;
     setTimeout(traverseToPos, 350);
   }
-  setStatus(\`Traversing to position \${pos}…\`, "info");
+  setStatus(`Traversing to position \${pos}…`, "info");
   traverseToPos();
 }
 
@@ -611,17 +637,17 @@ function scllDelete() {
     }
   }
 
-  if (targetId === null) { setStatus(\`⚠ Value \${val} not found.\`, "error"); return; }
+  if (targetId === null) { setStatus(`⚠ Value \${val} not found.`, "error"); return; }
 
   animating = true;
   let step = 0;
   function traverseToTarget() {
     if (step > foundAt) {
       orderedIds.forEach(id => {
-        const el = document.querySelector(\`[data-id="\${id}"]\`);
+        const el = document.querySelector(`[data-id="\${id}"]`);
         if (el) el.classList.remove("node-position-highlight");
       });
-      const targetEl = document.querySelector(\`[data-id="\${targetId}"]\`);
+      const targetEl = document.querySelector(`[data-id="\${targetId}"]`);
       if (targetEl) {
         targetEl.classList.remove("node-position-highlight");
         targetEl.classList.add("node-highlight");
@@ -642,20 +668,20 @@ function scllDelete() {
           document.getElementById("simInput").value = "";
           renderList();
           updateStats();
-          setStatus(\`✓ Deleted node with value \${val}.\`, "success");
+          setStatus(`✓ Deleted node with value \${val}.`, "success");
           animating = false;
         }, 420);
       }, 300);
       return;
     }
-    const el = document.querySelector(\`[data-id="\${orderedIds[step]}"]\`);
+    const el = document.querySelector(`[data-id="\${orderedIds[step]}"]`);
     if (el) el.classList.add("node-position-highlight");
     const isTarget = orderedIds[step] === targetId;
-    setStatus(isTarget ? \`✓ Found value \${val}!\` : \`Searching…\`, isTarget ? "success" : "info");
+    setStatus(isTarget ? `✓ Found value \${val}!` : `Searching…`, isTarget ? "success" : "info");
     step++;
     setTimeout(traverseToTarget, 330);
   }
-  setStatus(\`Searching for value \${val}…\`, "info");
+  setStatus(`Searching for value \${val}…`, "info");
   traverseToTarget();
 }
 
@@ -665,10 +691,10 @@ function scllDeleteBeginning() {
 
   animating = true;
   const targetId = head;
-  const headEl = document.querySelector(\`[data-id="\${targetId}"]\`);
+  const headEl = document.querySelector(`[data-id="\${targetId}"]`);
 
   if (headEl) headEl.classList.add("node-highlight");
-  setStatus(\`Highlighting head node…\`, "info");
+  setStatus(`Highlighting head node…`, "info");
 
   setTimeout(() => {
     if (headEl) { headEl.classList.remove("node-highlight"); headEl.classList.add("node-del"); }
@@ -685,7 +711,7 @@ function scllDeleteBeginning() {
       opCount++;
       renderList();
       updateStats();
-      setStatus(\`✓ Deleted head node (value: \${deletedVal}).\`, "success");
+      setStatus(`✓ Deleted head node (value: \${deletedVal}).`, "success");
       animating = false;
     }, 420);
   }, 320);
@@ -698,9 +724,9 @@ function scllDeleteEnd() {
 
   if (size === 1) {
     const targetId = head;
-    const el = document.querySelector(\`[data-id="\${targetId}"]\`);
+    const el = document.querySelector(`[data-id="\${targetId}"]`);
     if (el) el.classList.add("node-highlight");
-    setStatus(\`Highlighting tail node…\`, "info");
+    setStatus(`Highlighting tail node…`, "info");
     setTimeout(() => {
       if (el) { el.classList.remove("node-highlight"); el.classList.add("node-del"); }
       setTimeout(() => {
@@ -709,7 +735,7 @@ function scllDeleteEnd() {
         delete nodes[targetId];
         size--; opCount++;
         renderList(); updateStats();
-        setStatus(\`✓ Deleted tail node (value: \${deletedVal}). List empty.\`, "success");
+        setStatus(`✓ Deleted tail node (value: \${deletedVal}). List empty.`, "success");
         animating = false;
       }, 420);
     }, 320);
@@ -727,10 +753,10 @@ function scllDeleteEnd() {
   function traverseToPenultimate() {
     if (step >= orderedIds.length - 1) {
       orderedIds.forEach(id => {
-        const el = document.querySelector(\`[data-id="\${id}"]\`);
+        const el = document.querySelector(`[data-id="\${id}"]`);
         if (el) el.classList.remove("node-position-highlight");
       });
-      const el = document.querySelector(\`[data-id="\${targetId}"]\`);
+      const el = document.querySelector(`[data-id="\${targetId}"]`);
       if (el) el.classList.add("node-highlight");
       setTimeout(() => {
         if (el) { el.classList.remove("node-highlight"); el.classList.add("node-del"); }
@@ -741,19 +767,19 @@ function scllDeleteEnd() {
           delete nodes[targetId];
           size--; opCount++;
           renderList(); updateStats();
-          setStatus(\`✓ Deleted tail node (value: \${deletedVal}).\`, "success");
+          setStatus(`✓ Deleted tail node (value: \${deletedVal}).`, "success");
           animating = false;
         }, 420);
       }, 300);
       return;
     }
-    const el = document.querySelector(\`[data-id="\${orderedIds[step]}"]\`);
+    const el = document.querySelector(`[data-id="\${orderedIds[step]}"]`);
     if (el) el.classList.add("node-position-highlight");
-    setStatus(\`Traversing… index \${step}\`, "info");
+    setStatus(`Traversing… index \${step}`, "info");
     step++;
     setTimeout(traverseToPenultimate, 300);
   }
-  setStatus(\`Traversing to find new tail…\`, "info");
+  setStatus(`Traversing to find new tail…`, "info");
   traverseToPenultimate();
 }
 
@@ -769,7 +795,7 @@ function scllTraverse() {
   let step = 0;
   function visitNext() {
     if (step > 0) {
-      const prevEl = document.querySelector(\`[data-id="\${orderedIds[step - 1]}"]\`);
+      const prevEl = document.querySelector(`[data-id="\${orderedIds[step - 1]}"]`);
       if (prevEl) {
         prevEl.classList.remove("node-traverse");
         prevEl.classList.add("node-visited");
@@ -783,7 +809,7 @@ function scllTraverse() {
       }
       setTimeout(() => {
         orderedIds.forEach(id => {
-          const el = document.querySelector(\`[data-id="\${id}"]\`);
+          const el = document.querySelector(`[data-id="\${id}"]`);
           if (el) el.classList.remove("node-visited");
         });
         setStatus("✓ Traversal complete.", "success");
@@ -792,9 +818,9 @@ function scllTraverse() {
       }, 600);
       return;
     }
-    const el = document.querySelector(\`[data-id="\${orderedIds[step]}"]\`);
+    const el = document.querySelector(`[data-id="\${orderedIds[step]}"]`);
     if (el) el.classList.add("node-traverse");
-    setStatus(\`Visiting node \${step}: value \${nodes[orderedIds[step]].value}\`, "info");
+    setStatus(`Visiting node \${step}: value \${nodes[orderedIds[step]].value}`, "info");
     step++;
     setTimeout(visitNext, 500);
   }
