@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Doubly Circular Linked List | iDS Studio Next</title>
-<meta name="description" content="Learn Doubly Circular Linked List — structure, operations, and C implementation on iDS Studio Next.">
 <link rel="stylesheet" href="../../dashboard/dashboard.css">
 <link rel="stylesheet" href="doubly-circular-linked-list.css">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
+<!-- ═══════════ XP POPUP ═══════════ -->
 <div class="xp-popup" id="xpPopup">
   <div class="xp-popup-icon">🎉</div>
   <div class="xp-popup-text">
@@ -19,21 +20,27 @@
   </div>
 </div>
 
+<!-- ═══════════ SIDEBAR ═══════════ -->
 <aside class="sidebar">
   <div class="logo">
-    <div class="logo-icon"><img src="../../image/ilogo.png" alt="iDS Studio" class="logo-img"></div>
+    <div class="logo-icon">
+      <img src="../../image/ilogo.png" alt="iDS Studio" class="logo-img">
+    </div>
     <div class="logo-text">
       <span class="logo-title">iDS Studio</span>
       <span class="logo-sub">Next</span>
     </div>
   </div>
+
   <nav class="menu">
     <a href="../../dashboard/dashboard.html" class="menu-item">Dashboard</a>
     <a href="../../learn/learn.html" class="menu-item active">Learn</a>
     <a href="../../practice/practice.html" class="menu-item">Practice</a>
     <a href="../../leaderboard/leaderboard.html" class="menu-item">Leaderboard</a>
   </nav>
+
   <div class="spacer"></div>
+
   <div class="sidebar-footer">
     <div class="user-chip">
       <div class="user-avatar" id="userAvatar">U</div>
@@ -51,7 +58,10 @@
   </div>
 </aside>
 
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
 <main class="main dcll-main">
+
+  <!-- Title Row -->
   <div class="lesson-title-row">
     <div class="lesson-title-left">
       <nav class="breadcrumb">
@@ -59,15 +69,14 @@
         <span class="breadcrumb-sep">›</span>
         <span class="breadcrumb-link">Unit 2</span>
         <span class="breadcrumb-sep">›</span>
-        <span class="breadcrumb-link">Circular Linked List</span>
-        <span class="breadcrumb-sep">›</span>
-        <span class="breadcrumb-current">Doubly Circular</span>
+        <span class="breadcrumb-current">Doubly Circular Linked List</span>
       </nav>
       <h1 class="lesson-heading">
         Doubly Circular Linked List
-        <span class="lesson-heading-tag">Circular – Bi-directional</span>
+        <span class="lesson-heading-tag">Circular – Infinite Traversal</span>
       </h1>
     </div>
+
     <button class="mark-complete-btn" id="markCompleteBtn">
       <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -76,67 +85,90 @@
     </button>
   </div>
 
+  <!-- Content Box -->
   <div class="lesson-content-box" id="lessonContentBox">
 
-    <!-- SECTION 1 -->
+    <!-- ── SECTION 1: Introduction ── -->
     <section class="lesson-section">
       <div class="section-header">
         <span class="section-number">01</span>
         <h2 class="section-title">What is a Doubly Circular Linked List?</h2>
       </div>
+
       <div class="definition-box">
         <div class="definition-icon">🔄</div>
         <div class="definition-body">
-          A <strong>Doubly Circular Linked List</strong> combines the properties of a doubly linked list and a circular linked list.
-          Every node has a <span class="highlight-text">next</span> pointer and a <span class="highlight-text">prev</span> pointer,
-          and the <strong>tail's next</strong> points back to <strong>head</strong> while
-          <strong>head's prev</strong> points back to <strong>tail</strong> — forming a fully circular, bidirectional structure.
+          A <strong>Doubly Circular Linked List</strong> is a variation of a linked list where each node has a
+          <span class="highlight-text">data</span> field and a <span class="highlight-text">next pointer</span> —
+          but unlike a regular linked list, the <span class="highlight-text">last node points back to the head</span>
+          instead of pointing to <code class="inline-code">NULL</code>. This forms a continuous loop.
         </div>
       </div>
+
       <p class="lesson-para">
-        This is the most feature-rich of the linked list variants. It supports traversal in both directions,
-        has no NULL terminators in either direction, and enables O(1) insertions at both ends with a tail pointer.
-        The cost is two pointers per node, doubling pointer overhead compared to a singly linked list.
+        The key difference from a regular singly linked list is the circular nature: traversal never reaches a dead end.
+        Once you reach the last node, the next pointer brings you back to the beginning — creating an infinite loop
+        if not handled carefully. This property makes it ideal for cyclic systems like round-robin schedulers and
+        music playlists.
       </p>
+
+      <!-- ASCII-style circular diagram -->
+      <div class="circular-ascii-diagram">
+        <div class="ascii-label">Circular Structure</div>
+        <div class="ascii-body">
+          <div class="ascii-row">
+            <span class="ascii-node">1</span>
+            <span class="ascii-arrow">→</span>
+            <span class="ascii-node">2</span>
+            <span class="ascii-arrow">→</span>
+            <span class="ascii-node">3</span>
+            <span class="ascii-arrow">→</span>
+            <span class="ascii-node">4</span>
+          </div>
+          <div class="ascii-loop-row">
+            <span class="ascii-up">↑</span>
+            <span class="ascii-spacer"></span>
+            <span class="ascii-back">← ← ← ← ← ←</span>
+            <span class="ascii-down">↓</span>
+          </div>
+        </div>
+        <div class="ascii-caption">Last node (4) points back to head (1) — no NULL!</div>
+      </div>
+
       <div class="analogy-grid">
         <div class="analogy-card">
-          <div class="analogy-emoji">🎠</div>
-          <h4 class="analogy-title">Carousel (Both Ways)</h4>
-          <p class="analogy-desc">You can step forward or backward between horses, and the last horse connects back to the first — both forward and backward.</p>
-        </div>
-        <div class="analogy-card">
-          <div class="analogy-emoji">🔃</div>
-          <h4 class="analogy-title">Browser History</h4>
-          <p class="analogy-desc">Navigate forward and backward through pages. In a DCLL implementation, the last page's next wraps to the first.</p>
-        </div>
-        <div class="analogy-card">
           <div class="analogy-emoji">🎡</div>
-          <h4 class="analogy-title">Two-Way Ring</h4>
-          <p class="analogy-desc">Nodes form a ring you can traverse clockwise (next) or counter-clockwise (prev) — never hitting a dead end.</p>
+          <h4 class="analogy-title">Ferris Wheel</h4>
+          <p class="analogy-desc">Cabins keep rotating in a circle. After the last cabin comes the first one again — it never stops at a dead end, just like a circular linked list.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🎵</div>
+          <h4 class="analogy-title">Repeat Playlist</h4>
+          <p class="analogy-desc">Songs play one after another. When the last song ends, it wraps back to the first. Each song is a node; the wrap-around is the circular pointer.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">⏱️</div>
+          <h4 class="analogy-title">Round Robin</h4>
+          <p class="analogy-desc">CPU scheduler gives each process a turn. After the last process, it goes back to the first — a perfect real-world use of circular linked lists.</p>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 2 -->
+    <!-- ── SECTION 2: Node Structure ── -->
     <section class="lesson-section">
       <div class="section-header">
         <span class="section-number">02</span>
-        <h2 class="section-title">Structure Visualization</h2>
+        <h2 class="section-title">Node Structure</h2>
       </div>
+
       <p class="lesson-para">
-        Each node has three fields: <code class="inline-code">prev</code>, <code class="inline-code">data</code>, and <code class="inline-code">next</code>.
-        The circular invariant means <code class="inline-code">tail-&gt;next == head</code> AND <code class="inline-code">head-&gt;prev == tail</code>.
+        Each node in a singly circular linked list has exactly two fields — same as a regular singly linked list.
+        The only behavioral difference is what the <code class="inline-code">next</code> pointer of the last node stores.
       </p>
 
-      <!-- Node anatomy -->
-      <div class="sll-node-anatomy">
-        <div class="anatomy-label">DCLL Node Structure</div>
-        <div class="anatomy-body dcll-anatomy">
-          <div class="anatomy-cell anatomy-prev">
-            <span class="anatomy-cell-label">prev</span>
-            <span class="anatomy-cell-val">← TAIL</span>
-          </div>
-          <div class="anatomy-divider"></div>
+      <div class="dll-node-anatomy">
+        <div class="anatomy-label">Node Structure</div>
+        <div class="anatomy-body">
           <div class="anatomy-cell anatomy-data">
             <span class="anatomy-cell-label">data</span>
             <span class="anatomy-cell-val">42</span>
@@ -144,328 +176,786 @@
           <div class="anatomy-divider"></div>
           <div class="anatomy-cell anatomy-next">
             <span class="anatomy-cell-label">next</span>
-            <span class="anatomy-cell-val">HEAD →</span>
+            <span class="anatomy-cell-val">→ head</span>
           </div>
         </div>
-        <div class="anatomy-caption">Head node: prev points to tail, next points to second node</div>
+        <div class="anatomy-caption">Last node's next points to head — not NULL</div>
       </div>
 
-      <!-- Chain diagram -->
-      <div class="dcll-chain-diagram">
-        <div class="dcll-top-label">← prev &nbsp;&nbsp;&nbsp; next →</div>
-        <div class="dcll-nodes-row">
-          <div class="dcll-head-ptr">HEAD ↓</div>
-          <div class="dcll-node-box">
-            <div class="dcll-node-prev dcll-circ">↩ TAIL</div>
-            <div class="dcll-node-data">10</div>
-            <div class="dcll-node-next">next →</div>
-          </div>
-          <div class="dcll-arrow">⇌</div>
-          <div class="dcll-node-box">
-            <div class="dcll-node-prev">← prev</div>
-            <div class="dcll-node-data">25</div>
-            <div class="dcll-node-next">next →</div>
-          </div>
-          <div class="dcll-arrow">⇌</div>
-          <div class="dcll-node-box dcll-tail-node">
-            <div class="dcll-node-prev">← prev</div>
-            <div class="dcll-node-data">38</div>
-            <div class="dcll-node-next dcll-circ">↩ HEAD</div>
-          </div>
-          <div class="dcll-tail-ptr">↑ TAIL</div>
-        </div>
-        <div class="dcll-back-caption">⇌ head.prev = tail &nbsp;|&nbsp; tail.next = head</div>
+      <div class="code-block-wrap">
+        <div class="code-block-label">C — Node Definition</div>
+        <pre class="code-block"><span class="kw">struct</span> node {
+    <span class="kw">int</span> data;          <span class="comment">// stores the value</span>
+    <span class="kw">struct</span> node* next; <span class="comment">// points to next node (last → head)</span>
+};</pre>
       </div>
 
-      <div class="diagram-row">
-        <div class="diagram-card">
-          <h4 class="diagram-title">Key Properties</h4>
-          <div class="sll-props-list">
-            <div class="sll-prop-item">
-              <span class="sll-prop-dot sll-dot-blue"></span>
-              <span class="sll-prop-text"><strong>Bidirectional</strong> — traverse forward (next) or backward (prev)</span>
-            </div>
-            <div class="sll-prop-item">
-              <span class="sll-prop-dot sll-dot-green"></span>
-              <span class="sll-prop-text"><strong>Fully circular</strong> — no NULL in either direction</span>
-            </div>
-            <div class="sll-prop-item">
-              <span class="sll-prop-dot sll-dot-orange"></span>
-              <span class="sll-prop-text"><strong>Two invariants:</strong> tail-&gt;next == head AND head-&gt;prev == tail</span>
-            </div>
-            <div class="sll-prop-item">
-              <span class="sll-prop-dot sll-dot-purple"></span>
-              <span class="sll-prop-text"><strong>Extra overhead:</strong> 2 pointers per node vs 1 in SLL</span>
-            </div>
+      <div class="node-fields-grid">
+        <div class="node-field-card">
+          <div class="nf-icon">📦</div>
+          <div class="nf-body">
+            <h4 class="nf-title">data</h4>
+            <p class="nf-desc">Stores the actual value — integer, character, or any type. This is the payload the node carries.</p>
           </div>
         </div>
-        <div class="diagram-card">
-          <h4 class="diagram-title">vs. Singly Circular LL</h4>
-          <div class="sll-props-list">
-            <div class="sll-prop-item">
-              <span class="sll-prop-dot sll-dot-blue"></span>
-              <span class="sll-prop-text">SCLL: 1 pointer/node &nbsp;|&nbsp; DCLL: 2 pointers/node</span>
-            </div>
-            <div class="sll-prop-item">
-              <span class="sll-prop-dot sll-dot-green"></span>
-              <span class="sll-prop-text">SCLL: forward only &nbsp;|&nbsp; DCLL: forward and backward</span>
-            </div>
-            <div class="sll-prop-item">
-              <span class="sll-prop-dot sll-dot-orange"></span>
-              <span class="sll-prop-text">DCLL: delete without predecessor traversal — O(1) with node reference</span>
-            </div>
+        <div class="node-field-card">
+          <div class="nf-icon">➡️</div>
+          <div class="nf-body">
+            <h4 class="nf-title">next pointer</h4>
+            <p class="nf-desc">Holds the address of the next node. For the last node, this points back to the head — closing the circle.</p>
+          </div>
+        </div>
+        <div class="node-field-card nf-no-prev">
+          <div class="nf-icon">🚫</div>
+          <div class="nf-body">
+            <h4 class="nf-title">No prev pointer</h4>
+            <p class="nf-desc">Unlike a doubly circular list, there is no previous pointer. Traversal is one direction only — forward.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 3 -->
+    <!-- ── SECTION 3: Visual Structure ── -->
     <section class="lesson-section">
       <div class="section-header">
         <span class="section-number">03</span>
-        <h2 class="section-title">Operations</h2>
+        <h2 class="section-title">Visual Structure</h2>
       </div>
-      <div class="ops-grid">
-        <div class="op-card">
-          <div class="op-badge op-ins-beg">Insert Begin</div>
-          <p class="op-desc">Create node, link it between tail and current head, update head. Both circular invariants must hold.</p>
-          <div class="op-complexity"><span class="complexity-label">Time</span><span class="complexity-value">O(1)</span></div>
-        </div>
-        <div class="op-card">
-          <div class="op-badge op-ins-end">Insert End</div>
-          <p class="op-desc">Create node, link it after tail and before head, update tail. Circular invariants restored.</p>
-          <div class="op-complexity"><span class="complexity-label">Time</span><span class="complexity-value">O(1)</span></div>
-        </div>
-        <div class="op-card">
-          <div class="op-badge op-delete">Delete Node</div>
-          <p class="op-desc">Relink predecessor and successor via both next and prev. With a node reference: O(1), otherwise O(n) search.</p>
-          <div class="op-complexity"><span class="complexity-label">Time</span><span class="complexity-value">O(1)/O(n)</span></div>
-        </div>
-        <div class="op-card">
-          <div class="op-badge op-traverse">Traversal</div>
-          <p class="op-desc">Forward: do-while with next. Backward: do-while with prev. Both stop when curr == head.</p>
-          <div class="op-complexity"><span class="complexity-label">Time</span><span class="complexity-value">O(n)</span></div>
-        </div>
+
+      <p class="lesson-para">
+        The diagram below shows how nodes are connected. Notice the curved arrow that loops from the last node
+        back to the head — this is what makes it circular. There is no node pointing to NULL.
+      </p>
+
+      <!-- SVG Circular Diagram -->
+      <div class="dcll-diagram-wrap">
+        
+        <svg class="dcll-svg" viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" id="circularDiagram">
+          <!-- Node 1 -->
+          <g class="svg-node" id="svgNode1">
+            <rect x="30" y="70" width="160" height="60" rx="12" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+            <rect x="80" y="70" width="60" height="60" fill="#dce9ff" stroke="#4f8cff" stroke-width="2"/>
+            
+            <!-- prev cell -->
+            <text x="55" y="96" text-anchor="middle" font-size="10" fill="#4a65c8" font-weight="700">prev</text>
+            <text x="55" y="113" text-anchor="middle" font-size="11" fill="#3b6cff" font-weight="600">← tail</text>
+            
+            <!-- data cell -->
+            <text x="110" y="96" text-anchor="middle" font-size="10" fill="#4a65c8" font-weight="700">data</text>
+            <text x="110" y="113" text-anchor="middle" font-size="16" fill="#1a3bcc" font-weight="700">10</text>
+            
+            <!-- next cell -->
+            <text x="165" y="96" text-anchor="middle" font-size="10" fill="#4a65c8" font-weight="700">next</text>
+            <text x="165" y="113" text-anchor="middle" font-size="11" fill="#3b6cff" font-weight="600">→</text>
+            
+            <text x="110" y="60" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="700">HEAD</text>
+            <line x1="110" y1="63" x2="110" y2="70" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="3,2"/>
+          </g>
+
+          <!-- Arrows 1 <-> 2 -->
+          <line x1="190" y1="90" x2="240" y2="90" stroke="#4f8cff" stroke-width="2"/>
+          <polygon points="240,85 250,90 240,95" fill="#4f8cff"/>
+          <line x1="190" y1="110" x2="240" y2="110" stroke="#4f8cff" stroke-width="2"/>
+          <polygon points="190,105 180,110 190,115" fill="#4f8cff"/>
+
+          <!-- Node 2 -->
+          <g class="svg-node" id="svgNode2">
+            <rect x="250" y="70" width="160" height="60" rx="12" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+            <rect x="300" y="70" width="60" height="60" fill="#dce9ff" stroke="#4f8cff" stroke-width="2"/>
+            <text x="275" y="96" text-anchor="middle" font-size="10" fill="#4a65c8" font-weight="700">prev</text>
+            <text x="275" y="113" text-anchor="middle" font-size="11" fill="#3b6cff" font-weight="600">←</text>
+            <text x="330" y="96" text-anchor="middle" font-size="10" fill="#4a65c8" font-weight="700">data</text>
+            <text x="330" y="113" text-anchor="middle" font-size="16" fill="#1a3bcc" font-weight="700">20</text>
+            <text x="385" y="96" text-anchor="middle" font-size="10" fill="#4a65c8" font-weight="700">next</text>
+            <text x="385" y="113" text-anchor="middle" font-size="11" fill="#3b6cff" font-weight="600">→</text>
+          </g>
+
+          <!-- Arrows 2 <-> 3 -->
+          <line x1="410" y1="90" x2="460" y2="90" stroke="#4f8cff" stroke-width="2"/>
+          <polygon points="460,85 470,90 460,95" fill="#4f8cff"/>
+          <line x1="410" y1="110" x2="460" y2="110" stroke="#4f8cff" stroke-width="2"/>
+          <polygon points="410,105 400,110 410,115" fill="#4f8cff"/>
+
+          <!-- Node 3 -->
+          <g class="svg-node" id="svgNode3">
+            <rect x="470" y="70" width="160" height="60" rx="12" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+            <rect x="520" y="70" width="60" height="60" fill="#dce9ff" stroke="#4f8cff" stroke-width="2"/>
+            <text x="495" y="96" text-anchor="middle" font-size="10" fill="#4a65c8" font-weight="700">prev</text>
+            <text x="495" y="113" text-anchor="middle" font-size="11" fill="#3b6cff" font-weight="600">←</text>
+            <text x="550" y="96" text-anchor="middle" font-size="10" fill="#4a65c8" font-weight="700">data</text>
+            <text x="550" y="113" text-anchor="middle" font-size="16" fill="#1a3bcc" font-weight="700">30</text>
+            <text x="605" y="96" text-anchor="middle" font-size="10" fill="#4a65c8" font-weight="700">next</text>
+            <text x="605" y="113" text-anchor="middle" font-size="11" fill="#3b6cff" font-weight="600">head →</text>
+            
+            <text x="550" y="60" text-anchor="middle" font-size="10" fill="#d97706" font-weight="700">TAIL</text>
+            <line x1="550" y1="63" x2="550" y2="70" stroke="#d97706" stroke-width="1.5" stroke-dasharray="3,2"/>
+          </g>
+
+          <!-- Circular Bottom Arc (Next) -->
+          <path d="M 550 130 C 550 200, 110 200, 110 135" fill="none" stroke="#4f8cff" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrowhead)"/>
+          
+          <!-- Circular Top Arc (Prev) -->
+          <path d="M 110 70 C 110 0, 550 0, 550 65" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrowhead-prev)"/>
+          
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#4f8cff"/>
+            </marker>
+            <marker id="arrowhead-prev" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b"/>
+            </marker>
+          </defs>
+        </svg>
+
       </div>
     </section>
 
-    <!-- SECTION 4 -->
+    <!-- ── SECTION 4: Key Characteristics ── -->
     <section class="lesson-section">
       <div class="section-header">
         <span class="section-number">04</span>
-        <h2 class="section-title">Implementation in C</h2>
+        <h2 class="section-title">Key Characteristics</h2>
       </div>
 
-      <div class="impl-tabs">
-        <button class="impl-tab active" onclick="switchTab('struct')">Node Structure</button>
-        <button class="impl-tab" onclick="switchTab('insert')">Insert &amp; Delete</button>
-        <button class="impl-tab" onclick="switchTab('display')">Traversal</button>
-      </div>
+      <p class="lesson-para">
+        Doubly circular linked lists have unique properties that set them apart from both regular linked lists and
+        other data structures. Understanding these characteristics helps you know when — and when not — to use them.
+      </p>
 
-      <div id="tab-struct" class="impl-panel active">
-        <p class="lesson-para">The node holds three fields: <code class="inline-code">prev</code>, <code class="inline-code">data</code>, <code class="inline-code">next</code>.</p>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-lang">C — Node Structure</span>
-            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-          </div>
-          <pre class="code-content"><span class="c-kw">#include</span> &lt;stdio.h&gt;
-<span class="c-kw">#include</span> &lt;stdlib.h&gt;
-
-<span class="c-kw">struct</span> Node {
-    <span class="c-kw">struct</span> Node* prev;
-    <span class="c-kw">int</span>          data;
-    <span class="c-kw">struct</span> Node* next;
-};
-
-<span class="c-kw">struct</span> Node* head = NULL;
-<span class="c-kw">struct</span> Node* tail = NULL;
-
-<span class="c-kw">struct</span> Node* createNode(<span class="c-kw">int</span> val) {
-    <span class="c-kw">struct</span> Node* n = (<span class="c-kw">struct</span> Node*)malloc(<span class="c-kw">sizeof</span>(<span class="c-kw">struct</span> Node));
-    n-&gt;data = val;
-    n-&gt;next = n-&gt;prev = NULL;
-    <span class="c-kw">return</span> n;
-}</pre>
+      <div class="characteristics-grid">
+        <div class="char-card char-blue">
+          <div class="char-icon">∞</div>
+          <h4 class="char-title">No NULL Pointer</h4>
+          <p class="char-desc">No node in the list points to NULL. The last node always points back to the head, completing the circle.</p>
         </div>
-      </div>
-
-      <div id="tab-insert" class="impl-panel">
-        <p class="lesson-para">Both <code class="inline-code">next</code> and <code class="inline-code">prev</code> links must be maintained. After every operation: <code class="inline-code">tail-&gt;next == head</code> and <code class="inline-code">head-&gt;prev == tail</code>.</p>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-lang">C — Insert &amp; Delete</span>
-            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-          </div>
-          <pre class="code-content"><span class="c-kw">void</span> insertAtEnd(<span class="c-kw">int</span> val) {
-    <span class="c-kw">struct</span> Node* n = createNode(val);
-    <span class="c-kw">if</span> (head == NULL) {
-        head = tail = n;
-        n-&gt;next = n-&gt;prev = n;   <span class="c-comment">// single node — points to itself</span>
-    } <span class="c-kw">else</span> {
-        n-&gt;prev    = tail;
-        n-&gt;next    = head;
-        tail-&gt;next = n;
-        head-&gt;prev = n;
-        tail       = n;
-    }
-}
-
-<span class="c-kw">void</span> insertAtBeginning(<span class="c-kw">int</span> val) {
-    <span class="c-kw">struct</span> Node* n = createNode(val);
-    <span class="c-kw">if</span> (head == NULL) {
-        head = tail = n;
-        n-&gt;next = n-&gt;prev = n;
-    } <span class="c-kw">else</span> {
-        n-&gt;next    = head;
-        n-&gt;prev    = tail;
-        head-&gt;prev = n;
-        tail-&gt;next = n;
-        head       = n;
-    }
-}
-
-<span class="c-kw">void</span> deleteNode(<span class="c-kw">int</span> val) {
-    <span class="c-kw">if</span> (head == NULL) { printf(<span class="c-str">"Empty.\n"</span>); <span class="c-kw">return</span>; }
-    <span class="c-kw">struct</span> Node* curr = head;
-    <span class="c-kw">do</span> {
-        <span class="c-kw">if</span> (curr-&gt;data == val) <span class="c-kw">break</span>;
-        curr = curr-&gt;next;
-    } <span class="c-kw">while</span> (curr != head);
-
-    <span class="c-kw">if</span> (curr-&gt;data != val) { printf(<span class="c-str">"Not found.\n"</span>); <span class="c-kw">return</span>; }
-
-    <span class="c-kw">if</span> (curr == head &amp;&amp; curr == tail) { head = tail = NULL; }
-    <span class="c-kw">else</span> {
-        curr-&gt;prev-&gt;next = curr-&gt;next;
-        curr-&gt;next-&gt;prev = curr-&gt;prev;
-        <span class="c-kw">if</span> (curr == head) head = curr-&gt;next;
-        <span class="c-kw">if</span> (curr == tail) tail = curr-&gt;prev;
-    }
-    free(curr);
-}</pre>
+        <div class="char-card char-green">
+          <div class="char-icon">🔁</div>
+          <h4 class="char-title">Forms a Loop</h4>
+          <p class="char-desc">All nodes form one continuous loop. You can start at any node and eventually reach every other node by following next pointers.</p>
         </div>
-        <div class="info-box">
-          <span class="info-icon">ℹ️</span>
-          <span>Unlike SLL/SCLL, deletion in DCLL doesn't need a predecessor search — just relink <code class="inline-code">curr-&gt;prev-&gt;next</code> and <code class="inline-code">curr-&gt;next-&gt;prev</code>.</span>
+        <div class="char-card char-orange">
+          <div class="char-icon">⚠️</div>
+          <h4 class="char-title">Infinite Traversal Risk</h4>
+          <p class="char-desc">A naive while loop checking for NULL will run forever. You must use a do-while loop or stop condition based on the head node.</p>
         </div>
-      </div>
-
-      <div id="tab-display" class="impl-panel">
-        <p class="lesson-para">Can traverse in both directions using the same do-while pattern, just changing <code class="inline-code">curr-&gt;next</code> to <code class="inline-code">curr-&gt;prev</code>.</p>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-lang">C — Forward &amp; Backward Traversal</span>
-            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-          </div>
-          <pre class="code-content"><span class="c-kw">void</span> displayForward() {
-    <span class="c-kw">if</span> (!head) { printf(<span class="c-str">"Empty.\n"</span>); <span class="c-kw">return</span>; }
-    <span class="c-kw">struct</span> Node* curr = head;
-    printf(<span class="c-str">"HEAD → "</span>);
-    <span class="c-kw">do</span> {
-        printf(<span class="c-str">"[%d] ⇌ "</span>, curr-&gt;data);
-        curr = curr-&gt;next;
-    } <span class="c-kw">while</span> (curr != head);
-    printf(<span class="c-str">"(HEAD)\n"</span>);
-}
-
-<span class="c-kw">void</span> displayBackward() {
-    <span class="c-kw">if</span> (!head) { printf(<span class="c-str">"Empty.\n"</span>); <span class="c-kw">return</span>; }
-    <span class="c-kw">struct</span> Node* curr = tail;
-    printf(<span class="c-str">"TAIL → "</span>);
-    <span class="c-kw">do</span> {
-        printf(<span class="c-str">"[%d] ⇌ "</span>, curr-&gt;data);
-        curr = curr-&gt;prev;
-    } <span class="c-kw">while</span> (curr != tail);
-    printf(<span class="c-str">"(TAIL)\n"</span>);
-}</pre>
+        <div class="char-card char-purple">
+          <div class="char-icon">🎯</div>
+          <h4 class="char-title">Any Node as Start</h4>
+          <p class="char-desc">Since the list is circular, you can technically start traversal from any node and still visit all nodes exactly once.</p>
         </div>
-      </div>
-
-      <div class="comparison-table-wrap">
-        <h4 class="table-heading">DCLL vs SCLL vs DLL — Comparison</h4>
-        <table class="comparison-table">
-          <thead><tr><th>Feature</th><th>SCLL</th><th>DLL</th><th>DCLL</th></tr></thead>
-          <tbody>
-            <tr><td>Pointers/node</td><td>1 (next)</td><td>2 (prev+next)</td><td>2 (prev+next)</td></tr>
-            <tr><td>Circular</td><td>Yes</td><td>No</td><td>Yes</td></tr>
-            <tr><td>Reverse traversal</td><td>No</td><td>Yes</td><td>Yes</td></tr>
-            <tr><td>Delete w/o predecessor</td><td>No</td><td>Yes</td><td>Yes</td></tr>
-            <tr><td>NULL terminators</td><td>None</td><td>Both ends</td><td>None</td></tr>
-          </tbody>
-        </table>
       </div>
     </section>
 
-    <!-- SECTION 5 -->
+    <!-- ── SECTION 5: Traversal ── -->
     <section class="lesson-section">
       <div class="section-header">
         <span class="section-number">05</span>
-        <h2 class="section-title">Advantages &amp; Limitations</h2>
+        <h2 class="section-title">Traversal</h2>
       </div>
-      <div class="analogy-grid">
-        <div class="analogy-card analogy-pro">
-          <div class="analogy-emoji">✅</div>
-          <h4 class="analogy-title">Bidirectional Traversal</h4>
-          <p class="analogy-desc">Navigate forward and backward without any extra data structures — ideal for undo/redo, browser history.</p>
+
+      <p class="lesson-para">
+        Traversal in a circular linked list requires special attention. Because there is no NULL, the standard
+        while-loop approach used for singly linked lists will cause an <strong>infinite loop</strong>.
+      </p>
+
+      <div class="traversal-compare">
+        <div class="trav-wrong">
+          <div class="trav-badge trav-bad">❌ Wrong — Infinite Loop!</div>
+          <pre class="code-block code-bad"><span class="comment">// WRONG: temp never becomes NULL!</span>
+<span class="kw">struct</span> node* temp = head;
+<span class="kw">while</span>(temp != NULL) {
+    printf(<span class="str">"%d "</span>, temp-&gt;data);
+    temp = temp-&gt;next; <span class="comment">// loops forever</span>
+}</pre>
+          <p class="trav-explain">Since no node's next is NULL, this loop never terminates. Avoid this pattern!</p>
         </div>
-        <div class="analogy-card analogy-pro">
-          <div class="analogy-emoji">✅</div>
-          <h4 class="analogy-title">O(1) Delete (by reference)</h4>
-          <p class="analogy-desc">Given a node reference, delete it in O(1) by relinking neighbours — no predecessor search needed.</p>
+        <div class="trav-correct">
+          <div class="trav-badge trav-good">✔ Correct — do-while Loop</div>
+          <pre class="code-block code-good"><span class="comment">// CORRECT: stop when we reach head again</span>
+<span class="kw">struct</span> node* temp = head;
+<span class="kw">do</span> {
+    printf(<span class="str">"%d "</span>, temp-&gt;data);
+    temp = temp-&gt;next;
+} <span class="kw">while</span>(temp != head);</pre>
+          <p class="trav-explain">The do-while ensures we visit the head at least once, then stop when we circle back to it.</p>
         </div>
-        <div class="analogy-card analogy-pro">
-          <div class="analogy-emoji">✅</div>
-          <h4 class="analogy-title">Efficient Queue/Deque</h4>
-          <p class="analogy-desc">Supports O(1) insert/delete at both ends — perfect for a double-ended queue (deque).</p>
+      </div>
+
+      <!-- Traversal step diagram -->
+      <div class="traversal-steps-wrap">
+        <div class="trav-steps-label">How Traversal Works — Step by Step</div>
+        <div class="trav-steps-row" id="travStepsRow">
+          <div class="trav-step" id="ts1">
+            <div class="ts-node">10</div>
+            <div class="ts-label">Start at head</div>
+          </div>
+          <div class="ts-arrow">→</div>
+          <div class="trav-step" id="ts2">
+            <div class="ts-node">20</div>
+            <div class="ts-label">Visit next</div>
+          </div>
+          <div class="ts-arrow">→</div>
+          <div class="trav-step" id="ts3">
+            <div class="ts-node">30</div>
+            <div class="ts-label">Visit next</div>
+          </div>
+          <div class="ts-arrow">→</div>
+          <div class="trav-step" id="ts4">
+            <div class="ts-node ts-last">40</div>
+            <div class="ts-label">Last node</div>
+          </div>
+          <div class="ts-arrow ts-circ">↩ HEAD</div>
         </div>
-        <div class="analogy-card analogy-con">
-          <div class="analogy-emoji">❌</div>
-          <h4 class="analogy-title">2× Pointer Overhead</h4>
-          <p class="analogy-desc">Two pointers per node doubles pointer memory vs SLL. For small data types this is significant.</p>
-        </div>
-        <div class="analogy-card analogy-con">
-          <div class="analogy-emoji">❌</div>
-          <h4 class="analogy-title">Complex Logic</h4>
-          <p class="analogy-desc">Every insert/delete must maintain four pointer assignments instead of two. Bugs from broken invariants cause infinite loops.</p>
-        </div>
+        <button class="animate-trav-btn" id="animTravBtn" onclick="animateTraversal()">▶ Animate Traversal</button>
       </div>
     </section>
 
-    <!-- SECTION 6 -->
+    <!-- ── SECTION 6: Insertion Operations ── -->
     <section class="lesson-section">
       <div class="section-header">
         <span class="section-number">06</span>
-        <h2 class="section-title">Applications</h2>
+        <h2 class="section-title">Insertion Operations</h2>
       </div>
-      <div class="apps-grid">
-        <div class="app-card">
-          <div class="app-icon">↩️</div>
-          <h4 class="app-title">Undo / Redo</h4>
-          <p class="app-desc">Text editors use a doubly circular list to maintain action history — navigate back (prev) to undo, forward (next) to redo.</p>
+
+      <p class="lesson-para">
+        Inserting into a circular linked list requires maintaining the circular link at all times.
+        The trickiest part is always ensuring the last node's next points back to the new (or existing) head.
+      </p>
+
+      <div class="ops-accordion">
+
+        <!-- Insert at Beginning -->
+        <div class="op-accordion-item" id="ins-begin">
+          <div class="op-accordion-header" onclick="toggleAccordion('ins-begin')">
+            <span class="op-acc-badge op-ins-beg">Insert at Beginning</span>
+            <span class="op-acc-arrow">▾</span>
+          </div>
+          <div class="op-accordion-body">
+            <ol class="op-steps">
+              <li>Create a new node with the given data.</li>
+              <li>If the list is empty, point the new node's next to itself — it becomes both head and tail.</li>
+              <li>If not empty, traverse to find the last node (the one whose next == head).</li>
+              <li>Set new node's next = current head.</li>
+              <li>Set last node's next = new node (so the circle is maintained).</li>
+              <li>Update head = new node.</li>
+            </ol>
+            <pre class="code-block"><span class="kw">void</span> insertBeginning(<span class="kw">struct</span> node** head, <span class="kw">int</span> data) {
+    <span class="kw">struct</span> node* newNode = createNode(data);
+    <span class="kw">if</span> (*head == NULL) {
+        newNode-&gt;next = newNode; <span class="comment">// points to itself</span>
+        *head = newNode;
+        <span class="kw">return</span>;
+    }
+    <span class="comment">// find last node</span>
+    <span class="kw">struct</span> node* last = *head;
+    <span class="kw">while</span>(last-&gt;next != *head)
+        last = last-&gt;next;
+    newNode-&gt;next = *head;
+    last-&gt;next = newNode; <span class="comment">// maintain circle</span>
+    *head = newNode;
+}</pre>
+          </div>
         </div>
-        <div class="app-card">
-          <div class="app-icon">🌐</div>
-          <h4 class="app-title">Browser Tab Cycling</h4>
-          <p class="app-desc">Ctrl+Tab / Ctrl+Shift+Tab cycle through tabs forward and backward — a DCLL models this naturally.</p>
+
+        <!-- Insert at End -->
+        <div class="op-accordion-item" id="ins-end">
+          <div class="op-accordion-header" onclick="toggleAccordion('ins-end')">
+            <span class="op-acc-badge op-ins-end">Insert at End</span>
+            <span class="op-acc-arrow">▾</span>
+          </div>
+          <div class="op-accordion-body">
+            <ol class="op-steps">
+              <li>Create a new node.</li>
+              <li>If list is empty, new node points to itself and becomes head.</li>
+              <li>Traverse to the last node (whose next == head).</li>
+              <li>Set last node's next = new node.</li>
+              <li>Set new node's next = head (completes the circle).</li>
+            </ol>
+            <pre class="code-block"><span class="kw">void</span> insertEnd(<span class="kw">struct</span> node** head, <span class="kw">int</span> data) {
+    <span class="kw">struct</span> node* newNode = createNode(data);
+    <span class="kw">if</span> (*head == NULL) {
+        newNode-&gt;next = newNode;
+        *head = newNode; <span class="kw">return</span>;
+    }
+    <span class="kw">struct</span> node* last = *head;
+    <span class="kw">while</span>(last-&gt;next != *head)
+        last = last-&gt;next;
+    last-&gt;next = newNode;
+    newNode-&gt;next = *head; <span class="comment">// close the circle</span>
+}</pre>
+          </div>
         </div>
-        <div class="app-card">
-          <div class="app-icon">🎯</div>
-          <h4 class="app-title">LRU Cache</h4>
-          <p class="app-desc">Least-recently-used caches use a DLL (often circular) to maintain order — move accessed items to front in O(1).</p>
+
+        <!-- Insert at Position -->
+        <div class="op-accordion-item" id="ins-pos">
+          <div class="op-accordion-header" onclick="toggleAccordion('ins-pos')">
+            <span class="op-acc-badge op-ins-pos">Insert at Position</span>
+            <span class="op-acc-arrow">▾</span>
+          </div>
+          <div class="op-accordion-body">
+            <ol class="op-steps">
+              <li>If position is 0, use Insert at Beginning.</li>
+              <li>Traverse to the node just before the desired position.</li>
+              <li>Create new node, set its next = node at position.</li>
+              <li>Set previous node's next = new node.</li>
+              <li>If inserting after the last node, also update last node's next = head.</li>
+            </ol>
+            <pre class="code-block"><span class="kw">void</span> insertAtPos(<span class="kw">struct</span> node** head, <span class="kw">int</span> data, <span class="kw">int</span> pos) {
+    <span class="kw">if</span> (pos == 0) { insertBeginning(head, data); <span class="kw">return</span>; }
+    <span class="kw">struct</span> node* temp = *head;
+    <span class="kw">for</span>(<span class="kw">int</span> i = 0; i &lt; pos - 1; i++) {
+        temp = temp-&gt;next;
+        <span class="kw">if</span>(temp == *head) <span class="kw">break</span>; <span class="comment">// guard: past end</span>
+    }
+    <span class="kw">struct</span> node* newNode = createNode(data);
+    newNode-&gt;next = temp-&gt;next;
+    temp-&gt;next = newNode;
+}</pre>
+          </div>
         </div>
-        <div class="app-card">
-          <div class="app-icon">🎵</div>
-          <h4 class="app-title">Media Player Controls</h4>
-          <p class="app-desc">Previous / Next song navigation with loop mode enabled — a DCLL lets you go forward or backward through the playlist circularly.</p>
+
+      </div>
+    </section>
+
+    <!-- ── SECTION 7: Deletion Operations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Deletion Operations</h2>
+      </div>
+
+      <p class="lesson-para">
+        Deletion must always preserve the circular structure. When deleting the head or tail node,
+        you must update the last node's next pointer to maintain the loop.
+      </p>
+
+      <div class="ops-accordion">
+
+        <!-- Delete at Beginning -->
+        <div class="op-accordion-item" id="del-begin">
+          <div class="op-accordion-header" onclick="toggleAccordion('del-begin')">
+            <span class="op-acc-badge op-delete">Delete at Beginning</span>
+            <span class="op-acc-arrow">▾</span>
+          </div>
+          <div class="op-accordion-body">
+            <ol class="op-steps">
+              <li>If list has only one node, set head = NULL and free the node.</li>
+              <li>Traverse to find the last node (next == head).</li>
+              <li>Set last node's next = head's next (skips current head).</li>
+              <li>Update head = head's next.</li>
+              <li>Free the old head node.</li>
+            </ol>
+            <pre class="code-block"><span class="kw">void</span> deleteBeginning(<span class="kw">struct</span> node** head) {
+    <span class="kw">if</span>(*head == NULL) <span class="kw">return</span>;
+    <span class="kw">struct</span> node* last = *head;
+    <span class="kw">while</span>(last-&gt;next != *head)
+        last = last-&gt;next;
+    <span class="kw">if</span>(*head == last) { <span class="comment">// single node</span>
+        free(*head); *head = NULL; <span class="kw">return</span>;
+    }
+    <span class="kw">struct</span> node* temp = *head;
+    last-&gt;next = (*head)-&gt;next;
+    *head = (*head)-&gt;next;
+    free(temp);
+}</pre>
+          </div>
+        </div>
+
+        <!-- Delete at End -->
+        <div class="op-accordion-item" id="del-end">
+          <div class="op-accordion-header" onclick="toggleAccordion('del-end')">
+            <span class="op-acc-badge op-delete">Delete at End</span>
+            <span class="op-acc-arrow">▾</span>
+          </div>
+          <div class="op-accordion-body">
+            <ol class="op-steps">
+              <li>If list has only one node, free it and set head = NULL.</li>
+              <li>Traverse to second-to-last node (whose next's next == head).</li>
+              <li>Free the last node.</li>
+              <li>Set second-to-last node's next = head (restores circle).</li>
+            </ol>
+            <pre class="code-block"><span class="kw">void</span> deleteEnd(<span class="kw">struct</span> node** head) {
+    <span class="kw">if</span>(*head == NULL) <span class="kw">return</span>;
+    <span class="kw">struct</span> node* prev = *head;
+    <span class="kw">struct</span> node* last = (*head)-&gt;next;
+    <span class="kw">if</span>(last == *head) { <span class="comment">// one node</span>
+        free(*head); *head = NULL; <span class="kw">return</span>;
+    }
+    <span class="kw">while</span>(last-&gt;next != *head) {
+        prev = last;
+        last = last-&gt;next;
+    }
+    prev-&gt;next = *head; <span class="comment">// restore circle</span>
+    free(last);
+}</pre>
+          </div>
+        </div>
+
+        <!-- Delete at Position -->
+        <div class="op-accordion-item" id="del-pos">
+          <div class="op-accordion-header" onclick="toggleAccordion('del-pos')">
+            <span class="op-acc-badge op-delete">Delete at Position</span>
+            <span class="op-acc-arrow">▾</span>
+          </div>
+          <div class="op-accordion-body">
+            <ol class="op-steps">
+              <li>If position is 0, use Delete at Beginning.</li>
+              <li>Traverse to the node just before the target position.</li>
+              <li>Store the target node in a temporary pointer.</li>
+              <li>Update previous node's next to skip the target node.</li>
+              <li>Free the target node.</li>
+            </ol>
+            <pre class="code-block"><span class="kw">void</span> deleteAtPos(<span class="kw">struct</span> node** head, <span class="kw">int</span> pos) {
+    <span class="kw">if</span>(pos == 0) { deleteBeginning(head); <span class="kw">return</span>; }
+    <span class="kw">struct</span> node* temp = *head;
+    <span class="kw">for</span>(<span class="kw">int</span> i = 0; i &lt; pos - 1; i++)
+        temp = temp-&gt;next;
+    <span class="kw">struct</span> node* toDel = temp-&gt;next;
+    temp-&gt;next = toDel-&gt;next;
+    free(toDel);
+}</pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── SECTION 8: Implementation in C ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">08</span>
+        <h2 class="section-title">Implementation in C</h2>
+        <div class="visualize-card" onclick="window.location.href='../doubly-circular-linked-list-visualize.html'" role="button" tabindex="0"
+             onkeydown="if(event.key==='Enter'||event.key===' ')window.location.href='../doubly-circular-linked-list-visualize.html'">
+          <div class="vc-icon">✨</div>
+          <div class="vc-text">
+            <div class="vc-title">Visualize Code</div>
+            <div class="vc-sub">Watch step-by-step execution with animations</div>
+          </div>
+          <div class="vc-arrow">→</div>
+          <span class="visualize-btn-ripple"></span>
+        </div>
+      </div>
+
+      <div class="code-block-wrap" style="margin-bottom: 24px;">
+        <div class="code-block-label">C — Complete Implementation</div>
+        <pre class="code-block"><span class="kw">#include</span> &lt;stdio.h&gt;
+<span class="kw">#include</span> &lt;stdlib.h&gt;
+
+<span class="kw">struct</span> node {
+    <span class="kw">int</span> data;
+    <span class="kw">struct</span> node* next;
+};
+
+<span class="kw">struct</span> node* head = NULL;
+
+<span class="kw">void</span> insert(<span class="kw">int</span> data) {
+    <span class="kw">struct</span> node* newnode = (<span class="kw">struct</span> node*)malloc(<span class="kw">sizeof</span>(<span class="kw">struct</span> node));
+    newnode-&gt;data = data;
+
+    <span class="kw">if</span> (head == NULL) {
+        newnode-&gt;next = newnode;
+        head = newnode;
+        <span class="kw">return</span>;
+    }
+
+    <span class="kw">struct</span> node* temp = head;
+    <span class="kw">while</span> (temp-&gt;next != head) {
+        temp = temp-&gt;next;
+    }
+
+    temp-&gt;next = newnode;
+    newnode-&gt;next = head;
+}</pre>
+      </div>
+
+    </section>
+
+    <!-- ── SECTION 9: Advantages ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">09</span>
+        <h2 class="section-title">Advantages</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">⚡</div>
+          <h4 class="analogy-title">Efficient Looping</h4>
+          <p class="analogy-desc">Cycling through elements repeatedly is natural — no need to reset the pointer back to head manually. Just keep following next.</p>
+        </div>
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">🛡️</div>
+          <h4 class="analogy-title">No NULL Checks</h4>
+          <p class="analogy-desc">Since no node is ever NULL, you avoid NULL pointer dereference bugs during traversal. Every node is valid and connected.</p>
+        </div>
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">🔄</div>
+          <h4 class="analogy-title">Cyclic System Fit</h4>
+          <p class="analogy-desc">Ideal for systems that inherently repeat — OS schedulers, media players, buffering — where the circular structure maps naturally to the problem.</p>
         </div>
       </div>
     </section>
 
+    <!-- ── SECTION 10: Disadvantages ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">10</span>
+        <h2 class="section-title">Disadvantages</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">🐛</div>
+          <h4 class="analogy-title">Hard to Debug</h4>
+          <p class="analogy-desc">Circular references make it hard to print or inspect the list. Standard debugging tools may follow the loop indefinitely.</p>
+        </div>
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">♾️</div>
+          <h4 class="analogy-title">Infinite Loop Risk</h4>
+          <p class="analogy-desc">A single mistake in the traversal condition can cause an infinite loop that freezes your program. Extra care with stopping conditions is essential.</p>
+        </div>
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">🧩</div>
+          <h4 class="analogy-title">More Complex Logic</h4>
+          <p class="analogy-desc">Every insertion and deletion must carefully maintain the circular link. This is more complex than a standard singly linked list where you just set NULL.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 11: Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">11</span>
+        <h2 class="section-title">Real-World Applications</h2>
+      </div>
+
+      <p class="lesson-para">
+        The circular nature of this data structure makes it a perfect match for real-world cyclic problems.
+        Here are the most common use cases:
+      </p>
+
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon-wrap app-blue">
+            <span class="app-icon">🖥️</span>
+          </div>
+          <div class="app-body">
+            <h4 class="app-title">Round Robin Scheduling</h4>
+            <p class="app-desc">Operating systems give each process equal CPU time in a cycle. The circular list lets the scheduler loop back to the first process after the last one — endlessly and fairly.</p>
+          </div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon-wrap app-green">
+            <span class="app-icon">🎶</span>
+          </div>
+          <div class="app-body">
+            <h4 class="app-title">Music Playlists (Loop Mode)</h4>
+            <p class="app-desc">When a playlist is set to repeat, each song node's next points to the following track. The last song's next points back to the first — exactly a circular linked list.</p>
+          </div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon-wrap app-orange">
+            <span class="app-icon">🗄️</span>
+          </div>
+          <div class="app-body">
+            <h4 class="app-title">Circular Buffers</h4>
+            <p class="app-desc">Used in streaming, audio processing, and networking. Data is written and read in a circle — when you reach the end, you wrap around to the start, reusing space efficiently.</p>
+          </div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon-wrap app-purple">
+            <span class="app-icon">🎮</span>
+          </div>
+          <div class="app-body">
+            <h4 class="app-title">Turn-Based Games</h4>
+            <p class="app-desc">Multiplayer games cycle through players' turns. A circular list of player nodes allows seamless looping — after the last player, it's the first player's turn again.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+        <!-- ── SECTION 7: Interactive Simulator ── -->
+    <section class="lesson-section simulator-section">
+      <div class="section-header">
+        <span class="section-number">12</span>
+        <h2 class="section-title">Interactive Doubly Circular Linked List Simulator</h2>
+      </div>
+      <p class="lesson-para">Build a singly circular linked list live. Insert nodes at the beginning, end, or a specific position. Delete nodes by value, from the beginning, or from the end — and watch pointer chains animate in real time.</p>
+
+      <div class="simulator-card" id="simulatorCard">
+
+        <!-- Controls -->
+        <div class="sim-controls">
+          <!-- Input row -->
+          <div class="sim-inputs-row">
+            <div class="sim-input-group">
+              <label class="sim-label">Enter Value</label>
+              <input type="number" id="simInput" class="sim-input" placeholder="e.g. 42" min="-999" max="999"
+                onkeydown="if(event.key==='Enter') dcllInsertEnd()">
+            </div>
+            <div class="sim-input-group">
+              <label class="sim-label">Enter Position <span class="sim-label-hint">(0-based)</span></label>
+              <input type="number" id="simPosInput" class="sim-input sim-pos-input" placeholder="e.g. 1" min="0"
+                disabled onkeydown="if(event.key==='Enter') dcllInsertAtPosition()">
+            </div>
+          </div>
+
+          <!-- Button groups -->
+          <div class="sim-btn-groups-wrap">
+            <!-- INSERT GROUP -->
+            <div class="sim-btn-group-labeled">
+              <span class="sim-group-label">Insert</span>
+              <div class="sim-btn-group">
+                <button class="sim-btn sim-push" onclick="dcllInsertBeginning()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                  </svg>
+                  At Begin
+                </button>
+                <button class="sim-btn sim-ins-end" onclick="dcllInsertEnd()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                  </svg>
+                  At End
+                </button>
+                <button class="sim-btn sim-ins-pos" id="btnInsertPos" onclick="handleScllInsertAtPosition()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5 10h10M10 5v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+                  </svg>
+                  At Position
+                </button>
+              </div>
+            </div>
+
+            <!-- DELETE GROUP -->
+            <div class="sim-btn-group-labeled">
+              <span class="sim-group-label">Delete</span>
+              <div class="sim-btn-group">
+                <button class="sim-btn sim-del-begin" onclick="dcllDeleteBeginning()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  At Begin
+                </button>
+                <button class="sim-btn sim-del-end" onclick="dcllDeleteEnd()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  At End
+                </button>
+                <button class="sim-btn sim-pop" onclick="dcllDelete()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  By Value
+                </button>
+              </div>
+            </div>
+
+            <!-- UTILITY GROUP -->
+            <div class="sim-btn-group-labeled">
+              <span class="sim-group-label">Utility</span>
+              <div class="sim-btn-group">
+                <button class="sim-btn sim-display" onclick="dcllTraverse()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                  </svg>
+                  Traverse
+                </button>
+                <button class="sim-btn sim-clear" onclick="dcllReset()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                  </svg>
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status message -->
+        <div class="sim-status" id="simStatus">
+          <span id="simStatusText">Ready — insert a value to begin</span>
+        </div>
+
+        <!-- Linked List Visualizer -->
+        <div class="dll-visualizer">
+
+          
+          <!-- SVG for Circular Arc -->
+          
+          <!-- SVG for Circular Arcs -->
+          <svg id="dcllArcSvg" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; overflow: visible;">
+             <path id="dcllArcPathNext" fill="none" stroke="#4f8cff" stroke-width="2.5" stroke-dasharray="4,4" marker-end="url(#arrowheadNext)"/>
+             <path id="dcllArcPathPrev" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="4,4" marker-end="url(#arrowheadPrev)"/>
+             <defs>
+               <marker id="arrowheadNext" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                 <polygon points="0 0, 10 3.5, 0 7" fill="#4f8cff"/>
+               </marker>
+               <marker id="arrowheadPrev" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                 <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b"/>
+               </marker>
+             </defs>
+          </svg>
+
+<!-- Pointer labels row (HEAD / TAIL) -->
+          <div class="dll-ptr-indicators" id="dllPtrIndicators">
+            <!-- dynamically populated -->
+          </div>
+
+          <!-- Node chain area -->
+          <div class="dll-sim-container" id="dllSimContainer">
+            <div class="sim-empty-state" id="simEmptyState">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <rect width="32" height="32" rx="8" fill="#eef3ff"/>
+                <path d="M6 12h8v8H6zM18 12h8v8h-8z" fill="#3b6cff" opacity="0.35"/>
+                <path d="M14 16h4" stroke="#3b6cff" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <p>List is empty</p>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="sim-stats">
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statSize">0</span>
+              <span class="sim-stat-label">Size</span>
+            </div>
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statHead">—</span>
+              <span class="sim-stat-label">Head</span>
+            </div>
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statTail">—</span>
+              <span class="sim-stat-label">Tail</span>
+            </div>
+            <div class="sim-stat">
+              <span class="sim-stat-value" id="statOps">0</span>
+              <span class="sim-stat-label">Ops</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /simulator-card -->
+    </section>
+
+    
+    <!-- Sparkle decoration -->
     <div class="sparkle-deco" aria-hidden="true">
-      <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
-        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z" fill="url(#sg2)" opacity="0.18"/>
-        <defs><linearGradient id="sg2" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#4f8cff"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs>
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGradCLL)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGradCLL" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
       </svg>
     </div>
 
