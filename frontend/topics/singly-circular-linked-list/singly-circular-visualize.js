@@ -1,64 +1,84 @@
 /* ─── singly-circular-visualize.js ───────────────────────────── */
 
 document.addEventListener("DOMContentLoaded", () => {
-  const listRow = document.getElementById("listRow");
-  const headPointer = document.getElementById("headPointer");
-  const tailPointer = document.getElementById("tailPointer");
-  const newNodeWrap = document.getElementById("newNodeWrap");
-  const newNodeData = document.getElementById("newNodeData");
-  const newNodeAddr = document.getElementById("newNodeAddr");
-  
-  const curveSvg = document.getElementById("curveSvg");
-  const curvePath = document.getElementById("curvePath");
+  const listRow        = document.getElementById("listRow");
+  const headPointer    = document.getElementById("headPointer");
+  const tailPointer    = document.getElementById("tailPointer");
+  const newNodeWrap    = document.getElementById("newNodeWrap");
+  const newNodeData    = document.getElementById("newNodeData");
+  const newNodeAddr    = document.getElementById("newNodeAddr");
+
+  const curveSvg          = document.getElementById("curveSvg");
+  const curvePath         = document.getElementById("curvePath");
   const circularCurvePath = document.getElementById("circularCurvePath");
 
   const valueInput = document.getElementById("vizValueInput");
   const btnConfirm = document.getElementById("vizConfirmBtn");
-  const btnNext = document.getElementById("btnNext");
-  const btnPrev = document.getElementById("btnPrev");
-  const btnReset = document.getElementById("btnReset");
-  
-  const stepItems = document.querySelectorAll(".viz-step-item");
+  const btnNext    = document.getElementById("btnNext");
+  const btnPrev    = document.getElementById("btnPrev");
+  const btnReset   = document.getElementById("btnReset");
+
+  const stepItems    = document.querySelectorAll(".viz-step-item");
   const progressDots = document.querySelectorAll(".viz-dot");
 
-  // State
+  // ── Mode ────────────────────────────────────────────────────────
+  let mode = 'insert-beginning';
+
+  const MODE_LABELS = {
+    'insert-beginning': 'Insert at Beginning',
+    'insert-end':       'Insert at End',
+  };
+
+  // Op pill switcher
+  document.querySelectorAll('.viz-op-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const newMode = pill.dataset.mode;
+      if (!newMode || newMode === mode) return;
+      mode = newMode;
+      document.querySelectorAll('.viz-op-pill').forEach(p => p.classList.remove('viz-op-pill-active'));
+      pill.classList.add('viz-op-pill-active');
+      const badge = document.querySelector('.viz-operation-badge');
+      if (badge) {
+        const last = badge.lastChild;
+        if (last && last.nodeType === 3) last.textContent = ' ' + (MODE_LABELS[mode] || mode);
+      }
+      resetAll();
+    });
+  });
+
+  // ── State ────────────────────────────────────────────────────────
   let currentStep = 0;
-  const totalSteps = 7; // 7 steps: last step = final merged list
+  const totalSteps = 7;
   let nodes = [];
   let insertValue = 10;
 
-  // Step → data-line mapping (matches data-line attrs in HTML)
-  // Step 1: malloc              → data-line="1"  (lines 11-12)
-  // Step 2: newnode->data=data  → data-line="2"  (line 13)
-  // Step 3: if (head == NULL)   → data-line="3"  (line 14)
-  // Step 4: newnode->next=head  → data-line="4"  (line 19)
-  // Step 5: tail->next=newnode  → data-line="5"  (line 20)
-  // Step 6: head = newnode      → data-line="6"  (line 21)
-  const STEP_TO_LINE = [null, 1, 2, 3, 4, 5, 6, null]; // step 7 = final state, no highlight
+  const NEW_NODE_ADDR_BEG = '0x100';
+  const NEW_NODE_ADDR_END = '0x105';
 
-  // ── Condition box setup ─────────────────────────────────────────
-  // conditionBox stays position:absolute inside animCanvas — never move it into DOM flow
-  // (moving it to static position pushes the canvas content down causing overlap)
+  // Step → data-line for both modes (same line numbers in their code blocks)
+  const STEP_TO_LINE = [null, 1, 2, 3, 4, 5, 6, null];
+
+  // ── Condition box ────────────────────────────────────────────────
   const conditionBox = document.getElementById("conditionBox");
   Object.assign(conditionBox.style, {
-    display: 'none',
-    position: 'absolute',
-    left: '50%',
-    top: '18px',
-    transform: 'translateX(-50%)',
-    margin: '0',
-    padding: '10px 22px',
-    background: '#fff5f5',
-    border: '2px solid #ef4444',
-    borderRadius: '10px',
-    fontFamily: "'JetBrains Mono', monospace",
-    fontSize: '13px',
-    fontWeight: '600',
-    color: '#b91c1c',
+    display:       'none',
+    position:      'absolute',
+    left:          '50%',
+    top:           '18px',
+    transform:     'translateX(-50%)',
+    margin:        '0',
+    padding:       '10px 22px',
+    background:    '#fff5f5',
+    border:        '2px solid #ef4444',
+    borderRadius:  '10px',
+    fontFamily:    "'JetBrains Mono', monospace",
+    fontSize:      '13px',
+    fontWeight:    '600',
+    color:         '#b91c1c',
     letterSpacing: '0.01em',
-    whiteSpace: 'nowrap',
-    zIndex: '50',
-    transition: 'opacity 0.25s ease',
+    whiteSpace:    'nowrap',
+    zIndex:        '50',
+    transition:    'opacity 0.25s ease',
   });
 
   function showConditionBox() {
@@ -66,12 +86,9 @@ document.addEventListener("DOMContentLoaded", () => {
     conditionBox.style.display = 'block';
     conditionBox.style.opacity = '1';
   }
+  function hideConditionBox() { conditionBox.style.display = 'none'; }
 
-  function hideConditionBox() {
-    conditionBox.style.display = 'none';
-  }
-
-  // ── Code highlighting ───────────────────────────────────────────
+  // ── Code highlighting ─────────────────────────────────────────────
   function highlightCode(activeLine) {
     const all = document.querySelectorAll('.viz-code-line.viz-highlightable');
     all.forEach(el => el.classList.remove('viz-line-active', 'viz-line-dim'));
@@ -84,14 +101,12 @@ document.addEventListener("DOMContentLoaded", () => {
       el.classList.add('viz-line-active');
       if (!scrolled && el.classList.contains('viz-highlightable')) {
         const codeBlock = el.closest('.viz-code-block');
-        if (codeBlock) {
-          codeBlock.scrollTo({ top: el.offsetTop - 10, behavior: 'smooth' });
-          scrolled = true;
-        }
+        if (codeBlock) { codeBlock.scrollTo({ top: el.offsetTop - 10, behavior: 'smooth' }); scrolled = true; }
       }
     });
   }
 
+  // ── Build initial 4-node list ─────────────────────────────────────
   function initNodes() {
     listRow.innerHTML = "";
     nodes = [
@@ -100,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
       { id: 3, data: 3, addr: "0x103", el: null },
       { id: 4, data: 4, addr: "0x104", el: null }
     ];
-
     nodes.forEach((n, i) => {
       const wrap = document.createElement("div");
       wrap.className = "viz-node-wrap";
@@ -115,122 +129,133 @@ document.addEventListener("DOMContentLoaded", () => {
       if (i < 3) {
         const arrow = document.createElement("div");
         arrow.className = "viz-arrow";
-        arrow.innerHTML = '<span class="viz-arrow-fwd">→</span>';
+        arrow.innerHTML = '<span class="viz-arrow-fwd">\u2192</span>';
         listRow.appendChild(arrow);
       }
       n.el = wrap.querySelector('.viz-node');
     });
-
     positionInitialPointers();
   }
 
   function positionInitialPointers() {
     void listRow.offsetWidth;
-    const n1Rect = nodes[0].el.getBoundingClientRect();
+    const n1Rect        = nodes[0].el.getBoundingClientRect();
+    const n4Rect        = nodes[3].el.getBoundingClientRect();
     const containerRect = listRow.parentElement.getBoundingClientRect();
 
-    // HEAD pointer → center of node 1
-    headPointer.style.left = (n1Rect.left - containerRect.left + n1Rect.width / 2) + "px";
-    headPointer.style.top  = (n1Rect.top - containerRect.top - 45) + "px";
-
-    // TAIL pointer → center of node 4
-    // Must set right='auto' to override CSS default right:20% which causes offset
-    const n4Rect = nodes[3].el.getBoundingClientRect();
+    headPointer.style.left  = (n1Rect.left - containerRect.left + n1Rect.width / 2) + "px";
+    headPointer.style.top   = (n1Rect.top  - containerRect.top  - 45) + "px";
     tailPointer.style.right = 'auto';
-    tailPointer.style.left = (n4Rect.left - containerRect.left + n4Rect.width / 2) + "px";
-    tailPointer.style.top  = (n4Rect.top - containerRect.top - 45) + "px";
+    tailPointer.style.left  = (n4Rect.left - containerRect.left + n4Rect.width / 2) + "px";
+    tailPointer.style.top   = (n4Rect.top  - containerRect.top  - 45) + "px";
 
     curveSvg.classList.add('visible');
     drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
   }
 
+  // ── Arc helpers ───────────────────────────────────────────────────
+
+  // Circular back-link going BELOW the row (tail → head style)
   function drawCircularArc(startEl, endEl, pathEl) {
     if (!startEl || !endEl) return;
-    const sRect = startEl.getBoundingClientRect();
-    const eRect = endEl.getBoundingClientRect();
-    const cRect = curveSvg.getBoundingClientRect();
+    const sRect  = startEl.getBoundingClientRect();
+    const eRect  = endEl.getBoundingClientRect();
+    const cRect  = curveSvg.getBoundingClientRect();
     const startX = sRect.right - cRect.left;
-    const startY = sRect.top - cRect.top + sRect.height / 2;
-    const endX = eRect.left - cRect.left - 5;
-    const endY = eRect.top - cRect.top + eRect.height / 2;
-    const sweep = 70;
-    const midY = startY + sRect.height + 15;
+    const startY = sRect.top   - cRect.top  + sRect.height / 2;
+    const endX   = eRect.left  - cRect.left - 5;
+    const endY   = eRect.top   - cRect.top  + eRect.height / 2;
+    const sweep  = 70;
+    const midY   = startY + sRect.height + 15;
     const d =
       "M " + startX + " " + startY +
       " C " + (startX + sweep) + " " + startY + "," +
-              (startX + sweep) + " " + midY + "," +
-              startX + " " + midY +
+              (startX + sweep) + " " + midY   + "," +
+              startX           + " " + midY   +
       " L " + endX + " " + midY +
       " C " + (endX - sweep) + " " + midY + "," +
               (endX - sweep) + " " + endY + "," +
-              endX + " " + endY;
+              endX           + " " + endY;
     pathEl.setAttribute("d", d);
-    pathEl.style.opacity = 0.8;
+    pathEl.setAttribute("stroke", "#3b6cff");
+    pathEl.setAttribute("marker-end", "url(#arrowHead)");
+    pathEl.style.opacity = '0.8';
   }
 
-function drawForwardArc(startEl, endEl, pathEl) {
-    if(!startEl || !endEl) return;
-    const sRect = startEl.getBoundingClientRect();
-    const eRect = endEl.getBoundingClientRect();
-    const cRect = curveSvg.getBoundingClientRect();
-
-    // Start: right-center of newNode
+  // BEG mode step 4: newNode (bottom-left area) → head bottom (swoop below)
+  function drawForwardArc(startEl, endEl, pathEl) {
+    if (!startEl || !endEl) return;
+    const sRect  = startEl.getBoundingClientRect();
+    const eRect  = endEl.getBoundingClientRect();
+    const cRect  = curveSvg.getBoundingClientRect();
     const startX = sRect.right - cRect.left;
-    const startY = sRect.top - cRect.top + sRect.height / 2;
-
-    // End: bottom-center of HEAD node
-    const endX = eRect.left - cRect.left + eRect.width / 2;
-    const endY = eRect.bottom - cRect.top + 6; 
-
-    // C-Swoop control points
-    const cp1x = startX + 45;
-    const cp1y = startY;
-    const cp2x = endX;
-    const cp2y = endY + 45;
-
-    const d = `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`;
-    
+    const startY = sRect.top   - cRect.top  + sRect.height / 2;
+    const endX   = eRect.left  - cRect.left + eRect.width  / 2;
+    const endY   = eRect.bottom - cRect.top + 6;
+    const d = `M ${startX} ${startY} C ${startX + 45} ${startY}, ${endX} ${endY + 45}, ${endX} ${endY}`;
     pathEl.setAttribute("d", d);
-    pathEl.setAttribute("stroke", "#16a34a");
-    pathEl.setAttribute("marker-end", "url(#arrowHeadGreen)");
-    // opacity left for caller (animatePath handles it)
+    pathEl.setAttribute("stroke", "#3b6cff");
+    pathEl.setAttribute("marker-end", "url(#arrowHead)");
   }
 
-  // ── Smooth draw-on animation (from doubly-visualize reference) ─
-  // Animates pathEl drawing itself + a glowing traveling dot along the path.
-  // color: stroke hex. onComplete: optional callback when done.
+  // END mode step 4: newNode (right of tail) → head top (arc ABOVE the list)
+  function drawEndForwardArc(newEl, headEl, pathEl) {
+    if (!newEl || !headEl) return;
+    const sRect  = newEl.getBoundingClientRect();
+    const eRect  = headEl.getBoundingClientRect();
+    const cRect  = curveSvg.getBoundingClientRect();
+    const startX = sRect.right - cRect.left;
+    const startY = sRect.top   - cRect.top  + sRect.height / 2;
+    const endX   = eRect.left  - cRect.left + eRect.width  / 2;
+    const endY   = eRect.top   - cRect.top  - 6;
+    const midY   = Math.min(startY, endY) - 55;
+    const d = `M ${startX} ${startY} C ${startX + 40} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+    pathEl.setAttribute("d", d);
+    pathEl.setAttribute("stroke", "#3b6cff");
+    pathEl.setAttribute("marker-end", "url(#arrowHead)");
+  }
+
+  // END mode step 5: tail (node4) → newNode (straight connect right-to-left)
+  function drawTailToNewArc(tailEl, newEl, pathEl) {
+    if (!tailEl || !newEl) return;
+    const sRect  = tailEl.getBoundingClientRect();
+    const eRect  = newEl.getBoundingClientRect();
+    const cRect  = curveSvg.getBoundingClientRect();
+    const startX = sRect.right - cRect.left;
+    const startY = sRect.top   - cRect.top  + sRect.height / 2;
+    const endX   = eRect.left  - cRect.left;
+    const endY   = eRect.top   - cRect.top  + eRect.height / 2;
+    const d = `M ${startX} ${startY} C ${startX + 30} ${startY}, ${endX - 30} ${endY}, ${endX} ${endY}`;
+    pathEl.setAttribute("d", d);
+    pathEl.setAttribute("stroke", "#3b6cff");
+    pathEl.setAttribute("marker-end", "url(#arrowHead)");
+  }
+
+  // ── Animated draw-on + traveling dot ─────────────────────────────
   function animatePath(pathEl, svgEl, color, onComplete) {
     pathEl.style.opacity = '1';
-
     let len;
     try { len = pathEl.getTotalLength(); } catch(e) { len = 400; }
     if (!len || len < 1) len = 400;
 
-    // Set up dash-draw starting position (fully hidden)
-    pathEl.style.transition      = 'none';
+    pathEl.style.transition       = 'none';
     pathEl.style.strokeDasharray  = len + 'px';
     pathEl.style.strokeDashoffset = len + 'px';
 
-    // Traveling glow dot
     const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     dot.setAttribute('r', '5');
     dot.setAttribute('fill', color);
     dot.classList.add('viz-travel-dot');
-    const shadowColor = color === '#16a34a'
-      ? 'rgba(22,163,74,0.75)'
-      : color === '#3b6cff'
-        ? 'rgba(59,108,255,0.75)'
-        : 'rgba(245,158,11,0.75)';
-    dot.style.filter = 'drop-shadow(0 0 5px ' + shadowColor + ')';
+    dot.style.filter = 'drop-shadow(0 0 5px ' +
+      (color === '#3b6cff' ? 'rgba(59,108,255,0.75)' : 'rgba(22,163,74,0.75)') + ')';
     svgEl.appendChild(dot);
 
     const duration = 850;
-    let startTime = null;
+    let startTime  = null;
 
     function animateDot(ts) {
       if (!startTime) startTime = ts;
       const progress = Math.min((ts - startTime) / duration, 1);
-      // easeInOut
       const eased = progress < 0.5
         ? 2 * progress * progress
         : 1 - Math.pow(-2 * progress + 2, 2) / 2;
@@ -249,235 +274,435 @@ function drawForwardArc(startEl, endEl, pathEl) {
       }
     }
 
-    // Double-rAF ensures transition is registered after 'none' reset
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        pathEl.style.transition      = `stroke-dashoffset ${duration / 1000}s cubic-bezier(0.4,0,0.2,1)`;
+        pathEl.style.transition       = `stroke-dashoffset ${duration / 1000}s cubic-bezier(0.4,0,0.2,1)`;
         pathEl.style.strokeDashoffset = '0px';
         requestAnimationFrame(animateDot);
       });
     });
   }
 
+  function showPathInstant(pathEl) {
+    pathEl.style.transition       = 'none';
+    pathEl.style.strokeDasharray  = '';
+    pathEl.style.strokeDashoffset = '';
+    pathEl.style.opacity          = '1';
+  }
+
+  function hidePath(pathEl) {
+    pathEl.style.strokeDasharray  = '';
+    pathEl.style.strokeDashoffset = '';
+    pathEl.style.opacity          = '0';
+  }
+
+  // ── Position newNode near tail (END mode) ─────────────────────────
+  function positionNewNodeNearTail() {
+    const canvas  = listRow.parentElement;
+    const n4Rect  = nodes[3].el.getBoundingClientRect();
+    const cr      = canvas.getBoundingClientRect();
+    const rowRect = listRow.getBoundingClientRect();
+    newNodeWrap.style.left      = (n4Rect.right - cr.left + 30) + 'px';
+    newNodeWrap.style.top       = (rowRect.top - cr.top + rowRect.height / 2 - 30) + 'px';
+    newNodeWrap.style.bottom    = 'auto';
+    newNodeWrap.style.transform = 'none';
+  }
+
+  function scrollToTail() {
+    const canvas = document.getElementById('animCanvas');
+    if (canvas) canvas.scrollTo({ left: canvas.scrollWidth, behavior: 'smooth' });
+  }
+
+  // ── Restore tail pointer to node 4 ───────────────────────────────
+  function restoreTailToNode4() {
+    const n4Rect = nodes[3].el.getBoundingClientRect();
+    const cr     = listRow.parentElement.getBoundingClientRect();
+    tailPointer.style.right = 'auto';
+    tailPointer.style.left  = (n4Rect.left - cr.left + n4Rect.width / 2) + 'px';
+    tailPointer.style.top   = (n4Rect.top  - cr.top  - 45) + 'px';
+  }
+
+  // ── Build final list DOM ──────────────────────────────────────────
+  function buildFinalList(finalNodes) {
+    const renderedEls = [];
+    finalNodes.forEach((n, i) => {
+      const wrap = document.createElement("div");
+      wrap.className = "viz-node-wrap";
+      wrap.innerHTML =
+        '<div class="viz-node viz-sll-node viz-node-entering">' +
+          '<div class="viz-node-data">' + n.data     + '</div>' +
+          '<div class="viz-node-next">' + n.nextAddr  + '</div>' +
+        '</div>' +
+        '<div class="viz-node-addr">' + n.addr + '</div>';
+      const nodeEl = wrap.querySelector('.viz-node');
+      nodeEl.style.animationDelay = (i * 60) + 'ms';
+      listRow.appendChild(wrap);
+      if (i < finalNodes.length - 1) {
+        const arrow = document.createElement("div");
+        arrow.className = "viz-arrow";
+        arrow.innerHTML = '<span class="viz-arrow-fwd">\u2192</span>';
+        listRow.appendChild(arrow);
+      }
+      renderedEls.push(nodeEl);
+    });
+    return renderedEls;
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  //  MASTER UPDATE — dispatches to mode-specific handler
+  // ════════════════════════════════════════════════════════════════
   function updateUI() {
     document.getElementById("headerStepNum").innerText = currentStep;
 
     stepItems.forEach((item, i) => {
       item.classList.remove('viz-step-done', 'viz-step-active', 'viz-step-upcoming');
-      if (i + 1 < currentStep)        item.classList.add('viz-step-done');
+      if      (i + 1 < currentStep)  item.classList.add('viz-step-done');
       else if (i + 1 === currentStep) item.classList.add('viz-step-active');
       else                            item.classList.add('viz-step-upcoming');
     });
 
     progressDots.forEach((dot, i) => {
       dot.classList.remove('viz-dot-active', 'viz-dot-done');
-      if (i === currentStep)     dot.classList.add('viz-dot-active');
-      else if (i < currentStep)  dot.classList.add('viz-dot-done');
+      if      (i === currentStep) dot.classList.add('viz-dot-active');
+      else if (i < currentStep)   dot.classList.add('viz-dot-done');
     });
 
     highlightCode(STEP_TO_LINE[currentStep]);
 
     btnPrev.disabled = (currentStep === 0) || (currentStep === totalSteps);
-    btnNext.disabled = currentStep === totalSteps;
+    btnNext.disabled = (currentStep === totalSteps);
 
-    // ── Step logic (fully idempotent — safe for Prev) ─────────────
+    if (mode === 'insert-end') updateUI_end();
+    else                       updateUI_beg();
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  //  INSERT AT BEGINNING
+  // ════════════════════════════════════════════════════════════════
+  function updateUI_beg() {
+    const NEW_ADDR  = NEW_NODE_ADDR_BEG;
+    const newNodeEl = newNodeWrap.querySelector('.viz-node');
+
     if (currentStep === 0) {
-      // Initial state — full reset
       newNodeWrap.classList.remove('visible');
-      curvePath.style.opacity = 0;
+      hidePath(curvePath);
       curvePath.setAttribute("stroke", "#3b6cff");
       curvePath.setAttribute("marker-end", "url(#arrowHead)");
       hideConditionBox();
-      // Restore node 4's next field (may have been mutated in step 5)
-      const n4next = nodes[3].el.querySelector('.viz-node-next');
-      if (n4next) n4next.innerText = "0x101";
+      const n4n = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n) n4n.innerText = "0x101";
       positionInitialPointers();
       drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
 
     } else if (currentStep === 1) {
-      // malloc — ? fields, node 4 next restored, head pointer back to node 1
       newNodeData.innerText = "?";
-      newNodeAddr.innerText = "0x100";
+      newNodeAddr.innerText = NEW_ADDR;
       document.getElementById("newNodeNextField").innerText = "?";
-      const n1Rect1 = nodes[0].el.getBoundingClientRect();
-      const cr1 = listRow.parentElement.getBoundingClientRect();
-      newNodeWrap.style.left = (n1Rect1.left - cr1.left - 40) + "px";
-      newNodeWrap.style.bottom = "120px";
+      const n1r = nodes[0].el.getBoundingClientRect();
+      const cr  = listRow.parentElement.getBoundingClientRect();
+      newNodeWrap.style.left      = (n1r.left - cr.left - 40) + "px";
+      newNodeWrap.style.top       = '';
+      newNodeWrap.style.bottom    = "120px";
+      newNodeWrap.style.transform = '';
       newNodeWrap.classList.add('visible');
-      curvePath.style.opacity = 0;
-      curvePath.setAttribute("stroke", "#3b6cff");
-      curvePath.setAttribute("marker-end", "url(#arrowHead)");
+      hidePath(curvePath);
       hideConditionBox();
-      // Restore node 4 next (may have been mutated coming back from step 5)
-      const n4next1 = nodes[3].el.querySelector('.viz-node-next');
-      if (n4next1) n4next1.innerText = "0x101";
-      // Restore head pointer to node 1
-      headPointer.style.left = (n1Rect1.left - cr1.left + n1Rect1.width / 2) + "px";
-      headPointer.style.top  = (n1Rect1.top - cr1.top - 45) + "px";
-      // Restore circular arc: tail → head (node4 → node1)
+      const n4n1 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n1) n4n1.innerText = "0x101";
+      headPointer.style.left = (n1r.left - cr.left + n1r.width / 2) + "px";
+      headPointer.style.top  = (n1r.top  - cr.top  - 45) + "px";
+      restoreTailToNode4();
       drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
 
     } else if (currentStep === 2) {
-      // newNode->data = data — value fills in
       newNodeData.innerText = insertValue;
       document.getElementById("newNodeNextField").innerText = "?";
       newNodeWrap.classList.add('visible');
-      curvePath.style.opacity = 0;
-      curvePath.setAttribute("stroke", "#3b6cff");
-      curvePath.setAttribute("marker-end", "url(#arrowHead)");
+      hidePath(curvePath);
       hideConditionBox();
-      // Restore node 4 next
-      const n4next2 = nodes[3].el.querySelector('.viz-node-next');
-      if (n4next2) n4next2.innerText = "0x101";
-      // Restore head pointer to node 1
-      const n1Rect2 = nodes[0].el.getBoundingClientRect();
-      const cr2 = listRow.parentElement.getBoundingClientRect();
-      headPointer.style.left = (n1Rect2.left - cr2.left + n1Rect2.width / 2) + "px";
-      headPointer.style.top  = (n1Rect2.top - cr2.top - 45) + "px";
+      const n4n2 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n2) n4n2.innerText = "0x101";
+      const n1r2 = nodes[0].el.getBoundingClientRect();
+      const cr2  = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n1r2.left - cr2.left + n1r2.width / 2) + "px";
+      headPointer.style.top  = (n1r2.top  - cr2.top  - 45) + "px";
+      restoreTailToNode4();
       drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
 
     } else if (currentStep === 3) {
-      // if (head == NULL) → FALSE
       newNodeData.innerText = insertValue;
       document.getElementById("newNodeNextField").innerText = "?";
       newNodeWrap.classList.add('visible');
-      curvePath.style.opacity = 0;
-      curvePath.setAttribute("stroke", "#3b6cff");
-      curvePath.setAttribute("marker-end", "url(#arrowHead)");
+      hidePath(curvePath);
       showConditionBox();
-      // Restore node 4 next
-      const n4next3 = nodes[3].el.querySelector('.viz-node-next');
-      if (n4next3) n4next3.innerText = "0x101";
-      // Restore head pointer to node 1
-      const n1Rect3 = nodes[0].el.getBoundingClientRect();
-      const cr3 = listRow.parentElement.getBoundingClientRect();
-      headPointer.style.left = (n1Rect3.left - cr3.left + n1Rect3.width / 2) + "px";
-      headPointer.style.top  = (n1Rect3.top - cr3.top - 45) + "px";
+      const n4n3 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n3) n4n3.innerText = "0x101";
+      const n1r3 = nodes[0].el.getBoundingClientRect();
+      const cr3  = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n1r3.left - cr3.left + n1r3.width / 2) + "px";
+      headPointer.style.top  = (n1r3.top  - cr3.top  - 45) + "px";
+      restoreTailToNode4();
       drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
 
     } else if (currentStep === 4) {
-      // newNode->next = head — green arc from newNode to node 1
+      // newNode->next = head — animated blue arc
       hideConditionBox();
       newNodeData.innerText = insertValue;
       document.getElementById("newNodeNextField").innerText = "0x101";
-      // Restore node 4 next (coming back from step 5)
-      const n4next4 = nodes[3].el.querySelector('.viz-node-next');
-      if (n4next4) n4next4.innerText = "0x101";
-      // Restore head pointer to node 1
-      const n1Rect4 = nodes[0].el.getBoundingClientRect();
-      const cr4 = listRow.parentElement.getBoundingClientRect();
-      headPointer.style.left = (n1Rect4.left - cr4.left + n1Rect4.width / 2) + "px";
-      headPointer.style.top  = (n1Rect4.top - cr4.top - 45) + "px";
+      const n4n4 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n4) n4n4.innerText = "0x101";
+      const n1r4 = nodes[0].el.getBoundingClientRect();
+      const cr4  = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n1r4.left - cr4.left + n1r4.width / 2) + "px";
+      headPointer.style.top  = (n1r4.top  - cr4.top  - 45) + "px";
+      restoreTailToNode4();
       drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
-      // Prepare path geometry but animate the draw-on
-      curvePath.style.opacity = '0';
-      curvePath.style.strokeDasharray  = '';
-      curvePath.style.strokeDashoffset = '';
-      drawForwardArc(newNodeWrap.querySelector('.viz-node'), nodes[0].el, curvePath);
-      animatePath(curvePath, curveSvg, '#16a34a');
+      hidePath(curvePath);
+      drawForwardArc(newNodeEl, nodes[0].el, curvePath);
+      animatePath(curvePath, curveSvg, '#3b6cff');
 
     } else if (currentStep === 5) {
-      // tail->next = newNode — update node4 next field, redraw circular arc to newNode
+      // tail->next = newNode — animate circular arc to newNode
       hideConditionBox();
-      const n4next5 = nodes[3].el.querySelector('.viz-node-next');
-      if (n4next5) n4next5.innerText = "0x100";
-      // Keep forward arc (newNode → node1) visible
+      const n4n5 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n5) n4n5.innerText = NEW_ADDR;
       document.getElementById("newNodeNextField").innerText = "0x101";
-      // Restore head pointer to node 1 (not yet moved)
-      const n1Rect5 = nodes[0].el.getBoundingClientRect();
-      const cr5 = listRow.parentElement.getBoundingClientRect();
-      headPointer.style.left = (n1Rect5.left - cr5.left + n1Rect5.width / 2) + "px";
-      headPointer.style.top  = (n1Rect5.top - cr5.top - 45) + "px";
-      drawForwardArc(newNodeWrap.querySelector('.viz-node'), nodes[0].el, curvePath);
-      // curvePath already drawn from step 4 — make it instantly visible (static)
-      curvePath.style.strokeDasharray  = '';
-      curvePath.style.strokeDashoffset = '';
-      curvePath.style.opacity = '1';
-      // Animate the circular arc redrawing to newNode
+      const n1r5 = nodes[0].el.getBoundingClientRect();
+      const cr5  = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n1r5.left - cr5.left + n1r5.width / 2) + "px";
+      headPointer.style.top  = (n1r5.top  - cr5.top  - 45) + "px";
+      restoreTailToNode4();
+      // Forward arc static
+      drawForwardArc(newNodeEl, nodes[0].el, curvePath);
+      showPathInstant(curvePath);
+      // Animate new circular arc tail → newNode
+      drawCircularArc(nodes[3].el, newNodeEl, circularCurvePath);
       circularCurvePath.style.strokeDasharray  = '';
       circularCurvePath.style.strokeDashoffset = '';
-      drawCircularArc(nodes[3].el, newNodeWrap.querySelector('.viz-node'), circularCurvePath);
-      const circColor5 = circularCurvePath.getAttribute('stroke') || '#3b6cff';
-      animatePath(circularCurvePath, curveSvg, circColor5);
+      animatePath(circularCurvePath, curveSvg, '#3b6cff');
 
     } else if (currentStep === 6) {
-      // head = newNode — move head pointer to newNode
+      // head = newNode — move head pointer
       hideConditionBox();
-      const cr6 = listRow.parentElement.getBoundingClientRect();
-      const newRect6 = newNodeWrap.querySelector('.viz-node').getBoundingClientRect();
-      headPointer.style.left = (newRect6.left - cr6.left + newRect6.width / 2) + "px";
-      headPointer.style.top  = (newRect6.top - cr6.top - 45) + "px";
-      // Keep node4 next updated
-      const n4next6 = nodes[3].el.querySelector('.viz-node-next');
-      if (n4next6) n4next6.innerText = "0x100";
+      const cr6     = listRow.parentElement.getBoundingClientRect();
+      const newR6   = newNodeEl.getBoundingClientRect();
+      headPointer.style.left = (newR6.left - cr6.left + newR6.width / 2) + "px";
+      headPointer.style.top  = (newR6.top  - cr6.top  - 45) + "px";
+      const n4n6 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n6) n4n6.innerText = NEW_ADDR;
       document.getElementById("newNodeNextField").innerText = "0x101";
-      drawForwardArc(newNodeWrap.querySelector('.viz-node'), nodes[0].el, curvePath);
-      curvePath.style.strokeDasharray  = '';
-      curvePath.style.strokeDashoffset = '';
-      curvePath.style.opacity = '1';
-      drawCircularArc(nodes[3].el, newNodeWrap.querySelector('.viz-node'), circularCurvePath);
+      restoreTailToNode4();
+      drawForwardArc(newNodeEl, nodes[0].el, curvePath);
+      showPathInstant(curvePath);
+      drawCircularArc(nodes[3].el, newNodeEl, circularCurvePath);
       circularCurvePath.style.strokeDasharray  = '';
       circularCurvePath.style.strokeDashoffset = '';
 
     } else if (currentStep === 7) {
-      // FINAL STATE — rebuild listRow with newNode prepended as normal blue node
+      // Final — prepend new node
       hideConditionBox();
-      curvePath.style.opacity = 0;
+      hidePath(curvePath);
       curvePath.setAttribute("stroke", "#3b6cff");
       curvePath.setAttribute("marker-end", "url(#arrowHead)");
-
-      // Rebuild list: [newNode(insertValue,0x100), 1,2,3,4]
       listRow.innerHTML = "";
       const finalNodes = [
-        { data: insertValue, addr: "0x100", nextAddr: "0x101" },
-        { data: 1,           addr: "0x101", nextAddr: "0x102" },
-        { data: 2,           addr: "0x102", nextAddr: "0x103" },
-        { data: 3,           addr: "0x103", nextAddr: "0x104" },
-        { data: 4,           addr: "0x104", nextAddr: "0x100" }
+        { data: insertValue, addr: NEW_ADDR,  nextAddr: "0x101" },
+        { data: 1,           addr: "0x101",   nextAddr: "0x102" },
+        { data: 2,           addr: "0x102",   nextAddr: "0x103" },
+        { data: 3,           addr: "0x103",   nextAddr: "0x104" },
+        { data: 4,           addr: "0x104",   nextAddr: NEW_ADDR }
       ];
-      let renderedEls = [];
-      finalNodes.forEach((n, i) => {
-        const wrap = document.createElement("div");
-        wrap.className = "viz-node-wrap";
-        wrap.innerHTML =
-          '<div class="viz-node viz-sll-node">' +
-            '<div class="viz-node-data">' + n.data + '</div>' +
-            '<div class="viz-node-next">' + n.nextAddr + '</div>' +
-          '</div>' +
-          '<div class="viz-node-addr">' + n.addr + '</div>';
-        listRow.appendChild(wrap);
-        if (i < finalNodes.length - 1) {
-          const arrow = document.createElement("div");
-          arrow.className = "viz-arrow";
-          arrow.innerHTML = '<span class="viz-arrow-fwd">→</span>';
-          listRow.appendChild(arrow);
-        }
-        renderedEls.push(wrap.querySelector('.viz-node'));
-      });
-
-      // Hide floating newNode
+      const els = buildFinalList(finalNodes);
       newNodeWrap.classList.remove('visible');
-
-      // Reposition head → new first node, tail → last node
       void listRow.offsetWidth;
       const cr7 = listRow.parentElement.getBoundingClientRect();
-      const firstEl = renderedEls[0];
-      const lastEl  = renderedEls[renderedEls.length - 1];
-      const firstRect = firstEl.getBoundingClientRect();
-      const lastRect  = lastEl.getBoundingClientRect();
-
-      headPointer.style.left = (firstRect.left - cr7.left + firstRect.width / 2) + "px";
-      headPointer.style.top  = (firstRect.top  - cr7.top  - 45) + "px";
+      const fR  = els[0].getBoundingClientRect();
+      const lR  = els[els.length - 1].getBoundingClientRect();
+      headPointer.style.left  = (fR.left - cr7.left + fR.width  / 2) + "px";
+      headPointer.style.top   = (fR.top  - cr7.top  - 45) + "px";
       tailPointer.style.right = 'auto';
-      tailPointer.style.left = (lastRect.left - cr7.left + lastRect.width / 2) + "px";
-      tailPointer.style.top  = (lastRect.top  - cr7.top  - 45) + "px";
-
-      // Redraw circular arc: last node → first node
-      drawCircularArc(lastEl, firstEl, circularCurvePath);
+      tailPointer.style.left  = (lR.left - cr7.left + lR.width  / 2) + "px";
+      tailPointer.style.top   = (lR.top  - cr7.top  - 45) + "px";
+      drawCircularArc(els[els.length - 1], els[0], circularCurvePath);
     }
   }
 
-  // ── Confirm / Enter → reset + jump to step 1 ───────────────────
+  // ════════════════════════════════════════════════════════════════
+  //  INSERT AT END
+  // ════════════════════════════════════════════════════════════════
+  function updateUI_end() {
+    const NEW_ADDR  = NEW_NODE_ADDR_END;
+    const newNodeEl = newNodeWrap.querySelector('.viz-node');
+
+    if (currentStep === 0) {
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      curvePath.setAttribute("stroke", "#3b6cff");
+      curvePath.setAttribute("marker-end", "url(#arrowHead)");
+      hideConditionBox();
+      const n4n = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n) n4n.innerText = "0x101";
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+
+    } else if (currentStep === 1) {
+      // malloc — new node appears NEAR TAIL, auto-scroll right
+      newNodeData.innerText = "?";
+      newNodeAddr.innerText = NEW_ADDR;
+      document.getElementById("newNodeNextField").innerText = "?";
+      positionNewNodeNearTail();
+      newNodeWrap.classList.add('visible');
+      hidePath(curvePath);
+      hideConditionBox();
+      const n4n1 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n1) n4n1.innerText = "0x101";
+      const n1r1 = nodes[0].el.getBoundingClientRect();
+      const cr1  = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n1r1.left - cr1.left + n1r1.width / 2) + "px";
+      headPointer.style.top  = (n1r1.top  - cr1.top  - 45) + "px";
+      restoreTailToNode4();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      scrollToTail();
+
+    } else if (currentStep === 2) {
+      newNodeData.innerText = insertValue;
+      document.getElementById("newNodeNextField").innerText = "?";
+      positionNewNodeNearTail();
+      newNodeWrap.classList.add('visible');
+      hidePath(curvePath);
+      hideConditionBox();
+      const n4n2 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n2) n4n2.innerText = "0x101";
+      const n1r2 = nodes[0].el.getBoundingClientRect();
+      const cr2  = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n1r2.left - cr2.left + n1r2.width / 2) + "px";
+      headPointer.style.top  = (n1r2.top  - cr2.top  - 45) + "px";
+      restoreTailToNode4();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+
+    } else if (currentStep === 3) {
+      newNodeData.innerText = insertValue;
+      document.getElementById("newNodeNextField").innerText = "?";
+      positionNewNodeNearTail();
+      newNodeWrap.classList.add('visible');
+      hidePath(curvePath);
+      showConditionBox();
+      const n4n3 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n3) n4n3.innerText = "0x101";
+      const n1r3 = nodes[0].el.getBoundingClientRect();
+      const cr3  = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n1r3.left - cr3.left + n1r3.width / 2) + "px";
+      headPointer.style.top  = (n1r3.top  - cr3.top  - 45) + "px";
+      restoreTailToNode4();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+
+    } else if (currentStep === 4) {
+      // newNode->next = head — animated arc ABOVE list
+      hideConditionBox();
+      newNodeData.innerText = insertValue;
+      document.getElementById("newNodeNextField").innerText = "0x101";
+      positionNewNodeNearTail();
+      newNodeWrap.classList.add('visible');
+      const n4n4 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n4) n4n4.innerText = "0x101";
+      const n1r4 = nodes[0].el.getBoundingClientRect();
+      const cr4  = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n1r4.left - cr4.left + n1r4.width / 2) + "px";
+      headPointer.style.top  = (n1r4.top  - cr4.top  - 45) + "px";
+      restoreTailToNode4();
+      // Old circular arc (tail→head) stays static
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      showPathInstant(circularCurvePath);
+      // Animate: newNode → head (above)
+      hidePath(curvePath);
+      drawEndForwardArc(newNodeEl, nodes[0].el, curvePath);
+      animatePath(curvePath, curveSvg, '#3b6cff');
+
+    } else if (currentStep === 5) {
+      // tail->next = newNode — fade old circular arc, animate tail→newNode
+      hideConditionBox();
+      newNodeData.innerText = insertValue;
+      document.getElementById("newNodeNextField").innerText = "0x101";
+      positionNewNodeNearTail();
+      newNodeWrap.classList.add('visible');
+      const n4n5 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n5) n4n5.innerText = NEW_ADDR;
+      const n1r5 = nodes[0].el.getBoundingClientRect();
+      const cr5  = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n1r5.left - cr5.left + n1r5.width / 2) + "px";
+      headPointer.style.top  = (n1r5.top  - cr5.top  - 45) + "px";
+      restoreTailToNode4();
+      // Forward arc (newNode→head) stays static
+      drawEndForwardArc(newNodeEl, nodes[0].el, curvePath);
+      showPathInstant(curvePath);
+      // Animate: tail (node4) → newNode
+      drawTailToNewArc(nodes[3].el, newNodeEl, circularCurvePath);
+      circularCurvePath.style.strokeDasharray  = '';
+      circularCurvePath.style.strokeDashoffset = '';
+      animatePath(circularCurvePath, curveSvg, '#3b6cff');
+
+    } else if (currentStep === 6) {
+      // tail = newNode — move TAIL pointer to newNode
+      hideConditionBox();
+      newNodeData.innerText = insertValue;
+      document.getElementById("newNodeNextField").innerText = "0x101";
+      positionNewNodeNearTail();
+      newNodeWrap.classList.add('visible');
+      const n4n6 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n6) n4n6.innerText = NEW_ADDR;
+      const n1r6 = nodes[0].el.getBoundingClientRect();
+      const cr6  = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n1r6.left - cr6.left + n1r6.width / 2) + "px";
+      headPointer.style.top  = (n1r6.top  - cr6.top  - 45) + "px";
+      // Move TAIL → newNode
+      const newR6 = newNodeEl.getBoundingClientRect();
+      tailPointer.style.right = 'auto';
+      tailPointer.style.left  = (newR6.left - cr6.left + newR6.width / 2) + "px";
+      tailPointer.style.top   = (newR6.top  - cr6.top  - 45) + "px";
+      // Both arcs static
+      drawEndForwardArc(newNodeEl, nodes[0].el, curvePath);
+      showPathInstant(curvePath);
+      drawTailToNewArc(nodes[3].el, newNodeEl, circularCurvePath);
+      circularCurvePath.style.strokeDasharray  = '';
+      circularCurvePath.style.strokeDashoffset = '';
+
+    } else if (currentStep === 7) {
+      // Final — append new node to list
+      hideConditionBox();
+      hidePath(curvePath);
+      curvePath.setAttribute("stroke", "#3b6cff");
+      curvePath.setAttribute("marker-end", "url(#arrowHead)");
+      listRow.innerHTML = "";
+      const finalNodes = [
+        { data: 1,           addr: "0x101", nextAddr: "0x102" },
+        { data: 2,           addr: "0x102", nextAddr: "0x103" },
+        { data: 3,           addr: "0x103", nextAddr: "0x104" },
+        { data: 4,           addr: "0x104", nextAddr: NEW_ADDR },
+        { data: insertValue, addr: NEW_ADDR, nextAddr: "0x101" }
+      ];
+      const els = buildFinalList(finalNodes);
+      newNodeWrap.classList.remove('visible');
+      void listRow.offsetWidth;
+      const cr7 = listRow.parentElement.getBoundingClientRect();
+      const fR  = els[0].getBoundingClientRect();
+      const lR  = els[els.length - 1].getBoundingClientRect();
+      headPointer.style.left  = (fR.left - cr7.left + fR.width  / 2) + "px";
+      headPointer.style.top   = (fR.top  - cr7.top  - 45) + "px";
+      tailPointer.style.right = 'auto';
+      tailPointer.style.left  = (lR.left - cr7.left + lR.width  / 2) + "px";
+      tailPointer.style.top   = (lR.top  - cr7.top  - 45) + "px";
+      drawCircularArc(els[els.length - 1], els[0], circularCurvePath);
+    }
+  }
+
+  // ── Reset ─────────────────────────────────────────────────────────
+  function resetAll() {
+    currentStep = 0;
+    initNodes();
+    updateUI();
+  }
+
+  // ── Confirm / Enter ───────────────────────────────────────────────
   function confirmAndStart() {
     const val = parseInt(valueInput.value);
     if (!isNaN(val)) insertValue = val;
@@ -489,34 +714,17 @@ function drawForwardArc(startEl, endEl, pathEl) {
   }
 
   btnConfirm.addEventListener("click", confirmAndStart);
-  valueInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") confirmAndStart();
+  valueInput.addEventListener("keydown", e => { if (e.key === "Enter") confirmAndStart(); });
+  btnNext.addEventListener("click",  () => { if (currentStep < totalSteps) { currentStep++; updateUI(); } });
+  btnPrev.addEventListener("click",  () => { if (currentStep > 0)          { currentStep--; updateUI(); } });
+  btnReset.addEventListener("click", resetAll);
+
+  document.addEventListener("keydown", e => {
+    if      (e.key === "ArrowRight" && currentStep < totalSteps) { currentStep++; updateUI(); }
+    else if (e.key === "ArrowLeft"  && currentStep > 0)          { currentStep--; updateUI(); }
   });
 
-  btnNext.addEventListener("click", () => {
-    if (currentStep < totalSteps) { currentStep++; updateUI(); }
-  });
-
-  btnPrev.addEventListener("click", () => {
-    if (currentStep > 0) { currentStep--; updateUI(); }
-  });
-
-  btnReset.addEventListener("click", () => {
-    currentStep = 0;
-    initNodes();
-    updateUI();
-  });
-
-  // FIX: Right arrow key → triggers Next; Left arrow key → triggers Prev
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowRight") {
-      if (currentStep < totalSteps) { currentStep++; updateUI(); }
-    } else if (e.key === "ArrowLeft") {
-      if (currentStep > 0) { currentStep--; updateUI(); }
-    }
-  });
-
-  // Init
+  // ── Init ──────────────────────────────────────────────────────────
   initNodes();
   updateUI();
 });
