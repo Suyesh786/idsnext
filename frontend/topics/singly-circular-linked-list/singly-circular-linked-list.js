@@ -200,395 +200,614 @@ function initSvgNodeHovers() {
   }, 50);
 })();
 
-/* ─── SCLL Simulator Engine ───────────────────────────────────── */
-let scllList = []; 
-let scllSimSteps = [];
-let scllCurrentStep = -1;
-let scllIsPlaying = false;
-let scllPlayTimer = null;
-let nodeIdCounter = 0;
+/* ══════════════════════════════════════════════════════════════
+   SINGLY CIRCULAR LINKED LIST SIMULATOR
+══════════════════════════════════════════════════════════════ */
 
-function generateId() { return 'node_' + (++nodeIdCounter); }
+const MAX_LIST_SIZE = 8;
+const VALUE_MIN     = -999;
+const VALUE_MAX     = 999;
 
-function clearSimState() {
-  clearInterval(scllPlayTimer);
-  scllIsPlaying = false;
-  document.getElementById("btnPlayStep").innerHTML = `<svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg> Play`;
-  scllSimSteps = [];
-  scllCurrentStep = -1;
-  updateSimControls();
+let nodes   = {};   // id → { id, value, next }
+let head    = null; // id of head node
+let tail    = null; // id of tail node
+let size    = 0;
+let opCount = 0;
+let animating = false;
+let nodeIdSeq = 0;
+
+function newId() { return "n" + (++nodeIdSeq); }
+
+function enablePositionInput(enable) {
+  const posInput = document.getElementById("simPosInput");
+  if (!posInput) return;
+  posInput.disabled = !enable;
 }
 
-function updateSimControls() {
-  document.getElementById("btnPrevStep").disabled = scllCurrentStep <= 0;
-  document.getElementById("btnNextStep").disabled = scllCurrentStep >= scllSimSteps.length - 1;
-  document.getElementById("btnPlayStep").disabled = scllSimSteps.length === 0;
-}
-
-function scllReset() {
-  clearSimState();
-  scllList = [];
-  document.getElementById("simInput").value = "";
-  document.getElementById("simStatusText").textContent = "List reset. Ready.";
-  document.getElementById("simCodeBlock").innerHTML = "// Waiting for operation...";
-  document.getElementById("simExplanation").innerHTML = "Ready.";
-  renderScllState({ nodes: [], ptrs: {}, code: "", hl: [], exp: "List cleared." });
-}
-
-function commitSteps(steps) {
-  clearSimState();
-  scllSimSteps = steps;
-  scllCurrentStep = 0;
-  updateSimControls();
-  renderScllState(scllSimSteps[0]);
-  simPlayPause();
-}
-
-function simPrevStep() {
-  if (scllCurrentStep > 0) {
-    scllCurrentStep--;
-    renderScllState(scllSimSteps[scllCurrentStep]);
-    updateSimControls();
+function handleScllInsertAtPosition() {
+  const posInput = document.getElementById("simPosInput");
+  if (!posInput) return;
+  if (posInput.disabled) {
+    enablePositionInput(true);
+    posInput.focus();
+    setStatus("Position input enabled — enter a position and click 'At Position' again.", "info");
+    return;
   }
+  scllInsertAtPosition();
 }
 
-function simNextStep() {
-  if (scllCurrentStep < scllSimSteps.length - 1) {
-    scllCurrentStep++;
-    renderScllState(scllSimSteps[scllCurrentStep]);
-    updateSimControls();
-  } else {
-    if (scllIsPlaying) simPlayPause();
+function setStatus(msg, type = "") {
+  const bar = document.getElementById("simStatus");
+  const txt = document.getElementById("simStatusText");
+  if (!bar || !txt) return;
+  bar.className = "sim-status";
+  if (type) bar.classList.add(`status-${type}`);
+  txt.textContent = msg;
+}
+
+function updateStats() {
+  const sizeEl = document.getElementById("statSize");
+  const headEl = document.getElementById("statHead");
+  const tailEl = document.getElementById("statTail");
+  const opsEl  = document.getElementById("statOps");
+  if (sizeEl) sizeEl.textContent = size;
+  if (headEl) headEl.textContent = head !== null ? nodes[head].value : "—";
+  if (tailEl) tailEl.textContent = tail !== null ? nodes[tail].value : "—";
+  if (opsEl)  opsEl.textContent  = opCount;
+}
+
+function updateEmptyState() {
+  const empty = document.getElementById("simEmptyState");
+  if (!empty) return;
+  empty.style.display = size === 0 ? "flex" : "none";
+}
+
+function getInputValue() {
+  const input = document.getElementById("simInput");
+  if (!input) return null;
+  const raw = input.value.trim();
+  if (raw === "" || isNaN(Number(raw))) {
+    setStatus("⚠ Please enter a valid number.", "error");
+    input.focus();
+    return null;
   }
-}
-
-function simPlayPause() {
-  const btn = document.getElementById("btnPlayStep");
-  if (scllIsPlaying) {
-    clearInterval(scllPlayTimer);
-    scllIsPlaying = false;
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg> Play`;
-  } else {
-    if (scllCurrentStep >= scllSimSteps.length - 1) scllCurrentStep = 0;
-    scllIsPlaying = true;
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> Pause`;
-    if(scllCurrentStep === 0 && scllSimSteps.length > 1) simNextStep();
-    scllPlayTimer = setInterval(simNextStep, 1000);
+  const val = parseInt(raw, 10);
+  if (val < VALUE_MIN || val > VALUE_MAX) {
+    setStatus(`⚠ Value out of range. Use ${VALUE_MIN} to ${VALUE_MAX}.`, "error");
+    input.focus();
+    return null;
   }
+  return val;
 }
 
-function renderScllState(state) {
-  if (!state) return;
+function getPositionValue() {
+  const input = document.getElementById("simPosInput");
+  if (!input) return null;
+  const raw = input.value.trim();
+  if (raw === "" || isNaN(Number(raw))) {
+    setStatus("⚠ Please enter a valid position (0-based index).", "error");
+    input.focus();
+    return null;
+  }
+  const pos = parseInt(raw, 10);
+  if (pos < 0) {
+    setStatus("⚠ Position must be 0 or greater.", "error");
+    input.focus();
+    return null;
+  }
+  if (pos > size) {
+    setStatus(`⚠ Position ${pos} is out of range. Valid range: 0 to ${size}.`, "error");
+    input.focus();
+    return null;
+  }
+  return pos;
+}
+
+function renderList(newNodeId = null, deleteNodeId = null) {
   const container = document.getElementById("sllSimContainer");
-  const ptrContainer = document.getElementById("sllPtrIndicators");
-  
-  document.getElementById("statSize").textContent = state.nodes.length;
-  document.getElementById("statHead").textContent = state.nodes.length > 0 ? "0x100" : "NULL";
-  document.getElementById("statTail").textContent = state.nodes.length > 0 ? "0x1" + (state.nodes.length-1).toString().padStart(2, "0") : "NULL";
+  if (!container) return;
 
-  document.getElementById("simCodeBlock").innerHTML = generateCodeHTML(state.code, state.hl);
-  document.getElementById("simExplanation").innerHTML = state.exp;
+  Array.from(container.children).forEach(child => {
+    if (!child.classList.contains("sim-empty-state")) child.remove();
+  });
 
-  if (state.nodes.length === 0) {
-    container.innerHTML = `<div class="sim-empty-state"><p>List is empty</p></div>`;
-    document.getElementById("scllArcPath").setAttribute("d", "");
+  updateEmptyState();
+  if (size === 0) {
+    updatePointerLabels([]);
+    updateScllArc();
     return;
   }
 
-  let html = `<div style="display:flex; align-items:flex-end; justify-content:center; gap:0; padding-top: 50px;">`;
-  state.nodes.forEach((n, i) => {
-    let classes = "viz-node";
-    if (n.state === "new") classes += " viz-node-new";
-    if (n.state === "highlight") classes += " viz-node-highlight";
-    
-    let ptrsHere = "";
-    if (state.ptrs.head === i) ptrsHere += `<div class="viz-head-pointer" style="position:absolute; top:-40px; left:50%; transform:translateX(-50%);"><div class="viz-ptr-label">HEAD</div><div class="viz-ptr-arrow">↓</div></div>`;
-    if (state.ptrs.tail === i) ptrsHere += `<div class="viz-tail-pointer" style="position:absolute; top:-40px; left:50%; transform:translateX(-50%);"><div class="viz-ptr-label viz-ptr-label-tail">TAIL</div><div class="viz-ptr-arrow viz-ptr-arrow-tail" style="color:#16a34a;">↓</div></div>`;
-    if (state.ptrs.temp === i) ptrsHere += `<div class="viz-head-pointer" style="position:absolute; top:-75px; left:50%; transform:translateX(-50%);"><div class="viz-ptr-label" style="background:#fef3c7; color:#d97706; border-color:#fde68a;">temp</div><div class="viz-ptr-arrow" style="color:#d97706;">↓</div></div>`;
+  const orderedIds = [];
+  let cur = head;
+  if (cur !== null) {
+    do {
+      orderedIds.push(cur);
+      cur = nodes[cur].next;
+    } while (cur !== null && cur !== head);
+  }
 
-    html += `
-      <div class="viz-node-wrap" id="wrap_${n.id}" style="position:relative;">
-        ${ptrsHere}
-        <div class="${classes}" id="node_${n.id}" style="border: 2px solid #c0d4ff; border-radius: 10px; display:flex; background:#fff; overflow:hidden;">
-          <div class="viz-node-data" style="padding:10px 14px; font-weight:bold; background:#f8fbff; font-family:monospace; font-size:15px;">${n.value}</div>
-          <div class="viz-node-next" style="padding:0 7px; border-left:1px solid #e2e8f0; font-size:9px; color:#3b6cff; display:flex; align-items:center; font-family:monospace;">${i === state.nodes.length - 1 ? (state.tempTailNext || "HEAD") : "→"}</div>
-        </div>
+  const domNodes = {};
+
+  orderedIds.forEach((id, idx) => {
+    const node = nodes[id];
+    const isLast = (id === tail);
+
+    const el = document.createElement("div");
+    el.className = "sll-node-el";
+    el.dataset.id = id;
+
+    if (id === newNodeId) {
+      el.classList.add("node-new");
+      setTimeout(() => el.classList.remove("node-new"), 500);
+    }
+    if (id === deleteNodeId) {
+      el.classList.add("node-del");
+    }
+
+    const nextPtrDisplay = isLast
+      ? `<span class="sll-node-ptr-val" style="color: #16a34a; font-weight: bold;">HEAD</span>`
+      : `<span class="sll-node-ptr-val">${nodes[node.next] ? "→ " + nodes[node.next].value : "—"}</span>`;
+
+    el.innerHTML = `
+      <div class="sll-node-val">${node.value}</div>
+      <div class="sll-node-ptr">
+        <span class="sll-node-ptr-label">next</span>
+        ${nextPtrDisplay}
       </div>
     `;
-    if (i < state.nodes.length - 1) {
-      html += `<div class="viz-arrow" style="margin: 0 5px; color:#3b6cff; font-weight:bold; align-self:center;">→</div>`;
+
+    container.appendChild(el);
+    domNodes[id] = el;
+
+    if (!isLast) {
+      const arrow = document.createElement("div");
+      arrow.className = "sll-sim-arrow";
+      if (id === newNodeId) arrow.classList.add("arrow-new");
+      arrow.textContent = "→";
+      container.appendChild(arrow);
     }
   });
-  html += `</div>`;
-  container.innerHTML = html;
 
-  updateScllArc(state);
-}
-
-function generateCodeHTML(codeStr, highlightLines) {
-  if (!codeStr) return "";
-  const lines = codeStr.split('\n');
-  let res = "";
-  lines.forEach((l, i) => {
-    const isHl = highlightLines.includes(i + 1);
-    res += `<div style="${isHl ? 'background:rgba(59,108,255,0.15); border-left:3px solid #3b6cff; font-weight:bold; color:#fff;' : 'padding-left:3px;'} padding: 2px 4px;">${l.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`;
+  requestAnimationFrame(() => {
+    updatePointerLabels(orderedIds, domNodes);
+    updateScllArc(orderedIds, domNodes);
   });
-  return res;
 }
 
-function updateScllArc(state) {
+function updatePointerLabels(orderedIds, domNodes) {
+  const ptrContainer = document.getElementById("sllPtrIndicators");
+  const simContainer = document.getElementById("sllSimContainer");
+  if (!ptrContainer || !simContainer) return;
+  ptrContainer.innerHTML = "";
+  if (!orderedIds || orderedIds.length === 0 || !domNodes) return;
+
+  const headId = orderedIds[0];
+  const tailId = orderedIds[orderedIds.length - 1];
+
+  const containerRect = simContainer.getBoundingClientRect();
+  const ptrRect       = ptrContainer.getBoundingClientRect();
+
+  function makeTag(label, cls) {
+    const tag = document.createElement("div");
+    tag.className = `sll-ptr-tag ${cls}`;
+    tag.innerHTML = `
+      <span class="sll-ptr-tag-label">${label}</span>
+      <span class="sll-ptr-tag-arrow">↓</span>
+    `;
+    return tag;
+  }
+
+  const headEl = domNodes[headId];
+  if (headEl) {
+    const headRect = headEl.getBoundingClientRect();
+    const headTag  = makeTag("HEAD", "ptr-head");
+    const leftOffset = headRect.left - ptrRect.left + headRect.width / 2;
+    headTag.style.position = "absolute";
+    headTag.style.left = (leftOffset - 20) + "px";
+    headTag.style.bottom = "0";
+    ptrContainer.appendChild(headTag);
+  }
+
+  const tailEl = domNodes[tailId];
+  if (tailEl) {
+    const tailRect = tailEl.getBoundingClientRect();
+    const tailTag  = makeTag("TAIL", "ptr-tail");
+    const leftOffset = tailRect.left - ptrRect.left + tailRect.width / 2;
+    tailTag.style.position = "absolute";
+    tailTag.style.left = (headId === tailId ? leftOffset + 30 : leftOffset - 20) + "px";
+    tailTag.style.bottom = "0";
+    ptrContainer.appendChild(tailTag);
+  }
+}
+
+function updateScllArc() {
   const path = document.getElementById("scllArcPath");
-  if (!state.showArc || state.nodes.length === 0) {
+  if (!path) return;
+  if (size === 0) {
     path.setAttribute("d", "");
     return;
   }
+  
   setTimeout(() => {
-    const nodes = document.querySelectorAll(".viz-node-wrap");
-    if (nodes.length === 0) return;
-    const first = nodes[0];
-    const last = nodes[nodes.length - 1];
+    const headEl = document.querySelector(\`[data-id="\${head}"]\`);
+    const tailEl = document.querySelector(\`[data-id="\${tail}"]\`);
+    if (!headEl || !tailEl) return;
     
     const svg = document.getElementById("scllArcSvg");
+    if (!svg) return;
+    
     const svgRect = svg.getBoundingClientRect();
-    const firstRect = first.getBoundingClientRect();
-    const lastRect = last.getBoundingClientRect();
+    const headRect = headEl.getBoundingClientRect();
+    const tailRect = tailEl.getBoundingClientRect();
     
-    const startX = lastRect.right - svgRect.left - 10;
-    const startY = lastRect.bottom - svgRect.top;
+    // Connect bottom center of tail to bottom center of head (curves below)
+    const startX = tailRect.left + (tailRect.width / 2) - svgRect.left;
+    const startY = tailRect.bottom - svgRect.top;
     
-    const endX = firstRect.left - svgRect.left + 10;
-    const endY = firstRect.top - svgRect.top;
+    const endX = headRect.left + (headRect.width / 2) - svgRect.left;
+    const endY = headRect.bottom - svgRect.top;
     
-    const cp1X = startX + 25;
-    const cp1Y = startY + 45;
-    const cp2X = endX - 25;
-    const cp2Y = endY + 25;
+    // Control points to draw the curve below the nodes
+    const curveDepth = 40 + (size * 5); // deeper curve for longer lists
+    const cp1X = startX;
+    const cp1Y = startY + curveDepth;
+    const cp2X = endX;
+    const cp2Y = endY + curveDepth;
     
-    const d = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
+    const d = \`M \${startX} \${startY} C \${cp1X} \${cp1Y}, \${cp2X} \${cp2Y}, \${endX} \${endY + 10}\`;
     path.setAttribute("d", d);
   }, 50);
 }
 
-window.addEventListener('resize', () => {
-  if (scllCurrentStep >= 0 && scllSimSteps[scllCurrentStep]) {
-    updateScllArc(scllSimSteps[scllCurrentStep]);
-  }
-});
-
-// -- OPERATIONS --
-
-const C_CODE_INSERT_END = `void insertEnd(int value) {
-  struct Node* n = malloc(sizeof(struct Node));
-  n->data = value;
-  if (head == NULL) {
-    head = n;
-    n->next = head;
-    return;
-  }
-  struct Node* temp = head;
-  while (temp->next != head) {
-    temp = temp->next;
-  }
-  temp->next = n;
-  n->next = head;
-}`;
-
-function scllInsertEnd() {
-  const val = parseInt(document.getElementById("simInput").value);
-  if (isNaN(val)) return;
-  document.getElementById("simInput").value = "";
-  let steps = [];
-  const nNode = { id: generateId(), value: val, state: "new" };
-  
-  if (scllList.length === 0) {
-    steps.push({ code: C_CODE_INSERT_END, hl: [2, 3], exp: `Created new node with value ${val}.`, nodes: [{...nNode}], ptrs: {}, showArc: false, tempTailNext: "NULL" });
-    steps.push({ code: C_CODE_INSERT_END, hl: [5], exp: `HEAD points to the new node.`, nodes: [{...nNode}], ptrs: { head: 0, tail: 0 }, showArc: false, tempTailNext: "NULL" });
-    steps.push({ code: C_CODE_INSERT_END, hl: [6], exp: `Set node->next to HEAD (circular link).`, nodes: [{...nNode, state:"normal"}], ptrs: { head: 0, tail: 0 }, showArc: true, tempTailNext: "HEAD" });
-    commitSteps(steps); scllList.push(nNode);
-  } else {
-    steps.push({ code: C_CODE_INSERT_END, hl: [2, 3], exp: `Created node with value ${val}.`, nodes: [...scllList.map(n=>({...n, state:"normal"})), {...nNode}], ptrs: { head: 0, tail: scllList.length-1 }, showArc: true, tempTailNext: "HEAD" });
-    let t = 0;
-    while(t < scllList.length - 1) {
-       steps.push({ code: C_CODE_INSERT_END, hl: [9, 10, 11], exp: `Traversing... temp is at node ${scllList[t].value}.`, nodes: [...scllList.map((n,idx)=>({...n, state:idx===t?"highlight":"normal"})), {...nNode}], ptrs: { head: 0, tail: scllList.length-1, temp: t }, showArc: true, tempTailNext: "HEAD" });
-       t++;
-    }
-    steps.push({ code: C_CODE_INSERT_END, hl: [9, 10, 11], exp: `temp reached the last node.`, nodes: [...scllList.map((n,idx)=>({...n, state:idx===t?"highlight":"normal"})), {...nNode}], ptrs: { head: 0, tail: scllList.length-1, temp: t }, showArc: true, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_INSERT_END, hl: [13], exp: `temp->next points to the new node.`, nodes: [...scllList.map(n=>({...n, state:"normal"})), {...nNode, state:"highlight"}], ptrs: { head: 0, tail: scllList.length-1, temp: t }, showArc: false, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_INSERT_END, hl: [14], exp: `new node->next points to HEAD.`, nodes: [...scllList.map(n=>({...n, state:"normal"})), {...nNode, state:"normal"}], ptrs: { head: 0, tail: scllList.length }, showArc: true, tempTailNext: "HEAD" });
-    commitSteps(steps); scllList.push(nNode);
-  }
-}
-
-const C_CODE_INSERT_BEGIN = `void insertBegin(int value) {
-  struct Node* n = malloc(sizeof(struct Node));
-  n->data = value;
-  if (head == NULL) {
-    head = n;
-    n->next = head;
-    return;
-  }
-  struct Node* temp = head;
-  while (temp->next != head) {
-    temp = temp->next;
-  }
-  n->next = head;
-  temp->next = n;
-  head = n;
-}`;
+window.addEventListener('resize', updateScllArc);
 
 function scllInsertBeginning() {
-  const val = parseInt(document.getElementById("simInput").value);
-  if (isNaN(val)) return;
+  if (animating) return;
+  const val = getInputValue();
+  if (val === null) return;
+  if (size >= MAX_LIST_SIZE) { setStatus(\`⚠ List is full! Maximum size is \${MAX_LIST_SIZE}.\`, "error"); return; }
+
+  animating = true;
+  const id = newId();
+  nodes[id] = { id, value: val, next: head };
+
+  if (size === 0) {
+    head = id;
+    tail = id;
+    nodes[id].next = head; // Circular link
+  } else {
+    head = id;
+    nodes[tail].next = head; // Update tail's next to new head
+  }
+  size++;
+  opCount++;
+
   document.getElementById("simInput").value = "";
-  let steps = [];
-  const nNode = { id: generateId(), value: val, state: "new" };
-  
-  if (scllList.length === 0) {
-    steps.push({ code: C_CODE_INSERT_BEGIN, hl: [2, 3], exp: `Created new node with value ${val}.`, nodes: [{...nNode}], ptrs: {}, showArc: false, tempTailNext: "NULL" });
-    steps.push({ code: C_CODE_INSERT_BEGIN, hl: [5], exp: `HEAD points to the new node.`, nodes: [{...nNode}], ptrs: { head: 0, tail: 0 }, showArc: false, tempTailNext: "NULL" });
-    steps.push({ code: C_CODE_INSERT_BEGIN, hl: [6], exp: `Set node->next to HEAD.`, nodes: [{...nNode, state:"normal"}], ptrs: { head: 0, tail: 0 }, showArc: true, tempTailNext: "HEAD" });
-    commitSteps(steps); scllList.push(nNode);
+  document.getElementById("simInput").focus();
+
+  renderList(id);
+  updateStats();
+  setStatus(\`✓ Inserted \${val} at the beginning.\`, "success");
+
+  setTimeout(() => { animating = false; }, 500);
+}
+
+function scllInsertEnd() {
+  if (animating) return;
+  const val = getInputValue();
+  if (val === null) return;
+  if (size >= MAX_LIST_SIZE) { setStatus(\`⚠ List is full! Maximum size is \${MAX_LIST_SIZE}.\`, "error"); return; }
+
+  animating = true;
+  const id = newId();
+  nodes[id] = { id, value: val, next: head }; // Points to head
+
+  if (size === 0) {
+    head = id;
+    tail = id;
+    nodes[id].next = head;
   } else {
-    steps.push({ code: C_CODE_INSERT_BEGIN, hl: [2, 3], exp: `Created node with value ${val}.`, nodes: [{...nNode}, ...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 1, tail: scllList.length }, showArc: true, tempTailNext: "HEAD" });
-    let t = 1;
-    while(t < scllList.length) {
-       steps.push({ code: C_CODE_INSERT_BEGIN, hl: [9, 10, 11], exp: `Traversing... temp is at node ${scllList[t-1].value}.`, nodes: [{...nNode}, ...scllList.map((n,idx)=>({...n, state:idx===(t-1)?"highlight":"normal"}))], ptrs: { head: 1, tail: scllList.length, temp: t }, showArc: true, tempTailNext: "HEAD" });
-       t++;
+    const tailEl = document.querySelector(\`[data-id="\${tail}"]\`);
+    if (tailEl) {
+      tailEl.classList.add("node-highlight");
+      setTimeout(() => tailEl.classList.remove("node-highlight"), 250);
     }
-    steps.push({ code: C_CODE_INSERT_BEGIN, hl: [13], exp: `new node->next points to old HEAD.`, nodes: [{...nNode, state:"highlight"}, ...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 1, tail: scllList.length, temp: scllList.length }, showArc: true, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_INSERT_BEGIN, hl: [14], exp: `temp->next points to the new node.`, nodes: [{...nNode, state:"normal"}, ...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 1, tail: scllList.length, temp: scllList.length }, showArc: true, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_INSERT_BEGIN, hl: [15], exp: `HEAD updated to the new node.`, nodes: [{...nNode, state:"normal"}, ...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 0, tail: scllList.length }, showArc: true, tempTailNext: "HEAD" });
-    commitSteps(steps); scllList.unshift(nNode);
+    nodes[tail].next = id;
+    tail = id;
   }
-}
+  size++;
+  opCount++;
 
-const C_CODE_DEL_BEGIN = `void deleteBegin() {
-  if (head == NULL) return;
-  if (head->next == head) {
-    free(head);
-    head = NULL;
-    return;
-  }
-  struct Node* temp = head;
-  struct Node* last = head;
-  while (last->next != head) {
-    last = last->next;
-  }
-  head = head->next;
-  last->next = head;
-  free(temp);
-}`;
-
-function scllDeleteBeginning() {
-  if (scllList.length === 0) return;
-  let steps = [];
-  
-  if (scllList.length === 1) {
-    steps.push({ code: C_CODE_DEL_BEGIN, hl: [3, 4], exp: `Only one node. Freeing it.`, nodes: [{...scllList[0], state:"highlight"}], ptrs: { head: 0 }, showArc: true, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_DEL_BEGIN, hl: [5], exp: `Set HEAD to NULL. List is empty.`, nodes: [], ptrs: {}, showArc: false, tempTailNext: "NULL" });
-    commitSteps(steps); scllList = [];
-  } else {
-    steps.push({ code: C_CODE_DEL_BEGIN, hl: [8, 9], exp: `temp and last point to HEAD.`, nodes: [...scllList.map((n,i)=>({...n, state:i===0?"highlight":"normal"}))], ptrs: { head: 0, temp: 0 }, showArc: true, tempTailNext: "HEAD" });
-    let t = 0;
-    while(t < scllList.length - 1) {
-       steps.push({ code: C_CODE_DEL_BEGIN, hl: [10, 11], exp: `Traversing... last is at node ${scllList[t].value}.`, nodes: [...scllList.map((n,i)=>({...n, state:i===t?"highlight":"normal"}))], ptrs: { head: 0, temp: t }, showArc: true, tempTailNext: "HEAD" });
-       t++;
-    }
-    steps.push({ code: C_CODE_DEL_BEGIN, hl: [10, 11], exp: `last reached the end.`, nodes: [...scllList.map((n,i)=>({...n, state:i===t?"highlight":"normal"}))], ptrs: { head: 0, temp: t }, showArc: true, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_DEL_BEGIN, hl: [13], exp: `Move HEAD to next node.`, nodes: [...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 1, temp: t }, showArc: true, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_DEL_BEGIN, hl: [14], exp: `Update last->next to new HEAD.`, nodes: [...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 1 }, showArc: true, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_DEL_BEGIN, hl: [15], exp: `Free old head.`, nodes: [...scllList.slice(1).map(n=>({...n, state:"normal"}))], ptrs: { head: 0 }, showArc: true, tempTailNext: "HEAD" });
-    commitSteps(steps); scllList.shift();
-  }
-}
-
-const C_CODE_DEL_END = `void deleteEnd() {
-  if (head == NULL) return;
-  if (head->next == head) {
-    free(head);
-    head = NULL;
-    return;
-  }
-  struct Node* temp = head;
-  struct Node* prev = NULL;
-  while (temp->next != head) {
-    prev = temp;
-    temp = temp->next;
-  }
-  prev->next = head;
-  free(temp);
-}`;
-
-function scllDeleteEnd() {
-  if (scllList.length === 0) return;
-  let steps = [];
-  if (scllList.length === 1) {
-    steps.push({ code: C_CODE_DEL_END, hl: [3, 4], exp: `Only one node. Freeing it.`, nodes: [{...scllList[0], state:"highlight"}], ptrs: { head: 0 }, showArc: true, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_DEL_END, hl: [5], exp: `Set HEAD to NULL. List is empty.`, nodes: [], ptrs: {}, showArc: false, tempTailNext: "NULL" });
-    commitSteps(steps); scllList = [];
-  } else {
-    steps.push({ code: C_CODE_DEL_END, hl: [8, 9], exp: `Setup temp and prev.`, nodes: [...scllList.map((n,i)=>({...n, state:i===0?"highlight":"normal"}))], ptrs: { head: 0, temp: 0 }, showArc: true, tempTailNext: "HEAD" });
-    let t = 0;
-    while(t < scllList.length - 1) {
-       steps.push({ code: C_CODE_DEL_END, hl: [10, 11, 12], exp: `Traversing... temp is at node ${scllList[t].value}.`, nodes: [...scllList.map((n,i)=>({...n, state:i===t?"highlight":"normal"}))], ptrs: { head: 0, temp: t }, showArc: true, tempTailNext: "HEAD" });
-       t++;
-    }
-    steps.push({ code: C_CODE_DEL_END, hl: [10, 11, 12], exp: `temp is at last node, prev is at second to last.`, nodes: [...scllList.map((n,i)=>({...n, state:i===t?"highlight":"normal"}))], ptrs: { head: 0, temp: t }, showArc: true, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_DEL_END, hl: [14], exp: `Update prev->next to point to HEAD.`, nodes: [...scllList.map((n,i)=>({...n, state:i===(t-1)?"highlight":"normal"}))], ptrs: { head: 0, temp: t }, showArc: false, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_DEL_END, hl: [15], exp: `Free last node.`, nodes: [...scllList.slice(0, t).map(n=>({...n, state:"normal"}))], ptrs: { head: 0 }, showArc: true, tempTailNext: "HEAD" });
-    commitSteps(steps); scllList.pop();
-  }
-}
-
-const C_CODE_TRAVERSE = `void display() {
-  if (head == NULL) return;
-  struct Node* temp = head;
-  do {
-    printf("%d ", temp->data);
-    temp = temp->next;
-  } while (temp != head);
-}`;
-
-function scllTraverse() {
-  if (scllList.length === 0) return;
-  let steps = [];
-  steps.push({ code: C_CODE_TRAVERSE, hl: [3], exp: `Start temp at HEAD.`, nodes: [...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 0, temp: 0 }, showArc: true, tempTailNext: "HEAD" });
-  for (let i = 0; i < scllList.length; i++) {
-    steps.push({ code: C_CODE_TRAVERSE, hl: [4, 5], exp: `Print node value: ${scllList[i].value}.`, nodes: [...scllList.map((n,idx)=>({...n, state:idx===i?"highlight":"normal"}))], ptrs: { head: 0, temp: i }, showArc: true, tempTailNext: "HEAD" });
-    steps.push({ code: C_CODE_TRAVERSE, hl: [6], exp: `Move temp to next node.`, nodes: [...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 0, temp: (i+1)%scllList.length }, showArc: true, tempTailNext: "HEAD" });
-  }
-  steps.push({ code: C_CODE_TRAVERSE, hl: [7], exp: `temp is back to HEAD. Stop traversal.`, nodes: [...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 0 }, showArc: true, tempTailNext: "HEAD" });
-  commitSteps(steps);
-}
-
-const C_CODE_SEARCH = `int search(int target) {
-  if (head == NULL) return 0;
-  struct Node* temp = head;
-  do {
-    if (temp->data == target) return 1;
-    temp = temp->next;
-  } while (temp != head);
-  return 0;
-}`;
-
-function scllSearch() {
-  if (scllList.length === 0) return;
-  const target = parseInt(document.getElementById("simInput").value);
-  if (isNaN(target)) return;
   document.getElementById("simInput").value = "";
-  
-  let steps = [];
-  steps.push({ code: C_CODE_SEARCH, hl: [3], exp: `Start temp at HEAD to search for ${target}.`, nodes: [...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 0, temp: 0 }, showArc: true, tempTailNext: "HEAD" });
-  
-  for (let i = 0; i < scllList.length; i++) {
-    steps.push({ code: C_CODE_SEARCH, hl: [5], exp: `Checking if ${scllList[i].value} == ${target}.`, nodes: [...scllList.map((n,idx)=>({...n, state:idx===i?"highlight":"normal"}))], ptrs: { head: 0, temp: i }, showArc: true, tempTailNext: "HEAD" });
-    if (scllList[i].value === target) {
-      steps.push({ code: C_CODE_SEARCH, hl: [5], exp: `Target ${target} found at position ${i}!`, nodes: [...scllList.map((n,idx)=>({...n, state:idx===i?"highlight":"normal"}))], ptrs: { head: 0, temp: i }, showArc: true, tempTailNext: "HEAD" });
-      commitSteps(steps);
+  document.getElementById("simInput").focus();
+
+  setTimeout(() => {
+    renderList(id);
+    updateStats();
+    setStatus(\`✓ Inserted \${val} at the end (tail pointer — O(1)).\`, "success");
+    setTimeout(() => { animating = false; }, 500);
+  }, 280);
+}
+
+function scllInsertAtPosition() {
+  if (animating) return;
+  const val = getInputValue();
+  if (val === null) return;
+  const pos = getPositionValue();
+  if (pos === null) return;
+  if (size >= MAX_LIST_SIZE) { setStatus(\`⚠ List is full! Maximum size is \${MAX_LIST_SIZE}.\`, "error"); return; }
+
+  if (pos === 0) { scllInsertBeginning(); return; }
+  if (pos === size) { scllInsertEnd(); return; }
+
+  animating = true;
+  const orderedIds = [];
+  let cur = head;
+  do { orderedIds.push(cur); cur = nodes[cur].next; } while (cur !== head && cur !== null);
+
+  let step = 0;
+  function traverseToPos() {
+    if (step >= pos) {
+      orderedIds.forEach(id => {
+        const el = document.querySelector(\`[data-id="\${id}"]\`);
+        if (el) el.classList.remove("node-position-highlight");
+      });
+
+      const prevId = orderedIds[pos - 1];
+      const nextId = nodes[prevId].next;
+
+      const newNodeId = newId();
+      nodes[newNodeId] = { id: newNodeId, value: val, next: nextId };
+      nodes[prevId].next = newNodeId;
+
+      if (nextId === head && pos === size) tail = newNodeId;
+
+      size++;
+      opCount++;
+      document.getElementById("simInput").value = "";
+      document.getElementById("simPosInput").value = "";
+
+      setTimeout(() => {
+        renderList(newNodeId);
+        updateStats();
+        setStatus(\`✓ Inserted \${val} at position \${pos}.\`, "success");
+        setTimeout(() => { animating = false; }, 500);
+      }, 120);
       return;
     }
-    steps.push({ code: C_CODE_SEARCH, hl: [6], exp: `Not found. Move temp to next node.`, nodes: [...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 0, temp: (i+1)%scllList.length }, showArc: true, tempTailNext: "HEAD" });
+    const el = document.querySelector(\`[data-id="\${orderedIds[step]}"]\`);
+    if (el) {
+      el.classList.add("node-position-highlight");
+      if (step === pos - 1) setTimeout(() => el.classList.add("node-insert-target"), 150);
+    }
+    setStatus(\`Traversing… at index \${step}\`, "info");
+    step++;
+    setTimeout(traverseToPos, 350);
   }
-  steps.push({ code: C_CODE_SEARCH, hl: [8], exp: `Target ${target} not found in the list.`, nodes: [...scllList.map(n=>({...n, state:"normal"}))], ptrs: { head: 0 }, showArc: true, tempTailNext: "HEAD" });
-  commitSteps(steps);
+  setStatus(\`Traversing to position \${pos}…\`, "info");
+  traverseToPos();
+}
+
+function scllDelete() {
+  if (animating) return;
+  const val = getInputValue();
+  if (val === null) return;
+  if (size === 0) { setStatus("⚠ List is empty.", "error"); return; }
+
+  const orderedIds = [];
+  let cur = head;
+  do { orderedIds.push(cur); cur = nodes[cur].next; } while (cur !== head && cur !== null);
+
+  let targetId = null;
+  let prevId = null;
+  let foundAt = -1;
+  for (let i = 0; i < orderedIds.length; i++) {
+    if (nodes[orderedIds[i]].value === val) {
+      targetId = orderedIds[i];
+      prevId = i > 0 ? orderedIds[i - 1] : tail; // For circular, prev of head is tail
+      foundAt = i;
+      break;
+    }
+  }
+
+  if (targetId === null) { setStatus(\`⚠ Value \${val} not found.\`, "error"); return; }
+
+  animating = true;
+  let step = 0;
+  function traverseToTarget() {
+    if (step > foundAt) {
+      orderedIds.forEach(id => {
+        const el = document.querySelector(\`[data-id="\${id}"]\`);
+        if (el) el.classList.remove("node-position-highlight");
+      });
+      const targetEl = document.querySelector(\`[data-id="\${targetId}"]\`);
+      if (targetEl) {
+        targetEl.classList.remove("node-position-highlight");
+        targetEl.classList.add("node-highlight");
+      }
+      setTimeout(() => {
+        if (targetEl) { targetEl.classList.remove("node-highlight"); targetEl.classList.add("node-del"); }
+        setTimeout(() => {
+          if (size === 1) {
+            head = null; tail = null;
+          } else {
+            nodes[prevId].next = nodes[targetId].next;
+            if (targetId === head) head = nodes[targetId].next;
+            if (targetId === tail) tail = prevId;
+          }
+          delete nodes[targetId];
+          size--;
+          opCount++;
+          document.getElementById("simInput").value = "";
+          renderList();
+          updateStats();
+          setStatus(\`✓ Deleted node with value \${val}.\`, "success");
+          animating = false;
+        }, 420);
+      }, 300);
+      return;
+    }
+    const el = document.querySelector(\`[data-id="\${orderedIds[step]}"]\`);
+    if (el) el.classList.add("node-position-highlight");
+    const isTarget = orderedIds[step] === targetId;
+    setStatus(isTarget ? \`✓ Found value \${val}!\` : \`Searching…\`, isTarget ? "success" : "info");
+    step++;
+    setTimeout(traverseToTarget, 330);
+  }
+  setStatus(\`Searching for value \${val}…\`, "info");
+  traverseToTarget();
+}
+
+function scllDeleteBeginning() {
+  if (animating) return;
+  if (size === 0) { setStatus("⚠ List is empty.", "error"); return; }
+
+  animating = true;
+  const targetId = head;
+  const headEl = document.querySelector(\`[data-id="\${targetId}"]\`);
+
+  if (headEl) headEl.classList.add("node-highlight");
+  setStatus(\`Highlighting head node…\`, "info");
+
+  setTimeout(() => {
+    if (headEl) { headEl.classList.remove("node-highlight"); headEl.classList.add("node-del"); }
+    setTimeout(() => {
+      const deletedVal = nodes[targetId].value;
+      if (size === 1) {
+        head = null; tail = null;
+      } else {
+        head = nodes[targetId].next;
+        nodes[tail].next = head;
+      }
+      delete nodes[targetId];
+      size--;
+      opCount++;
+      renderList();
+      updateStats();
+      setStatus(\`✓ Deleted head node (value: \${deletedVal}).\`, "success");
+      animating = false;
+    }, 420);
+  }, 320);
+}
+
+function scllDeleteEnd() {
+  if (animating) return;
+  if (size === 0) { setStatus("⚠ List is empty.", "error"); return; }
+  animating = true;
+
+  if (size === 1) {
+    const targetId = head;
+    const el = document.querySelector(\`[data-id="\${targetId}"]\`);
+    if (el) el.classList.add("node-highlight");
+    setStatus(\`Highlighting tail node…\`, "info");
+    setTimeout(() => {
+      if (el) { el.classList.remove("node-highlight"); el.classList.add("node-del"); }
+      setTimeout(() => {
+        const deletedVal = nodes[targetId].value;
+        head = null; tail = null;
+        delete nodes[targetId];
+        size--; opCount++;
+        renderList(); updateStats();
+        setStatus(\`✓ Deleted tail node (value: \${deletedVal}). List empty.\`, "success");
+        animating = false;
+      }, 420);
+    }, 320);
+    return;
+  }
+
+  const orderedIds = [];
+  let cur = head;
+  do { orderedIds.push(cur); cur = nodes[cur].next; } while (cur !== head);
+
+  const targetId = orderedIds[orderedIds.length - 1];
+  const newTailId = orderedIds[orderedIds.length - 2];
+
+  let step = 0;
+  function traverseToPenultimate() {
+    if (step >= orderedIds.length - 1) {
+      orderedIds.forEach(id => {
+        const el = document.querySelector(\`[data-id="\${id}"]\`);
+        if (el) el.classList.remove("node-position-highlight");
+      });
+      const el = document.querySelector(\`[data-id="\${targetId}"]\`);
+      if (el) el.classList.add("node-highlight");
+      setTimeout(() => {
+        if (el) { el.classList.remove("node-highlight"); el.classList.add("node-del"); }
+        setTimeout(() => {
+          const deletedVal = nodes[targetId].value;
+          tail = newTailId;
+          nodes[tail].next = head;
+          delete nodes[targetId];
+          size--; opCount++;
+          renderList(); updateStats();
+          setStatus(\`✓ Deleted tail node (value: \${deletedVal}).\`, "success");
+          animating = false;
+        }, 420);
+      }, 300);
+      return;
+    }
+    const el = document.querySelector(\`[data-id="\${orderedIds[step]}"]\`);
+    if (el) el.classList.add("node-position-highlight");
+    setStatus(\`Traversing… index \${step}\`, "info");
+    step++;
+    setTimeout(traverseToPenultimate, 300);
+  }
+  setStatus(\`Traversing to find new tail…\`, "info");
+  traverseToPenultimate();
+}
+
+function scllTraverse() {
+  if (animating) return;
+  if (size === 0) { setStatus("⚠ List is empty.", "error"); return; }
+
+  animating = true;
+  const orderedIds = [];
+  let cur = head;
+  do { orderedIds.push(cur); cur = nodes[cur].next; } while (cur !== head);
+
+  let step = 0;
+  function visitNext() {
+    if (step > 0) {
+      const prevEl = document.querySelector(\`[data-id="\${orderedIds[step - 1]}"]\`);
+      if (prevEl) {
+        prevEl.classList.remove("node-traverse");
+        prevEl.classList.add("node-visited");
+      }
+    }
+    if (step >= orderedIds.length) {
+      const circArrow = document.querySelector("#scllArcPath");
+      if(circArrow) {
+         circArrow.style.stroke = "#d97706";
+         setTimeout(() => { circArrow.style.stroke = "#4f8cff"; }, 500);
+      }
+      setTimeout(() => {
+        orderedIds.forEach(id => {
+          const el = document.querySelector(\`[data-id="\${id}"]\`);
+          if (el) el.classList.remove("node-visited");
+        });
+        setStatus("✓ Traversal complete.", "success");
+        opCount++; updateStats();
+        animating = false;
+      }, 600);
+      return;
+    }
+    const el = document.querySelector(\`[data-id="\${orderedIds[step]}"]\`);
+    if (el) el.classList.add("node-traverse");
+    setStatus(\`Visiting node \${step}: value \${nodes[orderedIds[step]].value}\`, "info");
+    step++;
+    setTimeout(visitNext, 500);
+  }
+  setStatus("Starting traversal…", "info");
+  visitNext();
+}
+
+function scllReset() {
+  if (animating) return;
+  nodes = {}; head = null; tail = null; size = 0;
+  opCount = 0; nodeIdSeq = 0;
+  document.getElementById("simInput").value = "";
+  document.getElementById("simPosInput").value = "";
+  renderList(); updateStats();
+  setStatus("List reset.", "info");
 }
