@@ -1,4 +1,13 @@
-<!DOCTYPE html>
+const fs = require('fs');
+const path = require('path');
+
+const destDir = path.join('frontend', 'topics', 'doubly-circular-linked-list');
+if (!fs.existsSync(destDir)) { fs.mkdirSync(destDir, { recursive: true }); }
+
+// -----------------------------------------------------------------------------
+// 1. HTML GENERATION
+// -----------------------------------------------------------------------------
+const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -353,7 +362,7 @@
 
       <div class="traversal-compare">
         <div class="trav-wrong">
-          <div class="trav-badge trav-bad" style="background:#eef3ff;color:#3b6cff;">Forward Traversal</div>
+          <div class="trav-badge trav-bad">Forward Traversal</div>
           <pre class="code-block code-good"><span class="comment">// Traverses 10 → 20 → 30</span>
 <span class="kw">struct</span> node* temp = head;
 <span class="kw">do</span> {
@@ -362,7 +371,7 @@
 } <span class="kw">while</span>(temp != head);</pre>
         </div>
         <div class="trav-correct">
-          <div class="trav-badge trav-good" style="background:#fff4e5;color:#d97706;">Backward Traversal</div>
+          <div class="trav-badge trav-good">Backward Traversal</div>
           <pre class="code-block code-good"><span class="comment">// Starts at tail, traverses 30 → 20 → 10</span>
 <span class="kw">struct</span> node* temp = head-&gt;prev;
 <span class="kw">do</span> {
@@ -640,7 +649,7 @@
         <span class="section-number">11</span>
         <h2 class="section-title">Interactive Doubly Circular Linked List Simulator</h2>
       </div>
-      <p class="lesson-para">Build a doubly circular linked list live. Insert nodes at the beginning or end. Watch BOTH the next and prev pointer chains animate in real time.</p>
+      <p class="lesson-para">Build a doubly circular linked list live. Insert nodes at the beginning, end, or a specific position. Watch BOTH the next and prev pointer chains animate in real time.</p>
 
       <div class="simulator-card" id="simulatorCard">
 
@@ -653,7 +662,11 @@
               <input type="number" id="simInput" class="sim-input" placeholder="e.g. 42" min="-999" max="999"
                 onkeydown="if(event.key==='Enter') dcllInsertEnd()">
             </div>
-            <!-- Positions disabled to simplify exact match and focus on prev/next double logic in the simulator constraints for DCLL -->
+            <div class="sim-input-group">
+              <label class="sim-label">Enter Position <span class="sim-label-hint">(0-based)</span></label>
+              <input type="number" id="simPosInput" class="sim-input sim-pos-input" placeholder="e.g. 1" min="0"
+                disabled onkeydown="if(event.key==='Enter') dcllInsertAtPosition()">
+            </div>
           </div>
 
           <!-- Button groups -->
@@ -801,3 +814,518 @@
 <script src="doubly-circular-linked-list.js"></script>
 </body>
 </html>
+`;
+fs.writeFileSync(path.join(destDir, 'doubly-circular-linked-list.html'), htmlContent);
+
+// -----------------------------------------------------------------------------
+// 2. CSS GENERATION
+// -----------------------------------------------------------------------------
+let css = fs.readFileSync(path.join('frontend', 'topics', 'singly-circular-linked-list', 'singly-circular-linked-list.css'), 'utf8');
+css = css.replace(/scll/g, 'dcll');
+
+css += \`
+/* ─── DCLL Simulator Node Layout (Horizontal [prev | data | next]) ─── */
+.dcll-node-horizontal {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: white;
+  border: 2px solid #c2d6ff;
+  border-radius: 8px;
+  min-width: 150px;
+  box-shadow: 0 4px 12px rgba(59, 108, 255, 0.08);
+  position: relative;
+  transition: all 0.3s ease;
+}
+.dcll-node-horizontal .dll-ptr-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  background: #f8faff;
+}
+.dcll-node-horizontal .dll-prev-cell {
+  border-right: 1px solid #c2d6ff;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+.dcll-node-horizontal .dll-next-cell {
+  border-left: 1px solid #c2d6ff;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+.dcll-node-horizontal .sll-node-val {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a3bcc;
+  padding: 8px 12px;
+  border: none !important;
+}
+.dll-sim-arrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 8px;
+}
+.dll-fwd-sim-arrow { color: #4f8cff; font-weight: bold; }
+.dll-bwd-sim-arrow { color: #f59e0b; font-weight: bold; }
+\`;
+fs.writeFileSync(path.join(destDir, 'doubly-circular-linked-list.css'), css);
+
+// -----------------------------------------------------------------------------
+// 3. JS GENERATION
+// -----------------------------------------------------------------------------
+let jsContent = \`/* ─── doubly-circular-linked-list.js ────────────────────────────── */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("markCompleteBtn");
+  if (btn) btn.addEventListener("click", markComplete);
+
+  const token = localStorage.getItem("token");
+  if (!token) { window.location.href = "../../login.html"; return; }
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  if (user && user.name) {
+    const sidebarName = document.getElementById("sidebarUserName");
+    if (sidebarName) sidebarName.textContent = user.name;
+    const avatar = document.getElementById("userAvatar");
+    if (avatar) avatar.textContent = user.name.charAt(0).toUpperCase();
+  }
+
+  checkIfCompleted();
+});
+
+async function checkIfCompleted() {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await fetch("https://idsnext-backend.onrender.com/api/users/me", {
+      headers: { "Authorization": \`Bearer \${token}\` }
+    });
+    const user = await response.json();
+    if (user.completedTopics && user.completedTopics.includes("doubly_circular_linked_list_unit2")) {
+      setCompletedState();
+    }
+  } catch (err) {}
+}
+
+async function markComplete() {
+  const btn = document.getElementById("markCompleteBtn");
+  if (!btn || btn.disabled) return;
+  const token = localStorage.getItem("token");
+  try {
+    const response = await fetch("https://idsnext-backend.onrender.com/api/users/complete-topic", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": \`Bearer \${token}\` },
+      body: JSON.stringify({ topicId: "doubly_circular_linked_list_unit2" })
+    });
+    if (response.ok) { setCompletedState(); showXpPopup(); }
+  } catch (err) {}
+}
+
+function setCompletedState() {
+  const btn = document.getElementById("markCompleteBtn");
+  if (!btn) return;
+  btn.classList.add("completed");
+  btn.disabled = true;
+  btn.querySelector(".btn-label").textContent = "Completed ✓";
+}
+
+function showXpPopup() {
+  const popup = document.getElementById("xpPopup");
+  if (!popup) return;
+  popup.classList.remove("hide");
+  popup.classList.add("show");
+  setTimeout(() => { popup.classList.remove("show"); popup.classList.add("hide"); }, 2600);
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "../../login.html";
+}
+
+function toggleAccordion(id) {
+  const item = document.getElementById(id);
+  if (item) item.classList.toggle("open");
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DOUBLY CIRCULAR LINKED LIST SIMULATOR
+══════════════════════════════════════════════════════════════ */
+
+const MAX_LIST_SIZE = 8;
+const VALUE_MIN     = -999;
+const VALUE_MAX     = 999;
+
+let nodes   = {};   
+let head    = null; 
+let tail    = null; 
+let size    = 0;
+let opCount = 0;
+let animating = false;
+let nodeIdSeq = 0;
+
+function newId() { return "n" + (++nodeIdSeq); }
+
+function setStatus(msg, type = "") {
+  const bar = document.getElementById("simStatus");
+  const txt = document.getElementById("simStatusText");
+  if (!bar || !txt) return;
+  bar.className = "sim-status";
+  if (type) bar.classList.add(\`status-\${type}\`);
+  txt.textContent = msg;
+}
+
+function updateStats() {
+  const sizeEl = document.getElementById("statSize");
+  const headEl = document.getElementById("statHead");
+  const tailEl = document.getElementById("statTail");
+  const opsEl  = document.getElementById("statOps");
+  if (sizeEl) sizeEl.textContent = size;
+  if (headEl) headEl.textContent = head !== null ? nodes[head].value : "—";
+  if (tailEl) tailEl.textContent = tail !== null ? nodes[tail].value : "—";
+  if (opsEl)  opsEl.textContent  = opCount;
+}
+
+function updateEmptyState() {
+  const empty = document.getElementById("simEmptyState");
+  if (!empty) return;
+  empty.style.display = size === 0 ? "flex" : "none";
+}
+
+function getInputValue() {
+  const input = document.getElementById("simInput");
+  if (!input) return null;
+  const raw = input.value.trim();
+  if (raw === "" || isNaN(Number(raw))) { setStatus("⚠ Enter a valid number.", "error"); return null; }
+  return parseInt(raw, 10);
+}
+
+function renderList(newNodeId = null, deleteNodeId = null) {
+  const container = document.getElementById("dllSimContainer");
+  if (!container) return;
+
+  Array.from(container.children).forEach(child => {
+    if (!child.classList.contains("sim-empty-state")) child.remove();
+  });
+
+  updateEmptyState();
+  if (size === 0) {
+    updatePointerLabels([]);
+    updatedcllArc();
+    return;
+  }
+
+  const orderedIds = [];
+  let cur = head;
+  if (cur !== null) {
+    do { orderedIds.push(cur); cur = nodes[cur].next; } while (cur !== head);
+  }
+
+  const domNodes = {};
+
+  orderedIds.forEach((id, idx) => {
+    const node = nodes[id];
+    const isFirst = (id === head);
+    const isLast  = (id === tail);
+
+    const el = document.createElement("div");
+    el.className = "dcll-node-horizontal sll-node-el"; 
+    el.dataset.id = id;
+
+    if (id === newNodeId) { el.classList.add("node-new"); setTimeout(() => el.classList.remove("node-new"), 500); }
+    if (id === deleteNodeId) { el.classList.add("node-del"); }
+
+    const prevDisplay = isFirst
+      ? \`<span style="color: #d97706; font-weight: bold; font-size:11px;">← TAIL</span>\`
+      : \`<span style="color: #666; font-size:11px;">← \${nodes[node.prev] ? nodes[node.prev].value : ""}</span>\`;
+
+    const nextDisplay = isLast
+      ? \`<span style="color: #2e7d32; font-weight: bold; font-size:11px;">HEAD →</span>\`
+      : \`<span style="color: #666; font-size:11px;">\${nodes[node.next] ? nodes[node.next].value : ""} →</span>\`;
+
+    el.innerHTML = \`
+      <div class="dll-ptr-cell dll-prev-cell">
+        <span style="font-size:10px; color:#a0aec0; margin-bottom:2px;">prev</span>
+        \${prevDisplay}
+      </div>
+      <div class="sll-node-val">\${node.value}</div>
+      <div class="dll-ptr-cell dll-next-cell">
+        <span style="font-size:10px; color:#a0aec0; margin-bottom:2px;">next</span>
+        \${nextDisplay}
+      </div>
+    \`;
+
+    container.appendChild(el);
+    domNodes[id] = el;
+
+    if (!isLast) {
+      const arrows = document.createElement("div");
+      arrows.className = "dll-sim-arrows";
+      arrows.innerHTML = \`<span class="dll-fwd-sim-arrow">→</span><span class="dll-bwd-sim-arrow">←</span>\`;
+      container.appendChild(arrows);
+    }
+  });
+
+  requestAnimationFrame(() => {
+    updatePointerLabels(orderedIds, domNodes);
+    updatedcllArc();
+  });
+}
+
+function updatePointerLabels(orderedIds, domNodes) {
+  const ptrContainer = document.getElementById("dllPtrIndicators");
+  if (!ptrContainer) return;
+  ptrContainer.innerHTML = "";
+  if (!orderedIds || orderedIds.length === 0) return;
+
+  const headId = orderedIds[0];
+  const tailId = orderedIds[orderedIds.length - 1];
+  const ptrRect = ptrContainer.getBoundingClientRect();
+
+  function makeTag(label, cls) {
+    const tag = document.createElement("div");
+    tag.className = \`sll-ptr-tag \${cls}\`;
+    tag.innerHTML = \`<span class="sll-ptr-tag-label">\${label}</span><span class="sll-ptr-tag-arrow">↓</span>\`;
+    return tag;
+  }
+
+  const headEl = domNodes[headId];
+  if (headEl) {
+    const headRect = headEl.getBoundingClientRect();
+    const headTag  = makeTag("HEAD", "ptr-head");
+    const leftOffset = headRect.left - ptrRect.left + (headRect.width / 2);
+    headTag.style.position = "absolute";
+    headTag.style.left = (leftOffset - 20) + "px";
+    headTag.style.bottom = "0";
+    ptrContainer.appendChild(headTag);
+  }
+
+  const tailEl = domNodes[tailId];
+  if (tailEl) {
+    const tailRect = tailEl.getBoundingClientRect();
+    const tailTag  = makeTag("TAIL", "ptr-tail");
+    const leftOffset = tailRect.left - ptrRect.left + (tailRect.width / 2);
+    tailTag.style.position = "absolute";
+    tailTag.style.left = (headId === tailId ? leftOffset + 30 : leftOffset - 20) + "px";
+    tailTag.style.bottom = "0";
+    ptrContainer.appendChild(tailTag);
+  }
+}
+
+function updatedcllArc() {
+  const pathNext = document.getElementById("dcllArcPathNext");
+  const pathPrev = document.getElementById("dcllArcPathPrev");
+  if (!pathNext || !pathPrev) return;
+  if (size <= 1) {
+    pathNext.setAttribute("d", "");
+    pathPrev.setAttribute("d", "");
+    return;
+  }
+  
+  setTimeout(() => {
+    const headEl = document.querySelector(\`[data-id="\${head}"]\`);
+    const tailEl = document.querySelector(\`[data-id="\${tail}"]\`);
+    if (!headEl || !tailEl) return;
+    
+    const svg = document.getElementById("dcllArcSvg");
+    const svgRect = svg.getBoundingClientRect();
+    const headRect = headEl.getBoundingClientRect();
+    const tailRect = tailEl.getBoundingClientRect();
+    
+    // NEXT ARC (below nodes: Tail -> Head)
+    const startXNext = tailRect.left + (tailRect.width * 0.8) - svgRect.left;
+    const startYNext = tailRect.bottom - svgRect.top;
+    const endXNext = headRect.left + (headRect.width * 0.8) - svgRect.left;
+    const endYNext = headRect.bottom - svgRect.top;
+    
+    const curveDepthNext = 40 + (size * 5);
+    const dNext = \`M \${startXNext} \${startYNext} C \${startXNext} \${startYNext + curveDepthNext}, \${endXNext} \${endYNext + curveDepthNext}, \${endXNext} \${endYNext + 10}\`;
+    pathNext.setAttribute("d", dNext);
+
+    // PREV ARC (above nodes: Head -> Tail)
+    const startXPrev = headRect.left + (headRect.width * 0.2) - svgRect.left;
+    const startYPrev = headRect.top - svgRect.top;
+    const endXPrev = tailRect.left + (tailRect.width * 0.2) - svgRect.left;
+    const endYPrev = tailRect.top - svgRect.top;
+    
+    const curveDepthPrev = 40 + (size * 5);
+    const dPrev = \`M \${startXPrev} \${startYPrev} C \${startXPrev} \${startYPrev - curveDepthPrev}, \${endXPrev} \${endYPrev - curveDepthPrev}, \${endXPrev} \${endYPrev - 10}\`;
+    pathPrev.setAttribute("d", dPrev);
+  }, 50);
+}
+
+window.addEventListener('resize', updatedcllArc);
+
+function dcllInsertBeginning() {
+  if (animating) return;
+  const val = getInputValue();
+  if (val === null) return;
+  if (size >= MAX_LIST_SIZE) { setStatus("⚠ List is full!", "error"); return; }
+
+  animating = true;
+  const id = newId();
+  
+  if (size === 0) {
+    nodes[id] = { id, value: val, prev: id, next: id };
+    head = id;
+    tail = id;
+  } else {
+    nodes[id] = { id, value: val, prev: tail, next: head };
+    nodes[head].prev = id;
+    nodes[tail].next = id;
+    head = id;
+  }
+  
+  size++; opCount++;
+  document.getElementById("simInput").value = "";
+  
+  renderList(id);
+  updateStats();
+  setStatus(\`✓ Inserted \${val} at beginning.\`, "success");
+  setTimeout(() => { animating = false; }, 500);
+}
+
+function dcllInsertEnd() {
+  if (animating) return;
+  const val = getInputValue();
+  if (val === null) return;
+  if (size >= MAX_LIST_SIZE) { setStatus("⚠ List is full!", "error"); return; }
+
+  animating = true;
+  const id = newId();
+
+  if (size === 0) {
+    nodes[id] = { id, value: val, prev: id, next: id };
+    head = id;
+    tail = id;
+  } else {
+    nodes[id] = { id, value: val, prev: tail, next: head };
+    nodes[tail].next = id;
+    nodes[head].prev = id;
+    tail = id;
+  }
+  
+  size++; opCount++;
+  document.getElementById("simInput").value = "";
+  
+  renderList(id);
+  updateStats();
+  setStatus(\`✓ Inserted \${val} at end.\`, "success");
+  setTimeout(() => { animating = false; }, 500);
+}
+
+function dcllDeleteBeginning() {
+  if (animating) return;
+  if (size === 0) { setStatus("⚠ List is empty.", "error"); return; }
+  animating = true;
+  
+  const targetId = head;
+  const headEl = document.querySelector(\`[data-id="\${targetId}"]\`);
+  if (headEl) headEl.classList.add("node-highlight");
+  
+  setTimeout(() => {
+    if (headEl) { headEl.classList.remove("node-highlight"); headEl.classList.add("node-del"); }
+    setTimeout(() => {
+      const deletedVal = nodes[targetId].value;
+      if (size === 1) {
+        head = null; tail = null;
+      } else {
+        head = nodes[targetId].next;
+        nodes[head].prev = tail;
+        nodes[tail].next = head;
+      }
+      delete nodes[targetId];
+      size--; opCount++;
+      renderList(); updateStats();
+      setStatus(\`✓ Deleted head node (\${deletedVal}).\`, "success");
+      animating = false;
+    }, 420);
+  }, 320);
+}
+
+function dcllDeleteEnd() {
+  if (animating) return;
+  if (size === 0) { setStatus("⚠ List is empty.", "error"); return; }
+  animating = true;
+
+  const targetId = tail;
+  const tailEl = document.querySelector(\`[data-id="\${targetId}"]\`);
+  if (tailEl) tailEl.classList.add("node-highlight");
+  
+  setTimeout(() => {
+    if (tailEl) { tailEl.classList.remove("node-highlight"); tailEl.classList.add("node-del"); }
+    setTimeout(() => {
+      const deletedVal = nodes[targetId].value;
+      if (size === 1) {
+         head = null; tail = null;
+      } else {
+         tail = nodes[targetId].prev;
+         nodes[tail].next = head;
+         nodes[head].prev = tail;
+      }
+      delete nodes[targetId];
+      size--; opCount++;
+      renderList(); updateStats();
+      setStatus(\`✓ Deleted tail node (\${deletedVal}).\`, "success");
+      animating = false;
+    }, 420);
+  }, 320);
+}
+
+function dcllTraverse() {
+  if (animating) return;
+  if (size === 0) { setStatus("⚠ List is empty.", "error"); return; }
+
+  animating = true;
+  const orderedIds = [];
+  let cur = head;
+  do { orderedIds.push(cur); cur = nodes[cur].next; } while (cur !== head);
+
+  let step = 0;
+  function visitNext() {
+    if (step > 0) {
+      const prevEl = document.querySelector(\`[data-id="\${orderedIds[step - 1]}"]\`);
+      if (prevEl) { prevEl.classList.remove("node-traverse"); prevEl.classList.add("node-visited"); }
+    }
+    if (step >= orderedIds.length) {
+      setTimeout(() => {
+        orderedIds.forEach(id => {
+          const el = document.querySelector(\`[data-id="\${id}"]\`);
+          if (el) el.classList.remove("node-visited");
+        });
+        setStatus("✓ Traversal complete.", "success");
+        opCount++; updateStats();
+        animating = false;
+      }, 600);
+      return;
+    }
+    const el = document.querySelector(\`[data-id="\${orderedIds[step]}"]\`);
+    if (el) el.classList.add("node-traverse");
+    setStatus(\`Visiting node \${step}: value \${nodes[orderedIds[step]].value}\`, "info");
+    step++;
+    setTimeout(visitNext, 500);
+  }
+  visitNext();
+}
+
+function dcllReset() {
+  if (animating) return;
+  nodes = {}; head = null; tail = null; size = 0; opCount = 0; nodeIdSeq = 0;
+  document.getElementById("simInput").value = "";
+  renderList(); updateStats();
+  setStatus("List reset.", "info");
+}
+\`;
+
+fs.writeFileSync(path.join(destDir, 'doubly-circular-linked-list.js'), jsContent);
+
+console.log('Successfully completely rebuilt DCLL');
