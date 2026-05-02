@@ -764,6 +764,174 @@
       </div>
     </section>
 
+        <!-- ── SECTION 12: Interactive Simulator ── -->
+    <section class="lesson-section simulator-section" id="simulator-section">
+      <div class="section-header">
+        <span class="section-number">12</span>
+        <h2 class="section-title">Interactive Singly Circular Linked List Simulator</h2>
+      </div>
+      <p class="lesson-para">Build a singly circular linked list live. Insert nodes, delete nodes, search, and watch the circular pointer chain animate in real time.</p>
+
+      <div class="simulator-card" id="simulatorCard">
+
+        <!-- Controls -->
+        <div class="sim-controls">
+          <!-- Input row -->
+          <div class="sim-inputs-row">
+            <div class="sim-input-group">
+              <label class="sim-label">Enter Value</label>
+              <input type="number" id="simInput" class="sim-input" placeholder="e.g. 42" min="-999" max="999"
+                onkeydown="if(event.key==='Enter') scllInsertEnd()">
+            </div>
+          </div>
+
+          <!-- Button groups -->
+          <div class="sim-btn-groups-wrap">
+            <!-- INSERT GROUP -->
+            <div class="sim-btn-group-labeled">
+              <span class="sim-group-label">Insert</span>
+              <div class="sim-btn-group">
+                <button class="sim-btn sim-push" onclick="scllInsertBeginning()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                  </svg>
+                  At Begin
+                </button>
+                <button class="sim-btn sim-ins-end" onclick="scllInsertEnd()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                  </svg>
+                  At End
+                </button>
+              </div>
+            </div>
+
+            <!-- DELETE GROUP -->
+            <div class="sim-btn-group-labeled">
+              <span class="sim-group-label">Delete</span>
+              <div class="sim-btn-group">
+                <button class="sim-btn sim-del-begin" onclick="scllDeleteBeginning()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  At Begin
+                </button>
+                <button class="sim-btn sim-del-end" onclick="scllDeleteEnd()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  At End
+                </button>
+              </div>
+            </div>
+
+            <!-- UTILITY GROUP -->
+            <div class="sim-btn-group-labeled">
+              <span class="sim-group-label">Utility</span>
+              <div class="sim-btn-group">
+                <button class="sim-btn sim-display" onclick="scllTraverse()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                  </svg>
+                  Traverse
+                </button>
+                <button class="sim-btn sim-search" onclick="scllSearch()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                  </svg>
+                  Search
+                </button>
+                <button class="sim-btn sim-clear" onclick="scllReset()">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                  </svg>
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-controls playback-controls" style="margin-top: 10px; background: rgba(59, 108, 255, 0.04); padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 14px;">
+           <button class="sim-btn" id="btnPrevStep" onclick="simPrevStep()" disabled>
+             <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/></svg>
+             Prev
+           </button>
+           <button class="sim-btn" id="btnPlayStep" onclick="simPlayPause()" disabled>
+             <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
+             Play
+           </button>
+           <button class="sim-btn" id="btnNextStep" onclick="simNextStep()" disabled>
+             Next
+             <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/></svg>
+           </button>
+        </div>
+
+        <!-- Status message -->
+        <div class="sim-status" id="simStatus">
+          <span id="simStatusText">Ready — insert a value to begin</span>
+        </div>
+
+        <!-- Main Layout: Code + Visualizer + Explanation -->
+        <div style="display: flex; gap: 16px; margin-top: 20px; align-items: stretch; flex-wrap: wrap;">
+          
+          <!-- Code Panel -->
+          <div style="flex: 1; min-width: 250px; background: #1e1e1e; border-radius: 12px; border: 1px solid #333; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="padding: 8px 12px; background: #2d2d2d; color: #a0a0a0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">C Implementation</div>
+            <pre id="simCodeBlock" style="margin: 0; padding: 16px; color: #d4d4d4; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.6; overflow-x: auto; flex: 1;"></pre>
+          </div>
+
+          <!-- Middle: Visualizer -->
+          <div style="flex: 2; min-width: 400px; display: flex; flex-direction: column;">
+            <div class="sll-visualizer" style="flex: 1; position: relative;">
+              <!-- Pointer labels row (HEAD / TAIL) -->
+              <div class="sll-ptr-indicators" id="sllPtrIndicators"></div>
+              
+              <!-- SVG for Circular Arc -->
+              <svg id="scllArcSvg" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; overflow: visible;">
+                 <path id="scllArcPath" fill="none" stroke="#4f8cff" stroke-width="2.5" stroke-dasharray="4,4" marker-end="url(#arrowhead)"/>
+                 <defs>
+                   <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                     <polygon points="0 0, 10 3.5, 0 7" fill="#4f8cff"/>
+                   </marker>
+                 </defs>
+              </svg>
+
+              <!-- Node chain area -->
+              <div class="sll-sim-container" id="sllSimContainer" style="position: relative; z-index: 1;">
+                <div class="sim-empty-state" id="simEmptyState">
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#eef3ff"/>
+                    <path d="M6 12h8v8H6zM18 12h8v8h-8z" fill="#3b6cff" opacity="0.35"/>
+                    <path d="M14 16h4" stroke="#3b6cff" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  <p>List is empty</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="sim-stats" style="margin-top: 16px;">
+              <div class="sim-stat"><span class="sim-stat-value" id="statSize">0</span><span class="sim-stat-label">Size</span></div>
+              <div class="sim-stat"><span class="sim-stat-value" id="statHead">—</span><span class="sim-stat-label">Head</span></div>
+              <div class="sim-stat"><span class="sim-stat-value" id="statTail">—</span><span class="sim-stat-label">Tail</span></div>
+            </div>
+          </div>
+
+          <!-- Explanation Panel -->
+          <div style="flex: 1; min-width: 250px; background: linear-gradient(135deg, #f0f6ff 0%, #e8f1ff 100%); border: 1.5px solid #c0d4ff; border-radius: 12px; padding: 16px; display: flex; flex-direction: column;">
+            <div style="font-size: 11px; font-weight: 700; color: #3b6cff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">Step Explanation</div>
+            <div id="simExplanation" style="font-size: 13.5px; color: #475569; line-height: 1.6; font-weight: 500;">
+              Waiting for an operation...
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /simulator-card -->
+    </section>
+
+
     <!-- Sparkle decoration -->
     <div class="sparkle-deco" aria-hidden="true">
       <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
