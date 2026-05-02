@@ -103,6 +103,67 @@ var CODE_TEMPLATES = {
     { line: 6, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-fn">free</span>(temp);' },
     { line: 0, html: '}' }
   ],
+  'delete-end': [
+    { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Delete at end of DLL</span>' },
+    { line: 0, html: '<span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>' },
+    { line: 0, html: '<span class="c-pp">#include</span> <span class="c-str">&lt;stdlib.h&gt;</span>' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-kw">struct</span> node {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-type">int</span> data;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* prev;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* next;' },
+    { line: 0, html: '};' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-kw">struct</span> node* head = <span class="c-kw">NULL</span>;' },
+    { line: 0, html: '<span class="c-kw">struct</span> node* tail = <span class="c-kw">NULL</span>;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-type">void</span> <span class="c-fn">deleteAtEnd</span>() {' },
+    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">if</span> (head == <span class="c-kw">NULL</span>) {' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">printf</span>(<span class="c-str">"List is empty.\\n"</span>);' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span>;' },
+    { line: 0, html: '&nbsp;&nbsp;}' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 2, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">if</span> (head-&gt;next == <span class="c-kw">NULL</span>) {' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">free</span>(head);' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;head = tail = <span class="c-kw">NULL</span>;' },
+    { line: 0, html: '&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span>;' },
+    { line: 0, html: '&nbsp;&nbsp;}' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 3, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* temp = tail;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 4, cls: 'viz-highlightable', html: '&nbsp;&nbsp;tail = tail-&gt;prev;' },
+    { line: 5, cls: 'viz-highlightable', html: '&nbsp;&nbsp;tail-&gt;next = <span class="c-kw">NULL</span>;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 6, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-fn">free</span>(temp);' },
+    { line: 0, html: '}' }
+  ],
+  'delete-middle': [
+    { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Delete at middle of DLL</span>' },
+    { line: 0, html: '<span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>' },
+    { line: 0, html: '<span class="c-pp">#include</span> <span class="c-str">&lt;stdlib.h&gt;</span>' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-kw">struct</span> node {' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-type">int</span> data;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* prev;' },
+    { line: 0, html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* next;' },
+    { line: 0, html: '};' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-kw">struct</span> node* head = <span class="c-kw">NULL</span>;' },
+    { line: 0, html: '<span class="c-kw">struct</span> node* tail = <span class="c-kw">NULL</span>;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 0, html: '<span class="c-type">void</span> <span class="c-fn">deleteAtMiddle</span>(<span class="c-type">int</span> pos) {' },
+    { line: 1, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">struct</span> node* temp = head;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 2, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-kw">for</span> (<span class="c-type">int</span> i = 1; i &lt; pos; i++) {' },
+    { line: 3, cls: 'viz-highlightable', html: '&nbsp;&nbsp;&nbsp;&nbsp;temp = temp-&gt;next;' },
+    { line: 4, cls: 'viz-highlightable', html: '&nbsp;&nbsp;}' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 5, cls: 'viz-highlightable', html: '&nbsp;&nbsp;temp-&gt;prev-&gt;next = temp-&gt;next;' },
+    { line: 6, cls: 'viz-highlightable', html: '&nbsp;&nbsp;temp-&gt;next-&gt;prev = temp-&gt;prev;' },
+    { line: 0, cls: 'viz-code-spacer', html: '&nbsp;' },
+    { line: 7, cls: 'viz-highlightable', html: '&nbsp;&nbsp;<span class="c-fn">free</span>(temp);' },
+    { line: 0, html: '}' }
+  ],
   'insert-middle': [
     { line: 0, cls: 'viz-code-comment', html: '<span class="c-comment">// Insert at middle of a DLL</span>' },
     { line: 0, html: '<span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>' },
@@ -171,6 +232,10 @@ function switchMode(newMode) {
   stopPlay();
   VIZ.currentStep = 0;
 
+  // Re-enable inputs in case they were disabled by mutual exclusion
+  if (VIZ.el.vizValueInput) VIZ.el.vizValueInput.disabled = false;
+  if (VIZ.el.vizPosInput) VIZ.el.vizPosInput.disabled = false;
+
   hideCurve();
   hideNewNode();
 
@@ -179,7 +244,7 @@ function switchMode(newMode) {
   removeTempPointer();
   hideTempPointer();
 
-  if (newMode === 'insert-beginning' || newMode === 'insert-end' || newMode === 'insert-middle' || newMode === 'delete-beginning') {
+  if (newMode === 'insert-beginning' || newMode === 'insert-end' || newMode === 'insert-middle' || newMode === 'delete-beginning' || newMode === 'delete-end' || newMode === 'delete-middle') {
     var overlay = document.getElementById('comingSoonOverlay');
     if (overlay) overlay.classList.remove('visible');
 
@@ -192,6 +257,15 @@ function switchMode(newMode) {
     } else if (newMode === 'delete-beginning') {
       VIZ.totalSteps = 6;
       labels = DELETE_BEGINNING_STEP_LABELS;
+    } else if (newMode === 'delete-end') {
+      VIZ.totalSteps = 6;
+      labels = DELETE_END_STEP_LABELS;
+    } else if (newMode === 'delete-middle') {
+      var defDpos = VIZ.deletePos || 2;
+      VIZ.totalSteps = getDelMidTotalSteps(defDpos);
+      labels = getDelMidStepLabels(defDpos);
+      var defDval = VIZ.initialList[defDpos - 1] !== undefined ? VIZ.initialList[defDpos - 1] : '?';
+      VIZ._delMidSteps = getDelMidStepData(defDpos, defDval, VIZ.totalSteps);
     } else {
       VIZ.totalSteps = 7;
       labels = (newMode === 'insert-end') ? INSERT_END_STEP_LABELS : INSERT_BEGINNING_STEP_LABELS;
@@ -201,15 +275,22 @@ function switchMode(newMode) {
     var inputRow = document.getElementById('valueInputRow');
     var confirmBtn = document.getElementById('vizConfirmBtn');
     var posWrap = document.getElementById('posInputWrap');
-    if (newMode === 'delete-beginning') {
+    if (newMode === 'delete-beginning' || newMode === 'delete-end') {
       if (inputRow) inputRow.style.display = 'none';
       if (confirmBtn) confirmBtn.style.display = 'none';
     } else {
       if (inputRow) inputRow.style.display = '';
       if (confirmBtn) confirmBtn.style.display = '';
       var lbl = document.getElementById('vizValueLabel');
-      if (lbl) lbl.textContent = 'Insert value';
-      if (posWrap) posWrap.style.display = (newMode === 'insert-middle') ? '' : 'none';
+      if (newMode === 'delete-middle') {
+        if (lbl) lbl.textContent = 'Delete value';
+        if (posWrap) posWrap.style.display = '';
+        // Wire mutual exclusion for delete-middle inputs
+        wireMutualExclusion();
+      } else {
+        if (lbl) lbl.textContent = 'Insert value';
+        if (posWrap) posWrap.style.display = (newMode === 'insert-middle') ? '' : 'none';
+      }
     }
 
     if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = VIZ.totalSteps;
@@ -236,6 +317,23 @@ function switchMode(newMode) {
 
   var timeVal = document.getElementById('timeComplexityVal');
   if (timeVal) timeVal.textContent = 'O(1)';
+
+  // Mobile: auto-scroll to tail section for delete-end, reset for others
+  if (window.innerWidth <= 768) {
+    var canvas = document.getElementById('animCanvas');
+    if (canvas) {
+      if (newMode === 'delete-end') {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            canvas.scrollTo({ left: canvas.scrollWidth, behavior: 'smooth' });
+            setTimeout(function () { positionPointers(); }, 400);
+          });
+        });
+      } else {
+        canvas.scrollTo({ left: 0, behavior: 'smooth' });
+      }
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -283,6 +381,165 @@ var DELETE_BEGINNING_STEP_LABELS = [
   'head = head\u2192next',
   'head\u2192prev = NULL',
   'free(temp) \u2014 node removed!'
+];
+
+var DELETE_END_STEP_LABELS = [
+  'Check: head == NULL?',
+  'Check: only one node?',
+  'temp = tail',
+  'tail = tail→prev',
+  'tail→next = NULL',
+  'free(temp) — node removed!'
+];
+
+// Dynamic step generators for delete-middle (step-by-step traversal)
+function getDelMidTotalSteps(dpos) {
+  // 0:initial, 1:setTemp, loop:(2*(dpos-1)+1), linkFwd, linkBck, free
+  return 2 + 2 * (dpos - 1) + 1 + 3 - 1; // last step index = 2*dpos+3
+}
+
+function getDelMidStepLabels(dpos) {
+  var labels = ['temp = head'];
+  for (var i = 1; i < dpos; i++) {
+    labels.push('Check: i=' + i + ' < ' + dpos + ' (TRUE)');
+    labels.push('temp = temp\u2192next (node ' + (i + 1) + ')');
+  }
+  labels.push('Check: i=' + dpos + ' < ' + dpos + ' (exit)');
+  labels.push('temp\u2192prev\u2192next = temp\u2192next');
+  labels.push('temp\u2192next\u2192prev = temp\u2192prev');
+  labels.push('free(temp) \u2014 node removed!');
+  return labels;
+}
+
+function getDelMidStepData(dpos, dval, totalLabel) {
+  var steps = [];
+  // Step 0: Initial
+  steps.push({
+    codeLine: null, animStatus: 'Ready', animStatusClass: '',
+    explainStepNum: 'Initial State', explainTitle: 'Starting Point',
+    explainText: 'We have a doubly linked list.<br><br>Goal: delete the node at position <strong>' + dpos + '</strong> (value ' + dval + ').',
+    whatBody: 'HEAD points to node 1. TAIL points to the last node. We call <code>deleteAtMiddle(pos)</code>.',
+    conceptText: '\uD83D\uDCA1 Delete at middle is O(n) \u2014 we must traverse to find the node!'
+  });
+  // Step 1: temp = head
+  steps.push({
+    codeLine: 1, animStatus: 'Saving temp\u2026', animStatusClass: 'status-running',
+    explainStepNum: 'Step 1 of ' + totalLabel, explainTitle: 'temp = head',
+    explainText: '<code>struct node* temp = head;</code> \u2014 start traversal from head.',
+    whatBody: 'A <strong>temp</strong> pointer (red) appears at node 1 (head).',
+    conceptText: '\uD83D\uDCCC temp starts at head and will walk forward to find the target node.'
+  });
+  // Loop iterations
+  var stepNum = 2;
+  for (var i = 1; i < dpos; i++) {
+    // Check: TRUE
+    steps.push({
+      codeLine: 2, animStatus: 'Traversing\u2026', animStatusClass: 'status-running',
+      explainStepNum: 'Step ' + stepNum + ' of ' + totalLabel, explainTitle: 'Loop: i=' + i + ' < ' + dpos + ' \u2192 TRUE',
+      explainText: '<code>for (int i = 1; i &lt; pos; i++)</code><br><br>i=' + i + ', pos=' + dpos + '. ' + i + ' &lt; ' + dpos + ' is <strong>True</strong> \u2014 loop runs.',
+      whatBody: 'Loop condition is TRUE. temp will advance to the next node.',
+      conceptText: '\uD83D\uDD04 Iteration ' + i + ': temp moves one node closer to the target.'
+    });
+    stepNum++;
+    // Move temp
+    var targetNode = i; // 0-based index temp moves to
+    steps.push({
+      codeLine: 3, animStatus: 'Traversing\u2026', animStatusClass: 'status-running',
+      explainStepNum: 'Step ' + stepNum + ' of ' + totalLabel, explainTitle: 'temp = temp\u2192next',
+      explainText: '<code>temp = temp-&gt;next;</code> \u2014 advance temp to node ' + (targetNode + 1) + '. i becomes ' + (i + 1) + '.',
+      whatBody: 'temp slides from node ' + targetNode + ' to node ' + (targetNode + 1) + '.',
+      conceptText: '\u27A1\uFE0F temp moves forward one step.'
+    });
+    stepNum++;
+  }
+  // Loop exit: FALSE
+  steps.push({
+    codeLine: 4, animStatus: 'Loop exits\u2026', animStatusClass: 'status-running',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalLabel, explainTitle: 'Loop exits: i=' + dpos + ' \u2265 pos',
+    explainText: 'i=' + dpos + ', pos=' + dpos + '. ' + dpos + ' &lt; ' + dpos + ' is <strong>False</strong>. Loop exits \u2014 temp is at the target node.',
+    whatBody: 'temp pointer is now on the node to be deleted (value ' + dval + ').',
+    conceptText: '\uD83C\uDFAF temp reached the target position. Ready to relink.'
+  });
+  stepNum++;
+  // linkFwd
+  steps.push({
+    codeLine: 5, animStatus: 'Relinking\u2026', animStatusClass: 'status-running',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalLabel, explainTitle: 'temp\u2192prev\u2192next = temp\u2192next',
+    explainText: '<code>temp-&gt;prev-&gt;next = temp-&gt;next;</code> \u2014 make the node <strong>before</strong> temp skip over it.',
+    whatBody: 'A blue jump curve draws from temp\u2192prev to temp\u2192next. Old forward link fades out.',
+    conceptText: '\uD83D\uDD35 Forward chain updated: prev node now skips over temp.'
+  });
+  stepNum++;
+  // linkBck
+  steps.push({
+    codeLine: 6, animStatus: 'Relinking\u2026', animStatusClass: 'status-running',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalLabel, explainTitle: 'temp\u2192next\u2192prev = temp\u2192prev',
+    explainText: '<code>temp-&gt;next-&gt;prev = temp-&gt;prev;</code> \u2014 make the node <strong>after</strong> temp point backward to temp\u2019s prev.',
+    whatBody: 'An orange jump curve draws from temp\u2192next back to temp\u2192prev. Old backward link fades out.',
+    conceptText: '\uD83D\uDFE0 Backward chain updated: next node now skips over temp.'
+  });
+  stepNum++;
+  // free
+  steps.push({
+    codeLine: 7, animStatus: 'Complete \u2713', animStatusClass: 'status-complete',
+    explainStepNum: 'Step ' + stepNum + ' of ' + totalLabel, explainTitle: 'free(temp) \u2014 done!',
+    explainText: '<code>free(temp);</code> \u2014 release memory of the deleted node.<br><br>List is now properly doubly-linked without that node.',
+    whatBody: 'The target node fades out. Remaining nodes are properly connected.',
+    conceptText: '\u2705 Delete at middle complete! O(n) traversal + O(1) pointer update.'
+  });
+  return steps;
+}
+
+var STEPS_DELETE_END = [
+  {
+    codeLine: null, animStatus: 'Ready', animStatusClass: '',
+    explainStepNum: 'Initial State', explainTitle: 'Starting Point',
+    explainText: 'We have a doubly linked list: <strong>1 ⇄ 2 ⇄ 3 ⇄ 4 ⇄ NULL</strong>.<br><br>Goal: delete the <strong>last node</strong> (node 4) from the end.',
+    whatBody: 'HEAD points to node 1. TAIL points to node 4. We call <code>deleteAtEnd()</code>.',
+    conceptText: '💡 Delete at end is O(1) because we keep a TAIL pointer — no traversal needed!'
+  },
+  {
+    codeLine: 1, animStatus: 'Checking head…', animStatusClass: 'status-running',
+    explainStepNum: 'Step 1 of 6', explainTitle: 'Check: head == NULL?',
+    explainText: '<code>if (head == NULL)</code> — is the list empty?<br><br>Our list has 4 nodes, so <strong>head != NULL</strong>. We proceed.',
+    whatBody: 'HEAD is not NULL — list has nodes. Skip the empty-list branch.',
+    conceptText: '🔗 Always guard against deleting from an empty list!'
+  },
+  {
+    codeLine: 2, animStatus: 'Checking size…', animStatusClass: 'status-running',
+    explainStepNum: 'Step 2 of 6', explainTitle: 'Check: only one node?',
+    explainText: '<code>if (head-&gt;next == NULL)</code> — is there only one node?<br><br>Our list has 4 nodes, so <strong>head→next != NULL</strong>. We take the multi-node path.',
+    whatBody: 'head→next points to node 2 — list has multiple nodes. Proceed to full delete.',
+    conceptText: '⚠️ Single-node case needs special handling: both head and tail must become NULL.'
+  },
+  {
+    codeLine: 3, animStatus: 'Saving temp…', animStatusClass: 'status-running',
+    explainStepNum: 'Step 3 of 6', explainTitle: 'temp = tail',
+    explainText: '<code>struct node* temp = tail;</code> — save a reference to the current tail node so we can free it after relinking.<br><br>Without this, we’d lose the pointer after moving tail.',
+    whatBody: 'A <strong>temp</strong> pointer (red) appears above node 4, pointing to the node we are about to remove.',
+    conceptText: '📌 Always save the node to delete BEFORE moving tail — otherwise you leak memory!'
+  },
+  {
+    codeLine: 4, animStatus: 'Moving TAIL…', animStatusClass: 'status-running',
+    explainStepNum: 'Step 4 of 6', explainTitle: 'tail = tail→prev',
+    explainText: '<code>tail = tail-&gt;prev;</code> — move TAIL back to the previous node (node 3).<br><br>Node 3 will become the new last node of the list.',
+    whatBody: 'TAIL pointer slides from node 4 to node 3. Node 3 is now the new tail.',
+    conceptText: '⬅️ TAIL pointer moves backward by one node.'
+  },
+  {
+    codeLine: 5, animStatus: 'Clearing next…', animStatusClass: 'status-running',
+    explainStepNum: 'Step 5 of 6', explainTitle: 'tail→next = NULL',
+    explainText: '<code>tail-&gt;next = NULL;</code> — the new tail (node 3) still has its NEXT pointing forward to node 4.<br><br>We must clear it to NULL — the last node must never have a forward link.',
+    whatBody: 'The NEXT field of node 3 flashes and updates to <strong>NULL</strong>. The forward link to node 4 is removed.',
+    conceptText: '📌 Last node’s next is always NULL — it’s the right boundary of the list!'
+  },
+  {
+    codeLine: 6, animStatus: 'Complete ✓', animStatusClass: 'status-complete',
+    explainStepNum: 'Step 6 of 6', explainTitle: 'free(temp) — done!',
+    explainText: '<code>free(temp);</code> — release the memory of the old tail node (node 4).<br><br>List is now: <strong>1 ⇄ 2 ⇄ 3 ⇄ NULL</strong>',
+    whatBody: 'Node 4 fades out and is removed. TAIL now points to node 3. Deletion complete in O(1).',
+    conceptText: '✅ Delete at end complete! No traversal needed — just pointer updates and free().'
+  }
 ];
 
 var STEPS_DELETE_BEG = [
@@ -621,6 +878,7 @@ var VIZ = {
   initialList: [1, 2, 3, 4],
   newValue: 0,
   insertPos: 3,
+  deletePos: 2,
   el: {}
 };
 
@@ -941,7 +1199,7 @@ function positionHeadOnNewNode() {
 // ═══════════════════════════════════════════════════════════════
 function applyStep(idx) {
   VIZ.currentStep = idx;
-  var stepArr = (mode === 'insert-end') ? STEPS_END : (mode === 'insert-middle') ? STEPS_MIDDLE : (mode === 'delete-beginning') ? STEPS_DELETE_BEG : STEPS;
+  var stepArr = (mode === 'insert-end') ? STEPS_END : (mode === 'insert-middle') ? STEPS_MIDDLE : (mode === 'delete-beginning') ? STEPS_DELETE_BEG : (mode === 'delete-end') ? STEPS_DELETE_END : (mode === 'delete-middle') ? (VIZ._delMidSteps || []) : STEPS;
   var step = stepArr[idx];
   if (!step) return;
 
@@ -950,13 +1208,19 @@ function applyStep(idx) {
   animateCardUpdate(function () {
     var pos = VIZ.insertPos;
     var posM1 = pos - 1;
+    var dpos = VIZ.deletePos || 2;
+    var dval = VIZ.initialList[dpos - 1] !== undefined ? VIZ.initialList[dpos - 1] : '?';
     function resolveTpl(s) {
       if (!s) return s;
       return s
         .replace(/\{\{POS\}\}/g, pos)
         .replace(/\{\{POS_MINUS_1\}\}/g, posM1)
         .replace(/\{\{LOOP_TRUE\}\}/g, (1 < posM1) ? 'True' : 'False')
-        .replace(/\{\{LOOP_FALSE\}\}/g, (2 < posM1) ? 'True' : 'False');
+        .replace(/\{\{LOOP_FALSE\}\}/g, (2 < posM1) ? 'True' : 'False')
+        .replace(/\{\{DPOS\}\}/g, dpos)
+        .replace(/\{\{DVAL\}\}/g, dval)
+        .replace(/\{\{LOOP1\}\}/g, (1 < dpos) ? 'True \u2014 loop runs' : 'False')
+        .replace(/\{\{LOOP2\}\}/g, (2 < dpos) ? 'True' : 'False \u2014 loop exits');
     }
     if (VIZ.el.explainStepNum) VIZ.el.explainStepNum.textContent = step.explainStepNum;
     if (VIZ.el.explainTitle)   VIZ.el.explainTitle.textContent   = step.explainTitle;
@@ -1099,6 +1363,49 @@ function resetHeadStyle() {
 //  MAIN ANIMATION DISPATCHER
 // ═══════════════════════════════════════════════════════════════
 function runAnimation(step) {
+  if (mode === 'delete-middle') {
+    var dpos = VIZ.deletePos; // 1-based
+    var loopIterations = dpos - 1; // how many times loop body runs
+    var loopStepCount = 2 * loopIterations + 1; // check+move pairs + final exit
+    var loopStart = 2;
+    var loopEnd = loopStart + loopStepCount - 1;
+    var afterLoop = loopEnd + 1;
+
+    if (step === 0) { animDelMid_initial(); }
+    else if (step === 1) { animDelMid_setTemp(); }
+    else if (step >= loopStart && step <= loopEnd) {
+      var loopStep = step - loopStart;
+      if (loopStep % 2 === 0) {
+        // Condition check step
+        var iter = loopStep / 2; // 0-based iteration
+        var iVal = iter + 1;     // loop variable i
+        var isTrue = (iVal < dpos);
+        var tempAt = iter;       // 0-based node index where temp currently sits
+        animDelMid_loopCheck(iVal, dpos, isTrue, tempAt);
+      } else {
+        // Temp move step
+        var iter2 = (loopStep - 1) / 2;
+        var moveTo = iter2 + 1; // 0-based node index to move temp to
+        animDelMid_tempAdvance(moveTo, dpos);
+      }
+    }
+    else if (step === afterLoop)     { animDelMid_linkFwd(); }
+    else if (step === afterLoop + 1) { animDelMid_linkBck(); }
+    else if (step === afterLoop + 2) { animDelMid_free(); }
+    return;
+  }
+  if (mode === 'delete-end') {
+    switch (step) {
+      case 0: animDelEnd_initial();    break;
+      case 1: animDelEnd_checkEmpty(); break;
+      case 2: animDelEnd_checkOne();   break;
+      case 3: animDelEnd_setTemp();    break;
+      case 4: animDelEnd_moveTail();   break;
+      case 5: animDelEnd_clearNext();  break;
+      case 6: animDelEnd_free();       break;
+    }
+    return;
+  }
   if (mode === 'delete-beginning') {
     switch (step) {
       case 0: animDelBeg_initial();     break;
@@ -2259,6 +2566,67 @@ function vizConfirmValues() {
     VIZ.insertPos = p + 1;
   }
 
+  // For delete-middle: validate by value OR position
+  if (mode === 'delete-middle') {
+    var posEl2 = VIZ.el.vizPosInput;
+    var valEl2 = VIZ.el.vizValueInput;
+    var listLen2 = VIZ.initialList.length;
+
+    if (posEl2 && posEl2.value !== '') {
+      // Position mode (0-based index: 0 = head)
+      var p2 = parseInt(posEl2.value);
+      if (isNaN(p2) || p2 < 0 || p2 >= listLen2) {
+        showToast('\u26a0\ufe0f Enter a valid position (0 to ' + (listLen2 - 1) + ')');
+        return;
+      }
+      if (p2 === 0) {
+        showToast('\u26a0\ufe0f Position 0 is the head — use Delete at Beginning');
+        return;
+      }
+      if (p2 >= listLen2 - 1) {
+        showToast('\u26a0\ufe0f Position ' + p2 + ' is the tail — use Delete at End');
+        return;
+      }
+      VIZ.deletePos = p2 + 1; // convert 0-based index to 1-based C code pos
+    } else if (valEl2 && valEl2.value !== '') {
+      // Value mode: find index
+      var v2 = parseInt(valEl2.value);
+      var foundIdx = -1;
+      for (var k = 0; k < listLen2; k++) {
+        if (VIZ.initialList[k] === v2) { foundIdx = k; break; }
+      }
+      if (foundIdx === -1) {
+        showToast('\u26a0\ufe0f Value ' + v2 + ' not found in the list');
+        return;
+      }
+      if (foundIdx === 0) {
+        showToast('\u26a0\ufe0f Value ' + v2 + ' is the head — use Delete at Beginning');
+        return;
+      }
+      if (foundIdx >= listLen2 - 1) {
+        showToast('\u26a0\ufe0f Value ' + v2 + ' is the tail — use Delete at End');
+        return;
+      }
+      VIZ.deletePos = foundIdx + 1; // 1-based
+    } else {
+      // Use default
+      VIZ.deletePos = VIZ.deletePos || 2;
+    }
+  }
+
+  // For delete-middle: recalculate totalSteps + rebuild UI based on actual deletePos
+  if (mode === 'delete-middle') {
+    var dmTotal = getDelMidTotalSteps(VIZ.deletePos);
+    VIZ.totalSteps = dmTotal;
+    if (VIZ.el.headerStepTotal) VIZ.el.headerStepTotal.textContent = dmTotal;
+    var dmLabels = getDelMidStepLabels(VIZ.deletePos);
+    rebuildStepList(dmLabels);
+    rebuildDots(dmTotal);
+    // Generate dynamic step data
+    var dmDval = VIZ.initialList[VIZ.deletePos - 1] !== undefined ? VIZ.initialList[VIZ.deletePos - 1] : '?';
+    VIZ._delMidSteps = getDelMidStepData(VIZ.deletePos, dmDval, dmTotal);
+  }
+
   // Full reset then jump to step 1
   stopPlay();
   hideCurve();
@@ -2289,6 +2657,10 @@ var inputEl = VIZ.el.vizValueInput;
       // p is 0-based index; convert to internal 1-based pos
       if (!isNaN(p) && p >= 0) VIZ.insertPos = p + 1;
     }
+    if (mode === 'delete-middle' && VIZ.el.vizPosInput && VIZ.el.vizPosInput.value !== '' && !VIZ.el.vizPosInput.disabled) {
+      var pd = parseInt(VIZ.el.vizPosInput.value);
+      if (!isNaN(pd) && pd > 0) VIZ.deletePos = pd + 1;
+    }
     applyStep(VIZ.currentStep + 1);
   } else {
     stopPlay();
@@ -2309,8 +2681,8 @@ function vizReset() {
   stopPlay();
   VIZ.currentStep = 0;
   VIZ.newValue    = 0;
-  if (VIZ.el.vizValueInput) VIZ.el.vizValueInput.value = '';
-  if (VIZ.el.vizPosInput) VIZ.el.vizPosInput.value = '';
+  if (VIZ.el.vizValueInput) { VIZ.el.vizValueInput.value = ''; VIZ.el.vizValueInput.disabled = false; }
+  if (VIZ.el.vizPosInput) { VIZ.el.vizPosInput.value = ''; VIZ.el.vizPosInput.disabled = false; }
   hideCurve();
   hideLoopBox();
   removeTempPointer();  // FIX #2: cleans dynamic TEMP_PTR_EL
@@ -3324,4 +3696,521 @@ function hideTempPointer() {
   tp.style.transition = 'opacity 0.25s ease';
   tp.style.opacity    = '0';
   setTimeout(function () { tp.style.display = 'none'; }, 260);
+}
+// ═══════════════════════════════════════════════════════════════
+//  DELETE-AT-END ANIMATION FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function delEndFinalList() { return VIZ.initialList.slice(0, VIZ.initialList.length - 1); }
+
+function animateTailToNode(nodeIndex) {
+  var canvas = document.getElementById('animCanvas');
+  var row    = VIZ.el.listRow;
+  var tp     = VIZ.el.tailPointer;
+  if (!canvas || !row || !tp) return;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = row.querySelectorAll('.viz-node-wrap');
+      var wrap  = wraps[nodeIndex];
+      if (!wrap) return;
+
+      var canvasRect = canvas.getBoundingClientRect();
+      var scrollLeft = canvas.scrollLeft || 0;
+      var tNode      = wrap.querySelector('.viz-node');
+      var tRect      = (tNode || wrap).getBoundingClientRect();
+      var tCx        = tRect.left + tRect.width / 2 - canvasRect.left + scrollLeft;
+      var tTopY      = tRect.top  - canvasRect.top  - tp.getBoundingClientRect().height - 4;
+
+      tp.style.transition = 'left 0.45s cubic-bezier(0.4,0,0.2,1), top 0.45s cubic-bezier(0.4,0,0.2,1)';
+      tp.style.top        = tTopY + 'px';
+      tp.style.left       = tCx   + 'px';
+      tp.style.transform  = 'translateX(-50%)';
+
+      PTR.tailIndex = nodeIndex;
+      if (VIZ.el.tailAddr) VIZ.el.tailAddr.textContent = PTR.nodeList[nodeIndex] ? PTR.nodeList[nodeIndex].address : '\u2014';
+
+      setTimeout(function () { tp.style.transition = ''; }, 500);
+    });
+  });
+}
+
+function animDelEnd_initial() {
+  buildList(VIZ.initialList, false, 0);
+  hideNewNode();
+  hideCurve();
+  removeTempPointer();
+  hideTempPointer();
+  hideLoopBox();
+}
+
+function animDelEnd_checkEmpty() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  removeTempPointer();
+  hideTempPointer();
+  var hp = VIZ.el.headPointer;
+  if (hp) {
+    hp.style.transition = 'transform 0.15s ease';
+    hp.style.transform  = 'translateX(-50%) scale(1.2)';
+    setTimeout(function () { hp.style.transform = 'translateX(-50%) scale(1)'; }, 300);
+  }
+  var box = document.getElementById('loopCheckBox');
+  if (box) {
+    box.classList.remove('loop-true','loop-false','state-change');
+    void box.offsetWidth;
+    box.innerHTML = 'head == NULL \u00a0\u2192\u00a0 <span style="font-weight:700">\u2717 FALSE \u2014 list has nodes</span>';
+    box.classList.add('active','loop-false','state-change');
+  }
+}
+
+function animDelEnd_checkOne() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  removeTempPointer();
+  hideTempPointer();
+  var box = document.getElementById('loopCheckBox');
+  if (box) {
+    box.classList.remove('loop-true','loop-false','state-change');
+    void box.offsetWidth;
+    box.innerHTML = 'head\u2192next == NULL \u00a0\u2192\u00a0 <span style="font-weight:700">\u2717 FALSE \u2014 multiple nodes</span>';
+    box.classList.add('active','loop-false','state-change');
+  }
+}
+
+function animDelEnd_setTemp() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  hideLoopBox();
+  var lastIdx = VIZ.initialList.length - 1;
+  placeTempPointerOnNode(lastIdx);
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps[lastIdx]) {
+        var nodeEl = wraps[lastIdx].querySelector('.viz-node');
+        if (nodeEl) {
+          nodeEl.style.transition  = 'box-shadow 0.3s ease, border-color 0.3s ease';
+          nodeEl.style.boxShadow   = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)';
+          nodeEl.style.borderColor = '#ef4444';
+        }
+      }
+    });
+  });
+}
+
+function animDelEnd_moveTail() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  hideLoopBox();
+  var lastIdx    = VIZ.initialList.length - 1;
+  var newTailIdx = lastIdx - 1;
+  placeTempPointerOnNode(lastIdx);
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps[lastIdx]) {
+        var nodeEl = wraps[lastIdx].querySelector('.viz-node');
+        if (nodeEl) {
+          nodeEl.style.boxShadow   = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)';
+          nodeEl.style.borderColor = '#ef4444';
+        }
+      }
+      animateTailToNode(newTailIdx);
+    });
+  });
+}
+
+function animDelEnd_clearNext() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  hideLoopBox();
+  var lastIdx    = VIZ.initialList.length - 1;
+  var newTailIdx = lastIdx - 1;
+  placeTempPointerOnNode(lastIdx);
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps[lastIdx]) {
+        var nodeEl = wraps[lastIdx].querySelector('.viz-node');
+        if (nodeEl) {
+          nodeEl.style.boxShadow   = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)';
+          nodeEl.style.borderColor = '#ef4444';
+        }
+      }
+      animateTailToNode(newTailIdx);
+      // Fade out arrows between newTailIdx and lastIdx
+      var listRow = VIZ.el.listRow;
+      if (listRow) {
+        var arrows = listRow.querySelectorAll('.viz-arrow');
+        var targetArrow = arrows[newTailIdx];
+        if (targetArrow) {
+          var fwdSpan = targetArrow.querySelector('.viz-arrow-fwd');
+          var bckSpan = targetArrow.querySelector('.viz-arrow-bck');
+          if (fwdSpan) { fwdSpan.style.transition = 'opacity 0.4s ease'; fwdSpan.style.opacity = '0'; }
+          if (bckSpan) { bckSpan.style.transition = 'opacity 0.4s ease'; bckSpan.style.opacity = '0'; }
+        }
+      }
+      // Flash new-tail NEXT field to NULL
+      if (wraps[newTailIdx]) {
+        var nextEl = wraps[newTailIdx].querySelector('.viz-node-next');
+        if (nextEl) {
+          setTimeout(function () {
+            nextEl.style.transition = 'background 0.25s ease, color 0.25s ease';
+            nextEl.style.background = 'rgba(245,158,11,0.25)';
+            nextEl.style.color      = '#d97706';
+            nextEl.textContent      = 'NULL';
+            setTimeout(function () {
+              nextEl.style.background = '';
+              nextEl.style.color      = '';
+            }, 800);
+          }, 150);
+        }
+      }
+    });
+  });
+}
+
+function animDelEnd_free() {
+  hideCurve();
+  hideLoopBox();
+  removeTempPointer();
+  hideTempPointer();
+  var finalList = delEndFinalList();
+  setTimeout(function () {
+    buildList(finalList, true, 0);
+  }, 80);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  MUTUAL EXCLUSION FOR DELETE-MIDDLE INPUTS
+// ═══════════════════════════════════════════════════════════════
+var _mutualExWired = false;
+function wireMutualExclusion() {
+  if (_mutualExWired) return;
+  _mutualExWired = true;
+  var vi = VIZ.el.vizValueInput;
+  var pi = VIZ.el.vizPosInput;
+  if (!vi || !pi) return;
+  vi.addEventListener('input', function () {
+    if (mode === 'delete-middle') {
+      pi.disabled = vi.value !== '';
+    }
+  });
+  pi.addEventListener('input', function () {
+    if (mode === 'delete-middle') {
+      vi.disabled = pi.value !== '';
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DELETE-AT-MIDDLE ANIMATION FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function delMidFinalList() {
+  var pos = VIZ.deletePos; // 1-based
+  return VIZ.initialList.slice(0, pos - 1).concat(VIZ.initialList.slice(pos));
+}
+
+function animDelMid_initial() {
+  buildList(VIZ.initialList, false, 0);
+  hideNewNode();
+  hideCurve();
+  removeTempPointer();
+  hideTempPointer();
+  hideLoopBox();
+}
+
+function animDelMid_setTemp() {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  hideLoopBox();
+  // temp starts at head (index 0) — no target highlight yet
+  placeTempPointerOnNode(0);
+  // Highlight only the HEAD node (where temp is) with a subtle blue glow
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps[0]) {
+        var nodeEl = wraps[0].querySelector('.viz-node');
+        if (nodeEl) {
+          nodeEl.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
+          nodeEl.style.boxShadow  = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)';
+          nodeEl.style.borderColor = '#ef4444';
+        }
+      }
+    });
+  });
+}
+
+// Dynamic loop check: shows condition for any iteration
+function animDelMid_loopCheck(iVal, dpos, isTrue, tempAt) {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  // temp stays where it currently is (tempAt = 0-based node index)
+  placeTempPointerOnNode(tempAt);
+  // Highlight the node temp is sitting on with red border
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps[tempAt]) {
+        var nodeEl = wraps[tempAt].querySelector('.viz-node');
+        if (nodeEl) {
+          nodeEl.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
+          nodeEl.style.boxShadow = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)';
+          nodeEl.style.borderColor = '#ef4444';
+        }
+      }
+    });
+  });
+  // Show condition box
+  var box = document.getElementById('loopCheckBox');
+  if (box) {
+    box.classList.remove('loop-true','loop-false','state-change');
+    void box.offsetWidth;
+    if (isTrue) {
+      box.innerHTML = 'i=' + iVal + ' &lt; pos=' + dpos + ' &nbsp;\u2192&nbsp; <span style="font-weight:700">\u2713 TRUE \u2014 loop runs</span>';
+      box.classList.add('active','loop-true','state-change');
+    } else {
+      box.innerHTML = 'i=' + iVal + ' &lt; pos=' + dpos + ' &nbsp;\u2192&nbsp; <span style="font-weight:700">\u2717 FALSE \u2014 loop exits</span>';
+      box.classList.add('active','loop-false','state-change');
+      // On exit, highlight target node red
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+          var targetIdx = dpos - 1;
+          if (wraps[targetIdx]) {
+            var nodeEl = wraps[targetIdx].querySelector('.viz-node');
+            if (nodeEl) {
+              nodeEl.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
+              nodeEl.style.boxShadow = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)';
+              nodeEl.style.borderColor = '#ef4444';
+            }
+          }
+        });
+      });
+    }
+  }
+}
+
+// Dynamic temp advance: moves temp ONE node forward to moveTo (0-based index)
+function animDelMid_tempAdvance(moveTo, dpos) {
+  buildList(VIZ.initialList, false, 0);
+  hideCurve();
+  // Keep the loop condition box visible while traversing (don't hide it)
+  // Move temp to the new node
+  placeTempPointerOnNode(moveTo);
+  // Highlight EVERY node temp visits with red border
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps[moveTo]) {
+        var nodeEl = wraps[moveTo].querySelector('.viz-node');
+        if (nodeEl) {
+          nodeEl.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
+          nodeEl.style.boxShadow = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)';
+          nodeEl.style.borderColor = '#ef4444';
+        }
+      }
+    });
+  });
+}
+
+function animDelMid_setupArrowheads(svg) {
+  var arrowHead = document.getElementById('arrowHead');
+  if (arrowHead) {
+    arrowHead.setAttribute('viewBox','0 0 10 10'); arrowHead.setAttribute('markerWidth','5');
+    arrowHead.setAttribute('markerHeight','5'); arrowHead.setAttribute('refX','8'); arrowHead.setAttribute('refY','5');
+    var ap = arrowHead.querySelector('path'); if (ap) ap.setAttribute('d','M 0 0 L 10 5 L 0 10 z');
+  }
+  var arrowHeadPrev = document.getElementById('arrowHeadPrev');
+  if (arrowHeadPrev) {
+    arrowHeadPrev.setAttribute('viewBox','0 0 10 10'); arrowHeadPrev.setAttribute('markerWidth','5');
+    arrowHeadPrev.setAttribute('markerHeight','5'); arrowHeadPrev.setAttribute('refX','8'); arrowHeadPrev.setAttribute('refY','5');
+    var ap2 = arrowHeadPrev.querySelector('path'); if (ap2) ap2.setAttribute('d','M 0 0 L 10 5 L 0 10 z');
+  }
+}
+
+// Step 5: temp->prev->next = temp->next  — blue JUMP ABOVE
+function animDelMid_linkFwd() {
+  buildList(VIZ.initialList, false, 0);
+  hideLoopBox();
+  var dpos = VIZ.deletePos; // 1-based: target node index = dpos-1
+  var prevIdx = dpos - 2;   // node before target
+  var nextIdx = dpos;       // node after target (0-based)
+  placeTempPointerOnNode(dpos - 1);
+  // Highlight target red
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps[dpos-1]) {
+        var nodeEl = wraps[dpos-1].querySelector('.viz-node');
+        if (nodeEl) { nodeEl.style.boxShadow = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)'; nodeEl.style.borderColor = '#ef4444'; }
+      }
+    });
+  });
+
+  // Fade out forward arrow between prevIdx and target
+  fadeOutMidLink(prevIdx, true, false);
+
+  var svg = VIZ.el.curveSvg;
+  if (!svg) return;
+  var old = svg.querySelectorAll('.viz-mid-link');
+  for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+  svg.classList.add('visible');
+  animDelMid_setupArrowheads(svg);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var canvas = document.getElementById('animCanvas');
+      if (!canvas) return;
+      var canvasRect = canvas.getBoundingClientRect();
+      var scrollLeft = canvas.scrollLeft || 0;
+      var listRow = VIZ.el.listRow;
+      var wraps = listRow ? listRow.querySelectorAll('.viz-node-wrap') : [];
+      var prevWrap = wraps[prevIdx];
+      var nextWrap = wraps[nextIdx];
+      if (!prevWrap || !nextWrap) return;
+
+      var prevNodeEl = prevWrap.querySelector('.viz-node');
+      var nextNodeEl = nextWrap.querySelector('.viz-node');
+      var prevRect = prevNodeEl.getBoundingClientRect();
+      var nextRect = nextNodeEl.getBoundingClientRect();
+
+      // Blue JUMP ABOVE: from prevNode right-top to nextNode left-top
+      var sx = prevRect.right - canvasRect.left + scrollLeft;
+      var sy = prevRect.top + prevRect.height * 0.20 - canvasRect.top;
+      var ex = nextRect.left - canvasRect.left + scrollLeft;
+      var ey = nextRect.top + nextRect.height * 0.20 - canvasRect.top;
+      var midX = (sx + ex) / 2;
+
+      var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('class','viz-mid-link');
+      path.setAttribute('d','M ' + sx + ' ' + sy + ' C ' + (sx+40) + ' ' + (sy-70) + ', ' + midX + ' ' + (sy-90) + ', ' + midX + ' ' + (sy-70) + ' S ' + (ex-40) + ' ' + (ey-70) + ', ' + ex + ' ' + ey);
+      // Simpler cubic over target node:
+      path.setAttribute('d','M ' + sx + ' ' + sy + ' C ' + (sx+60) + ' ' + (sy-80) + ', ' + (ex-60) + ' ' + (ey-80) + ', ' + ex + ' ' + ey);
+      path.setAttribute('stroke','#3b6cff'); path.setAttribute('stroke-width','2.5');
+      path.setAttribute('fill','none'); path.setAttribute('marker-end','url(#arrowHead)');
+      svg.appendChild(path);
+
+      animateMidPath(svg, path, '#3b6cff', function () {
+        // Update NEXT field of prev node to show addr of next node
+        var prevNextEl = prevNodeEl.querySelector('.viz-node-next');
+        if (prevNextEl && PTR.nodeList[nextIdx]) {
+          prevNextEl.style.transition = 'background 0.25s ease, color 0.25s ease';
+          prevNextEl.style.background = 'rgba(59,108,255,0.18)';
+          prevNextEl.style.color = '#3b6cff';
+          prevNextEl.textContent = PTR.nodeList[nextIdx].address;
+          setTimeout(function () { prevNextEl.style.background = ''; prevNextEl.style.color = ''; }, 800);
+        }
+      });
+    });
+  });
+}
+
+// Step 6: temp->next->prev = temp->prev  — orange JUMP BELOW
+function animDelMid_linkBck() {
+  buildList(VIZ.initialList, false, 0);
+  hideLoopBox();
+  var dpos = VIZ.deletePos;
+  var prevIdx = dpos - 2;
+  var nextIdx = dpos;
+  placeTempPointerOnNode(dpos - 1);
+  // Highlight target red
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var wraps2 = VIZ.el.listRow ? VIZ.el.listRow.querySelectorAll('.viz-node-wrap') : [];
+      if (wraps2[dpos-1]) {
+        var nodeEl2 = wraps2[dpos-1].querySelector('.viz-node');
+        if (nodeEl2) { nodeEl2.style.boxShadow = '0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.3)'; nodeEl2.style.borderColor = '#ef4444'; }
+      }
+    });
+  });
+
+  // Fade out fwd link between prev and target (already done in prev step, keep it faded)
+  fadeOutMidLink(prevIdx, true, false);
+  // Fade out bck link from temp->next back to temp (arrow at index dpos-1)
+  // This is the OLD backward pointer: temp->next->prev was pointing to temp
+  fadeOutMidLink(dpos - 1, false, false);
+
+  var svg = VIZ.el.curveSvg;
+  if (!svg) return;
+  var old = svg.querySelectorAll('.viz-mid-link');
+  for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+  svg.classList.add('visible');
+  animDelMid_setupArrowheads(svg);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var canvas = document.getElementById('animCanvas');
+      if (!canvas) return;
+      var canvasRect = canvas.getBoundingClientRect();
+      var scrollLeft = canvas.scrollLeft || 0;
+      var listRow = VIZ.el.listRow;
+      var wraps = listRow ? listRow.querySelectorAll('.viz-node-wrap') : [];
+      var prevWrap = wraps[prevIdx];
+      var nextWrap = wraps[nextIdx];
+      if (!prevWrap || !nextWrap) return;
+
+      var prevNodeEl = prevWrap.querySelector('.viz-node');
+      var nextNodeEl = nextWrap.querySelector('.viz-node');
+      var prevRect = prevNodeEl.getBoundingClientRect();
+      var nextRect = nextNodeEl.getBoundingClientRect();
+
+      // Static blue jump (fwd link, already done)
+      (function() {
+        var sx = prevRect.right - canvasRect.left + scrollLeft;
+        var sy = prevRect.top + prevRect.height * 0.20 - canvasRect.top;
+        var ex = nextRect.left - canvasRect.left + scrollLeft;
+        var ey = nextRect.top + nextRect.height * 0.20 - canvasRect.top;
+        var p1 = document.createElementNS('http://www.w3.org/2000/svg','path');
+        p1.setAttribute('class','viz-mid-link');
+        p1.setAttribute('d','M ' + sx + ' ' + sy + ' C ' + (sx+60) + ' ' + (sy-80) + ', ' + (ex-60) + ' ' + (ey-80) + ', ' + ex + ' ' + ey);
+        p1.setAttribute('stroke','#3b6cff'); p1.setAttribute('stroke-width','2.5');
+        p1.setAttribute('fill','none'); p1.setAttribute('marker-end','url(#arrowHead)');
+        svg.appendChild(p1);
+        // Ensure prev next field shows correct addr
+        var prevNextEl = prevNodeEl.querySelector('.viz-node-next');
+        if (prevNextEl && PTR.nodeList[nextIdx]) prevNextEl.textContent = PTR.nodeList[nextIdx].address;
+      })();
+
+      // Animate orange JUMP BELOW: from nextNode left-bottom to prevNode right-bottom
+      var sx2 = nextRect.left - canvasRect.left + scrollLeft;
+      var sy2 = nextRect.top + nextRect.height * 0.80 - canvasRect.top;
+      var ex2 = prevRect.right - canvasRect.left + scrollLeft;
+      var ey2 = prevRect.top + prevRect.height * 0.80 - canvasRect.top;
+
+      var path2 = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path2.setAttribute('class','viz-mid-link');
+      path2.setAttribute('d','M ' + sx2 + ' ' + sy2 + ' C ' + (sx2-60) + ' ' + (sy2+80) + ', ' + (ex2+60) + ' ' + (ey2+80) + ', ' + ex2 + ' ' + ey2);
+      path2.setAttribute('stroke','#f59e0b'); path2.setAttribute('stroke-width','2.5');
+      path2.setAttribute('fill','none'); path2.setAttribute('marker-end','url(#arrowHeadPrev)');
+      svg.appendChild(path2);
+
+      animateMidPath(svg, path2, '#f59e0b', function () {
+        // Update PREV field of next node to show addr of prev node
+        var nextPrevEl = nextNodeEl.querySelector('.viz-node-prev');
+        if (nextPrevEl && PTR.nodeList[prevIdx]) {
+          nextPrevEl.style.transition = 'background 0.25s ease, color 0.25s ease';
+          nextPrevEl.style.background = 'rgba(245,158,11,0.25)';
+          nextPrevEl.style.color = '#d97706';
+          nextPrevEl.textContent = PTR.nodeList[prevIdx].address;
+          setTimeout(function () { nextPrevEl.style.background = ''; nextPrevEl.style.color = ''; }, 800);
+        }
+      });
+    });
+  });
+}
+
+// Step 7: free(temp) — node fades out, list rebuilds
+function animDelMid_free() {
+  hideCurve();
+  hideLoopBox();
+  removeTempPointer();
+  hideTempPointer();
+  var finalList = delMidFinalList();
+  setTimeout(function () {
+    buildList(finalList, true, 0);
+  }, 80);
 }
