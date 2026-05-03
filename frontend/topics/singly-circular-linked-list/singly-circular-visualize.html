@@ -39,28 +39,28 @@
 
 <!-- ═══════════ OPERATION SELECTOR BAR ═══════════ -->
 <nav class="viz-op-selector-bar" id="opSelectorBar">
-  <button class="viz-op-pill viz-op-pill-active" data-mode="insert-beginning" onclick="switchMode('insert-beginning')">
+  <button class="viz-op-pill viz-op-pill-active" data-mode="insert-beginning">
     <span class="viz-op-pill-icon">+</span>
     Insert at Beginning
   </button>
-  <button class="viz-op-pill" data-mode="insert-end" onclick="switchMode('insert-end')">
+  <button class="viz-op-pill" data-mode="insert-end">
     <span class="viz-op-pill-icon">+</span>
     Insert at End
   </button>
-  <button class="viz-op-pill" data-mode="insert-middle" onclick="switchMode('insert-middle')">
+  <button class="viz-op-pill" data-mode="insert-middle">
     <span class="viz-op-pill-icon">+</span>
     Insert at Middle
   </button>
   <div class="viz-op-pill-divider"></div>
-  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-beginning" onclick="switchMode('delete-beginning')">
+  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-beginning">
     <span class="viz-op-pill-icon">−</span>
     Delete at Beginning
   </button>
-  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-end" onclick="switchMode('delete-end')">
+  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-end">
     <span class="viz-op-pill-icon">−</span>
     Delete at End
   </button>
-  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-middle" onclick="switchMode('delete-middle')">
+  <button class="viz-op-pill viz-op-pill-delete" data-mode="delete-middle">
     <span class="viz-op-pill-icon">−</span>
     Delete at Middle
   </button>
@@ -83,7 +83,8 @@
       <span class="viz-lang-tag">C</span>
     </div>
 
-    <div class="viz-code-block">
+    <!-- INSERT AT BEGINNING code block -->
+    <div class="viz-code-block" data-code-mode="insert-beginning">
       <div class="viz-code-lines" id="codeLines">
 
         <div class="viz-code-line viz-code-comment" data-line="0">
@@ -142,22 +143,97 @@
           <span class="lnum">17</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span>;</span>
         </div>
         <div class="viz-code-line" data-line="0">
-          <span class="lnum">18</span><span class="lcode">&nbsp;&nbsp;} <span class="c-kw">else</span> {</span>
+          <span class="lnum">18</span><span class="lcode">&nbsp;&nbsp;}</span>
         </div>
         <div id="codeLine3" class="viz-code-line viz-highlightable" data-line="4">
-          <span class="lnum">19</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;newnode→next = head;</span>
+          <span class="lnum">19</span><span class="lcode">&nbsp;&nbsp;newnode→next = head;</span>
         </div>
         <div id="codeLine4" class="viz-code-line viz-highlightable" data-line="5">
-          <span class="lnum">20</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;tail→next = newnode;</span>
+          <span class="lnum">20</span><span class="lcode">&nbsp;&nbsp;tail→next = newnode;</span>
         </div>
         <div id="codeLine5" class="viz-code-line viz-highlightable" data-line="6">
-          <span class="lnum">21</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;head = newnode;</span>
+          <span class="lnum">21</span><span class="lcode">&nbsp;&nbsp;head = newnode;</span>
         </div>
         <div class="viz-code-line">
-          <span class="lnum">22</span><span class="lcode">&nbsp;&nbsp;}</span>
+          <span class="lnum">22</span><span class="lcode">}</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- INSERT AT END code block -->
+    <div class="viz-code-block" data-code-mode="insert-end" style="display:none">
+      <div class="viz-code-lines">
+
+        <div class="viz-code-line viz-code-comment" data-line="0">
+          <span class="lnum">1</span><span class="lcode"><span class="c-comment">// SCLL Node structure</span></span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">2</span><span class="lcode"><span class="c-pp">#include</span> &lt;stdio.h&gt;</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">3</span><span class="lcode"><span class="c-pp">#include</span> &lt;stdlib.h&gt;</span>
+        </div>
+        <div class="viz-code-spacer"></div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">4</span><span class="lcode"><span class="c-kw">struct</span> node {</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">5</span><span class="lcode">&nbsp;&nbsp;<span class="c-kw">int</span> data;</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">6</span><span class="lcode">&nbsp;&nbsp;<span class="c-kw">struct</span> node* next;</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">7</span><span class="lcode">};</span>
+        </div>
+        <div class="viz-code-spacer"></div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">8</span><span class="lcode"><span class="c-kw">struct</span> node* head = <span class="c-kw">NULL</span>;</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">9</span><span class="lcode"><span class="c-kw">struct</span> node* tail = <span class="c-kw">NULL</span>;</span>
+        </div>
+        <div class="viz-code-spacer"></div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">23</span><span class="lcode"><span class="c-kw">void</span> <span class="c-fn">insertAtEnd</span>(<span class="c-kw">int</span> data) {</span>
+        </div>
+        <div class="viz-code-line viz-highlightable" data-line="1">
+          <span class="lnum">24</span><span class="lcode">&nbsp;&nbsp;<span class="c-kw">struct</span> node* newnode = (<span class="c-kw">struct</span> node*)</span>
+        </div>
+        <div class="viz-code-line viz-highlightable" data-line="1">
+          <span class="lnum">25</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">malloc</span>(<span class="c-fn">sizeof</span>(<span class="c-kw">struct</span> node));</span>
+        </div>
+        <div class="viz-code-line viz-highlightable" data-line="2">
+          <span class="lnum">26</span><span class="lcode">&nbsp;&nbsp;newnode→data = data;</span>
+        </div>
+        <div class="viz-code-spacer"></div>
+        <div class="viz-code-line viz-highlightable" data-line="3">
+          <span class="lnum">27</span><span class="lcode">&nbsp;&nbsp;<span class="c-kw">if</span> (head == <span class="c-kw">NULL</span>) {</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">28</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;newnode→next = newnode;</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">29</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;head = tail = newnode;</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">30</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span>;</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">31</span><span class="lcode">&nbsp;&nbsp;}</span>
+        </div>
+        <div class="viz-code-line viz-highlightable" data-line="4">
+          <span class="lnum">32</span><span class="lcode">&nbsp;&nbsp;newnode→next = head;</span>
+        </div>
+        <div class="viz-code-line viz-highlightable" data-line="5">
+          <span class="lnum">33</span><span class="lcode">&nbsp;&nbsp;tail→next = newnode;</span>
+        </div>
+        <div class="viz-code-line viz-highlightable" data-line="6">
+          <span class="lnum">34</span><span class="lcode">&nbsp;&nbsp;tail = newnode;</span>
         </div>
         <div class="viz-code-line">
-          <span class="lnum">23</span><span class="lcode">}</span>
+          <span class="lnum">35</span><span class="lcode">}</span>
         </div>
 
       </div>
@@ -219,7 +295,7 @@
           max="99"
         >
       </div>
-      <button class="viz-confirm-btn" id="vizConfirmBtn" onclick="vizConfirmValues()">
+      <button class="viz-confirm-btn" id="vizConfirmBtn">
         ↵ Enter
       </button>
     </div>
@@ -267,6 +343,10 @@
           <marker id="arrowHeadGreen" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
             <path d="M0,0 L0,8 L10,4 z" fill="#16a34a"/>
           </marker>
+          <!-- NEW Small Blue Arrow for the tail->newNode connection -->
+          <marker id="arrowHeadSmallBlue" markerWidth="8" markerHeight="6" refX="2" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#3b6cff"/>
+          </marker>
         </defs>
         <!-- NEXT arrow (blue): newNode → old head -->
         <path id="curvePath" d=""
@@ -291,7 +371,7 @@
 
     <!-- Controls -->
     <div class="viz-controls">
-      <button class="viz-ctrl-btn viz-ctrl-reset" id="btnReset" onclick="vizReset()">
+      <button class="viz-ctrl-btn viz-ctrl-reset" id="btnReset">
         <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
         </svg>
@@ -299,14 +379,14 @@
       </button>
 
       <div class="viz-ctrl-center">
-        <button class="viz-ctrl-btn viz-ctrl-prev" id="btnPrev" onclick="vizPrev()" disabled>
+        <button class="viz-ctrl-btn viz-ctrl-prev" id="btnPrev" disabled>
           <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
           </svg>
           Prev
         </button>
 
-        <button class="viz-ctrl-btn viz-ctrl-play" id="btnPlay" onclick="vizTogglePlay()">
+        <button class="viz-ctrl-btn viz-ctrl-play" id="btnPlay">
           <svg id="playIcon" width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
           </svg>
@@ -316,7 +396,7 @@
           <span id="playLabel">Play</span>
         </button>
 
-        <button class="viz-ctrl-btn viz-ctrl-next" id="btnNext" onclick="vizNext()">
+        <button class="viz-ctrl-btn viz-ctrl-next" id="btnNext">
           Next
           <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
@@ -407,5 +487,7 @@
 </main>
 
 <script src="singly-circular-visualize.js"></script>
+<link rel="stylesheet" href="../../spark/spark.css">
+<script src="../../spark/spark.js"></script>
 </body>
 </html>

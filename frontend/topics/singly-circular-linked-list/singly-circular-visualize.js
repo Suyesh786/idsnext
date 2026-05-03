@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const last = badge.lastChild;
         if (last && last.nodeType === 3) last.textContent = ' ' + (MODE_LABELS[mode] || mode);
       }
+      switchCodeBlocks(mode);
       resetAll();
     });
   });
@@ -88,6 +89,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function hideConditionBox() { conditionBox.style.display = 'none'; }
 
+  // ── Code block visibility (show only active mode's code) ─────────
+  function switchCodeBlocks(activeMode) {
+    // Expects HTML code containers to have data-code-mode="insert-beginning" / "insert-end"
+    const codeBlocks = document.querySelectorAll('.viz-code-block[data-code-mode]');
+    if (codeBlocks.length > 0) {
+      codeBlocks.forEach(block => {
+        block.style.display = block.dataset.codeMode === activeMode ? '' : 'none';
+      });
+    }
+  }
+
   // ── Code highlighting ─────────────────────────────────────────────
   function highlightCode(activeLine) {
     const all = document.querySelectorAll('.viz-code-line.viz-highlightable');
@@ -109,6 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // ── Build initial 4-node list ─────────────────────────────────────
   function initNodes() {
     listRow.innerHTML = "";
+    // Shift list right in END mode so tail stays visible without scrolling
+    listRow.style.paddingLeft = (mode === 'insert-end') ? '0px' : '0px';
+    listRow.style.marginLeft = (mode === 'insert-end') ? '-140px' : '0px';
     nodes = [
       { id: 1, data: 1, addr: "0x101", el: null },
       { id: 2, data: 2, addr: "0x102", el: null },
@@ -155,30 +170,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ── Arc helpers ───────────────────────────────────────────────────
 
-  // Circular back-link going BELOW the row (tail → head style)
-  function drawCircularArc(startEl, endEl, pathEl) {
+// Circular back-link going BELOW the row (tail → head style)
+function drawCircularArc(startEl, endEl, pathEl) {
     if (!startEl || !endEl) return;
     const sRect  = startEl.getBoundingClientRect();
     const eRect  = endEl.getBoundingClientRect();
     const cRect  = curveSvg.getBoundingClientRect();
+    
+    // Origin: Right-center edge of the tail node
     const startX = sRect.right - cRect.left;
     const startY = sRect.top   - cRect.top  + sRect.height / 2;
-    const endX   = eRect.left  - cRect.left - 5;
+    
+    // Approach target: Left edge of the head node
+    const endX   = eRect.left  - cRect.left - 10;
     const endY   = eRect.top   - cRect.top  + eRect.height / 2;
-    const sweep  = 70;
-    const midY   = startY + sRect.height + 15;
-    const d =
-      "M " + startX + " " + startY +
-      " C " + (startX + sweep) + " " + startY + "," +
-              (startX + sweep) + " " + midY   + "," +
-              startX           + " " + midY   +
-      " L " + endX + " " + midY +
-      " C " + (endX - sweep) + " " + midY + "," +
-              (endX - sweep) + " " + endY + "," +
-              endX           + " " + endY;
-    pathEl.setAttribute("d", d);
+    
+    // FIX: The drop depth must be below BOTH nodes so the path doesn't zigzag 
+    // when connecting to a node that is positioned lower on the screen.
+    const midY   = Math.max(startY, endY) + sRect.height + 25;
+    
+    // Radius for the rounded corners
+    const r = 20;
+
+    // Explicit edges to maintain perfect symmetry for all 4 turnings
+    const rightEdge = startX + r * 2;
+    const leftEdge  = endX - r * 2;
+
+    // Circuit-board path: Push right, drop down, run left beneath, hook up, push right.
+    const d = `
+      M ${startX} ${startY}
+      L ${rightEdge - r} ${startY}
+      Q ${rightEdge} ${startY}, ${rightEdge} ${startY + r}
+      L ${rightEdge} ${midY - r}
+      Q ${rightEdge} ${midY}, ${rightEdge - r} ${midY}
+      L ${leftEdge + r} ${midY}
+      Q ${leftEdge} ${midY}, ${leftEdge} ${midY - r}
+      L ${leftEdge} ${endY + r}
+      Q ${leftEdge} ${endY}, ${leftEdge + r} ${endY}
+      L ${endX} ${endY}
+    `;
+
+    pathEl.setAttribute("d", d.replace(/\s+/g, " ").trim());
     pathEl.setAttribute("stroke", "#3b6cff");
-    pathEl.setAttribute("marker-end", "url(#arrowHead)");
+    pathEl.setAttribute("marker-end", "url(#arrowHeadSmallBlue)"); 
     pathEl.style.opacity = '0.8';
   }
 
@@ -199,36 +233,87 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // END mode step 4: newNode (right of tail) → head top (arc ABOVE the list)
-  function drawEndForwardArc(newEl, headEl, pathEl) {
-    if (!newEl || !headEl) return;
-    const sRect  = newEl.getBoundingClientRect();
-    const eRect  = headEl.getBoundingClientRect();
-    const cRect  = curveSvg.getBoundingClientRect();
-    const startX = sRect.right - cRect.left;
-    const startY = sRect.top   - cRect.top  + sRect.height / 2;
-    const endX   = eRect.left  - cRect.left + eRect.width  / 2;
-    const endY   = eRect.top   - cRect.top  - 6;
-    const midY   = Math.min(startY, endY) - 55;
-    const d = `M ${startX} ${startY} C ${startX + 40} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
-    pathEl.setAttribute("d", d);
-    pathEl.setAttribute("stroke", "#3b6cff");
-    pathEl.setAttribute("marker-end", "url(#arrowHead)");
-  }
+function drawEndForwardArc(newEl, headEl, pathEl) {
+  if (!newEl || !headEl) return;
+  const sRect  = newEl.getBoundingClientRect();
+  const eRect  = headEl.getBoundingClientRect();
+  const cRect  = curveSvg.getBoundingClientRect();
+
+  // Origin: Right-center edge of the newNode
+  const startX = sRect.right - cRect.left;
+  const startY = sRect.top   - cRect.top  + sRect.height / 2;
+
+  // Approach target: Left edge of the head node, elevated ABOVE the center
+  const endX   = eRect.left  - cRect.left - 10;
+  const endY   = eRect.top   - cRect.top  + (eRect.height * 0.25);
+
+  // Peak altitude for the perfectly horizontal traverse
+  const peakY  = eRect.top - cRect.top - 55;
+
+  // Tighter right boundary to prevent screen overflow (only 35px out)
+  const rightEdge = startX + 35;
+  
+  // Overshoot left boundary to mirror the bottom pointer's symmetry
+  const leftEdge  = endX - 45;
+  
+  // Radius for the rounded corners
+  const r = 20;
+
+  // Geometric path: Lines (L) for straight edges, Quadratic Bezier (Q) for rounded 90-degree corners
+  const d = `
+    M ${startX} ${startY}
+    L ${rightEdge - r} ${startY}
+    Q ${rightEdge} ${startY}, ${rightEdge} ${startY - r}
+    L ${rightEdge} ${peakY + r}
+    Q ${rightEdge} ${peakY}, ${rightEdge - r} ${peakY}
+    L ${leftEdge + r} ${peakY}
+    Q ${leftEdge} ${peakY}, ${leftEdge} ${peakY + r}
+    L ${leftEdge} ${endY - r}
+    Q ${leftEdge} ${endY}, ${leftEdge + r} ${endY}
+    L ${endX} ${endY}
+  `;
+
+  // Remove the extra whitespace from the template literal for standard SVG syntax
+  pathEl.setAttribute("d", d.replace(/\s+/g, " ").trim());
+  pathEl.setAttribute("stroke", "#10b981"); // Emerald green
+  pathEl.setAttribute("marker-end", "url(#arrowHeadGreen)");
+}
 
   // END mode step 5: tail (node4) → newNode (straight connect right-to-left)
+// END mode step 5: tail (node4) → newNode (straight connect right-to-left)
   function drawTailToNewArc(tailEl, newEl, pathEl) {
     if (!tailEl || !newEl) return;
     const sRect  = tailEl.getBoundingClientRect();
     const eRect  = newEl.getBoundingClientRect();
     const cRect  = curveSvg.getBoundingClientRect();
+    
+    // Origin: Right-center edge of the tail node
     const startX = sRect.right - cRect.left;
     const startY = sRect.top   - cRect.top  + sRect.height / 2;
-    const endX   = eRect.left  - cRect.left;
+    
+    // Target: Left-center edge of the new node
+    // Changed to -10 so the line stops earlier and makes room for the smaller arrow to sit flush
+    const endX   = eRect.left  - cRect.left - 10;
     const endY   = eRect.top   - cRect.top  + eRect.height / 2;
-    const d = `M ${startX} ${startY} C ${startX + 30} ${startY}, ${endX - 30} ${endY}, ${endX} ${endY}`;
-    pathEl.setAttribute("d", d);
+
+    // Midpoint for the vertical drop to prevent control points from crossing
+    const midX   = startX + (endX - startX) / 2;
+    const r      = 10; // Radius for the smooth corners
+
+    // Circuit-board path: Right -> Curve Down -> Drop -> Curve Right -> Right
+    const d = `
+      M ${startX} ${startY}
+      L ${midX - r} ${startY}
+      Q ${midX} ${startY}, ${midX} ${startY + r}
+      L ${midX} ${endY - r}
+      Q ${midX} ${endY}, ${midX + r} ${endY}
+      L ${endX} ${endY}
+    `;
+
+    pathEl.setAttribute("d", d.replace(/\s+/g, " ").trim());
     pathEl.setAttribute("stroke", "#3b6cff");
-    pathEl.setAttribute("marker-end", "url(#arrowHead)");
+    // Updated to use the new small blue marker!
+    pathEl.setAttribute("marker-end", "url(#arrowHeadSmallBlue)");
   }
 
   // ── Animated draw-on + traveling dot ─────────────────────────────
@@ -301,16 +386,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const canvas  = listRow.parentElement;
     const n4Rect  = nodes[3].el.getBoundingClientRect();
     const cr      = canvas.getBoundingClientRect();
-    const rowRect = listRow.getBoundingClientRect();
-    newNodeWrap.style.left      = (n4Rect.right - cr.left + 30) + 'px';
-    newNodeWrap.style.top       = (rowRect.top - cr.top + rowRect.height / 2 - 30) + 'px';
-    newNodeWrap.style.bottom    = 'auto';
+    // Mirror BEG mode: left = n1.left - 40, bottom = 120px
+    // END: right of tail + same gap, same bottom anchor
+    newNodeWrap.style.left      = (n4Rect.right - cr.left + 40) + 'px';
+    newNodeWrap.style.top       = '';
+    newNodeWrap.style.bottom    = '120px';
     newNodeWrap.style.transform = 'none';
   }
 
   function scrollToTail() {
-    const canvas = document.getElementById('animCanvas');
-    if (canvas) canvas.scrollTo({ left: canvas.scrollWidth, behavior: 'smooth' });
+    const canvas = listRow.parentElement;
+    if (canvas) setTimeout(() => canvas.scrollTo({ left: canvas.scrollWidth, behavior: 'smooth' }), 100);
+  }
+
+  function scrollToHead() {
+    const canvas = listRow.parentElement;
+    if (canvas) setTimeout(() => canvas.scrollTo({ left: 0, behavior: 'smooth' }), 100);
   }
 
   // ── Restore tail pointer to node 4 ───────────────────────────────
@@ -535,6 +626,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newNodeEl = newNodeWrap.querySelector('.viz-node');
 
     if (currentStep === 0) {
+      listRow.style.marginLeft = '';
       newNodeWrap.classList.remove('visible');
       hidePath(curvePath);
       curvePath.setAttribute("stroke", "#3b6cff");
@@ -616,7 +708,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Animate: newNode → head (above)
       hidePath(curvePath);
       drawEndForwardArc(newNodeEl, nodes[0].el, curvePath);
-      animatePath(curvePath, curveSvg, '#3b6cff');
+      animatePath(curvePath, curveSvg, '#10b981');
 
     } else if (currentStep === 5) {
       // tail->next = newNode — fade old circular arc, animate tail→newNode
@@ -673,6 +765,7 @@ document.addEventListener("DOMContentLoaded", () => {
       curvePath.setAttribute("stroke", "#3b6cff");
       curvePath.setAttribute("marker-end", "url(#arrowHead)");
       listRow.innerHTML = "";
+      listRow.style.marginLeft = '-60px'; // shift left so full 5-node list is visible
       const finalNodes = [
         { data: 1,           addr: "0x101", nextAddr: "0x102" },
         { data: 2,           addr: "0x102", nextAddr: "0x103" },
@@ -692,6 +785,7 @@ document.addEventListener("DOMContentLoaded", () => {
       tailPointer.style.left  = (lR.left - cr7.left + lR.width  / 2) + "px";
       tailPointer.style.top   = (lR.top  - cr7.top  - 45) + "px";
       drawCircularArc(els[els.length - 1], els[0], circularCurvePath);
+      scrollToHead();
     }
   }
 
@@ -725,6 +819,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ── Init ──────────────────────────────────────────────────────────
+  switchCodeBlocks(mode);
   initNodes();
   updateUI();
 });
