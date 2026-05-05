@@ -29,6 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
     'insert-end':       'Insert at End',
     'insert-middle':    'Insert at Middle',
     'delete-beginning': 'Delete at Beginning',
+    'delete-end':       'Delete at End',
+    'delete-middle':    'Delete at Middle',
   };
 
   // ── Step sidebar labels per mode ─────────────────────────────────
@@ -77,7 +79,26 @@ document.addEventListener("DOMContentLoaded", () => {
   function rebuildStepList(m) {
     const stepList = document.getElementById('stepList');
     if (!stepList) return;
-    const labels = STEP_LABELS[m] || [];
+    
+    let labels = [];
+    if (m === 'delete-middle') {
+      DEL_MID_PLAN.forEach(step => {
+        if (step.type === 'init' || step.type === 'done') return;
+        if (step.type === 'checkNull') labels.push("Check: head == NULL?");
+        else if (step.type === 'checkTail') labels.push("Check: head == tail?");
+        else if (step.type === 'tempHead') labels.push("temp = head");
+        else if (step.type === 'ptrDecl') labels.push("struct node* ptr");
+        else if (step.type === 'loopTrue') labels.push("Loop: i < " + deletePos + " → TRUE");
+        else if (step.type === 'ptrTemp') labels.push("ptr = temp");
+        else if (step.type === 'tempMove') labels.push("temp = temp→next");
+        else if (step.type === 'loopFalse') labels.push("Loop: i < " + deletePos + " → FALSE");
+        else if (step.type === 'link1') labels.push("ptr→next = temp→next");
+        else if (step.type === 'free') labels.push("free(temp)");
+      });
+    } else {
+      labels = STEP_LABELS[m] || [];
+    }
+    
     stepList.innerHTML = labels.map((label, i) =>
       `<div class="viz-step-item viz-step-upcoming" data-step="${i + 1}">` +
         `<div class="viz-step-dot"></div>` +
@@ -100,23 +121,38 @@ document.addEventListener("DOMContentLoaded", () => {
         const last = badge.lastChild;
         if (last && last.nodeType === 3) last.textContent = ' ' + (MODE_LABELS[mode] || mode);
       }
-      // Show/hide position input row for insert-middle
-      const posRow = document.getElementById('posInputRow');
-      if (posRow) posRow.style.display = (mode === 'insert-middle') ? '' : 'none';
-      // Show/hide value input for delete modes (no value needed)
-      const valRow = document.getElementById('valueInputRow') || valueInput.closest('.viz-input-row');
-      if (valRow) valRow.style.display = (mode === 'delete-beginning') ? 'none' : '';
-      totalSteps = (mode === 'insert-middle') ? 10 : 7;      STEP_TO_LINE = (mode === 'insert-middle')
-        // steps: 0=init, 1=malloc, 2=data, 3=temp=head, 4=loopTRUE(for line), 5=tempMove(body line), 6=loopFALSE(for line), 7=link1, 8=link2, 9=circCheck, 10=done
-        ? [null, 1, 2, 3, 4, 5, 4, 6, 7, null, null]
-        : (mode === 'delete-beginning')
-          ? [null, 1, 2, 3, 4, 5, 6, null]
-          : [null, 1, 2, 3, 4, 5, 6, null];
+      
+      if (mode === 'insert-middle') {
+        totalSteps = 10;
+        STEP_TO_LINE = [null, 1, 2, 3, 4, 5, 4, 6, 7, null, null];
+      } else if (mode === 'delete-beginning') {
+        totalSteps = 7;
+        STEP_TO_LINE = [null, 1, 2, 3, 4, 5, 6, null];
+      } else if (mode === 'delete-middle') {
+        deletePos = 2; // default
+        buildDelMidPlan();
+      } else {
+        totalSteps = 7;
+        STEP_TO_LINE = [null, 1, 2, 3, 4, 5, 6, null];
+      }
+      
+      const timeVal = document.getElementById('timeComplexityVal');
+      if (timeVal) {
+        if (mode === 'insert-middle' || mode === 'delete-middle') {
+          timeVal.textContent = 'O(n)';
+        } else {
+          timeVal.textContent = 'O(1)';
+        }
+      }
+      
       switchCodeBlocks(mode);
       rebuildStepList(mode);
       hideLoopBox();
       removeTempPointer();
-      MID_PLAN = [];
+      removePtrPointer();
+      window._ptrAlreadyShown = false;
+      if (mode !== 'insert-middle') MID_PLAN = [];
+      if (mode !== 'delete-middle') DEL_MID_PLAN = [];
       resetAll();
     });
   });
@@ -127,6 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let nodes = [];
   let insertValue = 10;
   let insertPos   = 2;        // 1-based: position AFTER which we insert (insert-middle)
+  let deletePos   = 2;        // 1-based: position OF node to delete (delete-middle)
+  let DEL_MID_PLAN = [];
 
   const NEW_NODE_ADDR_BEG = '0x100';
   const NEW_NODE_ADDR_END = '0x105';
@@ -181,6 +219,51 @@ document.addEventListener("DOMContentLoaded", () => {
       codeBlocks.forEach(block => {
         block.style.display = block.dataset.codeMode === activeMode ? '' : 'none';
       });
+    }
+
+    // Wire mutual exclusion once
+    if (!window._mutualExWired) {
+      window._mutualExWired = true;
+      const vi = document.getElementById('vizValueInput');
+      const pi = document.getElementById('vizPosInput');
+      if (vi && pi) {
+        vi.addEventListener('input', function() {
+          if (mode === 'delete-middle') pi.disabled = vi.value !== '';
+        });
+        pi.addEventListener('input', function() {
+          if (mode === 'delete-middle') vi.disabled = pi.value !== '';
+        });
+      }
+    }
+
+    if (activeMode === 'delete-beginning' || activeMode === 'delete-end') {
+      document.getElementById('valueInputRow').style.display = 'none';
+    } else {
+      document.getElementById('valueInputRow').style.display = 'flex';
+      const posRow = document.getElementById('posInputRow');
+      const valLabel = document.getElementById('vizValueLabel');
+      const posLabel = posRow ? posRow.querySelector('.viz-value-label') : null;
+      const vi = document.getElementById('vizValueInput');
+      const pi = document.getElementById('vizPosInput');
+      
+      if (activeMode === 'insert-middle') {
+        if(posRow) posRow.style.display = 'flex';
+        if(valLabel) valLabel.textContent = 'Insert value';
+        if(posLabel) posLabel.textContent = 'Index (1–3)';
+        if(vi) vi.disabled = false;
+        if(pi) pi.disabled = false;
+      } else if (activeMode === 'delete-middle') {
+        if(posRow) posRow.style.display = 'flex';
+        if(valLabel) valLabel.textContent = 'Delete value';
+        if(posLabel) posLabel.textContent = 'Position (1-4)';
+        if(vi) vi.disabled = pi && pi.value !== '';
+        if(pi) pi.disabled = vi && vi.value !== '';
+      } else {
+        if(posRow) posRow.style.display = 'none';
+        if(valLabel) valLabel.textContent = 'Insert value';
+        if(vi) vi.disabled = false;
+        if(pi) pi.disabled = false;
+      }
     }
   }
 
@@ -745,6 +828,8 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
     // ── Update explanation card ──────────────────────────────────
     const stepData = mode === 'insert-middle'
       ? getMidStepData(currentStep)
+      : mode === 'delete-middle'
+        ? getDelMidStepDataText(currentStep)
       : mode === 'insert-end'
         ? STEPS_END[currentStep]
         : mode === 'delete-beginning'
@@ -772,6 +857,7 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
     if (mode === 'insert-end')         updateUI_end();
     else if (mode === 'insert-middle') updateUI_mid();
     else if (mode === 'delete-beginning') updateUI_del_beg();
+    else if (mode === 'delete-middle') updateUI_del_mid();
     else                               updateUI_beg();
   }
 
@@ -1088,6 +1174,200 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
   }
 
   // ════════════════════════════════════════════════════════════════
+  //  DELETE AT MIDDLE
+  // ════════════════════════════════════════════════════════════════
+  function updateUI_del_mid() {
+    if (currentStep === 0) {
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      removeTempPointer();
+      removePtrPointer();
+      hideConditionBox();
+      const n4n = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n) n4n.innerText = '0x101';
+      positionInitialPointers();
+      nodes.forEach(n => {
+        n.el.classList.remove('viz-node-dim');
+        n.el.style.transform = 'none';
+        n.el.style.opacity = '1';
+      });
+      return;
+    }
+
+    const planStep = DEL_MID_PLAN[currentStep];
+    if (!planStep) return;
+
+    if (planStep.type === 'checkNull') {
+      nodes.forEach(n => n.el.classList.remove('viz-node-dim'));
+      hidePath(curvePath);
+      hideLoopBox();
+      removeTempPointer();
+      conditionBox.innerHTML = 'head == NULL &nbsp;&rarr;&nbsp; &times; FALSE &mdash; list has nodes';
+      conditionBox.style.background = '#fff5f5';
+      conditionBox.style.border     = '2px solid #ef4444';
+      conditionBox.style.color      = '#b91c1c';
+      conditionBox.style.display    = 'block';
+      conditionBox.style.opacity    = '0';
+      requestAnimationFrame(() => requestAnimationFrame(() => { conditionBox.style.opacity = '1'; }));
+
+    } else if (planStep.type === 'checkTail') {
+      nodes.forEach(n => n.el.classList.remove('viz-node-dim'));
+      hidePath(curvePath);
+      hideLoopBox();
+      removeTempPointer();
+      conditionBox.innerHTML = 'head == tail &nbsp;&rarr;&nbsp; &times; FALSE &mdash; list has multiple nodes';
+      conditionBox.style.background = '#fff5f5';
+      conditionBox.style.border     = '2px solid #ef4444';
+      conditionBox.style.color      = '#b91c1c';
+      conditionBox.style.display    = 'block';
+      conditionBox.style.opacity    = '0';
+      requestAnimationFrame(() => requestAnimationFrame(() => { conditionBox.style.opacity = '1'; }));
+
+    } else if (planStep.type === 'tempHead') {
+      nodes.forEach(n => n.el.classList.remove('viz-node-dim'));
+      hideConditionBox();
+      hidePath(curvePath);
+      hideLoopBox();
+      placeTempPointerOnNode(0);
+
+    } else if (planStep.type === 'ptrDecl') {
+      // ptr ghost fades in below list near-left of head, showing NULL
+      const el     = createPtrPointer();
+      const canvas = listRow.parentElement;
+      const wraps  = listRow.querySelectorAll('.viz-node-wrap');
+      const headWrap = wraps[0];
+      if (headWrap && canvas) {
+        const canvasRect = canvas.getBoundingClientRect();
+        const nodeRect   = headWrap.querySelector('.viz-node').getBoundingClientRect();
+        const ghostX = nodeRect.left + nodeRect.width * 0.38 - canvasRect.left + (canvas.scrollLeft || 0) - 60;
+        const ghostY = nodeRect.bottom - canvasRect.top + 28;
+        el.style.transition = 'none';
+        el.style.left = ghostX + 'px';
+        el.style.top  = ghostY + 'px';
+        void el.offsetWidth;
+        el.style.transition = 'left 0.45s cubic-bezier(0.4,0,0.2,1),top 0.45s cubic-bezier(0.4,0,0.2,1),opacity 0.35s ease';
+        requestAnimationFrame(() => { el.style.opacity = '1'; });
+        const addrEl = document.getElementById('ptrAddrDynamic');
+        if (addrEl) addrEl.textContent = 'NULL';
+      }
+    } else if (planStep.type === 'loopTrue') {
+      updateLoopBox(planStep.i, deletePos, true);
+    } else if (planStep.type === 'ptrTemp') {
+      placePtrPointerOnNode(planStep.ptrIdx);
+    } else if (planStep.type === 'tempMove') {
+      placeTempPointerOnNode(planStep.tempIdx);
+    } else if (planStep.type === 'loopFalse') {
+      updateLoopBox(planStep.i, deletePos, false);
+      setTimeout(hideLoopBox, 2000);
+    } else if (planStep.type === 'link1') {
+      const ptrNode = nodes[deletePos - 2];
+      const targetNode = nodes[deletePos - 1];
+      const nextNode = (deletePos === nodes.length) ? nodes[0] : nodes[deletePos];
+      
+      if (ptrNode && ptrNode.el) {
+        ptrNode.el.querySelector('.viz-node-next').innerText = nextNode.addr;
+      }
+      if (targetNode && targetNode.el) {
+        targetNode.el.classList.add('viz-node-dim');
+      }
+
+      // Fade the DOM arrow between ptr node and temp (target) node
+      const allWraps = Array.from(listRow.children);
+      // ptr is at index (deletePos-2), each node-wrap is at child index (nodeIdx * 2),
+      // arrow after ptr node-wrap is at child index (deletePos-2)*2 + 1
+      const arrowIdx = (deletePos - 2) * 2 + 1;
+      const oldArrow = allWraps[arrowIdx];
+      if (oldArrow && oldArrow.classList.contains('viz-arrow')) {
+        oldArrow.style.transition = 'opacity 0.4s ease';
+        oldArrow.style.opacity    = '0.1';
+      }
+      
+      if (ptrNode && targetNode) {
+        curveSvg.classList.add('visible');
+        animDelMid_jumpArc(ptrNode.el, nextNode.el, curvePath, '#10b981');
+      }
+    } else if (planStep.type === 'free') {
+      animDelMid_free();
+    } else if (planStep.type === 'done') {
+      // Handled entirely by the free step timeout
+    }
+  }
+
+function animDelMid_jumpArc(startEl, endEl, pathEl, color) {
+    if (!startEl || !endEl) return;
+    const sRect  = startEl.getBoundingClientRect();
+    const eRect  = endEl.getBoundingClientRect();
+    const cRect  = curveSvg.getBoundingClientRect();
+
+    // Start slightly higher on the right edge of ptr node
+    const startX = sRect.right - cRect.left;
+    const startY = sRect.top   - cRect.top  + (sRect.height * 0.25);
+    
+    // Land slightly higher on the left edge of the target node
+    const endX   = eRect.left  - cRect.left - 8;
+    const endY   = eRect.top   - cRect.top  + (eRect.height * 0.25);
+    
+    // 👇 LOWERED THE BUMP: Changed from -110 to -75
+    // This gives it enough room to clear the temp tag but keeps it tidy
+    const peakY = sRect.top - cRect.top - 75; 
+    
+    // 👇 TIGHTENED THE CURVE: Changed from 50 to 40 so it doesn't bow out as much
+    const cp1X = startX + 40;
+    const cp1Y = peakY;
+    const cp2X = endX - 40;
+    const cp2Y = peakY;
+
+    // Draw the smooth curve
+    const d = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
+
+    pathEl.setAttribute("d", d.replace(/\s+/g, " ").trim());
+    pathEl.setAttribute("stroke", color || "#10b981");
+    pathEl.setAttribute("marker-end", "url(#arrowHeadGreen)");
+    
+    animatePath(pathEl, curveSvg, color || "#10b981", () => {});
+  }
+
+  function animDelMid_free() {
+    hidePath(curvePath);
+    removeTempPointer();
+    removePtrPointer();
+    const targetNode = nodes[deletePos - 1];
+    if (targetNode && targetNode.el) {
+      targetNode.el.style.transform = 'scale(0.8) translateY(20px)';
+      targetNode.el.style.opacity = '0';
+    }
+    
+    setTimeout(() => {
+      if (currentStep === totalSteps - 1 || currentStep === totalSteps) { // if still on free/done
+        listRow.innerHTML = '';
+        scrollToHead();
+        
+        let finalNodes = [];
+        for (let i = 0; i < nodes.length; i++) {
+          if (i !== deletePos - 1) {
+            finalNodes.push({ data: nodes[i].data, addr: nodes[i].addr, id: nodes[i].id });
+          }
+        }
+        for (let i = 0; i < finalNodes.length; i++) {
+          finalNodes[i].nextAddr = (i === finalNodes.length - 1) ? finalNodes[0].addr : finalNodes[i+1].addr;
+        }
+        
+        const els = buildFinalList(finalNodes);
+        void listRow.offsetWidth;
+        const cr = listRow.parentElement.getBoundingClientRect();
+        const fR = els[0].getBoundingClientRect();
+        const lR = els[els.length - 1].getBoundingClientRect();
+        headPointer.style.left  = (fR.left - cr.left + fR.width / 2) + 'px';
+        headPointer.style.top   = (fR.top  - cr.top  - 45) + 'px';
+        tailPointer.style.right = 'auto';
+        tailPointer.style.left  = (lR.left - cr.left + lR.width / 2) + 'px';
+        tailPointer.style.top   = (lR.top  - cr.top  - 45) + 'px';
+        drawCircularArc(els[els.length - 1], els[0], circularCurvePath);
+      }
+    }, 400);
+  }
+
+  // ════════════════════════════════════════════════════════════════
   //  INSERT AT END
   // ════════════════════════════════════════════════════════════════
   function updateUI_end() {
@@ -1263,13 +1543,14 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
     currentStep = 0;
     hideLoopBox();
     removeTempPointer();
+    window._ptrAlreadyShown = false;
     initNodes();
     updateUI();
   }
 
   // ── Confirm / Enter ───────────────────────────────────────────────
   function confirmAndStart() {
-    if (mode === 'delete-beginning') {
+    if (mode === 'delete-beginning' || mode === 'delete-end') {
       // No value needed — just reset and start
       currentStep = 0;
       initNodes();
@@ -1278,6 +1559,52 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
       updateUI();
       return;
     }
+
+    if (mode === 'delete-middle') {
+      const posInput = document.getElementById('vizPosInput');
+      const valInput = document.getElementById('vizValueInput');
+      let valStr = valInput ? valInput.value.trim() : '';
+      let posStr = posInput ? posInput.value.trim() : '';
+      
+      let targetIndex = -1; // 0-based index
+      if (valStr !== '') {
+        const val = parseInt(valStr);
+        for (let i = 0; i < nodes.length; i++) {
+          if (nodes[i].data === val) { targetIndex = i; break; }
+        }
+        if (targetIndex === -1) {
+          showToast('⚠️ Value not found in list');
+          return;
+        }
+      } else if (posStr !== '') {
+        targetIndex = parseInt(posStr);
+      }
+      
+      if (isNaN(targetIndex) || targetIndex < 0 || targetIndex >= nodes.length) {
+        showToast('⚠️ Enter valid index (0 to ' + (nodes.length - 1) + ') or value');
+        return;
+      }
+      
+      if (targetIndex === 0) {
+        showToast('⚠️ Index 0 is HEAD. Use Delete at Beginning instead.');
+        return;
+      }
+      if (targetIndex === nodes.length - 1) {
+        showToast('⚠️ Index ' + (nodes.length - 1) + ' is TAIL. Use Delete at End instead.');
+        return;
+      }
+      
+      deletePos = targetIndex + 1; // 1-based index internally
+      buildDelMidPlan();
+      window._ptrAlreadyShown = false;
+      currentStep = 0;
+      initNodes();
+      updateUI();
+      currentStep = 1;
+      updateUI();
+      return;
+    }
+
     const val = parseInt(valueInput.value);
     if (!isNaN(val)) insertValue = val;
 
@@ -1312,6 +1639,98 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
     if      (e.key === "ArrowRight" && currentStep < totalSteps) { currentStep++; updateUI(); }
     else if (e.key === "ArrowLeft"  && currentStep > 0)          { currentStep--; updateUI(); }
   });
+
+  let PTR_EL = null;
+  function createPtrPointer() {
+    if (!PTR_EL) {
+      PTR_EL = document.createElement('div');
+      PTR_EL.id = 'ptrPointerDynamic';
+      // ptr lives BELOW the list — arrow points UP
+      PTR_EL.style.cssText = 'position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:none;z-index:90;transition:left 0.45s cubic-bezier(0.4,0,0.2,1),top 0.45s cubic-bezier(0.4,0,0.2,1),opacity 0.35s ease;opacity:0';
+      PTR_EL.innerHTML =
+        '<div style="font-size:12px;color:#f87171;line-height:1;margin-bottom:1px">↑</div>' +
+        '<div id="ptrAddrDynamic" style="font-size:9px;color:#f87171;font-weight:600;margin-bottom:1px">0x...</div>' +
+        '<div style="background:#fff0f0;color:#f87171;font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;border:1.5px solid #f87171;letter-spacing:0.04em;line-height:1.4">ptr</div>';
+      const canvas = listRow.parentElement;
+      if (canvas) canvas.appendChild(PTR_EL);
+    }
+    return PTR_EL;
+  }
+
+  function removePtrPointer() {
+    if (PTR_EL) {
+      PTR_EL.style.opacity = '0';
+      setTimeout(() => {
+        if (PTR_EL && PTR_EL.parentNode) PTR_EL.parentNode.removeChild(PTR_EL);
+        PTR_EL = null;
+      }, 300);
+    }
+  }
+
+  function placePtrPointerOnNode(nodeIndex) {
+    const el     = createPtrPointer();
+    const canvas = listRow.parentElement;
+    if (!canvas) return;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const wraps = listRow.querySelectorAll('.viz-node-wrap');
+        const wrap  = wraps[nodeIndex];
+        if (!wrap) return;
+        const canvasRect = canvas.getBoundingClientRect();
+        const nodeRect   = wrap.querySelector('.viz-node').getBoundingClientRect();
+        // Slightly left of centre (0.38) so arrow doesn't overlap index text below node
+        const cx   = nodeRect.left + nodeRect.width * 0.38 - canvasRect.left + (canvas.scrollLeft || 0);
+        // ptr lives BELOW the list; arrow inside ptr element points UP toward the node
+        const topY = nodeRect.bottom - canvasRect.top + 28;
+        if (el.style.opacity === '0' || el.style.opacity === '') {
+          el.style.transition = 'none';
+          el.style.left = (cx - 20) + 'px';
+          el.style.top  = topY + 'px';
+          void el.offsetWidth;
+          el.style.transition = 'left 0.45s cubic-bezier(0.4,0,0.2,1),top 0.45s cubic-bezier(0.4,0,0.2,1),opacity 0.35s ease';
+          requestAnimationFrame(() => { el.style.opacity = '1'; });
+        } else {
+          el.style.left = (cx - 20) + 'px';
+          el.style.top  = topY + 'px';
+        }
+        const addrEl = document.getElementById('ptrAddrDynamic');
+        if (addrEl) addrEl.textContent = nodes[nodeIndex] ? nodes[nodeIndex].addr : '0x...';
+      });
+    });
+  }
+
+  function buildDelMidPlan() {
+    const LINE_TEMP  = 3; // struct node* temp = head;
+    const LINE_PTR   = 4; // struct node* ptr;
+    const LINE_FOR   = 5; // for (...)
+    const LINE_PTR_T = 6; // ptr = temp;
+    const LINE_TEMP_M= 7; // temp = temp->next;
+    const LINE_LINK  = 8; // ptr->next = temp->next;
+    const LINE_FREE  = 9; // free(temp);
+    
+    const plan = [];
+    plan.push({ type: 'init',      codeLine: null });
+    plan.push({ type: 'checkNull', codeLine: 1 });          // if (head == NULL) → FALSE
+    plan.push({ type: 'checkTail', codeLine: 2 });          // if (head == tail) → FALSE
+    plan.push({ type: 'tempHead',  codeLine: LINE_TEMP });  // temp = head
+    plan.push({ type: 'ptrDecl',   codeLine: LINE_PTR  });  // struct node* ptr; — ghost NULL
+    
+    for (let i = 1; i < deletePos; i++) {
+      plan.push({ type: 'loopTrue', codeLine: LINE_FOR,   i: i });
+      plan.push({ type: 'ptrTemp',  codeLine: LINE_PTR_T, i: i, ptrIdx: i - 1 }); 
+      plan.push({ type: 'tempMove', codeLine: LINE_TEMP_M,i: i, tempIdx: i });
+    }
+    plan.push({ type: 'loopFalse', codeLine: LINE_FOR,  i: deletePos });
+    plan.push({ type: 'link1',     codeLine: LINE_LINK });
+    plan.push({ type: 'free',      codeLine: LINE_FREE });
+    plan.push({ type: 'done',      codeLine: null });
+
+    DEL_MID_PLAN = plan;
+    if (mode === 'delete-middle') {
+      totalSteps = plan.length - 1;
+      STEP_TO_LINE = plan.map(s => s.codeLine !== undefined ? s.codeLine : null);
+    }
+  }
 
   // ── Init ──────────────────────────────────────────────────────────
   switchCodeBlocks(mode);
@@ -1607,6 +2026,113 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
 
     // Build STEP_TO_LINE from plan
     STEP_TO_LINE = plan.map(s => s.codeLine !== undefined ? s.codeLine : null);
+  }
+
+  function getDelMidStepDataText(stepIndex) {
+    const step = DEL_MID_PLAN[stepIndex];
+    if (!step) return null;
+    const total = DEL_MID_PLAN.length - 1;
+    const num   = stepIndex;
+
+    switch (step.type) {
+      case 'init':
+        return {
+          explainStepNum: 'Initial State',
+          explainTitle:   'Starting Point',
+          explainText:    'We have a circular singly linked list: <strong>1 → 2 → 3 → 4 → (back to 1)</strong>.<br><br>Goal: delete the node at position <strong>' + deletePos + '</strong>.',
+          whatBody:       'HEAD points to node 1. TAIL points to node 4. We call <code>deleteAtMiddle(pos)</code>.',
+          conceptText:    '💡 Delete at middle is O(n) — we must traverse to find the node and its predecessor!'
+        };
+      case 'checkNull':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'Check: head == NULL?',
+          explainText:    '<code>if (head == NULL) return;</code> — is the list empty?<br><br>Our list has 4 nodes, so <strong>head != NULL</strong>. We skip this.',
+          whatBody:       'Condition box shows: head == NULL → FALSE — list has nodes.',
+          conceptText:    '🔗 If list were empty, nothing to delete — just return.'
+        };
+      case 'checkTail':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'Check: head == tail?',
+          explainText:    '<code>if (head == tail)</code> — is there only one node?<br><br>Our list has 4 nodes, so <strong>head != tail</strong>. We proceed.',
+          whatBody:       'Condition box shows: head == tail → FALSE — list has multiple nodes.',
+          conceptText:    '📌 Single-node case: free(head), set head = tail = NULL. We skip that here.'
+        };
+      case 'tempHead':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'temp = head',
+          explainText:    '<code>struct node* temp = head;</code> — start traversal from head.',
+          whatBody:       'A <strong>temp</strong> pointer (red) appears at node 1 (head).',
+          conceptText:    '📌 temp starts at head and will walk forward to find the target node.'
+        };
+      case 'ptrDecl':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'struct node* ptr',
+          explainText:    '<code>struct node* ptr;</code> — declare ptr, the trailing pointer.<br><br>Not yet assigned — it holds no valid address yet.',
+          whatBody:       'A <strong>ptr</strong> label fades in below the list near head, showing NULL — not yet pointing to any node.',
+          conceptText:    '🔖 ptr will always trail one step behind temp, so we can relink the list after deletion.'
+        };
+      case 'loopTrue':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'Loop: i=' + step.i + ' < pos=' + deletePos + ' → TRUE',
+          explainText:    '<code>for (int i = 1; i &lt; pos; i++)</code><br><br>i=' + step.i + ', pos=' + deletePos + '. ' + step.i + ' &lt; ' + deletePos + ' is <strong>True</strong> — loop runs.',
+          whatBody:       'Loop condition is TRUE. temp will advance to the next node.',
+          conceptText:    '🔄 Iteration ' + step.i + ': temp moves one node closer to the target.'
+        };
+      case 'ptrTemp':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'ptr = temp',
+          explainText:    '<code>ptr = temp;</code> — ptr saves the current temp node before temp advances.',
+          whatBody:       'A <strong>ptr</strong> pointer appears on the same node as temp.',
+          conceptText:    '🔖 We must keep track of the PREVIOUS node (ptr) to relink the list later!'
+        };
+      case 'tempMove':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'temp = temp→next',
+          explainText:    '<code>temp = temp→next;</code> — advance temp to node ' + (step.tempIdx + 1) + '. i becomes ' + (step.i + 1) + '.',
+          whatBody:       'temp slides from index ' + (step.tempIdx - 1) + ' to index ' + step.tempIdx + '.',
+          conceptText:    '➡️ temp moves forward one step.'
+        };
+      case 'loopFalse':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'Loop: i=' + step.i + ' < pos=' + deletePos + ' → FALSE',
+          explainText:    '<code>for (int i = 1; i &lt; pos; i++)</code><br><br>i=' + step.i + ', pos=' + deletePos + '. ' + step.i + ' &lt; ' + deletePos + ' is <strong>False</strong>. Loop exits.',
+          whatBody:       'Loop condition is FALSE. Loop exits. temp is on the target node to delete.',
+          conceptText:    '🎯 temp reached the target position. Ready to relink.'
+        };
+      case 'link1':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'ptr→next = temp→next',
+          explainText:    '<code>ptr→next = temp→next;</code> — bypass the node being deleted.',
+          whatBody:       'A green jump curve draws from ptr to temp→next. Target node dims.',
+          conceptText:    '🟢 Forward chain updated: ptr node now skips over temp.'
+        };
+      case 'free':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'free(temp)',
+          explainText:    '<code>free(temp);</code> — deallocate the memory for the middle node.',
+          whatBody:       'The node pointed to by temp disappears. List shifts to close the gap.',
+          conceptText:    '🗑️ Memory is freed back to the system. No memory leaks!'
+        };
+      case 'done':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'Deletion Complete!',
+          explainText:    'Node at position <strong>' + deletePos + '</strong> successfully deleted.',
+          whatBody:       'List is finalized. Pointers are removed.',
+          conceptText:    '✅ Middle deletion complete! List structure perfectly maintained.'
+        };
+      default: return null;
+    }
   }
 
   // Build explanation text for current step from plan
