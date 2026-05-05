@@ -319,6 +319,62 @@
       </div>
     </div>
 
+    <!-- DELETE AT BEGINNING code block -->
+    <div class="viz-code-block" data-code-mode="delete-beginning" style="display:none">
+      <div class="viz-code-lines">
+
+        <div class="viz-code-line viz-code-comment" data-line="0">
+          <span class="lnum">1</span><span class="lcode"><span class="c-comment">// SCLL Node structure</span></span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">2</span><span class="lcode"><span class="c-pp">#include</span> &lt;stdio.h&gt;</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">3</span><span class="lcode"><span class="c-pp">#include</span> &lt;stdlib.h&gt;</span>
+        </div>
+        <div class="viz-code-spacer"></div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">4</span><span class="lcode"><span class="c-kw">void</span> <span class="c-fn">deleteAtBeginning</span>() {</span>
+        </div>
+        <div class="viz-code-line viz-highlightable" data-line="1">
+          <span class="lnum">5</span><span class="lcode">&nbsp;&nbsp;<span class="c-kw">if</span> (head == <span class="c-kw">NULL</span>) <span class="c-kw">return</span>;</span>
+        </div>
+        <div class="viz-code-spacer"></div>
+        <div class="viz-code-line viz-highlightable" data-line="2">
+          <span class="lnum">6</span><span class="lcode">&nbsp;&nbsp;<span class="c-kw">if</span> (head == tail) {</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">7</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">free</span>(head);</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">8</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;head = tail = <span class="c-kw">NULL</span>;</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">9</span><span class="lcode">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span>;</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">10</span><span class="lcode">&nbsp;&nbsp;}</span>
+        </div>
+        <div class="viz-code-spacer"></div>
+        <div class="viz-code-line viz-highlightable" data-line="3">
+          <span class="lnum">11</span><span class="lcode">&nbsp;&nbsp;<span class="c-kw">struct</span> node* temp = head;</span>
+        </div>
+        <div class="viz-code-line viz-highlightable" data-line="4">
+          <span class="lnum">12</span><span class="lcode">&nbsp;&nbsp;head = head<span class="c-op">-&gt;</span>next;</span>
+        </div>
+        <div class="viz-code-line viz-highlightable" data-line="5">
+          <span class="lnum">13</span><span class="lcode">&nbsp;&nbsp;tail<span class="c-op">-&gt;</span>next = head;</span>
+        </div>
+        <div class="viz-code-line viz-highlightable" data-line="6">
+          <span class="lnum">14</span><span class="lcode">&nbsp;&nbsp;<span class="c-fn">free</span>(temp);</span>
+        </div>
+        <div class="viz-code-line" data-line="0">
+          <span class="lnum">15</span><span class="lcode">}</span>
+        </div>
+
+      </div>
+    </div>
+
     <div class="viz-complexity-bar">
       <span class="viz-complexity-label">Time Complexity</span>
       <span class="viz-complexity-val" id="timeComplexityVal">O(1)</span>

@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     'insert-beginning': 'Insert at Beginning',
     'insert-end':       'Insert at End',
     'insert-middle':    'Insert at Middle',
+    'delete-beginning': 'Delete at Beginning',
   };
 
   // ── Step sidebar labels per mode ─────────────────────────────────
@@ -62,6 +63,15 @@ document.addEventListener("DOMContentLoaded", () => {
       'Circular link stays intact',
       'Node inserted! List updated',
     ],
+    'delete-beginning': [
+      'Check: head == NULL?',
+      'Check: head == tail?',
+      'temp = head',
+      'head = head→next',
+      'tail→next = head',
+      'free(temp)',
+      'Node deleted! List updated',
+    ],
   };
 
   function rebuildStepList(m) {
@@ -93,11 +103,15 @@ document.addEventListener("DOMContentLoaded", () => {
       // Show/hide position input row for insert-middle
       const posRow = document.getElementById('posInputRow');
       if (posRow) posRow.style.display = (mode === 'insert-middle') ? '' : 'none';
-      totalSteps = (mode === 'insert-middle') ? 10 : 7;
-      STEP_TO_LINE = (mode === 'insert-middle')
+      // Show/hide value input for delete modes (no value needed)
+      const valRow = document.getElementById('valueInputRow') || valueInput.closest('.viz-input-row');
+      if (valRow) valRow.style.display = (mode === 'delete-beginning') ? 'none' : '';
+      totalSteps = (mode === 'insert-middle') ? 10 : 7;      STEP_TO_LINE = (mode === 'insert-middle')
         // steps: 0=init, 1=malloc, 2=data, 3=temp=head, 4=loopTRUE(for line), 5=tempMove(body line), 6=loopFALSE(for line), 7=link1, 8=link2, 9=circCheck, 10=done
         ? [null, 1, 2, 3, 4, 5, 4, 6, 7, null, null]
-        : [null, 1, 2, 3, 4, 5, 6, null];
+        : (mode === 'delete-beginning')
+          ? [null, 1, 2, 3, 4, 5, 6, null]
+          : [null, 1, 2, 3, 4, 5, 6, null];
       switchCodeBlocks(mode);
       rebuildStepList(mode);
       hideLoopBox();
@@ -643,6 +657,68 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
   const STEPS_MID = [];   // updateUI_mid overrides the panel directly
 
   // ════════════════════════════════════════════════════════════════
+  //  DELETE AT BEGINNING — explanation data
+  // ════════════════════════════════════════════════════════════════
+  const STEPS_DEL_BEG = [
+    {
+      explainStepNum: 'Initial State',
+      explainTitle:   'Starting Point',
+      explainText:    'We have a circular singly linked list: <strong>1 → 2 → 3 → 4 → (back to 1)</strong>.<br><br>Goal: delete the first node (node 1) from the beginning.',
+      whatBody:       'HEAD points to node 1. TAIL (node 4) next points back to node 1 — forming the circle. We call <code>deleteAtBeginning()</code>.',
+      conceptText:    '💡 Circular SLL: tail→next always wraps to head — deleting head means rewiring this circular link!'
+    },
+    {
+      explainStepNum: 'Step 1 of 7',
+      explainTitle:   'Check: head == NULL?',
+      explainText:    '<code>if (head == NULL)</code> — is the list empty?<br><br>Our list has 4 nodes, so <strong>head != NULL</strong>. We skip this case.',
+      whatBody:       'The condition box shows: head == NULL → FALSE — list has nodes. We proceed past this check.',
+      conceptText:    '🔗 If list were empty, there is nothing to delete — we print a message and return.'
+    },
+    {
+      explainStepNum: 'Step 2 of 7',
+      explainTitle:   'Check: head == tail?',
+      explainText:    '<code>if (head == tail)</code> — is there only one node?<br><br>Our list has 4 nodes, so <strong>head != tail</strong>. We proceed to Case 3.',
+      whatBody:       'The condition box shows: head == tail → FALSE — list has multiple nodes. We go to the multi-node deletion path.',
+      conceptText:    '📌 Single-node case: free(head) and set head = tail = NULL. We skip that here.'
+    },
+    {
+      explainStepNum: 'Step 3 of 7',
+      explainTitle:   'temp = head',
+      explainText:    '<code>struct node* temp = head;</code> — save a pointer to the current head node (node 1) so we can free it after rewiring.',
+      whatBody:       'A <strong>temp</strong> pointer (red) appears above node 1 (current head). temp = 0x101.',
+      conceptText:    '⚠️ We must save the old head reference BEFORE moving head forward — otherwise we lose it and can\'t call free()!'
+    },
+    {
+      explainStepNum: 'Step 4 of 7',
+      explainTitle:   'head = head→next',
+      explainText:    '<code>head = head→next;</code> — move HEAD forward to node 2.<br><br>Node 2 is now the new first node of the list.',
+      whatBody:       'HEAD pointer slides from node 1 → node 2. temp still holds the old head (node 1).',
+      conceptText:    '➡️ Advancing head is safe because temp still holds node 1. The circular link is not fixed yet.'
+    },
+    {
+      explainStepNum: 'Step 5 of 7',
+      explainTitle:   'tail→next = head',
+      explainText:    '<code>tail→next = head;</code> — re-wire the tail\'s next pointer to the new head (node 2).<br><br>This restores the circular link.',
+      whatBody:       'The circular arc redraws from node 4 (tail) → node 2 (new head). Node 4\'s next updates to 0x102.',
+      conceptText:    '🔄 Critical! Without this, tail still points to the deleted node 1 — breaking the circle.'
+    },
+    {
+      explainStepNum: 'Step 6 of 7',
+      explainTitle:   'free(temp)',
+      explainText:    '<code>free(temp);</code> — release the memory of the old head node (node 1).<br><br>temp fades out — node 1 is gone.',
+      whatBody:       'The temp pointer and node 1 fade away. Memory at 0x101 is freed back to the heap.',
+      conceptText:    '🗑️ Always free deleted nodes — not doing so causes memory leaks! temp pointer is now dangling (don\'t use it).'
+    },
+    {
+      explainStepNum: 'Step 7 of 7',
+      explainTitle:   'Deletion Complete!',
+      explainText:    'Node 1 successfully deleted from the beginning.<br><br>List is now: <strong>2 → 3 → 4 → (back to 2)</strong>',
+      whatBody:       'The list snaps to 3 nodes. HEAD points to node 2. TAIL (node 4) circular arc redrawn to node 2.',
+      conceptText:    '✅ Delete at beginning is O(1) — just pointer updates, no traversal needed!'
+    }
+  ];
+
+  // ════════════════════════════════════════════════════════════════
   //  MASTER UPDATE — dispatches to mode-specific handler
   // ════════════════════════════════════════════════════════════════
   function updateUI() {
@@ -669,7 +745,11 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
     // ── Update explanation card ──────────────────────────────────
     const stepData = mode === 'insert-middle'
       ? getMidStepData(currentStep)
-      : (mode === 'insert-end' ? STEPS_END : STEPS_BEG)[currentStep];
+      : mode === 'insert-end'
+        ? STEPS_END[currentStep]
+        : mode === 'delete-beginning'
+          ? STEPS_DEL_BEG[currentStep]
+          : STEPS_BEG[currentStep];
     if (stepData) {
       const elStepNum   = document.getElementById('explainStepNum');
       const elTitle     = document.getElementById('explainTitle');
@@ -689,9 +769,10 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
     btnPrev.disabled = (currentStep === 0) || (currentStep === totalSteps);
     btnNext.disabled = (currentStep === totalSteps);
 
-    if (mode === 'insert-end')    updateUI_end();
+    if (mode === 'insert-end')         updateUI_end();
     else if (mode === 'insert-middle') updateUI_mid();
-    else                          updateUI_beg();
+    else if (mode === 'delete-beginning') updateUI_del_beg();
+    else                               updateUI_beg();
   }
 
   // ════════════════════════════════════════════════════════════════
@@ -841,6 +922,167 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
       tailPointer.style.right = 'auto';
       tailPointer.style.left  = (lR.left - cr7.left + lR.width  / 2) + "px";
       tailPointer.style.top   = (lR.top  - cr7.top  - 45) + "px";
+      drawCircularArc(els[els.length - 1], els[0], circularCurvePath);
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  //  DELETE AT BEGINNING
+  // ════════════════════════════════════════════════════════════════
+  function updateUI_del_beg() {
+
+    if (currentStep === 0) {
+      // Initial state — show default list, no temp, no condition box
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      hideConditionBox();
+      removeTempPointer();
+      const n4n = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n) n4n.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      scrollToHead();
+
+    } else if (currentStep === 1) {
+      // if (head == NULL) — FALSE condition box
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      removeTempPointer();
+      const n4n1 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n1) n4n1.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      // Show condition box: head == NULL → FALSE
+      conditionBox.innerHTML = 'head == NULL &nbsp;&rarr;&nbsp; &times; FALSE &mdash; list has nodes';
+      conditionBox.style.background = '#fff5f5';
+      conditionBox.style.border     = '2px solid #ef4444';
+      conditionBox.style.color      = '#b91c1c';
+      conditionBox.style.display    = 'block';
+      conditionBox.style.opacity    = '0';
+      requestAnimationFrame(() => requestAnimationFrame(() => { conditionBox.style.opacity = '1'; }));
+
+    } else if (currentStep === 2) {
+      // if (head == tail) — FALSE condition box
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      removeTempPointer();
+      const n4n2 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n2) n4n2.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      // Show condition box: head == tail → FALSE
+      conditionBox.innerHTML = 'head == tail &nbsp;&rarr;&nbsp; &times; FALSE &mdash; list has multiple nodes';
+      conditionBox.style.background = '#fff5f5';
+      conditionBox.style.border     = '2px solid #ef4444';
+      conditionBox.style.color      = '#b91c1c';
+      conditionBox.style.display    = 'block';
+      conditionBox.style.opacity    = '0';
+      requestAnimationFrame(() => requestAnimationFrame(() => { conditionBox.style.opacity = '1'; }));
+
+    } else if (currentStep === 3) {
+      // temp = head — temp pointer appears on node 1
+      hideConditionBox();
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      const n4n3 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n3) n4n3.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      placeTempPointerOnNode(0);
+
+    } else if (currentStep === 4) {
+      // head = head->next — head slides to node 2, temp stays on node 1
+      hideConditionBox();
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      const n4n4 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n4) n4n4.innerText = '0x101';
+      // Move HEAD to node 2
+      const n2Rect = nodes[1].el.getBoundingClientRect();
+      const cr4    = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n2Rect.left - cr4.left + n2Rect.width / 2) + 'px';
+      headPointer.style.top  = (n2Rect.top  - cr4.top  - 45) + 'px';
+      restoreTailToNode4();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      // temp stays on node 1
+      placeTempPointerOnNode(0);
+
+    } else if (currentStep === 5) {
+      // tail->next = head — circular arc redraws from tail to node 2
+      hideConditionBox();
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      // node 4 next field updates to 0x102
+      const n4n5 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n5) n4n5.innerText = '0x102';
+      // HEAD still at node 2
+      const n2Rect5 = nodes[1].el.getBoundingClientRect();
+      const cr5     = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n2Rect5.left - cr5.left + n2Rect5.width / 2) + 'px';
+      headPointer.style.top  = (n2Rect5.top  - cr5.top  - 45) + 'px';
+      restoreTailToNode4();
+      // Animate circular arc: tail → node 2 (new head)
+      drawCircularArc(nodes[3].el, nodes[1].el, circularCurvePath);
+      circularCurvePath.style.strokeDasharray  = '';
+      circularCurvePath.style.strokeDashoffset = '';
+      animatePath(circularCurvePath, curveSvg, '#3b6cff');
+      // temp stays on node 1
+      placeTempPointerOnNode(0);
+
+    } else if (currentStep === 6) {
+      // free(temp) — temp and node 1 fade away
+      hideConditionBox();
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      const n4n6 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n6) n4n6.innerText = '0x102';
+      const n2Rect6 = nodes[1].el.getBoundingClientRect();
+      const cr6     = listRow.parentElement.getBoundingClientRect();
+      headPointer.style.left = (n2Rect6.left - cr6.left + n2Rect6.width / 2) + 'px';
+      headPointer.style.top  = (n2Rect6.top  - cr6.top  - 45) + 'px';
+      restoreTailToNode4();
+      // Static circular arc tail → node 2
+      drawCircularArc(nodes[3].el, nodes[1].el, circularCurvePath);
+      circularCurvePath.style.strokeDasharray  = '';
+      circularCurvePath.style.strokeDashoffset = '';
+      // Fade out temp pointer (free)
+      removeTempPointer();
+      // Fade out node 1 visually
+      const node1Wrap = listRow.querySelector('#node-1') || listRow.querySelector('.viz-node-wrap');
+      if (node1Wrap) {
+        node1Wrap.style.transition = 'opacity 0.5s ease';
+        node1Wrap.style.opacity    = '0.15';
+      }
+      // Also fade the arrow after node 1
+      const firstArrow = node1Wrap ? node1Wrap.nextElementSibling : null;
+      if (firstArrow && firstArrow.classList.contains('viz-arrow')) {
+        firstArrow.style.transition = 'opacity 0.5s ease';
+        firstArrow.style.opacity    = '0.1';
+      }
+
+    } else if (currentStep === 7) {
+      // Done — rebuild final list: 2 → 3 → 4 → (back to 2)
+      hideConditionBox();
+      hidePath(curvePath);
+      removeTempPointer();
+      newNodeWrap.classList.remove('visible');
+      listRow.innerHTML = '';
+      scrollToHead();
+      const finalNodes = [
+        { data: 2, addr: '0x102', nextAddr: '0x103' },
+        { data: 3, addr: '0x103', nextAddr: '0x104' },
+        { data: 4, addr: '0x104', nextAddr: '0x102' },
+      ];
+      const els = buildFinalList(finalNodes);
+      void listRow.offsetWidth;
+      const cr7 = listRow.parentElement.getBoundingClientRect();
+      const fR  = els[0].getBoundingClientRect();
+      const lR  = els[els.length - 1].getBoundingClientRect();
+      headPointer.style.left  = (fR.left - cr7.left + fR.width  / 2) + 'px';
+      headPointer.style.top   = (fR.top  - cr7.top  - 45) + 'px';
+      tailPointer.style.right = 'auto';
+      tailPointer.style.left  = (lR.left - cr7.left + lR.width  / 2) + 'px';
+      tailPointer.style.top   = (lR.top  - cr7.top  - 45) + 'px';
       drawCircularArc(els[els.length - 1], els[0], circularCurvePath);
     }
   }
@@ -1027,6 +1269,15 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
 
   // ── Confirm / Enter ───────────────────────────────────────────────
   function confirmAndStart() {
+    if (mode === 'delete-beginning') {
+      // No value needed — just reset and start
+      currentStep = 0;
+      initNodes();
+      updateUI();
+      currentStep = 1;
+      updateUI();
+      return;
+    }
     const val = parseInt(valueInput.value);
     if (!isNaN(val)) insertValue = val;
 
