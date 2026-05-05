@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       el.classList.add('viz-line-active');
       if (!scrolled && el.classList.contains('viz-highlightable')) {
         const codeBlock = el.closest('.viz-code-block');
-        if (codeBlock) { codeBlock.scrollTo({ top: el.offsetTop - 10, behavior: 'smooth' }); scrolled = true; }
+        if (codeBlock && codeBlock.offsetParent !== null) { codeBlock.scrollTo({ top: el.offsetTop - 10, behavior: 'smooth' }); scrolled = true; }
       }
     });
   }
@@ -243,49 +243,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Circular back-link going BELOW the row (tail → head style)
 function drawCircularArc(startEl, endEl, pathEl) {
-    if (!startEl || !endEl) return;
-    const sRect  = startEl.getBoundingClientRect();
-    const eRect  = endEl.getBoundingClientRect();
-    const cRect  = curveSvg.getBoundingClientRect();
-    
-    // Origin: Right-center edge of the tail node
-    const startX = sRect.right - cRect.left;
-    const startY = sRect.top   - cRect.top  + sRect.height / 2;
-    
-    // Approach target: Left edge of the head node
-    const endX   = eRect.left  - cRect.left - 10;
-    const endY   = eRect.top   - cRect.top  + eRect.height / 2;
-    
-    // FIX: The drop depth must be below BOTH nodes so the path doesn't zigzag 
-    // when connecting to a node that is positioned lower on the screen.
-    const midY   = Math.max(startY, endY) + sRect.height + 25;
-    
-    // Radius for the rounded corners
-    const r = 20;
+  if (!startEl || !endEl) return;
+  const sRect  = startEl.getBoundingClientRect();
+  const eRect  = endEl.getBoundingClientRect();
+  const cRect  = curveSvg.getBoundingClientRect();
+  
+  // Origin: Right-center edge of the tail node
+  const startX = sRect.right - cRect.left;
+  const startY = sRect.top   - cRect.top  + sRect.height / 2;
+  
+  // Approach target: Left edge of the head node
+  const endX   = eRect.left  - cRect.left - 10;
+  const endY   = eRect.top   - cRect.top  + eRect.height / 2;
+  
+  // 👇 MOBILE FIX: Check if we are on a phone screen
+  // 55px drops it safely below the index on mobile, 25px keeps laptop exactly the same.
+  const isMobile = window.innerWidth <= 768;
+  const dropDepth = isMobile ? 55 : 25; 
+  
+  const midY   = Math.max(startY, endY) + sRect.height + dropDepth;
+  
+  // Radius for the rounded corners (keeps your curves nice!)
+  const r = 20;
 
-    // Explicit edges to maintain perfect symmetry for all 4 turnings
-    const rightEdge = startX + r * 2;
-    const leftEdge  = endX - r * 2;
+  // Explicit edges to maintain perfect symmetry for all 4 turnings
+  const rightEdge = startX + r * 2;
+  const leftEdge  = endX - r * 2;
 
-    // Circuit-board path: Push right, drop down, run left beneath, hook up, push right.
-    const d = `
-      M ${startX} ${startY}
-      L ${rightEdge - r} ${startY}
-      Q ${rightEdge} ${startY}, ${rightEdge} ${startY + r}
-      L ${rightEdge} ${midY - r}
-      Q ${rightEdge} ${midY}, ${rightEdge - r} ${midY}
-      L ${leftEdge + r} ${midY}
-      Q ${leftEdge} ${midY}, ${leftEdge} ${midY - r}
-      L ${leftEdge} ${endY + r}
-      Q ${leftEdge} ${endY}, ${leftEdge + r} ${endY}
-      L ${endX} ${endY}
-    `;
+  // Circuit-board path: Push right, drop down, run left beneath, hook up, push right.
+  const d = `
+    M ${startX} ${startY}
+    L ${rightEdge - r} ${startY}
+    Q ${rightEdge} ${startY}, ${rightEdge} ${startY + r}
+    L ${rightEdge} ${midY - r}
+    Q ${rightEdge} ${midY}, ${rightEdge - r} ${midY}
+    L ${leftEdge + r} ${midY}
+    Q ${leftEdge} ${midY}, ${leftEdge} ${midY - r}
+    L ${leftEdge} ${endY + r}
+    Q ${leftEdge} ${endY}, ${leftEdge + r} ${endY}
+    L ${endX} ${endY}
+  `;
 
-    pathEl.setAttribute("d", d.replace(/\s+/g, " ").trim());
-    pathEl.setAttribute("stroke", "#3b6cff");
-    pathEl.setAttribute("marker-end", "url(#arrowHeadSmallBlue)"); 
-    pathEl.style.opacity = '0.8';
-  }
+  pathEl.setAttribute("d", d.replace(/\s+/g, " ").trim());
+  pathEl.setAttribute("stroke", "#3b6cff");
+  pathEl.setAttribute("marker-end", "url(#arrowHeadSmallBlue)"); 
+  pathEl.style.opacity = '0.8';
+}
 
   // BEG mode step 4: newNode (bottom-left area) → head bottom (swoop below)
   function drawForwardArc(startEl, endEl, pathEl) {
@@ -1654,6 +1657,7 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
       hidePath(curvePath);
       newNodeWrap.classList.remove('visible');
       listRow.innerHTML = '';
+      scrollToHead();
       const finalNodes = [];
       for (let i = 0; i < nodes.length; i++) {
         finalNodes.push({ data: nodes[i].data, addr: nodes[i].addr, nextAddr: i < nodes.length - 1 ? nodes[i+1].addr : '0x101' });

@@ -1404,3 +1404,54 @@
     order: 99; /* always last */
   }
 }
+
+/* ═══ MOBILE PHONE — CIRCULAR LIST FIXES (≤ 480px) ════════════ */
+@media (max-width: 480px) {
+  /* TASK 1: Fix animation visibility — enable horizontal scroll */
+  .viz-scroll-container {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /*
+   * Canvas fixed wide (700px) so the full 4-node list + circular arc
+   * fits inside. User scrolls right to reveal tail→head curve.
+   */
+  .viz-anim-canvas {
+    min-width: 700px !important;
+    width: 700px !important;
+    overflow: visible !important;
+  }
+
+  /*
+   * Keep position:absolute — JS pointer math depends on it.
+   * Override left:50% → left:30px so list anchors near left edge.
+   * Remove X-translate, keep Y-centering only.
+   * Full list + arc visible via horizontal scroll.
+   */
+  .viz-list-row {
+    left: 140px !important;
+    transform: translateX(0) translateY(-20%) !important;
+  }
+
+  /* TASK 2: Compact red condition box */
+  .viz-condition-box {
+    font-size: 11px !important;
+    padding: 5px 10px !important;
+    max-width: 88% !important;
+    text-align: center !important;
+    border-radius: 8px !important;
+    white-space: normal !important;
+    width: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Keep loop-box compact */
+  .viz-loop-box {
+    font-size: 11px;
+    padding: 5px 10px;
+    max-width: 88%;
+    white-space: normal;
+  }
+}
