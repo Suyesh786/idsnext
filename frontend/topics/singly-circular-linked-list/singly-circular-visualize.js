@@ -74,6 +74,18 @@ document.addEventListener("DOMContentLoaded", () => {
       'free(temp)',
       'Node deleted! List updated',
     ],
+    'delete-end': [
+      'Check: head == NULL?',
+      'Check: head == tail?',
+      'temp = head',
+      'while(temp→next != tail) → TRUE',
+      'temp = temp→next',
+      'while(temp→next != tail) → FALSE',
+      'temp→next = head',
+      'free(tail)',
+      'tail = temp',
+      'Node deleted! List updated',
+    ],
   };
 
   function rebuildStepList(m) {
@@ -94,6 +106,19 @@ document.addEventListener("DOMContentLoaded", () => {
         else if (step.type === 'loopFalse') labels.push("Loop: i < " + deletePos + " → FALSE");
         else if (step.type === 'link1') labels.push("ptr→next = temp→next");
         else if (step.type === 'free') labels.push("free(temp)");
+      });
+    } else if (m === 'delete-end') {
+      DEL_END_PLAN.forEach(step => {
+        if (step.type === 'init' || step.type === 'done') return;
+        if (step.type === 'checkNull') labels.push("Check: head == NULL?");
+        else if (step.type === 'checkTail') labels.push("Check: head == tail?");
+        else if (step.type === 'tempHead') labels.push("temp = head");
+        else if (step.type === 'whileTrue') labels.push("while(temp→next != tail) → TRUE");
+        else if (step.type === 'tempMove') labels.push("temp = temp→next");
+        else if (step.type === 'whileFalse') labels.push("while(temp→next != tail) → FALSE");
+        else if (step.type === 'circLink') labels.push("temp→next = head");
+        else if (step.type === 'freeTail') labels.push("free(tail)");
+        else if (step.type === 'tailTemp') labels.push("tail = temp");
       });
     } else {
       labels = STEP_LABELS[m] || [];
@@ -128,6 +153,8 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (mode === 'delete-beginning') {
         totalSteps = 7;
         STEP_TO_LINE = [null, 1, 2, 3, 4, 5, 6, null];
+      } else if (mode === 'delete-end') {
+        buildDelEndPlan();
       } else if (mode === 'delete-middle') {
         deletePos = 2; // default
         buildDelMidPlan();
@@ -138,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
       const timeVal = document.getElementById('timeComplexityVal');
       if (timeVal) {
-        if (mode === 'insert-middle' || mode === 'delete-middle') {
+        if (mode === 'insert-middle' || mode === 'delete-middle' || mode === 'delete-end') {
           timeVal.textContent = 'O(n)';
         } else {
           timeVal.textContent = 'O(1)';
@@ -153,6 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window._ptrAlreadyShown = false;
       if (mode !== 'insert-middle') MID_PLAN = [];
       if (mode !== 'delete-middle') DEL_MID_PLAN = [];
+      if (mode !== 'delete-end') DEL_END_PLAN = [];
       resetAll();
     });
   });
@@ -165,6 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let insertPos   = 2;        // 1-based: position AFTER which we insert (insert-middle)
   let deletePos   = 2;        // 1-based: position OF node to delete (delete-middle)
   let DEL_MID_PLAN = [];
+  let DEL_END_PLAN = [];
 
   const NEW_NODE_ADDR_BEG = '0x100';
   const NEW_NODE_ADDR_END = '0x105';
@@ -209,6 +238,29 @@ document.addEventListener("DOMContentLoaded", () => {
   function hideConditionBox() {
     conditionBox.style.opacity = '0';
     setTimeout(() => { conditionBox.style.display = 'none'; }, 300);
+  }
+
+  // For delete-end on narrow (phone) screens, place box BELOW the list.
+  // All other modes keep top:16px (default).
+  function positionConditionBoxForDelEnd() {
+    const isPhone = window.innerWidth <= 520;
+    if (mode === 'delete-end' && isPhone) {
+      conditionBox.style.top        = 'auto';
+      conditionBox.style.bottom     = '72px';
+      conditionBox.style.fontSize   = '12.5px';
+      conditionBox.style.padding    = '11px 18px';
+      conditionBox.style.whiteSpace = 'normal';
+      conditionBox.style.maxWidth   = '90%';
+      conditionBox.style.textAlign  = 'center';
+    } else {
+      conditionBox.style.top        = '16px';
+      conditionBox.style.bottom     = 'auto';
+      conditionBox.style.fontSize   = '13px';
+      conditionBox.style.padding    = '10px 22px';
+      conditionBox.style.whiteSpace = 'nowrap';
+      conditionBox.style.maxWidth   = 'none';
+      conditionBox.style.textAlign  = 'left';
+    }
   }
 
   // ── Code block visibility (show only active mode's code) ─────────
@@ -404,6 +456,7 @@ function drawCircularArc(startEl, endEl, pathEl) {
   }
 
   // END mode step 4: newNode (right of tail) → head top (arc ABOVE the list)
+// END mode step 4: newNode (right of tail) → head top (arc ABOVE the list)
 function drawEndForwardArc(newEl, headEl, pathEl) {
   if (!newEl || !headEl) return;
   const sRect  = newEl.getBoundingClientRect();
@@ -414,23 +467,27 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
   const startX = sRect.right - cRect.left;
   const startY = sRect.top   - cRect.top  + sRect.height / 2;
 
-  // Approach target: Left edge of the head node, elevated ABOVE the center
+  // Approach target: Left edge of the head node, positioned slightly below the center (25% from top)
   const endX   = eRect.left  - cRect.left - 10;
   const endY   = eRect.top   - cRect.top  + (eRect.height * 0.25);
 
   // Peak altitude for the perfectly horizontal traverse
   const peakY  = eRect.top - cRect.top - 55;
 
-  // Tighter right boundary to prevent screen overflow (only 35px out)
+  // Tighter right boundary to prevent screen overflow
   const rightEdge = startX + 35;
   
-  // Overshoot left boundary to mirror the bottom pointer's symmetry
+  // Left Edge push: Goes further left than the blue line to approach from the "backside"
   const leftEdge  = endX - 45;
   
   // Radius for the rounded corners
   const r = 20;
 
-  // Geometric path: Lines (L) for straight edges, Quadratic Bezier (Q) for rounded 90-degree corners
+  // Geometric path: 
+  // 1. Move to start, push right.
+  // 2. Drop down to the peak altitude.
+  // 3. Run left far enough to clear the blue line's boundary.
+  // 4. Hook back in to meet the head from the left.
   const d = `
     M ${startX} ${startY}
     L ${rightEdge - r} ${startY}
@@ -444,7 +501,6 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
     L ${endX} ${endY}
   `;
 
-  // Remove the extra whitespace from the template literal for standard SVG syntax
   pathEl.setAttribute("d", d.replace(/\s+/g, " ").trim());
   pathEl.setAttribute("stroke", "#10b981"); // Emerald green
   pathEl.setAttribute("marker-end", "url(#arrowHeadGreen)");
@@ -832,9 +888,11 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
         ? getDelMidStepDataText(currentStep)
       : mode === 'insert-end'
         ? STEPS_END[currentStep]
-        : mode === 'delete-beginning'
-          ? STEPS_DEL_BEG[currentStep]
-          : STEPS_BEG[currentStep];
+      : mode === 'delete-beginning'
+        ? STEPS_DEL_BEG[currentStep]
+      : mode === 'delete-end'
+        ? getDelEndStepDataText(currentStep)
+        : STEPS_BEG[currentStep];
     if (stepData) {
       const elStepNum   = document.getElementById('explainStepNum');
       const elTitle     = document.getElementById('explainTitle');
@@ -857,6 +915,7 @@ function drawEndForwardArc(newEl, headEl, pathEl) {
     if (mode === 'insert-end')         updateUI_end();
     else if (mode === 'insert-middle') updateUI_mid();
     else if (mode === 'delete-beginning') updateUI_del_beg();
+    else if (mode === 'delete-end')    updateUI_del_end();
     else if (mode === 'delete-middle') updateUI_del_mid();
     else                               updateUI_beg();
   }
@@ -1697,6 +1756,410 @@ function animDelMid_jumpArc(startEl, endEl, pathEl, color) {
         if (addrEl) addrEl.textContent = nodes[nodeIndex] ? nodes[nodeIndex].addr : '0x...';
       });
     });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  //  DELETE AT END — plan builder
+  // ════════════════════════════════════════════════════════════════
+  function buildDelEndPlan() {
+    const nodeCount = 4; // always 4-node default list
+    const plan = [];
+    plan.push({ type: 'init',       codeLine: null });
+    plan.push({ type: 'checkNull',  codeLine: 1 });
+    plan.push({ type: 'checkTail',  codeLine: 2 });
+    plan.push({ type: 'tempHead',   codeLine: 3 });
+    // Loop: temp walks from index 0 up to index nodeCount-2 (stops when temp->next == tail)
+    for (let i = 0; i < nodeCount - 2; i++) {
+      plan.push({ type: 'whileTrue',  codeLine: 4, tempIdx: i });
+      plan.push({ type: 'tempMove',   codeLine: 5, tempIdx: i + 1 });
+    }
+    plan.push({ type: 'whileFalse',  codeLine: 4, tempIdx: nodeCount - 2 });
+    plan.push({ type: 'circLink',    codeLine: 6 });
+    plan.push({ type: 'freeTail',    codeLine: 7 });
+    plan.push({ type: 'tailTemp',    codeLine: 8 });
+    plan.push({ type: 'done',        codeLine: null });
+
+    DEL_END_PLAN = plan;
+    totalSteps   = plan.length - 1;
+    STEP_TO_LINE = plan.map(s => s.codeLine != null ? s.codeLine : null);
+  }
+
+  // ── Delete-end explanation text ───────────────────────────────────
+  function getDelEndStepDataText(stepIndex) {
+    if (!DEL_END_PLAN.length) buildDelEndPlan();
+    const step  = DEL_END_PLAN[stepIndex];
+    if (!step) return null;
+    const total = DEL_END_PLAN.length - 1;
+    const num   = stepIndex;
+    switch (step.type) {
+      case 'init':
+        return {
+          explainStepNum: 'Initial State',
+          explainTitle:   'Starting Point',
+          explainText:    'We have a circular singly linked list: <strong>1 → 2 → 3 → 4 → (back to 1)</strong>.<br><br>Goal: delete the last node (node 4, the tail) from the end.',
+          whatBody:       'HEAD points to node 1. TAIL (node 4) next points back to node 1 — forming the circle. We call <code>deleteAtEnd()</code>.',
+          conceptText:    '💡 Circular SLL has no prev pointer — to delete tail we must traverse to find the node BEFORE tail!'
+        };
+      case 'checkNull':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'Check: head == NULL?',
+          explainText:    '<code>if (head == NULL) return;</code> — is the list empty?<br><br>Our list has 4 nodes, so <strong>head != NULL</strong>. We skip this case.',
+          whatBody:       'The condition box shows: head == NULL → FALSE — list has nodes. We proceed past this check.',
+          conceptText:    '🔗 If list were empty, nothing to delete — we print a message and return.'
+        };
+      case 'checkTail':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'Check: head == tail?',
+          explainText:    '<code>if (head == tail)</code> — is there only one node?<br><br>Our list has 4 nodes, so <strong>head != tail</strong>. We proceed to Case 3.',
+          whatBody:       'The condition box shows: head == tail → FALSE — list has multiple nodes. We go to the traversal path.',
+          conceptText:    '📌 Single-node case: free(head) and set head = tail = NULL. We skip that here.'
+        };
+      case 'tempHead':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'temp = head',
+          explainText:    '<code>struct node* temp = head;</code> — start traversal pointer at head (node 1).',
+          whatBody:       'A <strong>temp</strong> pointer (red) appears above node 1. temp will walk forward until temp→next == tail.',
+          conceptText:    '⚠️ We need the node JUST BEFORE tail — so we stop when temp→next equals tail!'
+        };
+      case 'whileTrue':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'while(temp→next != tail) → TRUE',
+          explainText:    '<code>while (temp→next != tail)</code> — is temp→next NOT the tail?<br><br>temp is at node ' + (step.tempIdx + 1) + ', next is node ' + (step.tempIdx + 2) + ' which is NOT tail. <strong>Condition TRUE.</strong>',
+          whatBody:       'Loop condition box shows TRUE (green). temp will advance one node forward.',
+          conceptText:    '🔄 We keep going — temp hasn\'t reached the node before tail yet.'
+        };
+      case 'tempMove':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'temp = temp→next',
+          explainText:    '<code>temp = temp→next;</code> — advance temp to node ' + (step.tempIdx + 1) + '.',
+          whatBody:       'temp slides forward one node. Now temp is at node ' + (step.tempIdx + 1) + '.',
+          conceptText:    '➡️ temp moves one step closer to the node just before tail.'
+        };
+      case 'whileFalse':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'while(temp→next != tail) → FALSE',
+          explainText:    '<code>while (temp→next != tail)</code> — temp is now at node ' + (step.tempIdx + 1) + ', and temp→next IS the tail (node 4). <strong>Condition FALSE — loop exits.</strong>',
+          whatBody:       'Loop condition box shows FALSE (red). Loop exits. temp is now the node just before tail.',
+          conceptText:    '🎯 temp found! It\'s the penultimate node. Now we can safely delete tail and rewire.'
+        };
+      case 'circLink':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'temp→next = head',
+          explainText:    '<code>temp→next = head;</code> — the node before old tail now points to HEAD, maintaining the circular link.',
+          whatBody:       'An emerald green arc animates from temp to head. The old temp→tail link is removed. Circular chain preserved.',
+          conceptText:    '🔄 Critical! Wire temp→next to head BEFORE freeing tail — this restores the circle.'
+        };
+      case 'freeTail':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'free(tail)',
+          explainText:    '<code>free(tail);</code> — release the memory of the old tail node (node 4).',
+          whatBody:       'The old tail node (node 4) fades out smoothly. Memory at 0x104 is freed back to the heap.',
+          conceptText:    '🗑️ Always free deleted nodes — not doing so causes memory leaks!'
+        };
+      case 'tailTemp':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'tail = temp',
+          explainText:    '<code>tail = temp;</code> — TAIL pointer moves to temp (node 3), which is now the new last node.',
+          whatBody:       'TAIL pointer slides from the deleted node to node 3. temp pointer fades away.',
+          conceptText:    '➡️ Always update tail last — all pointer rewiring was completed first!'
+        };
+      case 'done':
+        return {
+          explainStepNum: 'Step ' + num + ' of ' + total,
+          explainTitle:   'Deletion Complete!',
+          explainText:    'Node 4 successfully deleted from the end.<br><br>List is now: <strong>1 → 2 → 3 → (back to 1)</strong>',
+          whatBody:       'List snaps to 3 nodes. HEAD at node 1. TAIL at node 3. Circular arc redrawn from node 3 to node 1.',
+          conceptText:    '✅ Delete at end is O(n) — traversal to find the second-to-last node is required!'
+        };
+      default: return null;
+    }
+  }
+
+  // ── Delete-end animator ──────────────────────────────────────────
+  function updateUI_del_end() {
+    if (!DEL_END_PLAN.length) buildDelEndPlan();
+    const step = DEL_END_PLAN[currentStep];
+    if (!step) return;
+
+    if (step.type === 'init') {
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      removeTempPointer();
+      hideConditionBox();
+      const n4n = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n) n4n.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      scrollToHead();
+      // Restore all node opacity
+      listRow.querySelectorAll('.viz-node-wrap').forEach(w => {
+        w.style.transition = 'opacity 0.3s ease';
+        w.style.opacity = '1';
+      });
+      listRow.querySelectorAll('.viz-arrow').forEach(a => {
+        a.style.transition = 'opacity 0.3s ease';
+        a.style.opacity = '1';
+      });
+
+    } else if (step.type === 'checkNull') {
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      removeTempPointer();
+      const n4n1 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n1) n4n1.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      listRow.querySelectorAll('.viz-node-wrap').forEach(w => { w.style.opacity = '1'; });
+      listRow.querySelectorAll('.viz-arrow').forEach(a => { a.style.opacity = '1'; });
+      conditionBox.innerHTML = 'head == NULL &nbsp;&rarr;&nbsp; &times; FALSE &mdash; list has nodes';
+      conditionBox.style.background = '#fff5f5';
+      conditionBox.style.border     = '2px solid #ef4444';
+      conditionBox.style.color      = '#b91c1c';
+      positionConditionBoxForDelEnd();
+      conditionBox.style.display    = 'block';
+      conditionBox.style.opacity    = '0';
+      requestAnimationFrame(() => requestAnimationFrame(() => { conditionBox.style.opacity = '1'; }));
+
+    } else if (step.type === 'checkTail') {
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      removeTempPointer();
+      const n4n2 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n2) n4n2.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      listRow.querySelectorAll('.viz-node-wrap').forEach(w => { w.style.opacity = '1'; });
+      listRow.querySelectorAll('.viz-arrow').forEach(a => { a.style.opacity = '1'; });
+      conditionBox.innerHTML = 'head == tail &nbsp;&rarr;&nbsp; &times; FALSE &mdash; list has multiple nodes';
+      conditionBox.style.background = '#fff5f5';
+      conditionBox.style.border     = '2px solid #ef4444';
+      conditionBox.style.color      = '#b91c1c';
+      positionConditionBoxForDelEnd();
+      conditionBox.style.display    = 'block';
+      conditionBox.style.opacity    = '0';
+      requestAnimationFrame(() => requestAnimationFrame(() => { conditionBox.style.opacity = '1'; }));
+
+    } else if (step.type === 'tempHead') {
+      hideConditionBox();
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      const n4n3 = nodes[3].el.querySelector('.viz-node-next');
+      if (n4n3) n4n3.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      listRow.querySelectorAll('.viz-node-wrap').forEach(w => { w.style.opacity = '1'; });
+      listRow.querySelectorAll('.viz-arrow').forEach(a => { a.style.opacity = '1'; });
+      placeTempPointerOnNode(0);
+
+    } else if (step.type === 'whileTrue') {
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      const n4nWT = nodes[3].el.querySelector('.viz-node-next');
+      if (n4nWT) n4nWT.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      listRow.querySelectorAll('.viz-node-wrap').forEach(w => { w.style.opacity = '1'; });
+      listRow.querySelectorAll('.viz-arrow').forEach(a => { a.style.opacity = '1'; });
+      placeTempPointerOnNode(step.tempIdx);
+      // Update box in-place — no hide/show, prevents flash
+      const nextNodeWT = nodes[step.tempIdx + 1];
+      conditionBox.innerHTML = 'temp&rarr;next (' + (nextNodeWT ? nextNodeWT.addr : '?') + ') != tail (' + nodes[nodes.length-1].addr + ') &nbsp;&rarr;&nbsp; <span style="font-weight:700">&#10003; TRUE &mdash; loop runs</span>';
+      conditionBox.style.background = '#f0fdf4';
+      conditionBox.style.border     = '2px solid #16a34a';
+      conditionBox.style.color      = '#15803d';
+      positionConditionBoxForDelEnd();
+      conditionBox.style.display    = 'block';
+      if (conditionBox.style.opacity !== '1') {
+        conditionBox.style.opacity = '0';
+        requestAnimationFrame(() => requestAnimationFrame(() => { conditionBox.style.opacity = '1'; }));
+      }
+
+    } else if (step.type === 'tempMove') {
+      // Green box stays visible during loop body — intentional
+      hidePath(curvePath);
+      const n4nTM = nodes[3].el.querySelector('.viz-node-next');
+      if (n4nTM) n4nTM.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      listRow.querySelectorAll('.viz-node-wrap').forEach(w => { w.style.opacity = '1'; });
+      listRow.querySelectorAll('.viz-arrow').forEach(a => { a.style.opacity = '1'; });
+      placeTempPointerOnNode(step.tempIdx);
+
+    } else if (step.type === 'whileFalse') {
+
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      const n4nWF = nodes[3].el.querySelector('.viz-node-next');
+      if (n4nWF) n4nWF.innerText = '0x101';
+      positionInitialPointers();
+      drawCircularArc(nodes[3].el, nodes[0].el, circularCurvePath);
+      listRow.querySelectorAll('.viz-node-wrap').forEach(w => { w.style.opacity = '1'; });
+      listRow.querySelectorAll('.viz-arrow').forEach(a => { a.style.opacity = '1'; });
+      placeTempPointerOnNode(step.tempIdx);
+      // Show while FALSE condition box (red)
+      conditionBox.innerHTML = 'temp&rarr;next (' + nodes[nodes.length-1].addr + ') != tail (' + nodes[nodes.length-1].addr + ') &nbsp;&rarr;&nbsp; <span style="font-weight:700">&#10007; FALSE &mdash; exit loop</span>';
+      conditionBox.style.background = '#fff5f5';
+      conditionBox.style.border     = '2px solid #ef4444';
+      conditionBox.style.color      = '#b91c1c';
+      positionConditionBoxForDelEnd();
+      conditionBox.style.display    = 'block';
+      if (conditionBox.style.opacity !== '1') {
+        conditionBox.style.opacity = '0';
+        requestAnimationFrame(() => requestAnimationFrame(() => { conditionBox.style.opacity = '1'; }));
+      }
+
+    } else if (step.type === 'circLink') {
+      // temp->next = head — emerald green arc from temp (node 2, index 2) to head (node 1, index 0)
+// temp->next = head — emerald green arc from temp (node 3) to head (node 1)
+      hideConditionBox();
+      newNodeWrap.classList.remove('visible');
+      listRow.querySelectorAll('.viz-node-wrap').forEach(w => { w.style.opacity = '1'; });
+      
+      const allChildren = Array.from(listRow.children);
+      const tempIdx = nodes.length - 2; 
+      const arrowBetweenTempTail = allChildren[tempIdx * 2 + 1];
+      if (arrowBetweenTempTail && arrowBetweenTempTail.classList.contains('viz-arrow')) {
+        arrowBetweenTempTail.style.transition = 'opacity 0.4s ease';
+        arrowBetweenTempTail.style.opacity    = '0.1';
+      }
+
+      const node3next = nodes[nodes.length - 2].el.querySelector('.viz-node-next');
+      if (node3next) node3next.innerText = '0x101';
+      positionInitialPointers();
+
+      placeTempPointerOnNode(nodes.length - 2);
+      const tempElCL = nodes[nodes.length - 2].el;
+      const headElCL = nodes[0].el;
+      const cSvgRect = curveSvg.getBoundingClientRect();
+      const tRectCL  = tempElCL.getBoundingClientRect();
+      const hRectCL  = headElCL.getBoundingClientRect();
+
+      // Start: right-center of temp (node 3)
+      const sxCL = tRectCL.right - cSvgRect.left;
+      const syCL = tRectCL.top   - cSvgRect.top + tRectCL.height / 2;
+
+      // End: Left edge of head node, slightly below the center (25% height)
+      const exCL = hRectCL.left  - cSvgRect.left - 10;
+      const eyCL = hRectCL.top   - cSvgRect.top  + (hRectCL.height * 0.25);
+
+      const isMobCL  = window.innerWidth <= 768;
+      // Green drops deeper to pass below the blue line
+      const greenDropCL = isMobCL ? 90 : 55;
+      const midYCL      = Math.max(syCL, eyCL) + tRectCL.height + greenDropCL;
+      
+      const rCL = 20;
+      const rightEdgeCL = sxCL + rCL * 2;
+
+      // Calculate blue line's turn to ensure we go 1-1.5cm (approx 45-55px) ahead of it
+      const blueEndXCL  = hRectCL.left - cSvgRect.left - 10;
+      const blueLeftCL  = blueEndXCL - 40; 
+      const greenUpX    = blueLeftCL - 50; // Push further left to clear the blue line's turning
+
+      const dCL =
+        'M ' + sxCL + ' ' + syCL +
+        ' L ' + (rightEdgeCL - rCL) + ' ' + syCL +
+        ' Q ' + rightEdgeCL + ' ' + syCL + ', ' + rightEdgeCL + ' ' + (syCL + rCL) +
+        ' L ' + rightEdgeCL + ' ' + (midYCL - rCL) +
+        ' Q ' + rightEdgeCL + ' ' + midYCL + ', ' + (rightEdgeCL - rCL) + ' ' + midYCL +
+        ' L ' + (greenUpX + rCL) + ' ' + midYCL +
+        ' Q ' + greenUpX + ' ' + midYCL + ', ' + greenUpX + ' ' + (midYCL - rCL) +
+        ' L ' + greenUpX + ' ' + (eyCL + rCL) +
+        ' Q ' + greenUpX + ' ' + eyCL + ', ' + (greenUpX + rCL) + ' ' + eyCL +
+        ' L ' + exCL + ' ' + eyCL;
+
+      curvePath.setAttribute('d', dCL);
+      curvePath.setAttribute('stroke', '#10b981');
+      curvePath.setAttribute('marker-end', 'url(#arrowHeadGreen)');
+      curvePath.style.opacity = '0.8';
+      curveSvg.classList.add('visible');
+      animatePath(curvePath, curveSvg, '#10b981');
+
+    } else if (step.type === 'freeTail') {
+      // free(tail) — node 4 fades out smoothly; green curvePath stays visible
+      hideConditionBox();
+      newNodeWrap.classList.remove('visible');
+      // intentionally NOT hiding curvePath — green temp->head arc must persist
+      // Keep temp on node3
+      placeTempPointerOnNode(nodes.length - 2);
+      // node3 next = head
+      const node3nxt = nodes[nodes.length - 2].el.querySelector('.viz-node-next');
+      if (node3nxt) node3nxt.innerText = '0x101';
+      positionInitialPointers();
+      // Restore arrows except last
+      listRow.querySelectorAll('.viz-node-wrap').forEach((w, i) => {
+        w.style.transition = 'opacity 0.5s ease';
+        w.style.opacity    = i === nodes.length - 1 ? '0.15' : '1';
+      });
+      listRow.querySelectorAll('.viz-arrow').forEach((a, i) => {
+        a.style.transition = 'opacity 0.5s ease';
+        a.style.opacity    = i === nodes.length - 2 ? '0.1' : '1';
+      });
+      // Hide blue arc (tail freed — tail->head link gone), green (temp->head) stays as-is
+      circularCurvePath.style.transition = 'opacity 0.4s ease';
+      circularCurvePath.style.opacity    = '0';
+      // curvePath (green temp->head) intentionally untouched — no re-animation
+
+    } else if (step.type === 'tailTemp') {
+      // tail = temp — tail pointer slides to node3, temp fades
+      hideConditionBox();
+      newNodeWrap.classList.remove('visible');
+      hidePath(curvePath);
+      listRow.querySelectorAll('.viz-node-wrap').forEach((w, i) => {
+        w.style.opacity = i === nodes.length - 1 ? '0.15' : '1';
+      });
+      listRow.querySelectorAll('.viz-arrow').forEach((a, i) => {
+        a.style.opacity = i === nodes.length - 2 ? '0.1' : '1';
+      });
+      const node3nxt2 = nodes[nodes.length - 2].el.querySelector('.viz-node-next');
+      if (node3nxt2) node3nxt2.innerText = '0x101';
+      // Move TAIL pointer to node 3 (index 2)
+      const cr = listRow.parentElement.getBoundingClientRect();
+      const n3Rect = nodes[nodes.length - 2].el.getBoundingClientRect();
+      tailPointer.style.left = (n3Rect.left - cr.left + n3Rect.width / 2) + 'px';
+      tailPointer.style.top  = (n3Rect.top  - cr.top  - 45) + 'px';
+      // Circular arc: node3→head (animated blue)
+      drawCircularArc(nodes[nodes.length - 2].el, nodes[0].el, circularCurvePath);
+      circularCurvePath.setAttribute('stroke', '#3b6cff');
+      circularCurvePath.setAttribute('marker-end', 'url(#arrowHead)');
+      curveSvg.classList.add('visible');
+      animatePath(circularCurvePath, curveSvg, '#3b6cff');
+      // Remove temp pointer
+      removeTempPointer();
+
+    } else if (step.type === 'done') {
+      // Final list: 1 → 2 → 3 → (back to 1)
+      hideConditionBox();
+      hidePath(curvePath);
+      removeTempPointer();
+      newNodeWrap.classList.remove('visible');
+      listRow.innerHTML = '';
+      scrollToHead();
+      const finalNodes = [
+        { data: 1, addr: '0x101', nextAddr: '0x102' },
+        { data: 2, addr: '0x102', nextAddr: '0x103' },
+        { data: 3, addr: '0x103', nextAddr: '0x101' },
+      ];
+      const els = buildFinalList(finalNodes);
+      void listRow.offsetWidth;
+      const cr7 = listRow.parentElement.getBoundingClientRect();
+      const fR  = els[0].getBoundingClientRect();
+      const lR  = els[els.length - 1].getBoundingClientRect();
+      headPointer.style.left  = (fR.left - cr7.left + fR.width  / 2) + 'px';
+      headPointer.style.top   = (fR.top  - cr7.top  - 45) + 'px';
+      tailPointer.style.right = 'auto';
+      tailPointer.style.left  = (lR.left - cr7.left + lR.width  / 2) + 'px';
+      tailPointer.style.top   = (lR.top  - cr7.top  - 45) + 'px';
+      drawCircularArc(els[els.length - 1], els[0], circularCurvePath);
+    }
   }
 
   function buildDelMidPlan() {
