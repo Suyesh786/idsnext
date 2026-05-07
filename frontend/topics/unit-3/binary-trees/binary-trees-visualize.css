@@ -107,7 +107,7 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 1.6fr 2.4fr 1fr;
+  grid-template-columns: 1.6fr 2.2fr 1.2fr; /* UPDATE 1 (anim -0.2fr) UPDATE 2 (tree +0.2fr) */
   gap: 14px;
   padding: 14px 18px;
   overflow: hidden;
@@ -402,6 +402,223 @@
 .viz-tree-msg {
   font-size:12.5px; color:var(--text-muted);
   text-align:center; line-height:1.65;
+}
+
+/* Tree canvas */
+.tree-canvas {
+  flex: 1;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Memory nodes relative container */
+.tree-mem-nodes {
+  position: relative;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* SVG edge layer */
+.tree-edge-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 0;
+}
+.tree-edge {
+  stroke: #3b6cff; /* UPDATE 7: blue stroke */
+  stroke-width: 2.5; /* UPDATE 7: thicker */
+  fill: none;
+  marker-end: url(#tree-arrow); /* UPDATE 7: arrowhead */
+}
+
+/* Tree node wrapper */
+.tree-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+}
+
+@keyframes treeNodeAppear {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.tree-node-appear {
+  animation: treeNodeAppear 0.3s ease-out forwards;
+}
+
+/* Root label */
+.tree-root-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.tree-root-pill {
+  font-family: var(--font-code);
+  font-size: 10px; font-weight: 700;
+  color: var(--blue);
+  background: var(--blue-light);
+  border: 1px solid var(--blue-mid);
+  padding: 1px 8px;
+  border-radius: 99px;
+}
+.tree-root-arrow {
+  font-size: 14px;
+  color: var(--blue);
+  line-height: 1;
+}
+
+/* Node box: 3-cell grid */
+.tree-node-box {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  width: 180px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  font-family: var(--font-code);
+  font-size: 12px;
+  overflow: hidden;
+  transition: border-color 0.25s, background 0.25s;
+}
+
+.tree-node-malloc .tree-node-box {
+  border-color: #f97316;
+  background: #fff7ed;
+}
+.tree-node-data .tree-node-box {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+
+.tree-cell {
+  padding: 8px 6px;
+  text-align: center;
+  border-right: 1px solid rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.tree-cell-last { border-right: none; }
+
+.tree-cell-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+.tree-cell-val {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Address label */
+.tree-addr {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-code);
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* Bottom pointer label — mirror of root label, below the node box */
+.tree-bottom-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+/* Node pill — same shape as root pill but uses circle gradient colors */
+.tree-node-pill {
+  font-family: var(--font-code);
+  font-size: 10px; font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(to bottom, #3b6cff, #6b9fff);
+  border: 1px solid #3b6cff;
+  padding: 1px 8px;
+  border-radius: 99px;
+  box-shadow: 0 2px 6px rgba(59,108,255,0.35);
+}
+
+/* UPDATE 3: Memory Representation headline pill */
+.tree-section-label-mem {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(59,108,255,0.08);
+  color: var(--blue);
+  border: 1.5px solid rgba(59,108,255,0.3);
+  font-size: 13px; font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  margin-left: 8px;
+  margin-top: 10px;
+}
+
+/* UPDATE 4: Divider */
+.tree-section-divider {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 16px 8px;
+  width: calc(100% - 16px);
+}
+
+/* UPDATE 5: Tree Structure headline pill */
+.tree-section-label-tree {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(16,185,129,0.08);
+  color: #059669;
+  border: 1.5px solid rgba(16,185,129,0.3);
+  font-size: 13px; font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  margin-left: 8px;
+}
+
+/* UPDATE 6: SVG circle tree */
+.tree-struct-svg {
+  display: block;
+  margin: 0 auto 12px auto;
+  width: 200px;
+  height: 160px;
+}
+.tree-circle-node {
+  transition: opacity 0.35s;
+}
+
+/* NULL box for left/right pointer arrows */
+.tree-null-box {
+  position: absolute;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  font-family: var(--font-code);
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  padding: 3px 7px;
+  white-space: nowrap;
+  z-index: 2;
+}
+.tree-null-line {
+  stroke: #cbd5e1;
+  stroke-width: 1.5;
+  fill: none;
+  marker-end: url(#null-arrow);
 }
 
 /* ═══ EXPLANATION BAR ═════════════════════════════════════════ */

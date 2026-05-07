@@ -159,6 +159,7 @@ const STEPS = [
     arrow: null,
     linkArrow: { fromBox:'main', fromStep:0, toBox:'c1' },
     panTo: 'c1',
+    treeAction: { type:'malloc', node:'n5' },
     expl: 'malloc() allocates memory for a new node. newnode is created at address 0x500.'
   },
 
@@ -170,6 +171,7 @@ const STEPS = [
     arrow: null,
     linkArrow: { fromBox:'main', fromStep:0, toBox:'c1' },
     panTo: 'c1',
+    treeAction: { type:'setData', node:'n5', value:'5' },
     expl: 'Store the value 5 into newnode->data. Node 5 now has its data set.'
   },
 
@@ -225,6 +227,7 @@ const STEPS = [
     arrow: null,
     linkArrow: { fromBox:'c1', fromStep:5, toBox:'c2' },
     panTo: 'c2',
+    treeAction: { type:'malloc', node:'n2' },
     expl: 'malloc() allocates memory. newnode created at address 0x300.'
   },
 
@@ -236,6 +239,7 @@ const STEPS = [
     arrow: null,
     linkArrow: { fromBox:'c1', fromStep:5, toBox:'c2' },
     panTo: 'c2',
+    treeAction: { type:'setData', node:'n2', value:'2' },
     expl: 'Store value 2 into newnode->data. Node 2 has its data set.'
   },
 
@@ -291,6 +295,7 @@ const STEPS = [
     arrow: { type:'ret', fromBox:'c3', fromStep:3, toBox:'c2', toStep:5 },
     linkArrow: { fromBox:'c2', fromStep:5, toBox:'c3' },
     panTo: 'c3',
+    treeAction: { type:'setLeft', node:'n2', value:'NULL' },
     expl: 'Returning NULL. Left child of node 2 is NULL. create() call ends.'
   },
 
@@ -346,6 +351,7 @@ const STEPS = [
     arrow: { type:'ret', fromBox:'c4', fromStep:3, toBox:'c2', toStep:6 },
     linkArrow: { fromBox:'c2', fromStep:6, toBox:'c4' },
     panTo: 'c4',
+    treeAction: { type:'setRight', node:'n2', value:'NULL' },
     expl: 'Returning NULL. Right child of node 2 is NULL. Both children of node 2 are set.'
   },
 
@@ -357,6 +363,7 @@ const STEPS = [
     arrow: { type:'ret', fromBox:'c2', fromStep:7, toBox:'c1', toStep:5 },
     linkArrow: { fromBox:'c1', fromStep:5, toBox:'c2' },
     panTo: 'c2',
+    treeAction: { type:'setLeft', node:'n5', value:'0x300' },
     expl: 'Both children of node 2 are done. Returning newnode (0x300) back to create#1.'
   },
 
@@ -412,6 +419,7 @@ const STEPS = [
     arrow: { type:'ret', fromBox:'c5', fromStep:3, toBox:'c1', toStep:6 },
     linkArrow: { fromBox:'c1', fromStep:6, toBox:'c5' },
     panTo: 'c5',
+    treeAction: { type:'setRight', node:'n5', value:'NULL' },
     expl: 'Returning NULL. Right child of node 5 is NULL. Both children of node 5 are set.'
   },
 
@@ -433,6 +441,7 @@ const STEPS = [
     dimmed: [], hidden: ['c1','c2','c3','c4','c5'],
     arrow: null, linkArrow: null,
     panTo: 'main',
+    treeAction: { type:'setRoot', node:'n5', value:'0x500' },
     expl: 'root now points to node 5 (address 0x500). Binary tree created successfully!'
   },
 
@@ -874,6 +883,7 @@ function renderStep(stepNum) {
     clearArrows();
     if (explText) explText.innerHTML = 'Click <strong>Next</strong> to begin the walkthrough.';
     updateChrome(0);
+    resetTree();
     _rendering = false;
     return;
   }
@@ -932,6 +942,7 @@ function renderStep(stepNum) {
       setBoxStepHighlight(s);
       // Draw everything — green return arrow animates NOW after scroll settled
       redrawAllArrows(s, false);
+      renderTree(s);
       _rendering = false;
       if (s.done) setTimeout(showDone, 200);
     }, appearing.length ? SETTLE : 0);
@@ -1036,8 +1047,489 @@ animViewport.addEventListener('wheel', e => {
 })();
 
 
+/* ── Tree Panel ── */
+
+/* Node state: { state: 'none'|'malloc'|'data', data, left, right, addr, hasRoot } */
+const treeState = {
+  n5: { state: 'none', data: '?', left: '?', right: '?', addr: '0x500', hasRoot: false },
+  n2: { state: 'none', data: '?', left: '?', right: '?', addr: '0x300', hasRoot: false },
+};
+
+function resetTree() {
+  treeState.n5 = { state: 'none', data: '?', left: '?', right: '?', addr: '0x500', hasRoot: false };
+  treeState.n2 = { state: 'none', data: '?', left: '?', right: '?', addr: '0x300', hasRoot: false };
+  const panel = document.querySelector('.viz-tree-panel');
+  if (!panel) return;
+  /* Remove canvas entirely and re-init (so circles reset to hidden) */
+  const canvas = panel.querySelector('.tree-canvas');
+  if (canvas) canvas.remove();
+  /* Keep placeholder hidden */
+  const ph = panel.querySelector('.viz-tree-placeholder');
+  if (ph) ph.style.display = 'none';
+  /* Re-run init to restore headings + empty circle SVG */
+  (function reInitTree() {
+    let c = document.createElement('div');
+    c.className = 'tree-canvas';
+    c.style.cssText = 'display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding:0 0 12px 0;';
+    panel.appendChild(c);
+    const ml = document.createElement('div'); ml.className = 'tree-section-label-mem'; ml.innerHTML = '🧠 Memory Representation'; c.appendChild(ml);
+    const mn = document.createElement('div'); mn.className = 'tree-mem-nodes'; mn.style.cssText = 'position:relative;width:100%;flex-shrink:0;flex:1;min-height:0;'; c.appendChild(mn);
+    const dv = document.createElement('hr'); dv.className = 'tree-section-divider'; c.appendChild(dv);
+    const tl = document.createElement('div'); tl.className = 'tree-section-label-tree'; tl.innerHTML = '🌳 Tree Structure'; c.appendChild(tl);
+    const treeWrap = document.createElement('div');
+    treeWrap.style.cssText = 'flex:1;min-height:0;display:flex;align-items:flex-start;justify-content:center;padding-top:16px;';
+    c.appendChild(treeWrap);
+    buildCircleTree(treeWrap);
+  })();
+}
+
+function renderTree(step) {
+  if (!step.treeAction) return;
+  const { type, node, value } = step.treeAction;
+  const ns = treeState[node];
+
+  if (type === 'malloc') {
+    ns.state = 'malloc';
+    ns.data = '?'; ns.left = '?'; ns.right = '?';
+  } else if (type === 'setData') {
+    ns.state = 'data';
+    ns.data = value;
+  } else if (type === 'setLeft') {
+    ns.left = value;
+  } else if (type === 'setRight') {
+    ns.right = value;
+  } else if (type === 'setRoot') {
+    ns.hasRoot = true;
+  }
+
+  const panel = document.querySelector('.viz-tree-panel');
+  if (!panel) return;
+
+  const ph = panel.querySelector('.viz-tree-placeholder');
+  if (ph) ph.style.display = 'none';
+
+  let canvas = panel.querySelector('.tree-canvas');
+  if (!canvas) {
+    canvas = document.createElement('div');
+    canvas.className = 'tree-canvas';
+    canvas.style.cssText = 'display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding:0 0 12px 0;';
+    panel.appendChild(canvas);
+  }
+
+  /* UPDATE 3: Memory Representation headline — inject once, from step 6+ */
+  if (!canvas.querySelector('.tree-section-label-mem')) {
+    const memLabel = document.createElement('div');
+    memLabel.className = 'tree-section-label-mem';
+    memLabel.innerHTML = '🧠 Memory Representation';
+    canvas.insertBefore(memLabel, canvas.firstChild);
+  }
+
+  /* Memory nodes container */
+  let memNodes = canvas.querySelector('.tree-mem-nodes');
+  if (!memNodes) {
+    memNodes = document.createElement('div');
+    memNodes.className = 'tree-mem-nodes';
+    memNodes.style.cssText = 'position:relative;width:100%;flex-shrink:0;';
+    canvas.appendChild(memNodes);
+  }
+  /* Once we have content, override the flex:1 from init so it sizes by content */
+  memNodes.style.flex = '0 0 auto';
+
+  /* Layout — symmetric: n5 centered, n2 left-offset */
+  const PANEL_W = panel.offsetWidth || 240;
+  const NODE_W  = 180;
+  const centerX = Math.max(0, (PANEL_W - NODE_W) / 2 - 8);
+  const N5_X = centerX;
+  const N5_Y = 10;
+  const N2_X = Math.max(4, centerX - 50);
+  const N2_Y = 170;
+
+  /* Ensure SVG edge layer exists inside memNodes */
+  let svg = memNodes.querySelector('.tree-edge-svg');
+  if (!svg) {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'tree-edge-svg');
+    /* UPDATE 7: arrowhead marker + null-arrow marker */
+    svg.innerHTML = `<defs>
+      <marker id="tree-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+        <polygon points="0 0,7 3,0 6" fill="#3b6cff"/>
+      </marker>
+      <marker id="null-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+        <polygon points="0 0,6 3,0 6" fill="#cbd5e1"/>
+      </marker>
+    </defs>`;
+    memNodes.insertBefore(svg, memNodes.firstChild);
+  }
+
+  /* Compute dynamic height for memNodes */
+  const memH = N2_Y + 100;
+  memNodes.style.height = memH + 'px';
+
+  /* Render nodes */
+  const nodes = [
+    { key: 'n5', x: N5_X, y: N5_Y },
+    { key: 'n2', x: N2_X, y: N2_Y },
+  ];
+
+  nodes.forEach(({ key, x, y }) => {
+    const ns2 = treeState[key];
+    if (ns2.state === 'none') return;
+
+    let el = memNodes.querySelector(`.tree-node[data-node="${key}"]`);
+    const isNew = !el;
+
+    if (isNew) {
+      el = document.createElement('div');
+      el.className = 'tree-node tree-node-appear';
+      el.dataset.node = key;
+      el.style.left = x + 'px';
+      el.style.top  = y + 'px';
+      memNodes.appendChild(el);
+    }
+
+    el.classList.remove('tree-node-malloc', 'tree-node-data');
+    el.classList.add(ns2.state === 'malloc' ? 'tree-node-malloc' : 'tree-node-data');
+
+    /* Root label (top) */
+    let rootLabel = el.querySelector('.tree-root-label');
+    if (ns2.hasRoot && !rootLabel) {
+      rootLabel = document.createElement('div');
+      rootLabel.className = 'tree-root-label';
+      rootLabel.innerHTML = '<span class="tree-root-pill">root</span><span class="tree-root-arrow">↓</span>';
+      el.insertBefore(rootLabel, el.firstChild);
+    }
+
+    /* Node box */
+    let box = el.querySelector('.tree-node-box');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'tree-node-box';
+      box.innerHTML =
+        '<div class="tree-cell tree-cell-left"><div class="tree-cell-label">LEFT</div><div class="tree-cell-val" data-cell="left">?</div></div>' +
+        '<div class="tree-cell tree-cell-data"><div class="tree-cell-label">DATA</div><div class="tree-cell-val" data-cell="data">?</div></div>' +
+        '<div class="tree-cell tree-cell-right tree-cell-last"><div class="tree-cell-label">RIGHT</div><div class="tree-cell-val" data-cell="right">?</div></div>';
+      el.appendChild(box);
+    }
+
+    box.querySelector('[data-cell="left"]').textContent  = ns2.left;
+    box.querySelector('[data-cell="data"]').textContent  = ns2.data;
+    box.querySelector('[data-cell="right"]').textContent = ns2.right;
+
+    /* Address label — hide on root node */
+    let addrEl = el.querySelector('.tree-addr');
+    if (!addrEl) {
+      addrEl = document.createElement('div');
+      addrEl.className = 'tree-addr';
+      el.appendChild(addrEl);
+    }
+    addrEl.textContent = ns2.addr;
+    addrEl.style.display = ns2.hasRoot ? 'none' : '';
+
+    /* Bottom pointer — arrow + node pill, same style as root, shown when hasRoot */
+    let bottomLabel = el.querySelector('.tree-bottom-label');
+    if (ns2.hasRoot && !bottomLabel) {
+      bottomLabel = document.createElement('div');
+      bottomLabel.className = 'tree-bottom-label';
+      el.appendChild(bottomLabel);
+    }
+
+    if (isNew) setTimeout(() => el.classList.remove('tree-node-appear'), 350);
+  });
+
+  /* Draw edge + NULL boxes */
+  drawTreeEdge(memNodes, svg, treeState.n5, treeState.n2, N5_X, N5_Y, N2_X, N2_Y);
+
+  /* Ensure tree-struct-wrap + circle SVG exist below divider */
+  if (!canvas.querySelector('.tree-struct-wrap')) {
+    const treeWrap = document.createElement('div');
+    treeWrap.className = 'tree-struct-wrap';
+    treeWrap.style.cssText = 'display:flex;align-items:center;justify-content:center;padding:8px 0;';
+    canvas.appendChild(treeWrap);
+    buildCircleTree(treeWrap);
+  }
+
+  /* FIX 2: updateCircleTree handles circle reveal + line draw timing */
+  updateCircleTree(canvas);
+}
+
+/* FIX 2 + UPDATE B: Build SVG circle tree — gradient, shadow, scale pop-in via SVG keyframes */
+function buildCircleTree(canvas) {
+  if (canvas.querySelector('.tree-struct-svg')) return;
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'tree-struct-svg');
+  svg.setAttribute('width', '200');
+  svg.setAttribute('height', '160');
+  svg.setAttribute('viewBox', '0 0 200 160');
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="nodeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%"   stop-color="#3b6cff"/>
+        <stop offset="100%" stop-color="#6b9fff"/>
+      </linearGradient>
+      <filter id="nodeShadow" x="-40%" y="-40%" width="180%" height="180%">
+        <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="rgba(59,108,255,0.35)"/>
+      </filter>
+      <style>
+        @keyframes ctPop {
+          0%   { opacity:0; transform:scale(0); }
+          70%  { opacity:1; transform:scale(1.12); }
+          100% { opacity:1; transform:scale(1); }
+        }
+        .ct-node-5 { opacity:0; transform-origin:100px 28px; transform-box:fill-box; }
+        .ct-node-2 { opacity:0; transform-origin:56px 108px; transform-box:fill-box; }
+        .ct-node-5.ct-visible { animation: ctPop 0.25s ease-out forwards; }
+        .ct-node-2.ct-visible { animation: ctPop 0.25s ease-out forwards; }
+      </style>
+      <!-- FIX 2: arrow points in direction of line travel (toward node 2) -->
+      <marker id="ct-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+        <polygon points="0 0,8 3,0 6" fill="#3b6cff"/>
+      </marker>
+    </defs>
+    <!-- line hidden until step 24 when n5.left===0x300 -->
+    <line class="ct-line ct-line-52"
+      x1="88" y1="52" x2="68" y2="84"
+      stroke="#3b6cff" stroke-width="2.5"
+      marker-end="url(#ct-arrow)"
+      style="display:none"/>
+    <!-- Node 5: hidden until step 7 (setData) -->
+    <g class="tree-circle-node ct-node-5">
+      <circle cx="100" cy="28" r="26" fill="url(#nodeGrad)" filter="url(#nodeShadow)"/>
+      <text x="100" y="34" text-anchor="middle"
+        fill="#ffffff" font-size="15" font-weight="800"
+        font-family="DM Sans,sans-serif"
+        stroke="#3b6cff" stroke-width="3" paint-order="stroke">5</text>
+    </g>
+    <!-- Node 2: hidden until step 13 (setData) -->
+    <g class="tree-circle-node ct-node-2">
+      <circle cx="56" cy="108" r="26" fill="url(#nodeGrad)" filter="url(#nodeShadow)"/>
+      <text x="56" y="114" text-anchor="middle"
+        fill="#ffffff" font-size="15" font-weight="800"
+        font-family="DM Sans,sans-serif"
+        stroke="#3b6cff" stroke-width="3" paint-order="stroke">2</text>
+    </g>
+  `;
+  canvas.appendChild(svg);
+}
+
+/* FIX 2: circles appear only at setData; line only at step 24 (n5.left==='0x300') */
+function updateCircleTree(canvas) {
+  const wrap = canvas.querySelector('.tree-struct-wrap') || canvas;
+  const svg = wrap.querySelector('.tree-struct-svg');
+  if (!svg) return;
+
+  /* Node 5: pop in at step 7 */
+  if (treeState.n5.state === 'data') {
+    const n5g = svg.querySelector('.ct-node-5');
+    if (n5g && !n5g.classList.contains('ct-visible')) {
+      n5g.classList.add('ct-visible');
+    }
+  }
+
+  /* Node 2: pop in at step 13 */
+  if (treeState.n2.state === 'data') {
+    const n2g = svg.querySelector('.ct-node-2');
+    if (n2g && !n2g.classList.contains('ct-visible')) {
+      n2g.classList.add('ct-visible');
+    }
+  }
+
+  /* FIX 2: line draws ONLY at step 24 when memory edge also drawn */
+  if (treeState.n5.left === '0x300') {
+    const line = svg.querySelector('.ct-line-52');
+    if (line && line.style.display === 'none') {
+      const len = 90;
+      line.setAttribute('stroke-dasharray', len);
+      line.setAttribute('stroke-dashoffset', len);
+      line.style.display = '';
+      requestAnimationFrame(() => {
+        line.style.transition = 'stroke-dashoffset 0.4s ease';
+        line.setAttribute('stroke-dashoffset', '0');
+      });
+    }
+  }
+}
+
+function drawTreeEdge(memNodes, svg, ns5, ns2, n5x, n5y, n2x, n2y) {
+  /* Clean old edges and null boxes */
+  svg.querySelectorAll('.tree-edge,.tree-null-line').forEach(e => e.remove());
+  memNodes.querySelectorAll('.tree-null-box').forEach(e => e.remove());
+
+  if (ns5.state === 'none') return;
+
+  const rootOff  = ns5.hasRoot ? 44 : 0;
+  const nodeBoxH = 60;
+  const cellW    = 60; /* 180px / 3 cells */
+
+  /* LEFT cell center-bottom of n5 */
+  const lx1 = n5x + cellW / 2;
+  const ly1 = n5y + rootOff + nodeBoxH;
+
+  /* RIGHT cell center-bottom of n5 */
+  const rx1 = n5x + cellW * 2 + cellW / 2;
+  const ry1 = n5y + rootOff + nodeBoxH;
+
+  /* ── Left pointer line (n5 → n2 or NULL) ── */
+  if (ns5.left === '0x300' && ns2.state !== 'none') {
+    /* UPDATE 7: blue arrow line to node 2 */
+    const x2 = n2x + 90;
+    const y2 = n2y + (ns2.hasRoot ? 44 : 0);
+    const totalLen = Math.hypot(x2 - lx1, y2 - ly1);
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('class', 'tree-edge');
+    line.setAttribute('x1', lx1); line.setAttribute('y1', ly1);
+    line.setAttribute('x2', x2);  line.setAttribute('y2', y2);
+    line.setAttribute('stroke-dasharray', totalLen);
+    line.setAttribute('stroke-dashoffset', totalLen);
+    svg.appendChild(line);
+    requestAnimationFrame(() => {
+      line.style.transition = 'stroke-dashoffset 0.4s ease';
+      line.setAttribute('stroke-dashoffset', '0');
+    });
+
+  } else if (ns5.left === 'NULL') {
+    /* NULL box to the LEFT */
+    const nullBox = document.createElement('div');
+    nullBox.className = 'tree-null-box';
+    nullBox.textContent = 'NULL';
+    const nbx = Math.max(0, lx1 - 50);
+    const nby = ly1 + 16;
+    nullBox.style.left = nbx + 'px';
+    nullBox.style.top  = nby + 'px';
+    memNodes.appendChild(nullBox);
+
+    const nullLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    nullLine.setAttribute('class', 'tree-null-line');
+    nullLine.setAttribute('x1', lx1); nullLine.setAttribute('y1', ly1);
+    nullLine.setAttribute('x2', nbx + 25); nullLine.setAttribute('y2', nby);
+    svg.appendChild(nullLine);
+  }
+
+  /* ── Right pointer line of n5 → NULL ── */
+  if (ns5.right === 'NULL') {
+    const nullBox = document.createElement('div');
+    nullBox.className = 'tree-null-box';
+    nullBox.textContent = 'NULL';
+    const nbx = rx1 + 8;
+    const nby = ry1 + 16;
+    nullBox.style.left = nbx + 'px';
+    nullBox.style.top  = nby + 'px';
+    memNodes.appendChild(nullBox);
+
+    const nullLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    nullLine.setAttribute('class', 'tree-null-line');
+    nullLine.setAttribute('x1', rx1); nullLine.setAttribute('y1', ry1);
+    nullLine.setAttribute('x2', nbx); nullLine.setAttribute('y2', nby);
+    svg.appendChild(nullLine);
+  }
+
+  if (ns2.state === 'none') return;
+
+  /* ── Left/Right pointers of n2 → NULL ── */
+  const n2rootOff = ns2.hasRoot ? 44 : 0;
+  const n2BottomY = n2y + n2rootOff + nodeBoxH;
+  const n2lx1 = n2x + cellW / 2;
+  const n2rx1 = n2x + cellW * 2 + cellW / 2;
+
+  if (ns2.left === 'NULL') {
+    const nullBox = document.createElement('div');
+    nullBox.className = 'tree-null-box';
+    nullBox.textContent = 'NULL';
+    const nbx = Math.max(0, n2lx1 - 50);
+    const nby = n2BottomY + 16;
+    nullBox.style.left = nbx + 'px';
+    nullBox.style.top  = nby + 'px';
+    memNodes.appendChild(nullBox);
+
+    const nullLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    nullLine.setAttribute('class', 'tree-null-line');
+    nullLine.setAttribute('x1', n2lx1); nullLine.setAttribute('y1', n2BottomY);
+    nullLine.setAttribute('x2', nbx + 25); nullLine.setAttribute('y2', nby);
+    svg.appendChild(nullLine);
+  }
+
+  if (ns2.right === 'NULL') {
+    const nullBox = document.createElement('div');
+    nullBox.className = 'tree-null-box';
+    nullBox.textContent = 'NULL';
+    const nbx = n2rx1 + 8;
+    const nby = n2BottomY + 16;
+    nullBox.style.left = nbx + 'px';
+    nullBox.style.top  = nby + 'px';
+    memNodes.appendChild(nullBox);
+
+    const nullLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    nullLine.setAttribute('class', 'tree-null-line');
+    nullLine.setAttribute('x1', n2rx1); nullLine.setAttribute('y1', n2BottomY);
+    nullLine.setAttribute('x2', nbx); nullLine.setAttribute('y2', nby);
+    svg.appendChild(nullLine);
+  }
+}
+
+
 /* ── Init ── */
 buildCodePanel();
 buildProgressDots();
 buildAllBoxes();
+
+/* FIX 1: Init tree panel immediately — show both headings, hide placeholder */
+(function initTreePanel() {
+  const panel = document.querySelector('.viz-tree-panel');
+  if (!panel) return;
+
+  const ph = panel.querySelector('.viz-tree-placeholder');
+  if (ph) ph.style.display = 'none';
+
+  let canvas = panel.querySelector('.tree-canvas');
+  if (!canvas) {
+    canvas = document.createElement('div');
+    canvas.className = 'tree-canvas';
+    canvas.style.cssText = 'display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding:0 0 12px 0;';
+    panel.appendChild(canvas);
+  }
+
+  /* Memory Representation heading */
+  if (!canvas.querySelector('.tree-section-label-mem')) {
+    const memLabel = document.createElement('div');
+    memLabel.className = 'tree-section-label-mem';
+    memLabel.innerHTML = '🧠 Memory Representation';
+    canvas.appendChild(memLabel);
+  }
+
+  /* Empty mem-nodes container — flex:1 so it fills upper half */
+  if (!canvas.querySelector('.tree-mem-nodes')) {
+    const memNodes = document.createElement('div');
+    memNodes.className = 'tree-mem-nodes';
+    memNodes.style.cssText = 'position:relative;width:100%;flex:1;min-height:0;';
+    canvas.appendChild(memNodes);
+  }
+
+  /* Divider */
+  if (!canvas.querySelector('.tree-section-divider')) {
+    const divider = document.createElement('hr');
+    divider.className = 'tree-section-divider';
+    canvas.appendChild(divider);
+  }
+
+  /* Tree Structure heading */
+  if (!canvas.querySelector('.tree-section-label-tree')) {
+    const treeLabel = document.createElement('div');
+    treeLabel.className = 'tree-section-label-tree';
+    treeLabel.innerHTML = '🌳 Tree Structure';
+    canvas.appendChild(treeLabel);
+  }
+
+  /* Tree wrap — flex:1 so it fills lower half, centers circle SVG */
+  if (!canvas.querySelector('.tree-struct-wrap')) {
+    const treeWrap = document.createElement('div');
+    treeWrap.className = 'tree-struct-wrap';
+    treeWrap.style.cssText = 'flex:1;min-height:0;display:flex;align-items:flex-start;justify-content:center;padding-top:16px;';
+    canvas.appendChild(treeWrap);
+    /* Build circle SVG immediately (circles hidden until data set) */
+    buildCircleTree(treeWrap);
+  }
+})();
+
 renderStep(0);
