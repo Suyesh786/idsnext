@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polynomial Representation | iDS Studio Next</title>
+<link rel="stylesheet" href="../../dashboard/dashboard.css">
+<link rel="stylesheet" href="polynomial-representation.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="../../image/ilogo.png" alt="iDS Studio" class="logo-img">
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <a href="../../dashboard/dashboard.html" class="menu-item">Dashboard</a>
+    <a href="../../learn/learn.html" class="menu-item active">Learn</a>
+    <a href="../../practice/practice.html" class="menu-item">Practice</a>
+    <a href="../../leaderboard/leaderboard.html" class="menu-item">Leaderboard</a>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        Logout
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main sll-main">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <nav class="breadcrumb">
+        <a href="../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 2</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Polynomial Representation</span>
+      </nav>
+      <h1 class="lesson-heading">
+        Polynomial Representation
+        <span class="lesson-heading-tag">Linked List Application</span>
+      </h1>
+    </div>
+
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- ══ SECTION 1: Introduction ══ -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is Polynomial Representation?</h2>
+      </div>
+
+      <div class="definition-box">
+        <div class="definition-icon">📐</div>
+        <div class="definition-body">
+          A <strong>polynomial</strong> is a mathematical expression made of
+          <span class="highlight-text">terms</span>, where each term has a
+          <span class="highlight-text">coefficient</span> (numeric value) and an
+          <span class="highlight-text">exponent</span> (power of the variable).
+          For example: <code class="inline-code">5x³ + 4x² + 2x + 7</code>.
+          Representing this using a <span class="highlight-text">linked list</span>
+          stores each term as a node — naturally handling sparse polynomials without wasting memory.
+        </div>
+      </div>
+
+      <p class="lesson-para">
+        Each term of the polynomial maps directly to a linked list node. The coefficient and exponent are stored as fields inside the node, and the <code class="inline-code">next</code> pointer chains terms in descending order of exponent — from highest power to lowest.
+      </p>
+
+      <!-- Intro mapping diagram -->
+      <div class="sll-chain-diagram">
+        <div class="poly-expression-label">Expression: <strong>5x³ + 4x² + 2x + 7</strong></div>
+        <div class="poly-map-arrow">↓  maps to  ↓</div>
+        <div class="sll-pointer-row">
+          <div class="sll-ptr-label head-ptr">HEAD</div>
+          <div class="sll-ptr-arrow-down">↓</div>
+        </div>
+        <div class="sll-nodes-row">
+          <div class="sll-node-box poly-node-box">
+            <div class="poly-node-coeff">
+              <span class="poly-cell-label">coeff</span>
+              <span class="poly-cell-val">5</span>
+            </div>
+            <div class="poly-node-exp">
+              <span class="poly-cell-label">exp</span>
+              <span class="poly-cell-val">3</span>
+            </div>
+            <div class="poly-node-next-field">
+              <span class="poly-cell-label">next</span>
+              <span class="poly-cell-val-small">→</span>
+            </div>
+          </div>
+          <div class="sll-chain-arrow">→</div>
+          <div class="sll-node-box poly-node-box">
+            <div class="poly-node-coeff">
+              <span class="poly-cell-label">coeff</span>
+              <span class="poly-cell-val">4</span>
+            </div>
+            <div class="poly-node-exp">
+              <span class="poly-cell-label">exp</span>
+              <span class="poly-cell-val">2</span>
+            </div>
+            <div class="poly-node-next-field">
+              <span class="poly-cell-label">next</span>
+              <span class="poly-cell-val-small">→</span>
+            </div>
+          </div>
+          <div class="sll-chain-arrow">→</div>
+          <div class="sll-node-box poly-node-box">
+            <div class="poly-node-coeff">
+              <span class="poly-cell-label">coeff</span>
+              <span class="poly-cell-val">2</span>
+            </div>
+            <div class="poly-node-exp">
+              <span class="poly-cell-label">exp</span>
+              <span class="poly-cell-val">1</span>
+            </div>
+            <div class="poly-node-next-field">
+              <span class="poly-cell-label">next</span>
+              <span class="poly-cell-val-small">→</span>
+            </div>
+          </div>
+          <div class="sll-chain-arrow">→</div>
+          <div class="sll-node-box poly-node-box sll-node-tail">
+            <div class="poly-node-coeff">
+              <span class="poly-cell-label">coeff</span>
+              <span class="poly-cell-val">7</span>
+            </div>
+            <div class="poly-node-exp">
+              <span class="poly-cell-label">exp</span>
+              <span class="poly-cell-val">0</span>
+            </div>
+            <div class="poly-node-next-field">
+              <span class="poly-cell-label">next</span>
+              <span class="poly-cell-val-small sll-null">NULL</span>
+            </div>
+          </div>
+        </div>
+        <div class="poly-legend-row">
+          <span class="poly-legend-item poly-legend-coeff">■ coefficient</span>
+          <span class="poly-legend-item poly-legend-exp">■ exponent</span>
+        </div>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="analogy-emoji">🔢</div>
+          <h4 class="analogy-title">Each Term = One Node</h4>
+          <p class="analogy-desc">Every term of a polynomial (e.g. 4x²) becomes exactly one node — storing the coefficient 4 and exponent 2. Nodes chain in decreasing exponent order.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🧩</div>
+          <h4 class="analogy-title">Sparse Friendly</h4>
+          <p class="analogy-desc">A polynomial like x¹⁰⁰ + 1 has only 2 terms. A linked list uses 2 nodes — not 101 array slots. Only non-zero terms get stored.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🔗</div>
+          <h4 class="analogy-title">Dynamic Growth</h4>
+          <p class="analogy-desc">Adding a new term means inserting a node at the correct position. No array resizing, no shifting elements — pointer re-wiring is all it takes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECTION 2: Why Linked List? ══ -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Why Use a Linked List?</h2>
+      </div>
+
+      <p class="lesson-para">
+        Arrays seem like a natural choice — use index as the exponent, value as coefficient. But this breaks down fast with real polynomials. A linked list solves every array problem elegantly.
+      </p>
+
+      <!-- Side-by-side comparison -->
+      <div class="diagram-row">
+        <div class="diagram-card poly-compare-bad">
+          <h4 class="diagram-title">❌ Array Representation</h4>
+          <p class="lesson-para" style="font-size:13px;margin-bottom:12px;">
+            For <code class="inline-code">5x⁵ + 2x¹</code> — array must hold indices 0 through 5:
+          </p>
+          <div class="poly-array-visual">
+            <div class="poly-array-cell poly-array-zero">
+              <span class="poly-array-idx">0</span>
+              <span class="poly-array-val">0</span>
+            </div>
+            <div class="poly-array-cell poly-array-zero">
+              <span class="poly-array-idx">1</span>
+              <span class="poly-array-val">2</span>
+            </div>
+            <div class="poly-array-cell poly-array-zero">
+              <span class="poly-array-idx">2</span>
+              <span class="poly-array-val">0</span>
+            </div>
+            <div class="poly-array-cell poly-array-zero">
+              <span class="poly-array-idx">3</span>
+              <span class="poly-array-val">0</span>
+            </div>
+            <div class="poly-array-cell poly-array-zero">
+              <span class="poly-array-idx">4</span>
+              <span class="poly-array-val">0</span>
+            </div>
+            <div class="poly-array-cell poly-array-val-cell">
+              <span class="poly-array-idx">5</span>
+              <span class="poly-array-val">5</span>
+            </div>
+          </div>
+          <div class="info-box" style="margin-top:12px;">
+            <span class="info-icon">⚠️</span>
+            <span>4 out of 6 slots are wasted zeros. For x¹⁰⁰⁰ + 1, you'd waste 999 slots.</span>
+          </div>
+        </div>
+
+        <div class="diagram-card poly-compare-good">
+          <h4 class="diagram-title">✅ Linked List Representation</h4>
+          <p class="lesson-para" style="font-size:13px;margin-bottom:12px;">
+            Same polynomial <code class="inline-code">5x⁵ + 2x¹</code> — only 2 nodes needed:
+          </p>
+          <div class="sll-nodes-row" style="flex-wrap:wrap;gap:8px;">
+            <div class="sll-node-box poly-node-box">
+              <div class="poly-node-coeff">
+                <span class="poly-cell-label">coeff</span>
+                <span class="poly-cell-val">5</span>
+              </div>
+              <div class="poly-node-exp">
+                <span class="poly-cell-label">exp</span>
+                <span class="poly-cell-val">5</span>
+              </div>
+              <div class="poly-node-next-field">
+                <span class="poly-cell-label">next</span>
+                <span class="poly-cell-val-small">→</span>
+              </div>
+            </div>
+            <div class="sll-chain-arrow">→</div>
+            <div class="sll-node-box poly-node-box sll-node-tail">
+              <div class="poly-node-coeff">
+                <span class="poly-cell-label">coeff</span>
+                <span class="poly-cell-val">2</span>
+              </div>
+              <div class="poly-node-exp">
+                <span class="poly-cell-label">exp</span>
+                <span class="poly-cell-val">1</span>
+              </div>
+              <div class="poly-node-next-field">
+                <span class="poly-cell-label">next</span>
+                <span class="poly-cell-val-small sll-null">NULL</span>
+              </div>
+            </div>
+          </div>
+          <div class="info-box" style="margin-top:12px;background:#f0fff4;border-color:#b7efc5;border-left-color:#2e7d32;color:#1b5e20;">
+            <span class="info-icon">✅</span>
+            <span>Zero waste. Only non-zero terms stored. Scales to any degree.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="comparison-table-wrap">
+        <p class="table-heading">Array vs Linked List — Polynomial Storage</p>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Criterion</th>
+              <th>Array</th>
+              <th>Linked List</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Memory for sparse poly</td><td>Wastes O(degree) slots</td><td>Only O(terms) nodes</td></tr>
+            <tr><td>Insert new term</td><td>Shift elements, O(n)</td><td>Pointer rewire, O(1)~O(n)</td></tr>
+            <tr><td>Delete a term</td><td>Shift + compact, O(n)</td><td>Pointer re-link, O(n) find</td></tr>
+            <tr><td>Dynamic degree change</td><td>Requires resize/copy</td><td>Natural, no resize</td></tr>
+            <tr><td>Zero-coefficient terms</td><td>Must store explicitly</td><td>Simply omit the node</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ SECTION 3: Node Structure ══ -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Structure of a Polynomial Node</h2>
+      </div>
+
+      <p class="lesson-para">
+        Each node in a polynomial linked list stores exactly two data fields — <code class="inline-code">coeff</code> (the coefficient) and <code class="inline-code">exp</code> (the exponent) — plus a <code class="inline-code">next</code> pointer to the following term.
+      </p>
+
+      <!-- Node anatomy -->
+      <div class="sll-node-anatomy">
+        <div class="anatomy-label">Polynomial Node Structure</div>
+        <div class="anatomy-body">
+          <div class="anatomy-cell poly-anatomy-coeff">
+            <span class="anatomy-cell-label">coeff</span>
+            <span class="anatomy-cell-val" style="color:#1d4ed8;">5</span>
+          </div>
+          <div class="anatomy-divider"></div>
+          <div class="anatomy-cell poly-anatomy-exp">
+            <span class="anatomy-cell-label">exp</span>
+            <span class="anatomy-cell-val" style="color:#2e7d32;">3</span>
+          </div>
+          <div class="anatomy-divider"></div>
+          <div class="anatomy-cell anatomy-next">
+            <span class="anatomy-cell-label">next</span>
+            <span class="anatomy-cell-val">0x2B4</span>
+          </div>
+        </div>
+        <div class="anatomy-caption">Represents the term <strong>5x³</strong> — coefficient · exponent · pointer to next term</div>
+      </div>
+
+      <!-- C struct code block -->
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">C — Node Structure</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content"><span class="c-kw">struct</span> node {
+    <span class="c-kw">int</span> coeff;           <span class="c-comment">// coefficient of the term</span>
+    <span class="c-kw">int</span> exp;             <span class="c-comment">// exponent (power) of the variable</span>
+    <span class="c-kw">struct</span> node* next;   <span class="c-comment">// pointer to the next term</span>
+};</pre>
+      </div>
+
+      <div class="diagram-row">
+        <div class="diagram-card">
+          <h4 class="diagram-title">Field: coeff</h4>
+          <div class="sll-props-list">
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-blue"></span>
+              <span class="sll-prop-text">Stores the numeric multiplier of the term</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-blue"></span>
+              <span class="sll-prop-text">Can be positive, negative, or zero (but zero-coeff nodes are usually omitted)</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-blue"></span>
+              <span class="sll-prop-text">Example: in <code class="inline-code">-3x²</code>, coeff = <code class="inline-code">-3</code></span>
+            </div>
+          </div>
+        </div>
+        <div class="diagram-card">
+          <h4 class="diagram-title">Field: exp</h4>
+          <div class="sll-props-list">
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-green"></span>
+              <span class="sll-prop-text">Stores the power of the variable x</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-green"></span>
+              <span class="sll-prop-text">Nodes are ordered by decreasing exponent (head = highest degree)</span>
+            </div>
+            <div class="sll-prop-item">
+              <span class="sll-prop-dot sll-dot-green"></span>
+              <span class="sll-prop-text">Example: in <code class="inline-code">-3x²</code>, exp = <code class="inline-code">2</code></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECTION 4: Full Polynomial Visualization ══ -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Polynomial as a Linked List</h2>
+      </div>
+
+      <p class="lesson-para">
+        Let's trace how the polynomial <strong>6x⁴ + 3x² + 2x + 1</strong> is stored as a linked list. Each term becomes a node with coeff and exp fields, chained HEAD → NULL in descending exponent order.
+      </p>
+
+      <div class="sll-chain-diagram">
+        <div class="poly-expression-label">Polynomial: <strong>6x⁴ + 3x² + 2x + 1</strong></div>
+        <div class="sll-pointer-row">
+          <div class="sll-ptr-label head-ptr">HEAD</div>
+          <div class="sll-ptr-arrow-down">↓</div>
+        </div>
+        <div class="sll-nodes-row">
+          <div class="sll-node-box poly-node-box">
+            <div class="poly-node-coeff">
+              <span class="poly-cell-label">coeff</span>
+              <span class="poly-cell-val">6</span>
+            </div>
+            <div class="poly-node-exp">
+              <span class="poly-cell-label">exp</span>
+              <span class="poly-cell-val">4</span>
+            </div>
+            <div class="poly-node-next-field">
+              <span class="poly-cell-label">next</span>
+              <span class="poly-cell-val-small">→</span>
+            </div>
+          </div>
+          <div class="sll-chain-arrow">→</div>
+          <div class="sll-node-box poly-node-box">
+            <div class="poly-node-coeff">
+              <span class="poly-cell-label">coeff</span>
+              <span class="poly-cell-val">3</span>
+            </div>
+            <div class="poly-node-exp">
+              <span class="poly-cell-label">exp</span>
+              <span class="poly-cell-val">2</span>
+            </div>
+            <div class="poly-node-next-field">
+              <span class="poly-cell-label">next</span>
+              <span class="poly-cell-val-small">→</span>
+            </div>
+          </div>
+          <div class="sll-chain-arrow">→</div>
+          <div class="sll-node-box poly-node-box">
+            <div class="poly-node-coeff">
+              <span class="poly-cell-label">coeff</span>
+              <span class="poly-cell-val">2</span>
+            </div>
+            <div class="poly-node-exp">
+              <span class="poly-cell-label">exp</span>
+              <span class="poly-cell-val">1</span>
+            </div>
+            <div class="poly-node-next-field">
+              <span class="poly-cell-label">next</span>
+              <span class="poly-cell-val-small">→</span>
+            </div>
+          </div>
+          <div class="sll-chain-arrow">→</div>
+          <div class="sll-node-box poly-node-box sll-node-tail">
+            <div class="poly-node-coeff">
+              <span class="poly-cell-label">coeff</span>
+              <span class="poly-cell-val">1</span>
+            </div>
+            <div class="poly-node-exp">
+              <span class="poly-cell-label">exp</span>
+              <span class="poly-cell-val">0</span>
+            </div>
+            <div class="poly-node-next-field">
+              <span class="poly-cell-label">next</span>
+              <span class="poly-cell-val-small sll-null">NULL</span>
+            </div>
+          </div>
+          <div class="sll-chain-arrow">→</div>
+          <div class="dll-null-right">NULL</div>
+        </div>
+        <div class="poly-term-labels-row">
+          <span class="poly-term-label">6x⁴</span>
+          <span class="poly-term-gap"></span>
+          <span class="poly-term-label">3x²</span>
+          <span class="poly-term-gap"></span>
+          <span class="poly-term-label">2x¹</span>
+          <span class="poly-term-gap"></span>
+          <span class="poly-term-label">1x⁰</span>
+        </div>
+        <div class="poly-legend-row">
+          <span class="poly-legend-item poly-legend-coeff">■ coefficient</span>
+          <span class="poly-legend-item poly-legend-exp">■ exponent</span>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <span>Note that the term for x³ is <strong>missing</strong> — its coefficient is 0. In a linked list, we simply skip it entirely. An array would have needed to store a 0 at index 3.</span>
+      </div>
+    </section>
+
+    <!-- ══ SECTION 5: Operations ══ -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Operations on Polynomial Linked Lists</h2>
+      </div>
+
+      <div class="ops-grid">
+        <div class="op-card">
+          <div class="op-badge op-ins-beg">Addition</div>
+          <p class="op-desc">Traverse both lists simultaneously. When exponents match, add coefficients and create a new node. When they differ, copy the larger-exponent node to the result list.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(m+n)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-ins-end">Subtraction</div>
+          <p class="op-desc">Same as addition, but negate the coefficients of the second polynomial before combining. Same exponent matching logic applies.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(m+n)</span>
+          </div>
+        </div>
+        <div class="op-card">
+          <div class="op-badge op-traverse">Multiplication</div>
+          <p class="op-desc">For each node in P1, multiply with every node in P2: multiply coefficients, add exponents. Collect results, then merge same-exponent terms. More complex but manageable.</p>
+          <div class="op-complexity">
+            <span class="complexity-label">Time Complexity</span>
+            <span class="complexity-value">O(m×n)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Addition visual -->
+      <div class="diagram-card" style="margin-top:8px;">
+        <h4 class="diagram-title">Addition Example — P1 + P2</h4>
+        <div class="sll-op-diagram">
+          <div class="sll-op-step">
+            <span class="sll-op-step-label">P1</span>
+            <div class="sll-mini-chain">
+              <div class="sll-mini-ptr">HEAD→</div>
+              <div class="sll-mini-node poly-mini-node">[5|2]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node poly-mini-node">[3|1]</div>
+              <span class="sll-mini-arr">→</span>
+              <span class="sll-mini-null">NULL</span>
+            </div>
+          </div>
+          <div class="sll-op-step">
+            <span class="sll-op-step-label">P2</span>
+            <div class="sll-mini-chain">
+              <div class="sll-mini-ptr">HEAD→</div>
+              <div class="sll-mini-node poly-mini-node">[2|2]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node poly-mini-node">[4|0]</div>
+              <span class="sll-mini-arr">→</span>
+              <span class="sll-mini-null">NULL</span>
+            </div>
+          </div>
+          <div class="sll-op-step">
+            <span class="sll-op-step-label">Result (P1 + P2) — 5x²+2x² combined → 7x²</span>
+            <div class="sll-mini-chain">
+              <div class="sll-mini-ptr">HEAD→</div>
+              <div class="sll-mini-node sll-mini-new poly-mini-node">[7|2]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node sll-mini-new poly-mini-node">[3|1]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node sll-mini-new poly-mini-node">[4|0]</div>
+              <span class="sll-mini-arr">→</span>
+              <span class="sll-mini-null">NULL</span>
+            </div>
+          </div>
+        </div>
+        <div class="info-box" style="margin-top:14px;">
+          <span class="info-icon">📌</span>
+          <span>Same exponent = coefficients are added together. Different exponents = node is copied as-is to the result list. Terms are always kept in descending exponent order.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECTION 6: Traversal ══ -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Traversal</h2>
+      </div>
+
+      <p class="lesson-para">
+        Traversal visits each node from HEAD to NULL, reading the coefficient and exponent to print or process the term. This is identical to standard singly linked list traversal — simply follow the <code class="inline-code">next</code> pointer until it is <code class="inline-code">NULL</code>.
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">C — Traversal</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content"><span class="c-kw">struct</span> node* temp = head;
+
+<span class="c-kw">while</span>(temp != NULL) {
+    printf(<span class="c-str">"%dx^%d"</span>, temp-&gt;coeff, temp-&gt;exp);
+    <span class="c-kw">if</span>(temp-&gt;next != NULL)
+        printf(<span class="c-str">" + "</span>);
+    temp = temp-&gt;next;
+}
+printf(<span class="c-str">"\n"</span>);</pre>
+      </div>
+
+      <!-- Traversal step diagram -->
+      <div class="sll-chain-diagram" style="margin-top:20px;">
+        <div class="poly-expression-label">Traversing: <strong>6x⁴ + 3x² + 2x + 1</strong></div>
+        <div class="sll-op-diagram" style="margin-top:14px;">
+          <div class="sll-op-step">
+            <span class="sll-op-step-label">Step 1 — visit node at HEAD</span>
+            <div class="sll-mini-chain">
+              <div class="sll-mini-node sll-mini-new poly-mini-node">[6|4]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node poly-mini-node">[3|2]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node poly-mini-node">[2|1]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node poly-mini-node">[1|0]</div>
+              <span class="sll-mini-arr">→</span>
+              <span class="sll-mini-null">NULL</span>
+            </div>
+          </div>
+          <div class="sll-op-step">
+            <span class="sll-op-step-label">Step 2 — follow next, visit [3|2]</span>
+            <div class="sll-mini-chain">
+              <div class="sll-mini-node poly-mini-node">[6|4]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node sll-mini-new poly-mini-node">[3|2]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node poly-mini-node">[2|1]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node poly-mini-node">[1|0]</div>
+              <span class="sll-mini-arr">→</span>
+              <span class="sll-mini-null">NULL</span>
+            </div>
+          </div>
+          <div class="sll-op-step">
+            <span class="sll-op-step-label">Continue until temp == NULL → print: 6x^4 + 3x^2 + 2x^1 + 1x^0</span>
+            <div class="sll-mini-chain">
+              <div class="sll-mini-node poly-mini-node">[6|4]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node poly-mini-node">[3|2]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node poly-mini-node">[2|1]</div>
+              <span class="sll-mini-arr">→</span>
+              <div class="sll-mini-node poly-mini-node">[1|0]</div>
+              <span class="sll-mini-arr">→</span>
+              <span class="sll-mini-null">NULL ✓</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECTION 7: Advantages ══ -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Advantages</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">💾</div>
+          <h4 class="analogy-title">Dynamic Memory Allocation</h4>
+          <p class="analogy-desc">Memory is allocated only for terms that exist. No pre-declaration of max degree required — nodes are created on demand.</p>
+        </div>
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">🪶</div>
+          <h4 class="analogy-title">Efficient Sparse Representation</h4>
+          <p class="analogy-desc">A polynomial with 3 non-zero terms out of degree 100 uses exactly 3 nodes. Arrays would waste 98 slots on zeros.</p>
+        </div>
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">➕</div>
+          <h4 class="analogy-title">Easy Insertion &amp; Deletion</h4>
+          <p class="analogy-desc">Inserting a new term between two existing terms only requires pointer adjustments — no element shifting like in arrays.</p>
+        </div>
+        <div class="analogy-card analogy-pro">
+          <div class="analogy-emoji">🧮</div>
+          <h4 class="analogy-title">Polynomial Operations</h4>
+          <p class="analogy-desc">Addition, subtraction, and multiplication are straightforward — traverse both lists and process nodes by matching exponents.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECTION 8: Limitations ══ -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">08</span>
+        <h2 class="section-title">Limitations</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">🔀</div>
+          <h4 class="analogy-title">Pointer Complexity</h4>
+          <p class="analogy-desc">Each node requires an extra <code class="inline-code">next</code> pointer field, increasing per-node memory overhead compared to simple arrays.</p>
+        </div>
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">🚶</div>
+          <h4 class="analogy-title">Sequential Traversal Only</h4>
+          <p class="analogy-desc">To find a specific term, you must traverse from HEAD. No random access by index — unlike arrays where arr[i] is O(1).</p>
+        </div>
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">✖️</div>
+          <h4 class="analogy-title">Complex Multiplication</h4>
+          <p class="analogy-desc">Multiplication requires O(m×n) node combinations and a merge step to combine same-exponent results — significantly more complex than addition.</p>
+        </div>
+        <div class="analogy-card analogy-con">
+          <div class="analogy-emoji">📦</div>
+          <h4 class="analogy-title">Pointer Overhead</h4>
+          <p class="analogy-desc">For dense polynomials (most terms non-zero), a linked list uses more total memory than an array due to storing a pointer in every node.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECTION 9: Applications ══ -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">09</span>
+        <h2 class="section-title">Applications</h2>
+      </div>
+
+      <p class="lesson-para">
+        Polynomial representation with linked lists appears across scientific computing, symbolic math engines, and algebraic tools — anywhere expressions must be stored and manipulated programmatically.
+      </p>
+
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon">🧮</div>
+          <h4 class="app-title">Scientific Calculators</h4>
+          <p class="app-desc">Advanced calculators store and evaluate polynomial expressions internally, supporting operations like differentiation and integration.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📐</div>
+          <h4 class="app-title">Symbolic Mathematics</h4>
+          <p class="app-desc">Systems like Wolfram Alpha and MATLAB represent algebraic expressions as linked structures to enable symbolic simplification and evaluation.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🔢</div>
+          <h4 class="app-title">Algebra Systems</h4>
+          <p class="app-desc">CAS (Computer Algebra Systems) use polynomial linked lists to represent and manipulate variables, solve equations, and factor expressions.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">💻</div>
+          <h4 class="app-title">Computer Algebra Software</h4>
+          <p class="app-desc">Tools like Mathematica, Maple, and SymPy internally manage polynomials as dynamic lists to support arbitrary-precision and multi-variable expressions.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">✂️</div>
+          <h4 class="app-title">Expression Simplification</h4>
+          <p class="app-desc">Compilers and symbolic engines combine like terms, remove zero-coefficient nodes, and reorder expressions using linked list traversal and modification.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📈</div>
+          <h4 class="app-title">Numerical Methods</h4>
+          <p class="app-desc">Polynomial interpolation (Newton's, Lagrange's methods) uses linked representations to build and evaluate interpolating polynomials dynamically.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGradPoly)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGradPoly" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="polynomial-representation.js"></script>
+<link rel="stylesheet" href="../../spark/spark.css">
+<script src="../../spark/spark.js"></script>
+</body>
+</html>
