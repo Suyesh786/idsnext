@@ -67,11 +67,44 @@ function logout() {
   window.location.href = "../../login.html";
 }
 
+// Minimal sidebar helpers (safe no-ops if markup is missing).
+window.toggleSidebar = window.toggleSidebar || function () {
+  const sidebar = document.querySelector(".sidebar");
+  if (!sidebar) return;
+
+  const overlay = document.getElementById("sidebarOverlay");
+  const mainContent = document.querySelector(".main");
+
+  const isMobile = window.innerWidth <= 768;
+
+  if (isMobile) {
+    const isOpen = sidebar.classList.contains("sidebar-mobile-open");
+    sidebar.classList.toggle("sidebar-mobile-open");
+    if (overlay) overlay.classList.toggle("active");
+    document.body.style.overflow = !isOpen ? "hidden" : "";
+  } else {
+    sidebar.classList.toggle("sidebar-collapsed");
+    if (mainContent) mainContent.classList.toggle("main-expanded");
+  }
+};
+
+window.closeSidebar = window.closeSidebar || function () {
+  const sidebar = document.querySelector(".sidebar");
+  if (!sidebar) return;
+
+  const overlay = document.getElementById("sidebarOverlay");
+  sidebar.classList.remove("sidebar-mobile-open");
+  if (overlay) overlay.classList.remove("active");
+  document.body.style.overflow = "";
+};
+
 function toggleAccordion(id) {
   const item = document.getElementById(id);
   if (item) item.classList.toggle("open");
 }
 
+// Theory-only page: disable simulator/visualizer logic.
+if (false) {
 /* ══════════════════════════════════════════════════════════════
    DOUBLY CIRCULAR LINKED LIST SIMULATOR
 ══════════════════════════════════════════════════════════════ */
@@ -497,3 +530,5 @@ function dcllReset() {
   updateStats();
   setStatus("List reset. Ready for a new sequence.", "info");
 }
+
+} // end disabled simulator block
