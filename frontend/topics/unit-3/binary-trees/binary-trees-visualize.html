@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Binary Tree — Visualize Code | IDS Studio Next</title>
+  <link rel="stylesheet" href="binary-trees-visualize.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+</head>
+<body class="viz-body">
+
+  <!-- ═══ TOPBAR ═══ -->
+  <header class="viz-header">
+    <div class="viz-header-left">
+      <a href="binary-trees.html" class="viz-back-btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+        </svg>
+        Back to Binary Tree
+      </a>
+      <div class="viz-header-divider"></div>
+      <div class="viz-header-title-wrap">
+        <span class="viz-header-eyebrow">Binary Tree</span>
+        <h1 class="viz-header-title">Visualize Code</h1>
+      </div>
+    </div>
+    <div class="viz-header-right">
+      <div class="viz-operation-badge">
+        <span class="viz-op-dot"></span>
+        create() Recursion
+      </div>
+      <div class="viz-step-counter">
+        Step <span id="headerStepNum">0</span> / <span id="headerStepTotal">32</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN 3-PANEL ═══ -->
+  <main class="viz-main">
+
+    <!-- LEFT: CODE -->
+    <section class="viz-panel viz-code-panel">
+      <div class="viz-panel-header">
+        <div class="viz-panel-title-row">
+          <span class="viz-panel-icon">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </span>
+          <span class="viz-panel-title">C Code</span>
+        </div>
+        <span class="viz-lang-tag">C</span>
+      </div>
+      <div class="viz-code-block">
+        <div class="viz-code-lines" id="codeLines"></div>
+      </div>
+      <div class="viz-complexity-bar">
+        <span class="viz-complexity-label">Time</span>
+        <span class="viz-complexity-val">O(n)</span>
+        <span class="viz-complexity-sep">·</span>
+        <span class="viz-complexity-label">Space</span>
+        <span class="viz-complexity-val">O(n)</span>
+      </div>
+    </section>
+
+    <!-- CENTER: ANIMATION -->
+    <section class="viz-panel viz-anim-panel">
+      <div class="viz-panel-header">
+        <div class="viz-panel-title-row">
+          <span class="viz-panel-icon">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.986.074-1.95.292-2.843A7 7 0 1010 14h2z"/>
+            </svg>
+          </span>
+          <span class="viz-panel-title">Call Stack Animation</span>
+        </div>
+        <span class="viz-anim-status" id="animStatus">Ready</span>
+      </div>
+
+      <!-- scrollable viewport; user can drag -->
+      <div class="viz-anim-viewport" id="animViewport">
+        <div class="viz-anim-canvas" id="animCanvas">
+          <!-- call boxes injected by JS -->
+        </div>
+        <!-- SVG arrows overlay — OUTSIDE canvas so it doesn't move with pan -->
+        <svg class="viz-arrows-svg" id="arrowsSvg" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+          <defs>
+            <marker id="mh-call" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+              <polygon points="0 0,8 3,0 6" fill="#3b6cff"/>
+            </marker>
+            <marker id="mh-ret" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+              <polygon points="0 0,8 3,0 6" fill="#10b981"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <!-- Controls -->
+      <div class="viz-controls">
+        <button class="viz-ctrl-btn viz-ctrl-reset" id="btnReset">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+          </svg>
+          Reset
+        </button>
+        <div class="viz-ctrl-center">
+          <button class="viz-ctrl-btn viz-ctrl-prev" id="btnPrev" disabled>
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            Prev
+          </button>
+          <div class="viz-step-pill" id="stepPill">0 / 32</div>
+          <button class="viz-ctrl-btn viz-ctrl-next" id="btnNext">
+            Next
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+        <div class="viz-progress-dots" id="progressDots"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT: TREE PLACEHOLDER -->
+    <section class="viz-panel viz-tree-panel">
+      <div class="viz-panel-header">
+        <div class="viz-panel-title-row">
+          <span class="viz-panel-icon" style="color:#10b981">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+              <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+            </svg>
+          </span>
+          <span class="viz-panel-title">Tree</span>
+        </div>
+        <span class="viz-lang-tag viz-tag-soon">Soon</span>
+      </div>
+      <div class="viz-tree-placeholder">
+        <div class="viz-tree-icon">🌳</div>
+        <p class="viz-tree-msg">Tree visualization<br>coming soon</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══ EXPLANATION BAR ═══ -->
+  <section class="viz-explain-bar">
+    <div class="viz-explain-label">
+      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor" style="flex-shrink:0">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+      </svg>
+      What's happening
+    </div>
+    <div class="viz-explain-text" id="explText">Click <strong>Next</strong> to begin the walkthrough.</div>
+  </section>
+
+  <script src="binary-trees-visualize.js"></script>
+</body>
+</html>
