@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Trees &amp; Terminology | iDS Studio Next</title>
+<link rel="stylesheet" href="../../../dashboard/dashboard.css">
+<link rel="stylesheet" href="tree-intro.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
+
+<!-- ═══════════ MOBILE TOPBAR ═══════════ -->
+<div class="topbar" id="topbar">
+  <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="topbar-logo">
+    <img src="../../../image/ilogo.png" class="logo-img" alt="IDS Logo">
+    <span class="topbar-site-name">iDS Studio <span class="topbar-next">Next</span></span>
+  </div>
+</div>
+
+<!-- Dark overlay for mobile sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar" id="mainSidebar">
+
+  <div class="sidebar-desktop-toggle">
+    <button class="hamburger-btn" id="desktopHamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="../../../image/ilogo.png" alt="iDS Studio" class="logo-img">
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <a href="../../../dashboard/dashboard.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+      </svg>
+      <span class="menu-label">Dashboard</span>
+    </a>
+    <a href="../../../learn/learn.html" class="menu-item active">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+      </svg>
+      <span class="menu-label">Learn</span>
+    </a>
+    <a href="../../../practice/practice.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+      </svg>
+      <span class="menu-label">Practice</span>
+    </a>
+    <a href="../../../leaderboard/leaderboard.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+      </svg>
+      <span class="menu-label">Leaderboard</span>
+    </a>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        <span class="menu-label">Logout</span>
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main ll-main">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <nav class="breadcrumb">
+        <a href="../../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 3</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Introduction to Trees &amp; Terminology</span>
+      </nav>
+      <h1 class="lesson-heading">
+        Trees &amp; Terminology
+        <span class="lesson-heading-tag">Hierarchical Data Structure</span>
+      </h1>
+    </div>
+
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- ── SECTION 1: What is a Tree? ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is a Tree?</h2>
+      </div>
+
+      <div class="definition-box">
+        <div class="definition-icon">🌳</div>
+        <div class="definition-body">
+          A <strong>Tree</strong> is a non-linear, hierarchical data structure made of
+          <span class="highlight-text">nodes</span> connected by
+          <span class="highlight-text">edges</span>. Unlike arrays or linked lists that are
+          linear (one item after another), trees <span class="highlight-text">branch out</span>
+          — each node can have multiple children below it.
+        </div>
+      </div>
+
+      <p class="lesson-para">
+        Think of a <strong>family tree</strong>: a grandparent at the top, two parents below, and grandchildren further down. Your computer's <strong>file system</strong> is a tree — folders contain sub-folders and files. An <strong>org chart</strong> is a tree — the CEO at the top, departments branching below. Trees model these real-world hierarchies naturally.
+      </p>
+
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <span>Trees are <strong>connected</strong> and <strong>acyclic</strong> — there are no loops. Every node (except the root) has exactly one parent, and there is exactly one path between any two nodes.</span>
+      </div>
+
+      <!-- Simple Tree Visual -->
+      <div class="tree-visual-wrap">
+        <div class="tree-visual-label">A simple tree — 7 nodes, 3 levels</div>
+        <div class="tree-diagram tree-diagram-simple">
+          <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
+            <!-- Edges -->
+            <line x1="260" y1="48" x2="130" y2="118" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="260" y1="48" x2="390" y2="118" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="130" y1="118" x2="65" y2="188" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="130" y1="118" x2="195" y2="188" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="390" y1="118" x2="325" y2="188" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="390" y1="118" x2="455" y2="188" stroke="#c0d4ff" stroke-width="2"/>
+            <!-- Root -->
+            <circle cx="260" cy="36" r="28" fill="#4f8cff" stroke="#3b6cff" stroke-width="2"/>
+            <text x="260" y="41" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="DM Sans,sans-serif">A</text>
+            <!-- Level 1 -->
+            <circle cx="130" cy="118" r="26" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+            <text x="130" y="123" text-anchor="middle" fill="#3b6cff" font-size="14" font-weight="700" font-family="DM Sans,sans-serif">B</text>
+            <circle cx="390" cy="118" r="26" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+            <text x="390" y="123" text-anchor="middle" fill="#3b6cff" font-size="14" font-weight="700" font-family="DM Sans,sans-serif">C</text>
+            <!-- Level 2 -->
+            <circle cx="65" cy="188" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+            <text x="65" y="193" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">D</text>
+            <circle cx="195" cy="188" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+            <text x="195" y="193" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">E</text>
+            <circle cx="325" cy="188" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+            <text x="325" y="193" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">F</text>
+            <circle cx="455" cy="188" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+            <text x="455" y="193" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">G</text>
+            <!-- Labels -->
+            <text x="296" y="30" fill="#4f8cff" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">Root</text>
+          </svg>
+          <div class="tree-legend-row">
+            <span class="tree-legend-item"><span class="legend-dot dot-blue"></span>Root node</span>
+            <span class="tree-legend-item"><span class="legend-dot dot-mid"></span>Internal nodes</span>
+            <span class="tree-legend-item"><span class="legend-dot dot-purple"></span>Leaf nodes</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 2: Why Trees? ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Why Trees?</h2>
+      </div>
+
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="analogy-emoji">🐌</div>
+          <h4 class="analogy-title">Linear Search is Slow</h4>
+          <p class="analogy-desc">Arrays and linked lists require visiting every element to find one. That's O(n) — with 1 million items, up to 1 million checks.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">⚡</div>
+          <h4 class="analogy-title">Trees Enable O(log n)</h4>
+          <p class="analogy-desc">A balanced Binary Search Tree halves the search space at each step. 1 million items → only ~20 comparisons needed.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-emoji">🗂️</div>
+          <h4 class="analogy-title">Hierarchical Data Fits Naturally</h4>
+          <p class="analogy-desc">File systems, HTML DOM, org charts, menus — all have parent-child structure. Trees model this directly; arrays cannot.</p>
+        </div>
+      </div>
+
+      <!-- Comparison Visual -->
+      <div class="why-compare-wrap">
+        <div class="why-compare-card why-bad">
+          <div class="why-compare-title">
+            <span class="op-badge op-pop">Linked List — Search 7</span>
+          </div>
+          <div class="ll-nodes-row" style="margin-top:12px; gap:0;">
+            <div class="ll-node why-visited"><div class="ll-node-data">1</div></div>
+            <div class="ll-arrow">→</div>
+            <div class="ll-node why-visited"><div class="ll-node-data">3</div></div>
+            <div class="ll-arrow">→</div>
+            <div class="ll-node why-visited"><div class="ll-node-data">5</div></div>
+            <div class="ll-arrow">→</div>
+            <div class="ll-node why-visited"><div class="ll-node-data">6</div></div>
+            <div class="ll-arrow">→</div>
+            <div class="ll-node why-found"><div class="ll-node-data">7</div></div>
+          </div>
+          <p class="why-note">Visits every node: O(n) — 5 checks</p>
+        </div>
+
+        <div class="why-compare-card why-good">
+          <div class="why-compare-title">
+            <span class="op-badge op-push">BST — Search 7</span>
+          </div>
+          <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg" class="tree-svg" style="max-width:260px; margin-top:10px;">
+            <line x1="140" y1="34" x2="80" y2="90" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="140" y1="34" x2="200" y2="90" stroke="#a7f3d0" stroke-width="2.5"/>
+            <line x1="200" y1="90" x2="170" y2="146" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="200" y1="90" x2="230" y2="146" stroke="#a7f3d0" stroke-width="2.5"/>
+            <!-- Root 5 — visited -->
+            <circle cx="140" cy="24" r="22" fill="#fff8e8" stroke="#f59e0b" stroke-width="2.5"/>
+            <text x="140" y="29" text-anchor="middle" fill="#92400e" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">5</text>
+            <!-- Left 3 — not visited -->
+            <circle cx="80" cy="90" r="20" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="2"/>
+            <text x="80" y="95" text-anchor="middle" fill="#9e9e9e" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">3</text>
+            <!-- Right 8 — visited -->
+            <circle cx="200" cy="90" r="20" fill="#fff8e8" stroke="#f59e0b" stroke-width="2.5"/>
+            <text x="200" y="95" text-anchor="middle" fill="#92400e" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">8</text>
+            <!-- 6 visited -->
+            <circle cx="170" cy="146" r="20" fill="#d1fae5" stroke="#16a34a" stroke-width="2.5"/>
+            <text x="170" y="151" text-anchor="middle" fill="#166534" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">7</text>
+            <!-- 9 not visited -->
+            <circle cx="230" cy="146" r="20" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="2"/>
+            <text x="230" y="151" text-anchor="middle" fill="#9e9e9e" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">9</text>
+          </svg>
+          <p class="why-note">Only 3 comparisons: 5→8→7. O(log n)</p>
+        </div>
+      </div>
+
+      <p class="lesson-para" style="margin-top:16px;">
+        Trees are also the <strong>foundation for advanced structures</strong>: Binary Search Trees, AVL Trees, Heaps, Tries, and B-Trees all build on this concept. Mastering trees unlocks the entire upper half of data structures.
+      </p>
+    </section>
+
+    <!-- ── SECTION 3: Tree Terminology ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Tree Terminology</h2>
+      </div>
+
+      <p class="lesson-para">Every term you need — mapped to the diagram below. Study the diagram first, then read each definition.</p>
+
+      <!-- LARGE LABELED DIAGRAM -->
+      <div class="tree-visual-wrap">
+        <div class="tree-visual-label">Complete terminology diagram — every term labeled</div>
+        <div class="tree-diagram tree-diagram-terms">
+          <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" class="tree-svg tree-svg-terms">
+            <!-- Edges -->
+            <line x1="340" y1="52" x2="190" y2="122" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="340" y1="52" x2="490" y2="122" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="190" y1="122" x2="110" y2="198" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="190" y1="122" x2="270" y2="198" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="490" y1="122" x2="420" y2="198" stroke="#c0d4ff" stroke-width="2"/>
+            <line x1="490" y1="122" x2="570" y2="198" stroke="#c0d4ff" stroke-width="2"/>
+
+            <!-- Height line (right side) -->
+            <line x1="635" y1="52" x2="635" y2="198" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <line x1="628" y1="52" x2="642" y2="52" stroke="#f59e0b" stroke-width="1.5"/>
+            <line x1="628" y1="198" x2="642" y2="198" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="650" y="130" fill="#92400e" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">Height=2</text>
+
+            <!-- Depth line for node B (left side) -->
+            <line x1="44" y1="52" x2="44" y2="122" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <line x1="37" y1="52" x2="51" y2="52" stroke="#7c3aed" stroke-width="1.5"/>
+            <line x1="37" y1="122" x2="51" y2="122" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="5" y="90" fill="#7c3aed" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">Depth</text>
+            <text x="7" y="102" fill="#7c3aed" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">of B=1</text>
+
+            <!-- Root -->
+            <circle cx="340" cy="40" r="28" fill="#4f8cff" stroke="#3b6cff" stroke-width="2.5"/>
+            <text x="340" y="45" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="DM Sans,sans-serif">A</text>
+            <!-- Root label -->
+            <text x="370" y="28" fill="#3b6cff" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">ROOT</text>
+
+            <!-- Internal node B -->
+            <circle cx="190" cy="122" r="26" fill="#fff8e8" stroke="#f59e0b" stroke-width="2"/>
+            <text x="190" y="127" text-anchor="middle" fill="#92400e" font-size="14" font-weight="700" font-family="DM Sans,sans-serif">B</text>
+            <!-- PARENT label (B is parent of D,E) -->
+            <text x="136" y="114" fill="#92400e" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">PARENT</text>
+
+            <!-- Internal node C -->
+            <circle cx="490" cy="122" r="26" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+            <text x="490" y="127" text-anchor="middle" fill="#3b6cff" font-size="14" font-weight="700" font-family="DM Sans,sans-serif">C</text>
+
+            <!-- Leaf D -->
+            <circle cx="110" cy="198" r="24" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+            <text x="110" y="203" text-anchor="middle" fill="#166534" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">D</text>
+            <text x="68" y="218" fill="#166534" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">LEAF</text>
+
+            <!-- Leaf E — sibling of D -->
+            <circle cx="270" cy="198" r="24" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+            <text x="270" y="203" text-anchor="middle" fill="#166534" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">E</text>
+            <text x="244" y="232" fill="#166534" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">LEAF</text>
+
+            <!-- Siblings brace D-E -->
+            <path d="M110 224 Q190 240 270 224" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <text x="165" y="252" fill="#166534" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">SIBLINGS</text>
+
+            <!-- Leaf F -->
+            <circle cx="420" cy="198" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+            <text x="420" y="203" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">F</text>
+            <text x="388" y="232" fill="#7c3aed" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">LEAF (child of C)</text>
+
+            <!-- Leaf G -->
+            <circle cx="570" cy="198" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+            <text x="570" y="203" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">G</text>
+
+            <!-- Edge label -->
+            <text x="240" y="88" fill="#64748b" font-size="10" font-weight="600" font-family="DM Sans,sans-serif">EDGE</text>
+            <line x1="252" y1="86" x2="264" y2="82" stroke="#64748b" stroke-width="1" marker-end="url(#arr)"/>
+
+            <!-- Subtree bracket -->
+            <rect x="154" y="94" width="152" height="140" rx="10" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.7"/>
+            <text x="156" y="108" fill="#92400e" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">SUBTREE</text>
+
+            <!-- Child label -->
+            <text x="88" y="176" fill="#166534" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">CHILD</text>
+            <text x="260" y="176" fill="#166534" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">CHILD</text>
+
+            <!-- Level labels (far left) -->
+            <text x="6" y="44" fill="#64748b" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">Level 0</text>
+            <text x="6" y="126" fill="#64748b" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">Level 1</text>
+            <text x="6" y="202" fill="#64748b" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">Level 2</text>
+
+            <defs>
+              <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Term Cards Grid -->
+      <div class="term-grid">
+        <div class="term-card">
+          <span class="term-badge" style="background:#eef3ff;color:#3b6cff;">Node</span>
+          <p class="term-desc">Basic unit of a tree. Holds a data value and references to its children.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#eef3ff;color:#3b6cff;">Root</span>
+          <p class="term-desc">Topmost node with no parent. Every tree has exactly one root.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#f0f0f0;color:#475569;">Edge</span>
+          <p class="term-desc">A link connecting a parent node to a child node. N nodes → N−1 edges.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#fff8e8;color:#92400e;">Parent</span>
+          <p class="term-desc">A node that has one or more children directly below it.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#d1fae5;color:#166534;">Child</span>
+          <p class="term-desc">A node connected directly below a parent node. Multiple children possible.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#d1fae5;color:#166534;">Leaf</span>
+          <p class="term-desc">Node with no children. Also called an external node. Always at the bottom.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#fce7f3;color:#9d174d;">Siblings</span>
+          <p class="term-desc">Nodes that share the same parent. D and E are siblings if both children of B.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#fff8e8;color:#92400e;">Subtree</span>
+          <p class="term-desc">Any node plus all its descendants forms a subtree — itself a valid tree.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#fef3c7;color:#92400e;">Height</span>
+          <p class="term-desc">Longest path from root down to any leaf node. Measured in edges.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#ede9fe;color:#5b21b6;">Depth</span>
+          <p class="term-desc">Distance (in edges) from the root to a specific node. Root has depth 0.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#f0f0f0;color:#475569;">Level</span>
+          <p class="term-desc">All nodes at the same depth form a level. Root is Level 0.</p>
+        </div>
+        <div class="term-card">
+          <span class="term-badge" style="background:#fce7f3;color:#9d174d;">Degree</span>
+          <p class="term-desc">Number of children a node has. Leaf nodes have degree 0.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: Tree Properties ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Tree Properties</h2>
+      </div>
+
+      <div class="props-grid">
+        <div class="prop-card">
+          <div class="prop-icon">🔢</div>
+          <h4 class="prop-title">N nodes → N−1 edges</h4>
+          <p class="prop-desc">A tree with N nodes always has exactly N−1 edges. No more, no fewer.</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-icon">🛤️</div>
+          <h4 class="prop-title">Unique path between any two nodes</h4>
+          <p class="prop-desc">In a tree, there is one and only one path from any node to any other node.</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-icon">👑</div>
+          <h4 class="prop-title">Every node (except root) has exactly one parent</h4>
+          <p class="prop-desc">The root is the only node without a parent. All others have exactly one.</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-icon">🔗</div>
+          <h4 class="prop-title">Trees are connected and acyclic</h4>
+          <p class="prop-desc">All nodes are reachable from the root, and there are no cycles (loops).</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-icon">∅</div>
+          <h4 class="prop-title">Empty tree is valid</h4>
+          <p class="prop-desc">A tree with zero nodes is a valid, legal tree — just an empty one.</p>
+        </div>
+        <div class="prop-card">
+          <div class="prop-icon">📐</div>
+          <h4 class="prop-title">Height ≥ log₂(N) for balanced trees</h4>
+          <p class="prop-desc">A perfectly balanced binary tree keeps height minimal — key to fast operations.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: Types of Trees ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Types of Trees <span style="font-size:13px;font-weight:500;color:var(--text-muted);">(overview — detail in upcoming topics)</span></h2>
+      </div>
+
+      <p class="lesson-para">Trees come in many flavors, each optimized for different use cases. Here's a quick preview — we'll deep-dive into each in upcoming topics.</p>
+
+      <div class="types-grid">
+        <div class="type-card">
+          <div class="type-icon-wrap type-blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="4" r="2.5" fill="#4f8cff"/><circle cx="6" cy="16" r="2.5" fill="#4f8cff"/><circle cx="18" cy="16" r="2.5" fill="#4f8cff"/><line x1="12" y1="6.5" x2="6" y2="13.5" stroke="#4f8cff" stroke-width="1.8"/><line x1="12" y1="6.5" x2="18" y2="13.5" stroke="#4f8cff" stroke-width="1.8"/></svg>
+          </div>
+          <div class="type-body">
+            <h4 class="type-title">Binary Tree</h4>
+            <p class="type-desc">Each node has <strong>at most 2 children</strong> — left and right. The simplest tree structure.</p>
+          </div>
+        </div>
+
+        <div class="type-card">
+          <div class="type-icon-wrap type-green">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="4" r="2.5" fill="#16a34a"/><circle cx="6" cy="16" r="2.5" fill="#16a34a"/><circle cx="18" cy="16" r="2.5" fill="#16a34a"/><line x1="12" y1="6.5" x2="6" y2="13.5" stroke="#16a34a" stroke-width="1.8"/><line x1="12" y1="6.5" x2="18" y2="13.5" stroke="#16a34a" stroke-width="1.8"/><text x="4" y="20" fill="#166534" font-size="7" font-weight="700" font-family="sans-serif">&lt;</text><text x="15" y="20" fill="#166534" font-size="7" font-weight="700" font-family="sans-serif">&gt;</text></svg>
+          </div>
+          <div class="type-body">
+            <h4 class="type-title">Binary Search Tree (BST)</h4>
+            <p class="type-desc"><strong>Left child &lt; parent &lt; right child</strong>. Enables O(log n) search, insert, and delete.</p>
+          </div>
+        </div>
+
+        <div class="type-card">
+          <div class="type-icon-wrap type-purple">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="4" r="2.5" fill="#7c3aed"/><circle cx="6" cy="14" r="2.5" fill="#7c3aed"/><circle cx="18" cy="14" r="2.5" fill="#7c3aed"/><line x1="12" y1="6.5" x2="6" y2="11.5" stroke="#7c3aed" stroke-width="1.8"/><line x1="12" y1="6.5" x2="18" y2="11.5" stroke="#7c3aed" stroke-width="1.8"/><text x="7" y="22" fill="#7c3aed" font-size="8" font-weight="700" font-family="sans-serif">⇌</text></svg>
+          </div>
+          <div class="type-body">
+            <h4 class="type-title">AVL Tree</h4>
+            <p class="type-desc">A <strong>self-balancing BST</strong>. Automatically rebalances after insert/delete to keep height O(log n).</p>
+          </div>
+        </div>
+
+        <div class="type-card">
+          <div class="type-icon-wrap type-orange">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="4" r="2.5" fill="#f59e0b"/><circle cx="6" cy="14" r="2.5" fill="#f59e0b"/><circle cx="18" cy="14" r="2.5" fill="#f59e0b"/><line x1="12" y1="6.5" x2="6" y2="11.5" stroke="#f59e0b" stroke-width="1.8"/><line x1="12" y1="6.5" x2="18" y2="11.5" stroke="#f59e0b" stroke-width="1.8"/><text x="5" y="20" fill="#92400e" font-size="8" font-weight="700" font-family="sans-serif">+−</text></svg>
+          </div>
+          <div class="type-body">
+            <h4 class="type-title">Expression Tree</h4>
+            <p class="type-desc">Used to represent <strong>math expressions</strong>. Operators at internal nodes, operands at leaves.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:8px;">
+        <span class="info-icon">📚</span>
+        <span>We will cover each tree type in detail in upcoming topics. This is just a preview to help you see the big picture.</span>
+      </div>
+    </section>
+
+    <!-- ── SECTION 6: Tree vs Linear ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Tree vs Linear Data Structures</h2>
+      </div>
+
+      <div class="comparison-table-wrap">
+        <h4 class="table-heading">Array / Linked List vs Tree — Quick Comparison</h4>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Array / Linked List</th>
+              <th>Tree (BST)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Structure</td><td>Linear — one after another</td><td>Hierarchical — branches</td></tr>
+            <tr><td>Search</td><td>O(n) — visit every element</td><td>O(log n) — halve each step</td></tr>
+            <tr><td>Insert / Delete</td><td>O(n) — shift or traverse</td><td>O(log n) — follow path</td></tr>
+            <tr><td>Memory layout</td><td>Contiguous (array) / scattered (LL)</td><td>Nodes scattered, linked by pointers</td></tr>
+            <tr><td>Best use case</td><td>Sequence data, indexed access</td><td>Hierarchical / sorted data</td></tr>
+            <tr><td>Traversal</td><td>Index or next pointer</td><td>Pre/In/Post-order DFS, BFS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECTION 7: Real-World Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Real-World Applications</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon">📁</div>
+          <h4 class="app-title">File Systems</h4>
+          <p class="app-desc">Folders contain sub-folders and files in a tree. Every OS uses a directory tree — /home/user/documents is a path from root to leaf.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🌐</div>
+          <h4 class="app-title">HTML DOM</h4>
+          <p class="app-desc">A webpage's structure is a tree. &lt;html&gt; is the root, &lt;body&gt; and &lt;head&gt; are children, nested tags are deeper nodes.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🏢</div>
+          <h4 class="app-title">Organization Charts</h4>
+          <p class="app-desc">CEO at the root, departments as internal nodes, individual employees as leaf nodes. Classic tree structure.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🤖</div>
+          <h4 class="app-title">Decision Trees (AI / ML)</h4>
+          <p class="app-desc">Machine learning models make predictions by branching on yes/no questions — each question is an internal node, each outcome a leaf.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🗄️</div>
+          <h4 class="app-title">Database Indexing (B-Trees)</h4>
+          <p class="app-desc">Databases use B-Trees to index billions of rows. Searching for a record takes O(log n) instead of scanning the full table.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🔤</div>
+          <h4 class="app-title">Autocomplete / Tries</h4>
+          <p class="app-desc">Search bars use Trie trees to suggest completions. Each character is an edge; all words sharing a prefix share tree branches.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mark Complete Button (bottom) -->
+    <div class="bottom-complete-row">
+      <button class="mark-complete-btn" id="markCompleteBtnBottom" onclick="markComplete()">
+        <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        <span class="btn-label">Mark Complete</span>
+      </button>
+    </div>
+
+    <!-- Sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGradTI)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGradTI" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="tree-intro.js"></script>
+<link rel="stylesheet" href="../../../spark/spark.css">
+<script src="../../../spark/spark.js"></script>
+</body>
+</html>
