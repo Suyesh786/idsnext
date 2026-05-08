@@ -860,6 +860,13 @@
     grid-column: 1 / -1;
   }
 
+  /* SEC01/02/04 mobile: stack vertical */
+  .sec01-split, .sec02-split, .sec04-master { flex-direction: column; }
+  .sec01-text, .sec01-diagram,
+  .sec02-diagram, .sec02-text,
+  .sec04-left, .sec04-right { flex: unset; width: 100%; }
+  .sec04-card-row { grid-template-columns: 1fr; }
+
   .sidebar.sidebar-collapsed {
     width: 240px !important;
   }
@@ -968,6 +975,169 @@
 .visualize-btn-ripple { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
 
 @media (max-width: 600px) {
-  .visualize-card { margin-left: 0; width: 100%; padding: 8px 12px; gap: 8px; }
-  .vc-sub { display: none; }
+  .section-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .visualize-card {
+    padding: 8px 12px;
+    gap: 8px;
+    margin-left: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .vc-text {
+    min-width: 0;
+    flex: 1;
+  }
+  .vc-sub {
+    display: none;
+  }
+  .vc-title {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vc-arrow {
+    flex-shrink: 0;
+  }
+}
+/* ═══════════════════════════════════════════════════════════════
+   SEC01 FIX — split layout: text left (45%) | diagram right (55%)
+   Desktop only — no mobile changes
+   ═══════════════════════════════════════════════════════════════ */
+.sec01-split {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.sec01-text {
+  flex: 0 0 45%;
+  min-width: 0;
+}
+
+.sec01-diagram {
+  flex: 0 0 55%;
+  min-width: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEC02 FIX — split layout: diagram left (50%) | text+code right (50%)
+   Desktop only — no mobile changes
+   ═══════════════════════════════════════════════════════════════ */
+.sec02-split {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.sec02-diagram {
+  flex: 0 0 50%;
+  min-width: 0;
+}
+
+.sec02-text {
+  flex: 0 0 50%;
+  min-width: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEC04 FIX — sketch layout
+   Left (65%): 2x2 card grid + bottom row (card5 + pills)
+   Right (35%): tall tree diagram spanning full height
+   Desktop only
+   ═══════════════════════════════════════════════════════════════ */
+.prop-title,
+.prop-desc {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.sec04-master {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.sec04-left {
+  flex: 0 0 65%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sec04-card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Pills card matches prop-card styling */
+.sec04-pills-card {
+  background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+  border: 1px solid #d0e2ff;
+  border-radius: 14px;
+  padding: 20px 18px;
+  box-shadow: 0 3px 12px rgba(79,140,255,0.06);
+}
+
+.sec04-right {
+  flex: 0 0 35%;
+  min-width: 0;
+  display: flex;
+}
+
+.sec04-tree-box {
+  max-width: 100% !important;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.sec04-tree-box .tree-svg {
+  flex: 1;
+}
+
+.sec04-pill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sec04-pill-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sec04-pill-level {
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: system-ui, -apple-system, sans-serif;
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.sec04-pill-formula {
+  color: #3b6cff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.sec04-pill-total .sec04-pill-level {
+  background: #d1fae5;
+  color: #166534;
+}
+
+.sec04-pill-total .sec04-pill-formula {
+  color: #16a34a;
 }

@@ -137,90 +137,91 @@
         <h2 class="section-title">What is a Binary Tree?</h2>
       </div>
 
-      <div class="definition-box">
-        <div class="definition-icon">🌲</div>
-        <div class="definition-body">
-          A <strong>Binary Tree</strong> is a special type of tree where every node has
-          <span class="highlight-text">at most 2 children</span> — called the
-          <span class="highlight-text">left child</span> and the
-          <span class="highlight-text">right child</span>. Each node stores data plus
-          two pointers. If a child doesn't exist, that pointer is <strong>NULL</strong>.
+      <!-- SEC01 FIX: split layout -->
+      <div class="sec01-split">
+        <!-- LEFT: text -->
+        <div class="sec01-text">
+          <div class="definition-box">
+            <div class="definition-icon">🌲</div>
+            <div class="definition-body">
+              A <strong>Binary Tree</strong> is a special type of tree where every node has
+              <span class="highlight-text">at most 2 children</span> — called the
+              <span class="highlight-text">left child</span> and the
+              <span class="highlight-text">right child</span>. Each node stores data plus
+              two pointers. If a child doesn't exist, that pointer is <strong>NULL</strong>.
+            </div>
+          </div>
+          <p class="lesson-para">
+            Unlike a general tree where a node can have any number of children, binary trees enforce a maximum of two. This constraint is what gives binary trees their power — it enables efficient searching, insertion, and recursive algorithms. The left and right distinction also allows ordering rules (like in BSTs) to be applied naturally.
+          </p>
+          <div class="info-box">
+            <span class="info-icon">💡</span>
+            <span>Every node in a binary tree holds three things: its <strong>data value</strong>, a <strong>left pointer</strong> (to its left subtree), and a <strong>right pointer</strong> (to its right subtree). Either or both pointers can be NULL.</span>
+          </div>
         </div>
-      </div>
-
-      <p class="lesson-para">
-        Unlike a general tree where a node can have any number of children, binary trees enforce a maximum of two. This constraint is what gives binary trees their power — it enables efficient searching, insertion, and recursive algorithms. The left and right distinction also allows ordering rules (like in BSTs) to be applied naturally.
-      </p>
-
-      <div class="info-box">
-        <span class="info-icon">💡</span>
-        <span>Every node in a binary tree holds three things: its <strong>data value</strong>, a <strong>left pointer</strong> (to its left subtree), and a <strong>right pointer</strong> (to its right subtree). Either or both pointers can be NULL.</span>
-      </div>
-
-      <!-- Binary Tree Visual -->
-      <div class="tree-visual-wrap">
-        <div class="tree-visual-label">A Binary Tree — max 2 children per node</div>
-        <div class="tree-diagram">
-          <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
-            <!-- Edges -->
-            <line x1="260" y1="48" x2="140" y2="120" stroke="#c0d4ff" stroke-width="2"/>
-            <line x1="260" y1="48" x2="380" y2="120" stroke="#c0d4ff" stroke-width="2"/>
-            <line x1="140" y1="120" x2="80" y2="196" stroke="#c0d4ff" stroke-width="2"/>
-            <line x1="140" y1="120" x2="200" y2="196" stroke="#c0d4ff" stroke-width="2"/>
-            <line x1="380" y1="120" x2="320" y2="196" stroke="#c0d4ff" stroke-width="2"/>
-            <!-- NULL pointers on leaves -->
-            <!-- Root -->
-            <circle cx="260" cy="36" r="28" fill="#4f8cff" stroke="#3b6cff" stroke-width="2"/>
-            <text x="260" y="41" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="DM Sans,sans-serif">1</text>
-            <text x="212" y="22" fill="#4f8cff" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">Root</text>
-            <!-- Left child label -->
-            <text x="108" y="98" fill="#166534" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">left</text>
-            <!-- Right child label -->
-            <text x="330" y="98" fill="#166534" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">right</text>
-            <!-- Level 1 -->
-            <circle cx="140" cy="120" r="26" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
-            <text x="140" y="125" text-anchor="middle" fill="#3b6cff" font-size="14" font-weight="700" font-family="DM Sans,sans-serif">2</text>
-            <circle cx="380" cy="120" r="26" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
-            <text x="380" y="125" text-anchor="middle" fill="#3b6cff" font-size="14" font-weight="700" font-family="DM Sans,sans-serif">3</text>
-            <!-- Level 2 -->
-            <circle cx="80" cy="196" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
-            <text x="80" y="201" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">4</text>
-            <circle cx="200" cy="196" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
-            <text x="200" y="201" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">5</text>
-            <circle cx="320" cy="196" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
-            <text x="320" y="201" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">6</text>
-            <!-- NULL indicators for leaves -->
-            <!-- Node 4 NULLs -->
-            <rect x="40" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="57" y="238" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">NULL</text>
-            <rect x="86" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="103" y="238" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">NULL</text>
-            <line x1="68" y1="220" x2="57" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
-            <line x1="92" y1="220" x2="103" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
-            <!-- Node 5 NULLs -->
-            <rect x="162" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="179" y="238" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">NULL</text>
-            <rect x="208" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="225" y="238" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">NULL</text>
-            <line x1="188" y1="220" x2="179" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
-            <line x1="212" y1="220" x2="225" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
-            <!-- Node 6 NULLs -->
-            <rect x="283" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="300" y="238" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">NULL</text>
-            <rect x="330" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="347" y="238" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">NULL</text>
-            <line x1="308" y1="220" x2="300" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
-            <line x1="332" y1="220" x2="347" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
-            <!-- Node 3 right NULL -->
-            <rect x="406" y="142" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="423" y="154" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">NULL</text>
-            <line x1="400" y1="142" x2="413" y2="142" stroke="#cbd5e1" stroke-width="1.5"/>
-          </svg>
-          <div class="tree-legend-row">
-            <span class="tree-legend-item"><span class="legend-dot dot-blue"></span>Root node</span>
-            <span class="tree-legend-item"><span class="legend-dot dot-mid"></span>Internal nodes</span>
-            <span class="tree-legend-item"><span class="legend-dot dot-purple"></span>Leaf nodes</span>
-            <span class="tree-legend-item"><span class="legend-dot" style="background:#f1f5f9;border:2px solid #cbd5e1;"></span>NULL pointer</span>
+        <!-- RIGHT: diagram -->
+        <div class="sec01-diagram">
+          <div class="tree-visual-wrap" style="margin:0;">
+            <div class="tree-visual-label">A Binary Tree — max 2 children per node</div>
+            <div class="tree-diagram" style="max-width:100%;">
+              <svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
+                <!-- Edges -->
+                <line x1="260" y1="48" x2="140" y2="120" stroke="#c0d4ff" stroke-width="2"/>
+                <line x1="260" y1="48" x2="380" y2="120" stroke="#c0d4ff" stroke-width="2"/>
+                <line x1="140" y1="120" x2="80" y2="196" stroke="#c0d4ff" stroke-width="2"/>
+                <line x1="140" y1="120" x2="200" y2="196" stroke="#c0d4ff" stroke-width="2"/>
+                <line x1="380" y1="120" x2="320" y2="196" stroke="#c0d4ff" stroke-width="2"/>
+                <!-- Root -->
+                <circle cx="260" cy="36" r="28" fill="#4f8cff" stroke="#3b6cff" stroke-width="2"/>
+                <text x="260" y="41" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="system-ui,-apple-system,sans-serif">1</text>
+                <text x="212" y="22" fill="#64748b" font-size="11" font-family="system-ui,-apple-system,sans-serif">Root</text>
+                <!-- Left child label -->
+                <text x="108" y="98" fill="#64748b" font-size="11" font-family="system-ui,-apple-system,sans-serif">left</text>
+                <!-- Right child label -->
+                <text x="330" y="98" fill="#64748b" font-size="11" font-family="system-ui,-apple-system,sans-serif">right</text>
+                <!-- Level 1 -->
+                <circle cx="140" cy="120" r="26" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+                <text x="140" y="125" text-anchor="middle" fill="#3b6cff" font-size="15" font-weight="700" font-family="system-ui,-apple-system,sans-serif">2</text>
+                <circle cx="380" cy="120" r="26" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+                <text x="380" y="125" text-anchor="middle" fill="#3b6cff" font-size="15" font-weight="700" font-family="system-ui,-apple-system,sans-serif">3</text>
+                <!-- Level 2 -->
+                <circle cx="80" cy="196" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+                <text x="80" y="201" text-anchor="middle" fill="#7c3aed" font-size="15" font-weight="700" font-family="system-ui,-apple-system,sans-serif">4</text>
+                <circle cx="200" cy="196" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+                <text x="200" y="201" text-anchor="middle" fill="#7c3aed" font-size="15" font-weight="700" font-family="system-ui,-apple-system,sans-serif">5</text>
+                <circle cx="320" cy="196" r="24" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+                <text x="320" y="201" text-anchor="middle" fill="#7c3aed" font-size="15" font-weight="700" font-family="system-ui,-apple-system,sans-serif">6</text>
+                <!-- NULL indicators for leaves -->
+                <rect x="40" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="57" y="238" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="system-ui,-apple-system,sans-serif">NULL</text>
+                <rect x="86" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="103" y="238" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="system-ui,-apple-system,sans-serif">NULL</text>
+                <line x1="68" y1="220" x2="57" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
+                <line x1="92" y1="220" x2="103" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
+                <rect x="162" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="179" y="238" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="system-ui,-apple-system,sans-serif">NULL</text>
+                <rect x="208" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="225" y="238" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="system-ui,-apple-system,sans-serif">NULL</text>
+                <line x1="188" y1="220" x2="179" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
+                <line x1="212" y1="220" x2="225" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
+                <rect x="283" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="300" y="238" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="system-ui,-apple-system,sans-serif">NULL</text>
+                <rect x="330" y="226" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="347" y="238" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="system-ui,-apple-system,sans-serif">NULL</text>
+                <line x1="308" y1="220" x2="300" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
+                <line x1="332" y1="220" x2="347" y2="226" stroke="#cbd5e1" stroke-width="1.5"/>
+                <!-- Node 3 right NULL -->
+                <rect x="406" y="142" width="34" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="423" y="154" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="system-ui,-apple-system,sans-serif">NULL</text>
+                <line x1="400" y1="142" x2="413" y2="142" stroke="#cbd5e1" stroke-width="1.5"/>
+              </svg>
+              <div class="tree-legend-row">
+                <span class="tree-legend-item"><span class="legend-dot dot-blue"></span>Root node</span>
+                <span class="tree-legend-item"><span class="legend-dot dot-mid"></span>Internal nodes</span>
+                <span class="tree-legend-item"><span class="legend-dot dot-purple"></span>Leaf nodes</span>
+                <span class="tree-legend-item"><span class="legend-dot" style="background:#f1f5f9;border:2px solid #cbd5e1;"></span>NULL pointer</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -233,61 +234,66 @@
         <h2 class="section-title">Binary Tree Node Structure</h2>
       </div>
 
-      <p class="lesson-para">Each node in a binary tree has exactly <strong>3 parts</strong>: a data field, a left pointer, and a right pointer. In C, this is defined as a struct.</p>
-
-      <!-- Code Block -->
-      <div class="code-block">
-        <div class="code-block-header">
-          <span class="code-lang">C</span>
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <!-- SEC02 FIX: split layout -->
+      <div class="sec02-split">
+        <!-- LEFT: diagram -->
+        <div class="sec02-diagram">
+          <div class="tree-visual-wrap" style="margin:0;">
+            <div class="tree-visual-label">Node memory layout — 3 fields per node</div>
+            <div class="tree-diagram" style="max-width:100%;">
+              <svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
+                <!-- Central node box -->
+                <rect x="130" y="50" width="100" height="44" rx="0" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+                <rect x="230" y="50" width="100" height="44" rx="0" fill="#fff8e8" stroke="#f59e0b" stroke-width="2"/>
+                <rect x="330" y="50" width="100" height="44" rx="0" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+                <!-- Field labels -->
+                <text x="180" y="68" text-anchor="middle" fill="#3b6cff" font-size="13" font-weight="600" font-family="system-ui,-apple-system,sans-serif">left</text>
+                <text x="180" y="84" text-anchor="middle" fill="#64748b" font-size="11" font-family="system-ui,-apple-system,sans-serif">pointer</text>
+                <text x="280" y="68" text-anchor="middle" fill="#92400e" font-size="13" font-weight="600" font-family="system-ui,-apple-system,sans-serif">data</text>
+                <text x="280" y="84" text-anchor="middle" fill="#64748b" font-size="11" font-family="system-ui,-apple-system,sans-serif">e.g. 42</text>
+                <text x="380" y="68" text-anchor="middle" fill="#3b6cff" font-size="13" font-weight="600" font-family="system-ui,-apple-system,sans-serif">right</text>
+                <text x="380" y="84" text-anchor="middle" fill="#64748b" font-size="11" font-family="system-ui,-apple-system,sans-serif">pointer</text>
+                <!-- Left arrow to child -->
+                <line x1="155" y1="94" x2="80" y2="145" stroke="#93c5fd" stroke-width="1.5" marker-end="url(#arr2b)"/>
+                <circle cx="80" cy="155" r="18" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+                <text x="80" y="160" text-anchor="middle" fill="#3b6cff" font-size="14" font-weight="700" font-family="system-ui,-apple-system,sans-serif">L</text>
+                <!-- Right arrow to child -->
+                <line x1="405" y1="94" x2="440" y2="145" stroke="#93c5fd" stroke-width="1.5" marker-end="url(#arr2b)"/>
+                <circle cx="440" cy="155" r="18" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+                <text x="440" y="160" text-anchor="middle" fill="#3b6cff" font-size="14" font-weight="700" font-family="system-ui,-apple-system,sans-serif">R</text>
+                <!-- NULL example on leaf -->
+                <line x1="80" y1="173" x2="48" y2="173" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arrNullB)"/>
+                <rect x="18" y="164" width="30" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="33" y="176" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="system-ui,-apple-system,sans-serif">NULL</text>
+                <line x1="98" y1="173" x2="126" y2="173" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arrNullB)"/>
+                <rect x="127" y="164" width="30" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="142" y="176" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="system-ui,-apple-system,sans-serif">NULL</text>
+                <defs>
+                  <marker id="arr2b" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#93c5fd"/>
+                  </marker>
+                  <marker id="arrNullB" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#cbd5e1"/>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+          </div>
         </div>
-        <pre class="code-content">struct node {
+        <!-- RIGHT: text + code -->
+        <div class="sec02-text">
+          <p class="lesson-para">Each node in a binary tree has exactly <strong>3 parts</strong>: a data field, a left pointer, and a right pointer. In C, this is defined as a struct.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-lang">C</span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre class="code-content">struct node {
     int data;
     struct node* left;
     struct node* right;
 };</pre>
-      </div>
-
-      <!-- Node memory box diagram -->
-      <div class="tree-visual-wrap">
-        <div class="tree-visual-label">Node memory layout — 3 fields per node</div>
-        <div class="tree-diagram">
-          <svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
-            <!-- Central node box -->
-            <rect x="130" y="50" width="100" height="44" rx="0" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
-            <rect x="230" y="50" width="100" height="44" rx="0" fill="#fff8e8" stroke="#f59e0b" stroke-width="2"/>
-            <rect x="330" y="50" width="100" height="44" rx="0" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
-            <!-- Field labels -->
-            <text x="180" y="68" text-anchor="middle" fill="#3b6cff" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">left</text>
-            <text x="180" y="84" text-anchor="middle" fill="#3b6cff" font-size="10" font-family="DM Sans,sans-serif">pointer</text>
-            <text x="280" y="68" text-anchor="middle" fill="#92400e" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">data</text>
-            <text x="280" y="84" text-anchor="middle" fill="#92400e" font-size="10" font-family="DM Sans,sans-serif">e.g. 42</text>
-            <text x="380" y="68" text-anchor="middle" fill="#3b6cff" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">right</text>
-            <text x="380" y="84" text-anchor="middle" fill="#3b6cff" font-size="10" font-family="DM Sans,sans-serif">pointer</text>
-            <!-- Left arrow to child -->
-            <line x1="155" y1="94" x2="80" y2="145" stroke="#4f8cff" stroke-width="2" marker-end="url(#arr2)"/>
-            <circle cx="80" cy="155" r="20" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
-            <text x="80" y="160" text-anchor="middle" fill="#3b6cff" font-size="12" font-weight="700" font-family="DM Sans,sans-serif">L</text>
-            <!-- Right arrow to child -->
-            <line x1="405" y1="94" x2="440" y2="145" stroke="#4f8cff" stroke-width="2" marker-end="url(#arr2)"/>
-            <circle cx="440" cy="155" r="20" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
-            <text x="440" y="160" text-anchor="middle" fill="#3b6cff" font-size="12" font-weight="700" font-family="DM Sans,sans-serif">R</text>
-            <!-- NULL example on leaf -->
-            <line x1="80" y1="175" x2="48" y2="175" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arrNull)"/>
-            <rect x="18" y="166" width="30" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="33" y="178" text-anchor="middle" fill="#94a3b8" font-size="8" font-weight="700" font-family="DM Sans,sans-serif">NULL</text>
-            <line x1="100" y1="175" x2="128" y2="175" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arrNull)"/>
-            <rect x="129" y="166" width="30" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="144" y="178" text-anchor="middle" fill="#94a3b8" font-size="8" font-weight="700" font-family="DM Sans,sans-serif">NULL</text>
-            <defs>
-              <marker id="arr2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-                <path d="M0,0 L8,4 L0,8 Z" fill="#4f8cff"/>
-              </marker>
-              <marker id="arrNull" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-                <path d="M0,0 L6,3 L0,6 Z" fill="#cbd5e1"/>
-              </marker>
-            </defs>
-          </svg>
+          </div>
         </div>
       </div>
     </section>
@@ -456,75 +462,108 @@
         <h2 class="section-title">Binary Tree Properties</h2>
       </div>
 
-      <div class="props-grid bt-props-grid">
-        <div class="prop-card">
-          <div class="prop-icon">📐</div>
-          <h4 class="prop-title">Max nodes at Level L = 2<sup>L</sup></h4>
-          <p class="prop-desc">Level 0 (root) = 1 node. Level 1 = 2. Level 2 = 4. Each level doubles.</p>
-        </div>
-        <div class="prop-card">
-          <div class="prop-icon">🌲</div>
-          <h4 class="prop-title">Max nodes in tree of height H = 2<sup>H+1</sup> − 1</h4>
-          <p class="prop-desc">A perfect binary tree of height 2 has 7 nodes: 2³ − 1 = 7.</p>
-        </div>
-        <div class="prop-card">
-          <div class="prop-icon">📏</div>
-          <h4 class="prop-title">Min height for N nodes = ⌊log₂N⌋</h4>
-          <p class="prop-desc">7 nodes need height at least 2. Keeping height minimal = fast operations.</p>
-        </div>
-        <div class="prop-card">
-          <div class="prop-icon">🔗</div>
-          <h4 class="prop-title">N nodes → exactly N−1 edges</h4>
-          <p class="prop-desc">Every node except root has exactly one incoming edge. So edges = nodes − 1.</p>
-        </div>
-        <div class="prop-card">
-          <div class="prop-icon">🍃</div>
-          <h4 class="prop-title">Max leaves at height H = 2<sup>H</sup></h4>
-          <p class="prop-desc">At height 2, a perfect tree has 4 leaf nodes at the bottom level.</p>
-        </div>
-      </div>
+      <!-- SEC04 FIX: sketch layout — left col (cards + pills) | right col (tree, tall) -->
+      <div class="sec04-master">
 
-      <!-- Level formula visual -->
-      <div class="tree-visual-wrap" style="margin-top:24px;">
-        <div class="tree-visual-label">Level formula: max nodes at level L = 2ᴸ — perfect tree of height 2</div>
-        <div class="tree-diagram">
-          <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
-            <!-- Edges -->
-            <line x1="260" y1="44" x2="150" y2="110" stroke="#c0d4ff" stroke-width="2"/>
-            <line x1="260" y1="44" x2="370" y2="110" stroke="#c0d4ff" stroke-width="2"/>
-            <line x1="150" y1="110" x2="90" y2="176" stroke="#c0d4ff" stroke-width="2"/>
-            <line x1="150" y1="110" x2="210" y2="176" stroke="#c0d4ff" stroke-width="2"/>
-            <line x1="370" y1="110" x2="310" y2="176" stroke="#c0d4ff" stroke-width="2"/>
-            <line x1="370" y1="110" x2="430" y2="176" stroke="#c0d4ff" stroke-width="2"/>
-            <!-- Root -->
-            <circle cx="260" cy="34" r="26" fill="#4f8cff" stroke="#3b6cff" stroke-width="2"/>
-            <text x="260" y="39" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">1</text>
-            <!-- Level 1 -->
-            <circle cx="150" cy="110" r="24" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
-            <text x="150" y="115" text-anchor="middle" fill="#3b6cff" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">2</text>
-            <circle cx="370" cy="110" r="24" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
-            <text x="370" y="115" text-anchor="middle" fill="#3b6cff" font-size="13" font-weight="700" font-family="DM Sans,sans-serif">3</text>
-            <!-- Level 2 -->
-            <circle cx="90" cy="176" r="22" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
-            <text x="90" y="181" text-anchor="middle" fill="#7c3aed" font-size="12" font-weight="700" font-family="DM Sans,sans-serif">4</text>
-            <circle cx="210" cy="176" r="22" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
-            <text x="210" y="181" text-anchor="middle" fill="#7c3aed" font-size="12" font-weight="700" font-family="DM Sans,sans-serif">5</text>
-            <circle cx="310" cy="176" r="22" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
-            <text x="310" y="181" text-anchor="middle" fill="#7c3aed" font-size="12" font-weight="700" font-family="DM Sans,sans-serif">6</text>
-            <circle cx="430" cy="176" r="22" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
-            <text x="430" y="181" text-anchor="middle" fill="#7c3aed" font-size="12" font-weight="700" font-family="DM Sans,sans-serif">7</text>
-            <!-- Level annotations -->
-            <text x="6" y="38" fill="#64748b" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">Level 0</text>
-            <text x="6" y="116" fill="#64748b" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">Level 1</text>
-            <text x="6" y="182" fill="#64748b" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">Level 2</text>
-            <!-- Count annotations -->
-            <text x="302" y="38" fill="#4f8cff" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">2⁰ = 1 node</text>
-            <text x="408" y="116" fill="#3b6cff" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">2¹ = 2 nodes</text>
-            <text x="466" y="182" fill="#7c3aed" font-size="10" font-weight="700" font-family="DM Sans,sans-serif">2² = 4 nodes</text>
-            <!-- Total -->
-            <text x="178" y="198" fill="#16a34a" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">Total = 1+2+4 = 7 = 2³ − 1 ✓</text>
-          </svg>
+        <!-- LEFT COLUMN: 2x2 cards + row with card5 + pills -->
+        <div class="sec04-left">
+          <!-- Row 1: card 1 + card 2 -->
+          <div class="sec04-card-row">
+            <div class="prop-card">
+              <div class="prop-icon">📐</div>
+              <h4 class="prop-title">Max nodes at Level L = 2<sup>L</sup></h4>
+              <p class="prop-desc">Level 0 (root) = 1 node. Level 1 = 2. Level 2 = 4. Each level doubles.</p>
+            </div>
+            <div class="prop-card">
+              <div class="prop-icon">🌲</div>
+              <h4 class="prop-title">Max nodes in tree of height H = 2<sup>H+1</sup> − 1</h4>
+              <p class="prop-desc">A perfect binary tree of height 2 has 7 nodes: 2³ − 1 = 7.</p>
+            </div>
+          </div>
+          <!-- Row 2: card 3 + card 4 -->
+          <div class="sec04-card-row">
+            <div class="prop-card">
+              <div class="prop-icon">📏</div>
+              <h4 class="prop-title">Min height for N nodes = ⌊log₂N⌋</h4>
+              <p class="prop-desc">7 nodes need height at least 2. Keeping height minimal = fast operations.</p>
+            </div>
+            <div class="prop-card">
+              <div class="prop-icon">🔗</div>
+              <h4 class="prop-title">N nodes → exactly N−1 edges</h4>
+              <p class="prop-desc">Every node except root has exactly one incoming edge. So edges = nodes − 1.</p>
+            </div>
+          </div>
+          <!-- Row 3: card 5 + formula pills -->
+          <div class="sec04-card-row">
+            <div class="prop-card">
+              <div class="prop-icon">🍃</div>
+              <h4 class="prop-title">Max leaves at height H = 2<sup>H</sup></h4>
+              <p class="prop-desc">At height 2, a perfect tree has 4 leaf nodes at the bottom level.</p>
+            </div>
+            <!-- Formula pills in card-shaped box -->
+            <div class="sec04-pills-card">
+              <div class="tree-visual-label" style="margin-bottom:12px;">LEVEL FORMULA</div>
+              <div class="sec04-pill-list">
+                <div class="sec04-pill-row">
+                  <span class="sec04-pill-level">Level 0</span>
+                  <span class="sec04-pill-formula">2⁰ = 1 node</span>
+                </div>
+                <div class="sec04-pill-row">
+                  <span class="sec04-pill-level">Level 1</span>
+                  <span class="sec04-pill-formula">2¹ = 2 nodes</span>
+                </div>
+                <div class="sec04-pill-row">
+                  <span class="sec04-pill-level">Level 2</span>
+                  <span class="sec04-pill-formula">2² = 4 nodes</span>
+                </div>
+                <div class="sec04-pill-row sec04-pill-total">
+                  <span class="sec04-pill-level">Total</span>
+                  <span class="sec04-pill-formula">= 7 = 2³ − 1 ✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- RIGHT COLUMN: tall tree diagram -->
+        <div class="sec04-right">
+          <div class="tree-diagram sec04-tree-box">
+            <div class="tree-visual-label" style="margin-bottom:12px;">Level formula — perfect tree of height 2</div>
+            <svg viewBox="0 0 260 290" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
+              <!-- Edges -->
+              <line x1="130" y1="52" x2="68" y2="130" stroke="#c0d4ff" stroke-width="2"/>
+              <line x1="130" y1="52" x2="192" y2="130" stroke="#c0d4ff" stroke-width="2"/>
+              <line x1="68" y1="130" x2="36" y2="210" stroke="#c0d4ff" stroke-width="2"/>
+              <line x1="68" y1="130" x2="100" y2="210" stroke="#c0d4ff" stroke-width="2"/>
+              <line x1="192" y1="130" x2="160" y2="210" stroke="#c0d4ff" stroke-width="2"/>
+              <line x1="192" y1="130" x2="224" y2="210" stroke="#c0d4ff" stroke-width="2"/>
+              <!-- Level labels -->
+              <text x="4" y="56" fill="#64748b" font-size="11" font-family="system-ui,-apple-system,sans-serif">L0</text>
+              <text x="4" y="134" fill="#64748b" font-size="11" font-family="system-ui,-apple-system,sans-serif">L1</text>
+              <text x="4" y="214" fill="#64748b" font-size="11" font-family="system-ui,-apple-system,sans-serif">L2</text>
+              <!-- Root -->
+              <circle cx="130" cy="42" r="22" fill="#4f8cff" stroke="#3b6cff" stroke-width="2"/>
+              <text x="130" y="48" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="system-ui,-apple-system,sans-serif">1</text>
+              <!-- Level 1 -->
+              <circle cx="68" cy="130" r="20" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+              <text x="68" y="136" text-anchor="middle" fill="#3b6cff" font-size="14" font-weight="700" font-family="system-ui,-apple-system,sans-serif">2</text>
+              <circle cx="192" cy="130" r="20" fill="#eef3ff" stroke="#4f8cff" stroke-width="2"/>
+              <text x="192" y="136" text-anchor="middle" fill="#3b6cff" font-size="14" font-weight="700" font-family="system-ui,-apple-system,sans-serif">3</text>
+              <!-- Level 2 -->
+              <circle cx="36" cy="210" r="18" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+              <text x="36" y="216" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="system-ui,-apple-system,sans-serif">4</text>
+              <circle cx="100" cy="210" r="18" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+              <text x="100" y="216" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="system-ui,-apple-system,sans-serif">5</text>
+              <circle cx="160" cy="210" r="18" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+              <text x="160" y="216" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="system-ui,-apple-system,sans-serif">6</text>
+              <circle cx="224" cy="210" r="18" fill="#f3f0ff" stroke="#7c3aed" stroke-width="2"/>
+              <text x="224" y="216" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="700" font-family="system-ui,-apple-system,sans-serif">7</text>
+              <!-- Total -->
+              <text x="130" y="262" text-anchor="middle" fill="#16a34a" font-size="11" font-weight="600" font-family="system-ui,-apple-system,sans-serif">1 + 2 + 4 = 7 = 2³ − 1 ✓</text>
+            </svg>
+          </div>
+        </div>
+
       </div>
     </section>
 
