@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree Representation | iDS Studio Next</title>
+<link rel="stylesheet" href="../../../dashboard/dashboard.css">
+<link rel="stylesheet" href="tree-representation.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
+
+<!-- ═══════════ MOBILE TOPBAR ═══════════ -->
+<div class="topbar" id="topbar">
+  <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="topbar-logo">
+    <img src="../../../image/ilogo.png" class="logo-img" alt="IDS Logo">
+    <span class="topbar-site-name">iDS Studio <span class="topbar-next">Next</span></span>
+  </div>
+</div>
+
+<!-- Dark overlay for mobile sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar" id="mainSidebar">
+
+  <div class="sidebar-desktop-toggle">
+    <button class="hamburger-btn" id="desktopHamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="../../../image/ilogo.png" alt="iDS Studio" class="logo-img">
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">iDS Studio</span>
+      <span class="logo-sub">Next</span>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <a href="../../../dashboard/dashboard.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+      </svg>
+      <span class="menu-label">Dashboard</span>
+    </a>
+    <a href="../../../learn/learn.html" class="menu-item active">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+      </svg>
+      <span class="menu-label">Learn</span>
+    </a>
+    <a href="../../../practice/practice.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+      </svg>
+      <span class="menu-label">Practice</span>
+    </a>
+    <a href="../../../leaderboard/leaderboard.html" class="menu-item">
+      <svg class="menu-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+      </svg>
+      <span class="menu-label">Leaderboard</span>
+    </a>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">User</span>
+        <span class="user-role">Student</span>
+      </div>
+    </div>
+    <div class="logout">
+      <button onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        <span class="menu-label">Logout</span>
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main ll-main">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <nav class="breadcrumb">
+        <a href="../../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 3</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Tree Representation</span>
+      </nav>
+      <h1 class="lesson-heading">
+        Tree Representation
+        <span class="lesson-heading-tag">Array vs Linked List</span>
+      </h1>
+    </div>
+
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- ── SECTION 1: What is Tree Representation? ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is Tree Representation?</h2>
+      </div>
+
+      <div class="definition-box">
+        <div class="definition-icon">🌳</div>
+        <div class="definition-body">
+          A binary tree exists in our mind as a diagram with nodes and branches — but a computer stores data in memory, not as pictures.
+          <strong>Tree representation</strong> is how we translate that diagram into actual memory.
+          There are two ways to do this: <span class="highlight-text">Method 1 — using an Array</span>, and
+          <span class="highlight-text">Method 2 — using a Linked List</span> (nodes connected by pointers).
+          Both store the exact same tree, just in different ways. Choosing the right one depends on your situation.
+        </div>
+      </div>
+    </section>
+
+    <!-- UPDATE 1: Section 02 removed -->
+
+    <!-- ── SECTION 2 (was 3): Array Representation ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Method 1: Array Representation</h2>
+      </div>
+
+      <!-- UPDATE 2: tr-split-array class → 60/40 desktop split -->
+      <div class="tr-split tr-split-array">
+        <!-- LEFT -->
+        <div class="tr-split-left">
+          <p class="app-title" style="font-size:15px; margin-bottom:14px;">Storing a tree in an array</p>
+          <p class="lesson-para">We number positions in the array starting from 1. The root always goes at index 1. For any node sitting at index <strong>i</strong>, we can find its children using a simple formula — no extra pointers needed.</p>
+          <p class="lesson-para">If a position has no node (an empty slot), we store <code>0</code> there as a placeholder.</p>
+
+          <div class="tr-formula-box">
+            <div class="tr-formula-title">Node at index <em>i</em></div>
+            <div class="tr-formula-row"><span class="tr-formula-label">Left child</span><span class="tr-formula-val">→ 2i</span></div>
+            <div class="tr-formula-row"><span class="tr-formula-label">Right child</span><span class="tr-formula-val">→ 2i + 1</span></div>
+            <div class="tr-formula-row"><span class="tr-formula-label">Parent</span><span class="tr-formula-val">→ ⌊i / 2⌋</span></div>
+          </div>
+
+          <!-- Index Calculator -->
+          <div class="tr-calc-box">
+            <div class="tr-calc-title">Try the formula</div>
+            <div class="tr-calc-row">
+              <input type="number" id="calcInput" class="tr-calc-input" min="1" placeholder="index i" />
+              <button class="tr-calc-btn" onclick="calcIndex()">Enter</button>
+            </div>
+            <div id="calcResult" class="tr-calc-result tr-calc-empty">Enter an index to see children &amp; parent</div>
+          </div>
+
+          <script>
+          function calcIndex() {
+            const i = parseInt(document.getElementById('calcInput').value);
+            const el = document.getElementById('calcResult');
+            if (!i || i < 1) {
+              el.innerHTML = '<span class="tr-calc-empty">Enter a valid index ≥ 1</span>';
+              return;
+            }
+            const parent = i === 1 ? '— (root)' : Math.floor(i / 2);
+            el.classList.remove('tr-calc-empty');
+            el.innerHTML = `
+              <div class="tr-calc-res-row"><span>Left child</span><span class="tr-calc-res-val">2 × ${i} = ${2*i}</span></div>
+              <div class="tr-calc-res-row"><span>Right child</span><span class="tr-calc-res-val">2 × ${i} + 1 = ${2*i+1}</span></div>
+              <div class="tr-calc-res-row tr-calc-res-last"><span>Parent</span><span class="tr-calc-res-val">⌊${i} / 2⌋ = ${parent}</span></div>
+            `;
+          }
+          document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('calcInput').addEventListener('keydown', function(e) {
+              if (e.key === 'Enter') calcIndex();
+            });
+          });
+          </script>
+        </div>
+
+        <!-- RIGHT: UPDATE 2 — reduced SVG nodes (r=28-30px, font 13px, boxes 32px) -->
+        <div class="tr-split-right">
+          <div class="tree-diagram" style="max-width:100%;">
+            <!-- Array visualization -->
+            <div class="tr-array-label">Array storage of our example tree:</div>
+            <div class="tr-array-row">
+              <div class="tr-array-cell">
+                <div class="tr-array-idx">1</div>
+                <div class="tr-array-val tr-array-filled">1</div>
+              </div>
+              <div class="tr-array-cell">
+                <div class="tr-array-idx">2</div>
+                <div class="tr-array-val tr-array-filled">2</div>
+              </div>
+              <div class="tr-array-cell">
+                <div class="tr-array-idx">3</div>
+                <div class="tr-array-val tr-array-filled">3</div>
+              </div>
+              <div class="tr-array-cell">
+                <div class="tr-array-idx">4</div>
+                <div class="tr-array-val tr-array-filled">4</div>
+              </div>
+              <div class="tr-array-cell">
+                <div class="tr-array-idx">5</div>
+                <div class="tr-array-val tr-array-filled">5</div>
+              </div>
+              <div class="tr-array-cell">
+                <div class="tr-array-idx">6</div>
+                <div class="tr-array-val tr-array-empty">0</div>
+              </div>
+              <div class="tr-array-cell">
+                <div class="tr-array-idx">7</div>
+                <div class="tr-array-val tr-array-empty">0</div>
+              </div>
+            </div>
+
+            <!-- Mini tree — nodes r=12, font 9px, tight viewBox for 30% col -->
+            <svg viewBox="0 0 180 160" xmlns="http://www.w3.org/2000/svg" class="tree-svg" style="margin-top:12px;">
+              <line x1="90" y1="24" x2="52" y2="72" stroke="#c0d4ff" stroke-width="1.5"/>
+              <line x1="90" y1="24" x2="128" y2="72" stroke="#c0d4ff" stroke-width="1.5"/>
+              <line x1="52" y1="84" x2="32" y2="122" stroke="#c0d4ff" stroke-width="1.5"/>
+              <line x1="52" y1="84" x2="72" y2="122" stroke="#c0d4ff" stroke-width="1.5"/>
+              <!-- Node 1 -->
+              <circle cx="90" cy="14" r="12" fill="#eff4ff" stroke="#3b6cff" stroke-width="1.5"/>
+              <text x="90" y="18" text-anchor="middle" fill="#1d3fbf" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">1</text>
+              <text x="90" y="36" text-anchor="middle" fill="#3b6cff" font-size="7" font-weight="700" font-family="DM Sans,sans-serif">[idx 1]</text>
+              <!-- Node 2 -->
+              <circle cx="52" cy="78" r="12" fill="#eff4ff" stroke="#3b6cff" stroke-width="1.5"/>
+              <text x="52" y="82" text-anchor="middle" fill="#1d3fbf" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">2</text>
+              <text x="52" y="100" text-anchor="middle" fill="#3b6cff" font-size="7" font-weight="700" font-family="DM Sans,sans-serif">[idx 2]</text>
+              <!-- Node 3 -->
+              <circle cx="128" cy="78" r="12" fill="#eff4ff" stroke="#3b6cff" stroke-width="1.5"/>
+              <text x="128" y="82" text-anchor="middle" fill="#1d3fbf" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">3</text>
+              <text x="128" y="100" text-anchor="middle" fill="#3b6cff" font-size="7" font-weight="700" font-family="DM Sans,sans-serif">[idx 3]</text>
+              <!-- Node 4 -->
+              <circle cx="32" cy="130" r="10" fill="#eff4ff" stroke="#3b6cff" stroke-width="1.5"/>
+              <text x="32" y="134" text-anchor="middle" fill="#1d3fbf" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">4</text>
+              <text x="32" y="148" text-anchor="middle" fill="#3b6cff" font-size="7" font-weight="700" font-family="DM Sans,sans-serif">[idx 4]</text>
+              <!-- Node 5 -->
+              <circle cx="72" cy="130" r="10" fill="#eff4ff" stroke="#3b6cff" stroke-width="1.5"/>
+              <text x="72" y="134" text-anchor="middle" fill="#1d3fbf" font-size="9" font-weight="700" font-family="DM Sans,sans-serif">5</text>
+              <text x="72" y="148" text-anchor="middle" fill="#3b6cff" font-size="7" font-weight="700" font-family="DM Sans,sans-serif">[idx 5]</text>
+            </svg>
+            <div class="tr-diagram-caption" style="margin-top:6px;">Each node maps to a fixed array index using the 2i / 2i+1 formula.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: Tracing the Formula ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Tracing the Formula — Try It</h2>
+      </div>
+
+      <!-- UPDATE 3: Two cards side by side on desktop -->
+      <div class="tr-trace-cards-row">
+        <!-- LEFT card: node 4 -->
+        <div class="tr-trace-card">
+          <div class="tr-trace-title">🔍 Tracing the Formula</div>
+          <div class="tr-trace-group">
+            <div class="tr-trace-q">Where is node 4 stored?</div>
+            <div class="tr-trace-step">→ Node 4 is the left child of node 2</div>
+            <div class="tr-trace-step">→ Node 2 is at index 2</div>
+            <div class="tr-trace-step">→ Left child of index 2 = 2 × 2 = <strong>index 4</strong> ✓</div>
+            <div class="tr-trace-result">∴ Node 4 → array[4] = 4</div>
+          </div>
+        </div>
+        <!-- RIGHT card: node 5 -->
+        <div class="tr-trace-card">
+          <div class="tr-trace-title">🔍 Tracing the Formula</div>
+          <div class="tr-trace-group">
+            <div class="tr-trace-q">Where is node 5 stored?</div>
+            <div class="tr-trace-step">→ Node 5 is the right child of node 2</div>
+            <div class="tr-trace-step">→ Node 2 is at index 2</div>
+            <div class="tr-trace-step">→ Right child of index 2 = 2×2+1 = <strong>index 5</strong> ✓</div>
+            <div class="tr-trace-result">∴ Node 5 → array[5] = 5</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: Linked List Representation ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Method 2: Linked List Representation</h2>
+      </div>
+
+      <div class="tr-split tr-split-ll">
+        <!-- LEFT -->
+        <div class="tr-split-left">
+          <p class="app-title" style="font-size:15px; margin-bottom:14px;">Storing a tree using nodes and pointers</p>
+          <p class="lesson-para">Each node is a <strong>struct</strong> with 3 fields: <code>data</code> holds the value, <code>left</code> points to the left child, and <code>right</code> points to the right child. If a child doesn't exist, that pointer is <strong>NULL</strong>.</p>
+          <p class="lesson-para">Nodes are connected by pointers — not by array indices. This is the most common way to implement trees in C.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-lang">C</span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre class="code-content">struct node {
+    int data;
+    struct node* left;
+    struct node* right;
+};</pre>
+          </div>
+        </div>
+
+        <!-- RIGHT: Linked list diagram — UPDATE 4: compact node sizes -->
+        <div class="tr-split-right">
+          <div class="tree-diagram" style="max-width:100%;">
+            <div class="tr-array-label">Memory layout — nodes linked by pointers:</div>
+            <!-- UPDATE 4 FIX: Much smaller node boxes, data font 12px -->
+            <svg viewBox="0 0 160 210" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
+              <!-- Node 1 (root) — width 90, height 22 -->
+              <rect x="35" y="6" width="90" height="22" rx="3" fill="#eff4ff" stroke="#3b6cff" stroke-width="1.2"/>
+              <line x1="65" y1="6" x2="65" y2="28" stroke="#3b6cff" stroke-width="0.8"/>
+              <line x1="95" y1="6" x2="95" y2="28" stroke="#3b6cff" stroke-width="0.8"/>
+              <text x="50" y="15" text-anchor="middle" fill="#64748b" font-size="6" font-family="DM Sans,sans-serif">LEFT</text>
+              <text x="80" y="21" text-anchor="middle" fill="#1d3fbf" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">1</text>
+              <text x="110" y="15" text-anchor="middle" fill="#64748b" font-size="6" font-family="DM Sans,sans-serif">RIGHT</text>
+              <text x="50" y="24" text-anchor="middle" fill="#3b6cff" font-size="5.5" font-family="Courier New,monospace">0x200</text>
+              <text x="110" y="24" text-anchor="middle" fill="#3b6cff" font-size="5.5" font-family="Courier New,monospace">0x300</text>
+              <text x="80" y="38" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="Courier New,monospace">0x100</text>
+
+              <!-- Arrows root → node2, node3 -->
+              <line x1="50" y1="28" x2="32" y2="72" stroke="#3b6cff" stroke-width="1.2" marker-end="url(#arrowLL)" stroke-dasharray="3,2"/>
+              <line x1="110" y1="28" x2="128" y2="72" stroke="#3b6cff" stroke-width="1.2" marker-end="url(#arrowLL)" stroke-dasharray="3,2"/>
+
+              <!-- Node 2 — width 60, height 22 -->
+              <rect x="6" y="72" width="60" height="22" rx="3" fill="#eff4ff" stroke="#3b6cff" stroke-width="1.2"/>
+              <line x1="26" y1="72" x2="26" y2="94" stroke="#3b6cff" stroke-width="0.8"/>
+              <line x1="46" y1="72" x2="46" y2="94" stroke="#3b6cff" stroke-width="0.8"/>
+              <text x="16" y="81" text-anchor="middle" fill="#64748b" font-size="6" font-family="DM Sans,sans-serif">LEFT</text>
+              <text x="36" y="87" text-anchor="middle" fill="#1d3fbf" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">2</text>
+              <text x="53" y="81" text-anchor="middle" fill="#64748b" font-size="6" font-family="DM Sans,sans-serif">RIGHT</text>
+              <text x="16" y="91" text-anchor="middle" fill="#3b6cff" font-size="5.5" font-family="Courier New,monospace">0x400</text>
+              <text x="53" y="91" text-anchor="middle" fill="#3b6cff" font-size="5.5" font-family="Courier New,monospace">0x500</text>
+              <text x="36" y="104" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="Courier New,monospace">0x200</text>
+
+              <!-- Node 3 — width 60, height 22 -->
+              <rect x="94" y="72" width="60" height="22" rx="3" fill="#eff4ff" stroke="#3b6cff" stroke-width="1.2"/>
+              <line x1="114" y1="72" x2="114" y2="94" stroke="#3b6cff" stroke-width="0.8"/>
+              <line x1="134" y1="72" x2="134" y2="94" stroke="#3b6cff" stroke-width="0.8"/>
+              <text x="104" y="81" text-anchor="middle" fill="#64748b" font-size="6" font-family="DM Sans,sans-serif">LEFT</text>
+              <text x="124" y="87" text-anchor="middle" fill="#1d3fbf" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">3</text>
+              <text x="144" y="81" text-anchor="middle" fill="#64748b" font-size="6" font-family="DM Sans,sans-serif">RIGHT</text>
+              <text x="104" y="91" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="Courier New,monospace">NULL</text>
+              <text x="144" y="91" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="Courier New,monospace">NULL</text>
+              <text x="124" y="104" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="Courier New,monospace">0x300</text>
+
+              <!-- Arrows node2 → node4, node5 -->
+              <line x1="16" y1="94" x2="22" y2="138" stroke="#3b6cff" stroke-width="1.2" marker-end="url(#arrowLL)" stroke-dasharray="3,2"/>
+              <line x1="53" y1="94" x2="66" y2="138" stroke="#3b6cff" stroke-width="1.2" marker-end="url(#arrowLL)" stroke-dasharray="3,2"/>
+
+              <!-- Node 4 — width 52, height 20 -->
+              <rect x="4" y="138" width="52" height="20" rx="3" fill="#eff4ff" stroke="#3b6cff" stroke-width="1.2"/>
+              <line x1="21" y1="138" x2="21" y2="158" stroke="#3b6cff" stroke-width="0.8"/>
+              <line x1="39" y1="138" x2="39" y2="158" stroke="#3b6cff" stroke-width="0.8"/>
+              <text x="12" y="147" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="DM Sans,sans-serif">NULL</text>
+              <text x="30" y="153" text-anchor="middle" fill="#1d3fbf" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">4</text>
+              <text x="47" y="147" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="DM Sans,sans-serif">NULL</text>
+              <text x="30" y="168" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="Courier New,monospace">0x400</text>
+
+              <!-- Node 5 — width 52, height 20 -->
+              <rect x="46" y="138" width="52" height="20" rx="3" fill="#eff4ff" stroke="#3b6cff" stroke-width="1.2"/>
+              <line x1="63" y1="138" x2="63" y2="158" stroke="#3b6cff" stroke-width="0.8"/>
+              <line x1="81" y1="138" x2="81" y2="158" stroke="#3b6cff" stroke-width="0.8"/>
+              <text x="54" y="147" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="DM Sans,sans-serif">NULL</text>
+              <text x="72" y="153" text-anchor="middle" fill="#1d3fbf" font-size="11" font-weight="700" font-family="DM Sans,sans-serif">5</text>
+              <text x="89" y="147" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="DM Sans,sans-serif">NULL</text>
+              <text x="72" y="168" text-anchor="middle" fill="#94a3b8" font-size="5.5" font-family="Courier New,monospace">0x500</text>
+
+              <defs>
+                <marker id="arrowLL" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
+                  <polygon points="0 0, 6 3, 0 6" fill="#3b6cff"/>
+                </marker>
+              </defs>
+            </svg>
+            <div class="tr-diagram-caption" style="margin-top:8px;">Each node stores its value plus two pointers. NULL means no child exists.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: Comparison Table ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Side-by-Side Comparison</h2>
+      </div>
+
+      <div class="tr-comparison-wrap">
+        <div class="tr-comparison-table">
+          <!-- Header row -->
+          <div class="tr-cmp-row tr-cmp-header">
+            <div class="tr-cmp-cell tr-cmp-feature">Feature</div>
+            <div class="tr-cmp-cell tr-cmp-arr-head">Array Method</div>
+            <div class="tr-cmp-cell tr-cmp-ll-head">Linked List Method</div>
+          </div>
+          <!-- Rows -->
+          <div class="tr-cmp-row tr-cmp-odd">
+            <div class="tr-cmp-cell tr-cmp-feature-cell">Memory structure</div>
+            <div class="tr-cmp-cell">Contiguous (one block)</div>
+            <div class="tr-cmp-cell">Dynamic (scattered nodes)</div>
+          </div>
+          <div class="tr-cmp-row tr-cmp-even">
+            <div class="tr-cmp-cell tr-cmp-feature-cell">Access speed</div>
+            <div class="tr-cmp-cell">O(1) by index</div>
+            <div class="tr-cmp-cell">O(n) — must traverse</div>
+          </div>
+          <div class="tr-cmp-row tr-cmp-odd">
+            <div class="tr-cmp-cell tr-cmp-feature-cell">Memory usage</div>
+            <div class="tr-cmp-cell">Wastes space for empty nodes</div>
+            <div class="tr-cmp-cell">Only allocates existing nodes</div>
+          </div>
+          <div class="tr-cmp-row tr-cmp-even">
+            <div class="tr-cmp-cell tr-cmp-feature-cell">Best for</div>
+            <div class="tr-cmp-cell">Complete / perfect binary trees</div>
+            <div class="tr-cmp-cell">Sparse or general binary trees</div>
+          </div>
+          <div class="tr-cmp-row tr-cmp-odd">
+            <div class="tr-cmp-cell tr-cmp-feature-cell">Insertion</div>
+            <div class="tr-cmp-cell">Harder — may need shifting</div>
+            <div class="tr-cmp-cell">Easy — just malloc a new node</div>
+          </div>
+          <div class="tr-cmp-row tr-cmp-even">
+            <div class="tr-cmp-cell tr-cmp-feature-cell">Implementation</div>
+            <div class="tr-cmp-cell">Simple — just array[]</div>
+            <div class="tr-cmp-cell">Needs pointer management</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 6: When to Use Which? ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">When to Use Which?</h2>
+      </div>
+
+      <div class="tr-when-grid">
+        <!-- Card 1: Array -->
+        <div class="tr-when-card tr-when-arr">
+          <div class="app-icon">📦</div>
+          <h4 class="app-title">Use Array When</h4>
+          <ul class="tr-when-list">
+            <li>Tree is complete or perfect — no missing nodes</li>
+            <li>You need fast random access by level</li>
+            <li>Memory is pre-allocated and fixed</li>
+            <li><strong>Example:</strong> Heap data structure</li>
+          </ul>
+        </div>
+
+        <!-- Card 2: Linked List -->
+        <div class="tr-when-card tr-when-ll">
+          <div class="app-icon">🔗</div>
+          <h4 class="app-title">Use Linked List When</h4>
+          <ul class="tr-when-list">
+            <li>Tree is sparse — many positions are empty</li>
+            <li>Tree size changes dynamically at runtime</li>
+            <li>Building a BST, AVL tree, or general tree</li>
+            <li><strong>Example:</strong> Binary Search Tree</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 7: Implementation in C ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Implementation in C</h2>
+        <div class="visualize-card" onclick="openVisualizer()" role="button" tabindex="0"
+             onkeydown="if(event.key==='Enter'||event.key===' ')openVisualizer()">
+          <div class="vc-icon">✨</div>
+          <div class="vc-text">
+            <div class="vc-title">Visualize Code</div>
+            <div class="vc-sub">Watch step-by-step execution with animations</div>
+          </div>
+          <div class="vc-arrow">→</div>
+          <span class="visualize-btn-ripple"></span>
+        </div>
+      </div>
+
+      <!-- UPDATE 5: Full-width stacked layout (no split) -->
+      <p class="lesson-para">We implement the <strong>Linked List method</strong> in C using a recursive <code>create()</code> function. The user enters <strong>-1</strong> to indicate no child — the function returns NULL immediately. The left subtree is fully built before asking for the right side.</p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">C</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content">#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+
+struct node {
+    int data;
+    struct node* left;
+    struct node* right;
+};
+
+struct node* create() {
+    int x;
+    printf("Enter data (-1 for NULL): ");
+    scanf("%d", &amp;x);
+    if(x == -1) return NULL;
+    struct node* n = malloc(sizeof(struct node));
+    n-&gt;data = x;
+    n-&gt;left = create();
+    n-&gt;right = create();
+    return n;
+}
+
+int main() {
+    struct node* root = create();
+}</pre>
+      </div>
+    </section>
+
+    <!-- ── SECTION 8: Advantages & Limitations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">08</span>
+        <h2 class="section-title">Advantages &amp; Limitations</h2>
+      </div>
+
+      <!-- Array sub-section -->
+      <p class="tr-subsection-label">Array Representation</p>
+      <div class="tr-adv-grid">
+        <div class="app-card tr-adv-green">
+          <div class="app-icon">✔️</div>
+          <h4 class="app-title">Simple index-based access</h4>
+          <p class="app-desc">Find any node instantly with array[i]. No traversal needed.</p>
+        </div>
+        <div class="app-card tr-adv-green">
+          <div class="app-icon">✔️</div>
+          <h4 class="app-title">No pointers needed</h4>
+          <p class="app-desc">Cleaner code — parent-child relationships come from the 2i formula.</p>
+        </div>
+        <div class="app-card tr-adv-green">
+          <div class="app-icon">✔️</div>
+          <h4 class="app-title">Cache-friendly</h4>
+          <p class="app-desc">Contiguous memory = faster access. CPU cache loves arrays.</p>
+        </div>
+        <div class="app-card tr-adv-red">
+          <div class="app-icon">✖️</div>
+          <h4 class="app-title">Wastes memory</h4>
+          <p class="app-desc">Sparse trees leave many array slots empty, wasting space.</p>
+        </div>
+        <div class="app-card tr-adv-red">
+          <div class="app-icon">✖️</div>
+          <h4 class="app-title">Fixed size</h4>
+          <p class="app-desc">Hard to grow the array dynamically once allocated.</p>
+        </div>
+        <div class="app-card tr-adv-red">
+          <div class="app-icon">✖️</div>
+          <h4 class="app-title">Skewed trees are expensive</h4>
+          <p class="app-desc">A skewed tree of n nodes can need up to 2ⁿ array slots.</p>
+        </div>
+      </div>
+
+      <!-- Linked List sub-section -->
+      <p class="tr-subsection-label" style="margin-top:28px;">Linked List Representation</p>
+      <div class="tr-adv-grid">
+        <div class="app-card tr-adv-green">
+          <div class="app-icon">✔️</div>
+          <h4 class="app-title">Memory efficient</h4>
+          <p class="app-desc">Allocates only for nodes that exist — no wasted slots.</p>
+        </div>
+        <div class="app-card tr-adv-green">
+          <div class="app-icon">✔️</div>
+          <h4 class="app-title">Grows dynamically</h4>
+          <p class="app-desc">malloc() creates nodes on demand. Tree can shrink and grow freely.</p>
+        </div>
+        <div class="app-card tr-adv-green">
+          <div class="app-icon">✔️</div>
+          <h4 class="app-title">Natural for recursion</h4>
+          <p class="app-desc">Recursive algorithms map perfectly to pointer-based node structures.</p>
+        </div>
+        <div class="app-card tr-adv-red">
+          <div class="app-icon">✖️</div>
+          <h4 class="app-title">Pointer overhead</h4>
+          <p class="app-desc">Each node holds 2 extra pointers — memory adds up for large trees.</p>
+        </div>
+        <div class="app-card tr-adv-red">
+          <div class="app-icon">✖️</div>
+          <h4 class="app-title">No direct index access</h4>
+          <p class="app-desc">Must traverse from root to reach any node — no O(1) lookup.</p>
+        </div>
+        <div class="app-card tr-adv-red">
+          <div class="app-icon">✖️</div>
+          <h4 class="app-title">Pointer bugs</h4>
+          <p class="app-desc">Dangling or NULL pointer errors can silently corrupt the entire tree.</p>
+        </div>
+      </div>
+
+    <!-- Sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGradTR)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGradTR" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="tree-representation.js"></script>
+<link rel="stylesheet" href="../../../spark/spark.css">
+<script src="../../../spark/spark.js"></script>
+<script>
+function openVisualizer() {
+  window.location.href = 'tree-representation-visualize.html';
+}
+</script>
+</body>
+</html>
