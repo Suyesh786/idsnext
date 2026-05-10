@@ -589,7 +589,18 @@ function setCodeHighlight(lines) {
   });
   if (lines.length) {
     const first = document.getElementById('cl' + lines[0]);
-    if (first) first.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    if (first) {
+      /* Scroll the highlighted line to the TOP of the code block viewport */
+      const codeBlock = first.closest('.viz-code-block');
+      if (codeBlock) {
+        const blockTop   = codeBlock.getBoundingClientRect().top;
+        const lineTop    = first.getBoundingClientRect().top;
+        const scrollDiff = lineTop - blockTop;
+        codeBlock.scrollBy({ top: scrollDiff, behavior: 'smooth' });
+      } else {
+        first.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }
+    }
   }
 }
 
@@ -1490,6 +1501,68 @@ function drawTreeEdge(memNodes, svg, ns5, ns2, n5x, n5y, n2x, n2y) {
 buildCodePanel();
 buildProgressDots();
 buildAllBoxes();
+
+/* ── Mobile: build swipeable Animation+Tree wrapper ── */
+(function initMobileSwipe() {
+  if (window.innerWidth > 768) return;
+
+  const main      = document.querySelector('.viz-main');
+  const animPanel = document.querySelector('.viz-anim-panel');
+  const treePanel = document.querySelector('.viz-tree-panel');
+  const codePanel = document.querySelector('.viz-code-panel');
+  if (!main || !animPanel || !treePanel || !codePanel) return;
+
+  /* Wrapper */
+  const wrapper = document.createElement('div');
+  wrapper.className = 'mob-swipe-wrapper';
+
+  /* Tab dots row */
+  const tabs = document.createElement('div');
+  tabs.className = 'mob-panel-tabs';
+  tabs.innerHTML =
+    '<span class="mob-tab-label">Animation</span>' +
+    '<div class="mob-tab-dot active" id="mobDot0"></div>' +
+    '<div class="mob-tab-dot" id="mobDot1"></div>' +
+    '<span class="mob-tab-label">Tree</span>';
+  wrapper.appendChild(tabs);
+
+  /* Horizontal scroll track */
+  const track = document.createElement('div');
+  track.className = 'mob-swipe-track';
+  track.id = 'mobSwipeTrack';
+
+  /* Card 1: Animation */
+  const card0 = document.createElement('div');
+  card0.className = 'mob-swipe-card';
+  card0.appendChild(animPanel);
+  track.appendChild(card0);
+
+  /* Card 2: Tree */
+  const card1 = document.createElement('div');
+  card1.className = 'mob-swipe-card';
+  card1.appendChild(treePanel);
+  track.appendChild(card1);
+
+  wrapper.appendChild(track);
+
+  /* Insert wrapper + code panel into main in correct order */
+  main.innerHTML = '';
+  main.appendChild(wrapper);
+  main.appendChild(codePanel);
+
+  /* Update dots on scroll */
+  track.addEventListener('scroll', () => {
+    const idx = Math.round(track.scrollLeft / track.clientWidth);
+    document.getElementById('mobDot0').classList.toggle('active', idx === 0);
+    document.getElementById('mobDot1').classList.toggle('active', idx === 1);
+  }, { passive: true });
+
+  /* Dots click to scroll */
+  document.getElementById('mobDot0').addEventListener('click', () =>
+    track.scrollTo({ left: 0, behavior: 'smooth' }));
+  document.getElementById('mobDot1').addEventListener('click', () =>
+    track.scrollTo({ left: track.clientWidth, behavior: 'smooth' }));
+})();
 
 /* FIX 1: Init tree panel immediately — show both headings, hide placeholder */
 (function initTreePanel() {

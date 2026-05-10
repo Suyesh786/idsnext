@@ -656,3 +656,183 @@
 .done-icon { font-size:44px; }
 .done-title { font-size:20px; font-weight:800; color:var(--green); }
 .done-sub { font-family:var(--font-code); font-size:12px; color:var(--text-muted); text-align:center; }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE  ≤ 768px
+   Layout: Header → Swipeable(Anim+Tree) → Code → Explain bar
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  :root {
+    --header-h: 52px;
+    --expl-h:   64px;
+  }
+
+  /* ── Body: allow vertical scroll on mobile ── */
+  .viz-body {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* ── Header: compact ── */
+  .viz-header {
+    padding: 0 14px;
+    height: var(--header-h);
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .viz-header-divider { display: none; }
+  .viz-header-title-wrap { display: none; }
+  .viz-back-btn {
+    font-size: 12px;
+    padding: 5px 10px 5px 8px;
+  }
+  .viz-operation-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+  .viz-step-counter { font-size: 11.5px; }
+
+  /* ── Main: stack vertically ── */
+  .viz-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  /* ── All panels: reset desktop flex ── */
+  .viz-panel {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+    flex-shrink: 0;
+  }
+  .viz-panel:hover { box-shadow: none; }
+
+  /* ════════════════════════════════════════════
+     TOP SWIPEABLE ZONE: Animation + Tree
+     Two cards side by side, snap-scrollable
+  ════════════════════════════════════════════ */
+
+  /* Wrapper injected by JS (or we use the existing panels reordered) */
+  .mob-swipe-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  /* Dot indicators above swipeable area */
+  .mob-panel-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 0 6px;
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+  .mob-tab-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background .25s, width .25s;
+    cursor: pointer;
+  }
+  .mob-tab-dot.active {
+    background: var(--blue);
+    width: 22px;
+    border-radius: 4px;
+  }
+  .mob-tab-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-muted);
+    font-family: var(--font);
+  }
+
+  /* Horizontal scroll track */
+  .mob-swipe-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+    width: 100%;
+  }
+  .mob-swipe-track::-webkit-scrollbar { display: none; }
+
+  /* Each card in the track */
+  .mob-swipe-card {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    width: 100%;
+    min-width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Animation panel on mobile ── */
+  .viz-anim-panel {
+    height: auto;
+    border-top: 1px solid var(--border);
+    border-bottom: none;
+  }
+
+  .viz-anim-viewport {
+    height: 300px;
+    flex-shrink: 0;
+  }
+
+  /* ── Controls on mobile: compact row ── */
+  .viz-controls {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .viz-ctrl-btn { font-size: 12px; padding: 8px 10px; }
+  .viz-ctrl-reset { padding: 8px 10px; }
+  .viz-step-pill { font-size: 11px; padding: 5px 10px; }
+  .viz-progress-dots { display: none; } /* hidden on mobile, save space */
+
+  /* ── Tree panel on mobile ── */
+  .viz-tree-panel {
+    height: auto;
+    border-top: 1px solid var(--border);
+    border-bottom: none;
+  }
+  .tree-canvas {
+    min-height: 300px;
+  }
+
+  /* ── Code panel on mobile ── */
+  .viz-code-panel {
+    height: 40vh;
+    min-height: 220px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+  .viz-code-block {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+  .viz-complexity-bar { padding: 7px 14px; }
+
+  /* ── Explanation bar on mobile ── */
+  .viz-explain-bar {
+    padding: 10px 14px;
+    min-height: var(--expl-h);
+    flex-direction: column;
+    gap: 6px;
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
+  }
+  .viz-explain-text { font-size: 12.5px; }
+}
