@@ -107,7 +107,7 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 1.6fr 2.2fr 1.2fr; /* UPDATE 1 (anim -0.2fr) UPDATE 2 (tree +0.2fr) */
+  grid-template-columns: 1.6fr 1.9fr 1.5fr;
   gap: 14px;
   padding: 14px 18px;
   overflow: hidden;
@@ -482,11 +482,11 @@
 .tree-node-box {
   display: grid;
   grid-template-columns: 1fr 1.2fr 1fr;
-  width: 180px;
+  width: 140px;
   border-radius: 8px;
   border: 2px solid var(--border);
   font-family: var(--font-code);
-  font-size: 12px;
+  font-size: 11px;
   overflow: hidden;
   transition: border-color 0.25s, background 0.25s;
 }
@@ -501,7 +501,7 @@
 }
 
 .tree-cell {
-  padding: 8px 6px;
+  padding: 6px 4px;
   text-align: center;
   border-right: 1px solid rgba(0,0,0,0.08);
   display: flex;
@@ -520,7 +520,7 @@
 }
 .tree-cell-val {
   color: var(--text-primary);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
 }
 

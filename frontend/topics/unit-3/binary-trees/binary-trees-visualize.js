@@ -963,6 +963,16 @@ btnPrev.addEventListener('click', () => {
   if (currentStep > 0) { currentStep--; renderStep(currentStep); }
 });
 
+/* Keyboard arrow navigation */
+window.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight' && !_rendering && currentStep < TOTAL_STEPS) {
+    currentStep++; renderStep(currentStep);
+  } else if (e.key === 'ArrowLeft' && !_rendering && currentStep > 0) {
+    currentStep--; renderStep(currentStep);
+  }
+});
+
 btnReset.addEventListener('click', () => {
   _rendering = false;
   currentStep = 0;
@@ -1135,14 +1145,14 @@ function renderTree(step) {
   /* Once we have content, override the flex:1 from init so it sizes by content */
   memNodes.style.flex = '0 0 auto';
 
-  /* Layout — symmetric: n5 centered, n2 left-offset */
-  const PANEL_W = panel.offsetWidth || 240;
-  const NODE_W  = 180;
-  const centerX = Math.max(0, (PANEL_W - NODE_W) / 2 - 8);
+  /* Layout — n5 centered top, n2 below-left (tree shape) */
+  const PANEL_W = panel.offsetWidth || 260;
+  const NODE_W  = 140;
+  const centerX = Math.max(0, (PANEL_W - NODE_W) / 2 - 6);
   const N5_X = centerX;
   const N5_Y = 10;
-  const N2_X = Math.max(4, centerX - 50);
-  const N2_Y = 170;
+  const N2_X = Math.max(4, centerX - 110);
+  const N2_Y = 155;
 
   /* Ensure SVG edge layer exists inside memNodes */
   let svg = memNodes.querySelector('.tree-edge-svg');
@@ -1162,7 +1172,7 @@ function renderTree(step) {
   }
 
   /* Compute dynamic height for memNodes */
-  const memH = N2_Y + 100;
+  const memH = N2_Y + 120;
   memNodes.style.height = memH + 'px';
 
   /* Render nodes */
@@ -1346,6 +1356,11 @@ function updateCircleTree(canvas) {
       requestAnimationFrame(() => {
         line.style.transition = 'stroke-dashoffset 0.4s ease';
         line.setAttribute('stroke-dashoffset', '0');
+        setTimeout(() => {
+          line.removeAttribute('stroke-dasharray');
+          line.removeAttribute('stroke-dashoffset');
+          line.style.transition = '';
+        }, 450);
       });
     }
   }
@@ -1360,7 +1375,7 @@ function drawTreeEdge(memNodes, svg, ns5, ns2, n5x, n5y, n2x, n2y) {
 
   const rootOff  = ns5.hasRoot ? 44 : 0;
   const nodeBoxH = 60;
-  const cellW    = 60; /* 180px / 3 cells */
+  const cellW    = 47; /* 140px / 3 cells */
 
   /* LEFT cell center-bottom of n5 */
   const lx1 = n5x + cellW / 2;
@@ -1372,22 +1387,24 @@ function drawTreeEdge(memNodes, svg, ns5, ns2, n5x, n5y, n2x, n2y) {
 
   /* ── Left pointer line (n5 → n2 or NULL) ── */
   if (ns5.left === '0x300' && ns2.state !== 'none') {
-    /* UPDATE 7: blue arrow line to node 2 */
-    const x2 = n2x + 90;
+    const x2 = n2x + 70;
     const y2 = n2y + (ns2.hasRoot ? 44 : 0);
-    const totalLen = Math.hypot(x2 - lx1, y2 - ly1);
-
+    const alreadyDrawn = svg.dataset.edge52 === '1';
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('class', 'tree-edge');
     line.setAttribute('x1', lx1); line.setAttribute('y1', ly1);
     line.setAttribute('x2', x2);  line.setAttribute('y2', y2);
-    line.setAttribute('stroke-dasharray', totalLen);
-    line.setAttribute('stroke-dashoffset', totalLen);
     svg.appendChild(line);
-    requestAnimationFrame(() => {
-      line.style.transition = 'stroke-dashoffset 0.4s ease';
-      line.setAttribute('stroke-dashoffset', '0');
-    });
+    if (!alreadyDrawn) {
+      const totalLen = Math.hypot(x2 - lx1, y2 - ly1);
+      line.setAttribute('stroke-dasharray', totalLen);
+      line.setAttribute('stroke-dashoffset', totalLen);
+      requestAnimationFrame(() => {
+        line.style.transition = 'stroke-dashoffset 0.4s ease';
+        line.setAttribute('stroke-dashoffset', '0');
+      });
+      svg.dataset.edge52 = '1';
+    }
 
   } else if (ns5.left === 'NULL') {
     /* NULL box to the LEFT */

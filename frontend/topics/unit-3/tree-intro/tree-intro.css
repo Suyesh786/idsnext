@@ -657,7 +657,60 @@
   margin: 0;
 }
 
-/* ─── Bottom Complete Row ────────────────────────────────────── */
+/* ─── Section 01: two-column layout (desktop only) ───────────── */
+@media (min-width: 769px) {
+  .sec01-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+  }
+
+  .sec01-text {
+    flex: 0 0 70%;
+    width: 70%;
+  }
+
+  .sec01-diagram {
+    flex: 0 0 calc(30% - 28px);
+    width: calc(30% - 28px);
+    position: sticky;
+    top: 20px;
+  }
+
+  .sec01-diagram .tree-visual-wrap {
+    margin: 0;
+  }
+
+/* ─── Section 03: two-column layout (desktop only) ───────────── */
+  .sec03-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+  }
+
+  .sec03-text {
+    flex: 0 0 60%;
+    width: 60%;
+  }
+
+  /* term-grid inside sec03-text: 2 cols to fit the narrower column */
+  .sec03-text .term-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sec03-diagram {
+    flex: 0 0 calc(40% - 28px);
+    width: calc(40% - 28px);
+    position: sticky;
+    top: 20px;
+  }
+
+  .sec03-diagram .tree-visual-wrap {
+    margin: 0;
+  }
+}
+
+
 .bottom-complete-row {
   display: flex;
   justify-content: center;
