@@ -644,8 +644,8 @@ function setBoxStepHighlight(step) {
 /* ── Pan canvas to bring active box into view ── */
 function computePanTarget(id) {
   if (!id) return null;
-  const vpWidth  = animViewport.offsetWidth  || window.innerWidth  || 360;
-  const vpHeight = animViewport.offsetHeight || 320;
+  const vpWidth  = animViewport.offsetWidth;
+  const vpHeight = animViewport.offsetHeight;
   const boxX     = boxLeft(id);
 
   const targetX  = boxX - vpWidth / 2 + BOX_WIDTH / 2;
