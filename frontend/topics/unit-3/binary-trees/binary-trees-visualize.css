@@ -668,7 +668,7 @@
     --expl-h:   64px;
   }
 
-  /* ── Body: allow vertical scroll on mobile ── */
+  /* ── Body: vertical scroll ── */
   .viz-body {
     height: auto;
     min-height: 100vh;
@@ -695,7 +695,7 @@
   }
   .viz-step-counter { font-size: 11.5px; }
 
-  /* ── Main: stack vertically ── */
+  /* ── Main: vertical stack ── */
   .viz-main {
     display: flex;
     flex-direction: column;
@@ -704,35 +704,36 @@
     overflow: visible;
   }
 
-  /* ── All panels: reset desktop flex ── */
+  /* ── All panels: separated card look ── */
   .viz-panel {
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    box-shadow: none;
+    border-radius: var(--radius);
+    border: 1px solid var(--border) !important;
+    box-shadow: var(--shadow-card);
     flex-shrink: 0;
+    margin: 10px 12px;
+    overflow: hidden;
+    background: var(--card-bg);
   }
-  .viz-panel:hover { box-shadow: none; }
+  .viz-panel:hover { box-shadow: 0 4px 20px rgba(15,23,42,0.09); }
 
   /* ════════════════════════════════════════════
      TOP SWIPEABLE ZONE: Animation + Tree
-     Two cards side by side, snap-scrollable
+     Each is a full-width snap card — separated boxes
   ════════════════════════════════════════════ */
 
-  /* Wrapper injected by JS (or we use the existing panels reordered) */
   .mob-swipe-wrapper {
     display: flex;
     flex-direction: column;
     width: 100%;
   }
 
-  /* Dot indicators above swipeable area */
+  /* Toggle tabs row (Animation ● Tree) */
   .mob-panel-tabs {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 0 6px;
+    padding: 12px 0 6px;
     background: var(--bg);
     flex-shrink: 0;
   }
@@ -754,73 +755,96 @@
     font-family: var(--font);
   }
 
-  /* Horizontal scroll track */
+  /* Horizontal snap track — full width, each card = 100% - 24px (margin) */
   .mob-swipe-track {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    gap: 0;
     width: 100%;
+    /* peek: show 8px of next card */
+    padding: 0 12px;
+    box-sizing: border-box;
+    gap: 12px;
   }
   .mob-swipe-track::-webkit-scrollbar { display: none; }
 
-  /* Each card in the track */
+  /* Each swipe slot — full visible width */
   .mob-swipe-card {
     flex: 0 0 100%;
     scroll-snap-align: start;
-    width: 100%;
-    min-width: 100%;
+    min-width: calc(100% - 0px);
     display: flex;
     flex-direction: column;
+    /* height driven by inner panel */
   }
 
-  /* ── Animation panel on mobile ── */
-  .viz-anim-panel {
-    height: 420px;
-    min-height: 420px;
-    flex-shrink: 0;
+  /* ── Animation panel inside swipe card ── */
+  .mob-swipe-card .viz-anim-panel {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    border-top: 1px solid var(--border);
-    border-bottom: none;
+    border-radius: var(--radius) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: var(--shadow-card);
+    background: var(--card-bg);
+    overflow: hidden;
+    margin: 0; /* margin already on mob-swipe-card container */
+    height: 330px;
+    max-height: 330px;
   }
 
   .viz-anim-viewport {
     flex: 1;
     min-height: 0;
-    height: auto;
+    overflow: hidden;
   }
 
-  /* ── Controls on mobile: compact row ── */
+  /* ── Controls: inside animation card, compact ── */
   .viz-controls {
     padding: 10px 12px;
     gap: 8px;
+    border-top: 1px solid var(--border);
+    background: linear-gradient(to top, rgba(248,250,252,.8) 0%, rgba(255,255,255,0) 100%);
   }
   .viz-ctrl-btn { font-size: 12px; padding: 8px 10px; }
   .viz-ctrl-reset { padding: 8px 10px; }
   .viz-step-pill { font-size: 11px; padding: 5px 10px; }
-  .viz-progress-dots { display: none; } /* hidden on mobile, save space */
+  .viz-progress-dots { display: none; }
 
-  /* ── Tree panel on mobile ── */
-  .viz-tree-panel {
-    height: auto;
-    border-top: 1px solid var(--border);
-    border-bottom: none;
+  .call-box { width: 180px; }
+  .box-fn-name { font-size: 10px; }
+  .box-step { font-size: 9.5px; }
+  .box-header { padding: 6px 10px; }
+
+  /* ── Tree panel inside swipe card ── */
+  .mob-swipe-card .viz-tree-panel {
+    flex: 1;
+    border-radius: var(--radius) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: var(--shadow-card);
+    background: var(--card-bg);
+    overflow: hidden;
+    margin: 0;
+    height: 330px;
+    max-height: 330px;
   }
   .tree-canvas {
-    min-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 100%;
   }
 
-  /* ── Code panel on mobile ── */
+  /* ── Code panel: separate card below swipe zone ── */
   .viz-code-panel {
-    height: 40vh;
-    min-height: 220px;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
+    height: 35vh;
+    min-height: 200px;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
     display: flex;
     flex-direction: column;
+    /* margin already applied via .viz-panel rule above */
   }
   .viz-code-block {
     flex: 1;
@@ -829,7 +853,7 @@
   }
   .viz-complexity-bar { padding: 7px 14px; }
 
-  /* ── Explanation bar on mobile ── */
+  /* ── Explanation bar: separate sticky card at bottom ── */
   .viz-explain-bar {
     padding: 10px 14px;
     min-height: var(--expl-h);
@@ -838,6 +862,8 @@
     position: sticky;
     bottom: 0;
     z-index: 40;
+    border-top: 1px solid var(--border);
+    background: var(--card-bg);
   }
   .viz-explain-text { font-size: 12.5px; }
 }

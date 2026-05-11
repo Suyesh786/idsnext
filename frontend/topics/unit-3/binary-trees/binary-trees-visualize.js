@@ -652,10 +652,42 @@ function computePanTarget(id) {
   const maxOffX  = 2400 - vpWidth;
   const clampedX = Math.max(0, Math.min(targetX, maxOffX));
 
-  const parentId = BOX_PARENT[id];
-  const scrollY  = parentId
-    ? Math.max(0, computeBoxTop(parentId) - 24)
-    : Math.max(0, computeBoxTop(id) - 24);
+  const isMobile = window.innerWidth <= 768;
+
+  let scrollY;
+  if (isMobile) {
+    /* Mobile: show active box at top of viewport with a small top padding.
+       We also want to show the parent above it if possible — so we scroll to
+       whichever gives a cleaner view.
+       Strategy: if the active box has a parent, scroll so the PARENT top is
+       just visible (small peek) and the active (child) box is fully in view.
+       If no parent (main), just show the active box. */
+    const activeTop  = computeBoxTop(id);
+    const parentId   = BOX_PARENT[id];
+    if (parentId) {
+      const parentTop = computeBoxTop(parentId);
+      const parentH   = estimatedBoxHeight(parentId);
+      const activeH   = estimatedBoxHeight(id);
+      /* Ideal: scroll so parent header is at the very top (or slightly above)
+         and child is fully visible. We want activeTop + activeH to be within vpHeight. */
+      const childBottom = activeTop + activeH;
+      const showFrom = activeTop - 16; // 16px gap above child
+      /* If child fits with parent peek, show parent peek */
+      const peekScroll = Math.max(0, parentTop - 8);
+      /* If child would be off-screen from peekScroll, prefer child-first scroll */
+      const childOffBottom = childBottom - (peekScroll + vpHeight);
+      scrollY = childOffBottom > 0 ? showFrom : peekScroll;
+    } else {
+      scrollY = Math.max(0, activeTop - 16);
+    }
+  } else {
+    /* Desktop: existing behaviour — scroll to parent top */
+    const parentId = BOX_PARENT[id];
+    scrollY = parentId
+      ? Math.max(0, computeBoxTop(parentId) - 24)
+      : Math.max(0, computeBoxTop(id) - 24);
+  }
+
   const maxOffY  = Math.max(0, 1200 - vpHeight);
   const clampedY = Math.min(scrollY, maxOffY);
 
@@ -1010,24 +1042,31 @@ function getCurrentOffsets() {
 function setOffsets(ox, oy) {
   const vpWidth  = animViewport.offsetWidth;
   const vpHeight = animViewport.offsetHeight;
+  /* Allow negative Y so user can scroll UP to see parent boxes cut off above.
+     Floor is -vpHeight (one screen up max). Ceiling is canvas bottom. */
   const cx = Math.max(0, Math.min(ox, 2400 - vpWidth));
-  const cy = Math.max(0, Math.min(oy, Math.max(0, 1200 - vpHeight)));
+  const cy = Math.max(-vpHeight, Math.min(oy, Math.max(0, 1200 - vpHeight)));
   animCanvas.style.transform = `translate(-${cx}px, -${cy}px)`;
 }
 
-/* ── Mousewheel scroll (vertical) ── */
+/* ── Mousewheel scroll (vertical + horizontal) ── */
 animViewport.addEventListener('wheel', e => {
   e.preventDefault();
   const off = getCurrentOffsets();
-  setOffsets(off.x, off.y + e.deltaY * 0.8);
+  if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+    setOffsets(off.x + (e.deltaX || e.deltaY) * 0.8, off.y);
+  } else {
+    setOffsets(off.x, off.y + e.deltaY * 0.8);
+  }
   if (currentStep > 0) {
     const s = STEPS[currentStep - 1];
     if (s) redrawAllArrows(s);
   }
 }, { passive: false });
 
-/* ── Drag to pan the animation canvas ── */
+/* ── Drag to pan the animation canvas (mouse + touch with inertia) ── */
 (function initDrag() {
+  /* Mouse drag */
   let dragging = false, startX = 0, startY = 0, startOffX = 0, startOffY = 0;
 
   animViewport.addEventListener('mousedown', e => {
@@ -1043,13 +1082,49 @@ animViewport.addEventListener('wheel', e => {
   window.addEventListener('mouseup', () => {
     if (!dragging) return; dragging = false; animViewport.classList.remove('grabbing');
   });
-  animViewport.addEventListener('touchstart', e => {
-    startX = e.touches[0].clientX; startY = e.touches[0].clientY;
-    const off = getCurrentOffsets(); startOffX = off.x; startOffY = off.y;
-  }, { passive: true });
-  animViewport.addEventListener('touchmove', e => {
-    setOffsets(startOffX + (startX - e.touches[0].clientX), startOffY + (startY - e.touches[0].clientY));
+
+  /* Touch drag with momentum/inertia */
+  let touchStartX = 0, touchStartY = 0, touchOffX = 0, touchOffY = 0;
+  let lastTouchX = 0, lastTouchY = 0, lastTouchTime = 0;
+  let velX = 0, velY = 0;
+  let inertiaRaf = null;
+
+  function cancelInertia() {
+    if (inertiaRaf) { cancelAnimationFrame(inertiaRaf); inertiaRaf = null; }
+  }
+
+  function runInertia() {
+    const FRICTION = 0.88;
+    if (Math.abs(velX) < 0.3 && Math.abs(velY) < 0.3) { inertiaRaf = null; return; }
+    const off = getCurrentOffsets();
+    setOffsets(off.x + velX, off.y + velY);
+    velX *= FRICTION; velY *= FRICTION;
     if (currentStep > 0) { const s = STEPS[currentStep-1]; if (s) redrawAllArrows(s); }
+    inertiaRaf = requestAnimationFrame(runInertia);
+  }
+
+  animViewport.addEventListener('touchstart', e => {
+    cancelInertia();
+    touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
+    lastTouchX = touchStartX; lastTouchY = touchStartY;
+    lastTouchTime = Date.now(); velX = 0; velY = 0;
+    const off = getCurrentOffsets(); touchOffX = off.x; touchOffY = off.y;
+  }, { passive: true });
+
+  animViewport.addEventListener('touchmove', e => {
+    const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
+    const now = Date.now(), dt = Math.max(1, now - lastTouchTime);
+    velX = (lastTouchX - tx) / dt * 16;
+    velY = (lastTouchY - ty) / dt * 16;
+    lastTouchX = tx; lastTouchY = ty; lastTouchTime = now;
+    setOffsets(touchOffX + (touchStartX - tx), touchOffY + (touchStartY - ty));
+    if (currentStep > 0) { const s = STEPS[currentStep-1]; if (s) redrawAllArrows(s); }
+  }, { passive: true });
+
+  animViewport.addEventListener('touchend', () => {
+    if (Math.abs(velX) > 1 || Math.abs(velY) > 1) {
+      inertiaRaf = requestAnimationFrame(runInertia);
+    }
   }, { passive: true });
 })();
 
@@ -1549,6 +1624,10 @@ buildAllBoxes();
   main.innerHTML = '';
   main.appendChild(wrapper);
   main.appendChild(codePanel);
+
+  /* Force layout so animViewport.offsetWidth is real before renderStep fires */
+  void animPanel.offsetWidth;
+  setTimeout(() => { if (typeof renderStep === 'function') renderStep(currentStep || 0); }, 50);
 
   /* Update dots on scroll */
   track.addEventListener('scroll', () => {
