@@ -1604,4 +1604,60 @@ buildAllBoxes();
   }
 })();
 
+/* ── Mobile: build swipeable Animation+Tree wrapper ── */
+(function initMobileSwipe() {
+  if (window.innerWidth > 768) return;
+
+  const main      = document.querySelector('.viz-main');
+  const animPanel = document.querySelector('.viz-anim-panel');
+  const treePanel = document.querySelector('.viz-tree-panel');
+  const codePanel = document.querySelector('.viz-code-panel');
+  if (!main || !animPanel || !treePanel || !codePanel) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'mob-swipe-wrapper';
+
+  const tabs = document.createElement('div');
+  tabs.className = 'mob-panel-tabs';
+  tabs.innerHTML =
+    '<span class="mob-tab-label">Animation</span>' +
+    '<div class="mob-tab-dot active" id="mobDot0"></div>' +
+    '<div class="mob-tab-dot" id="mobDot1"></div>' +
+    '<span class="mob-tab-label">Tree</span>';
+  wrapper.appendChild(tabs);
+
+  const track = document.createElement('div');
+  track.className = 'mob-swipe-track';
+  track.id = 'mobSwipeTrack';
+
+  const card0 = document.createElement('div');
+  card0.className = 'mob-swipe-card';
+  card0.appendChild(animPanel);
+  track.appendChild(card0);
+
+  const card1 = document.createElement('div');
+  card1.className = 'mob-swipe-card';
+  card1.appendChild(treePanel);
+  track.appendChild(card1);
+
+  wrapper.appendChild(track);
+  main.innerHTML = '';
+  main.appendChild(wrapper);
+  main.appendChild(codePanel);
+
+  void animPanel.offsetWidth;
+  setTimeout(() => { if (typeof renderStep === 'function') renderStep(currentStep || 0); }, 50);
+
+  track.addEventListener('scroll', () => {
+    const idx = Math.round(track.scrollLeft / track.clientWidth);
+    document.getElementById('mobDot0').classList.toggle('active', idx === 0);
+    document.getElementById('mobDot1').classList.toggle('active', idx === 1);
+  }, { passive: true });
+
+  document.getElementById('mobDot0').addEventListener('click', () =>
+    track.scrollTo({ left: 0, behavior: 'smooth' }));
+  document.getElementById('mobDot1').addEventListener('click', () =>
+    track.scrollTo({ left: track.clientWidth, behavior: 'smooth' }));
+})();
+
 renderStep(0);
