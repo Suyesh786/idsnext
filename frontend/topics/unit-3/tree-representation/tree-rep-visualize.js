@@ -651,10 +651,34 @@ function computePanTarget(id) {
   const maxOffX  = 2400 - vpWidth;
   const clampedX = Math.max(0, Math.min(targetX, maxOffX));
 
-  const parentId = BOX_PARENT[id];
-  const scrollY  = parentId
-    ? Math.max(0, computeBoxTop(parentId) - 24)
-    : Math.max(0, computeBoxTop(id) - 24);
+  const isMobile = window.innerWidth <= 768;
+
+  let scrollY;
+  if (isMobile) {
+    /* Mobile: show active box at top with small padding.
+       If parent exists, show parent peek at top and child fully visible. */
+    const activeTop = computeBoxTop(id);
+    const parentId  = BOX_PARENT[id];
+    if (parentId) {
+      const parentTop      = computeBoxTop(parentId);
+      const parentH        = estimatedBoxHeight(parentId);
+      const activeH        = estimatedBoxHeight(id);
+      const childBottom    = activeTop + activeH;
+      const showFrom       = activeTop - 16;
+      const peekScroll     = Math.max(0, parentTop - 8);
+      const childOffBottom = childBottom - (peekScroll + vpHeight);
+      scrollY = childOffBottom > 0 ? showFrom : peekScroll;
+    } else {
+      scrollY = Math.max(0, activeTop - 16);
+    }
+  } else {
+    /* Desktop: scroll to parent top */
+    const parentId = BOX_PARENT[id];
+    scrollY = parentId
+      ? Math.max(0, computeBoxTop(parentId) - 24)
+      : Math.max(0, computeBoxTop(id) - 24);
+  }
+
   const maxOffY  = Math.max(0, 1200 - vpHeight);
   const clampedY = Math.min(scrollY, maxOffY);
 
