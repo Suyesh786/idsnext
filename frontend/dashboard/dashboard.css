@@ -827,6 +827,104 @@ body {
   letter-spacing: 0.5px;
 }
 
+/* ─── Visualizations Accordion ───────────────────────────────── */
+
+/* Trigger button — identical to .menu-item but is a <button> */
+.menu-accordion-trigger {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  text-align: left;
+  /* chevron needs space on the right */
+  justify-content: flex-start;
+}
+
+/* Push chevron to the far right */
+.menu-accordion-trigger .viz-chevron {
+  margin-left: auto;
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity  0.18s ease;
+}
+
+/* Rotate chevron when open */
+.menu-accordion-trigger.viz-open .viz-chevron {
+  transform: rotate(180deg);
+  opacity: 0.9;
+}
+
+/* Trigger hover/active state (mirrors .menu-item) */
+.menu-accordion-trigger:hover,
+.menu-accordion-trigger.viz-open {
+  background: var(--blue-light);
+  color: var(--blue);
+}
+
+/* Submenu wrapper — animates height + opacity */
+.viz-submenu {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity    0.22s ease;
+}
+
+/* Inner padding so items don't snap to edge */
+.viz-submenu-inner {
+  padding: 4px 0 4px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Individual child link */
+.viz-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 22px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background 0.16s ease, color 0.16s ease;
+  position: relative;
+}
+
+/* Subtle left accent line */
+.viz-item::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background 0.16s ease;
+}
+
+.viz-item:hover {
+  background: var(--blue-light);
+  color: var(--blue);
+}
+
+.viz-item:hover::before {
+  background: var(--blue);
+}
+
+.viz-item.active {
+  background: var(--blue-light);
+  color: var(--blue);
+  font-weight: 500;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    Spark AI Chat Assistant styles have been moved to:
    spark/spark.css  — loaded via spark/spark.js on every page.
