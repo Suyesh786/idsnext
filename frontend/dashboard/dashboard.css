@@ -655,9 +655,14 @@ body {
   display: none;
 }
 
+/* ─── Desktop Sidebar Toggle — hidden on desktop ──────────────── */
+.sidebar-desktop-toggle {
+  display: none;
+}
+
 /* ─── Top Bar (mobile) ───────────────────────────────────────── */
 .topbar {
-  display: none;
+  display: none !important;
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
