@@ -6,6 +6,7 @@
 <title>Binary Trees | iDS Studio Next</title>
 <link rel="stylesheet" href="../../../dashboard/dashboard.css">
 <link rel="stylesheet" href="binary-trees.css">
+<link rel="stylesheet" href="../../../visualize-button/visualize-button.css">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 </head>
 
@@ -494,16 +495,7 @@
       <div class="section-header">
         <span class="section-number">05</span>
         <h2 class="section-title">Creating a Binary Tree in C</h2>
-        <div class="visualize-card" onclick="openVisualizer()" role="button" tabindex="0"
-             onkeydown="if(event.key==='Enter'||event.key===' ')openVisualizer()">
-          <div class="vc-icon">✨</div>
-          <div class="vc-text">
-            <div class="vc-title">Visualize Code</div>
-            <div class="vc-sub">Watch step-by-step execution with animations</div>
-          </div>
-          <div class="vc-arrow">→</div>
-          <span class="visualize-btn-ripple"></span>
-        </div>
+        <div class="visualize-button-mount" data-visualize-link="binary-trees-visualize.html"></div>
       </div>
 
       <p class="lesson-para">
@@ -679,11 +671,7 @@ int main(){
 <script src="binary-trees.js"></script>
 <link rel="stylesheet" href="../../../spark/spark.css">
 <script src="../../../spark/spark.js"></script>
-<script>
-function openVisualizer() {
-  window.location.href = 'binary-trees-visualize.html';
-}
-</script>
 <script src="../../../sidebar/sidebar.js"></script>
+<script src="../../../visualize-button/visualize-button.js"></script>
 </body>
 </html>

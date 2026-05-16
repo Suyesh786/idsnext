@@ -6,6 +6,7 @@
 <title>Tree Representation | iDS Studio Next</title>
 <link rel="stylesheet" href="../../../dashboard/dashboard.css">
 <link rel="stylesheet" href="tree-representation.css">
+<link rel="stylesheet" href="../../../visualize-button/visualize-button.css">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 </head>
 
@@ -425,16 +426,7 @@
       <div class="section-header">
         <span class="section-number">07</span>
         <h2 class="section-title">Implementation in C</h2>
-        <div class="visualize-card" onclick="openVisualizer()" role="button" tabindex="0"
-             onkeydown="if(event.key==='Enter'||event.key===' ')openVisualizer()">
-          <div class="vc-icon">✨</div>
-          <div class="vc-text">
-            <div class="vc-title">Visualize Code</div>
-            <div class="vc-sub">Watch step-by-step execution with animations</div>
-          </div>
-          <div class="vc-arrow">→</div>
-          <span class="visualize-btn-ripple"></span>
-        </div>
+        <div class="visualize-button-mount" data-visualize-link="tree-rep-visualize.html"></div>
       </div>
 
       <!-- UPDATE 5: Full-width stacked layout (no split) -->
@@ -573,11 +565,7 @@ int main() {
 <script src="tree-representation.js"></script>
 <link rel="stylesheet" href="../../../spark/spark.css">
 <script src="../../../spark/spark.js"></script>
-<script>
-function openVisualizer() {
-  window.location.href = 'tree-representation-visualize.html';
-}
-</script>
 <script src="../../../sidebar/sidebar.js"></script>
+<script src="../../../visualize-button/visualize-button.js"></script>
 </body>
 </html>
