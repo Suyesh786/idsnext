@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Build the inner HTML
     mount.innerHTML = `
+      <div class="vc-coachmark" aria-hidden="true">
+        <span class="vc-coachmark-label">✨ Try Visualizer</span>
+        <span class="vc-coachmark-sub">Watch code execute live</span>
+      </div>
+      <span class="vc-coachmark-arrow" aria-hidden="true">↓</span>
       <div class="visualize-card" role="button" tabindex="0">
         <div class="vc-icon">✨</div>
         <div class="vc-text">
@@ -22,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <div class="vc-arrow">→</div>
         <span class="visualize-btn-ripple"></span>
+        <span class="vc-shimmer" aria-hidden="true"></span>
       </div>
     `;
 

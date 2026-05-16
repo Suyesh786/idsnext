@@ -1,4 +1,146 @@
-/* ── Glassmorphism Visualize Card ─────────────────────────── */
+/* ── Keyframes ────────────────────────────────────────────── */
+@keyframes vc-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes vc-gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes vc-glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 4px 24px rgba(20, 184, 166, 0.18),
+      0 0 0 0 rgba(52, 211, 153, 0.0),
+      inset 0 1px 0 rgba(255,255,255,0.65);
+  }
+  50% {
+    box-shadow:
+      0 6px 32px rgba(20, 184, 166, 0.28),
+      0 0 0 6px rgba(52, 211, 153, 0.07),
+      inset 0 1px 0 rgba(255,255,255,0.65);
+  }
+}
+
+@keyframes vc-arrow-nudge {
+  0%, 100% { opacity: 0.6; transform: translateY(0px); }
+  50%       { opacity: 1;   transform: translateY(2px); }
+}
+
+@keyframes vc-shimmer-sweep {
+  0%   { transform: translateX(-100%) skewX(-15deg); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateX(250%) skewX(-15deg); opacity: 0; }
+}
+
+/* ── Mount ────────────────────────────────────────────────── */
+.visualize-button-mount {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* ── Coachmark Bubble — Pick 2: Soft Teal → Mint ─────────── */
+.vc-coachmark {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 18px 12px;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(20,  184, 166, 0.18) 0%,
+    rgba(52,  211, 153, 0.16) 50%,
+    rgba(103, 232, 249, 0.14) 100%
+  );
+  background-size: 200% 200%;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(20, 184, 166, 0.28);
+  box-shadow:
+    0 4px 24px rgba(20, 184, 166, 0.18),
+    inset 0 1px 0 rgba(255,255,255,0.68);
+  animation:
+    vc-float 3.8s ease-in-out infinite,
+    vc-gradient-shift 7s ease infinite,
+    vc-glow-pulse 3.5s ease-in-out infinite;
+  cursor: default;
+  user-select: none;
+  max-width: 220px;
+  text-align: center;
+}
+
+.vc-coachmark-label {
+  font-family: var(--font, 'DM Sans', sans-serif);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f766e;
+  letter-spacing: 0.1px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.vc-coachmark-sub {
+  font-family: var(--font, 'DM Sans', sans-serif);
+  font-size: 11px;
+  font-weight: 500;
+  color: #059669;
+  margin-top: 2px;
+  white-space: nowrap;
+  opacity: 0.88;
+}
+
+/* ── Arrow — outside bubble ───────────────────────────────── */
+.vc-coachmark-arrow {
+  display: block;
+  font-size: 14px;
+  color: #2dd4bf;
+  line-height: 1;
+  text-align: center;
+  padding: 5px 0 4px;
+  animation: vc-arrow-nudge 2.8s ease-in-out infinite;
+  user-select: none;
+}
+
+/* ── One-time shimmer on button ───────────────────────────── */
+.vc-shimmer {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.vc-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.45),
+    transparent
+  );
+  transform: translateX(-100%) skewX(-15deg);
+  animation: vc-shimmer-sweep 0.9s ease forwards;
+  animation-delay: 0.4s;
+}
+
+/* ── Reduced motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .vc-coachmark        { animation: none; }
+  .vc-coachmark-arrow  { animation: none; opacity: 0.75; }
+  .vc-shimmer::after   { animation: none; }
+}
+
+/* ── Visualize Card (button) — unchanged ──────────────────── */
 .visualize-card {
   display: flex;
   align-items: center;
@@ -85,7 +227,7 @@
   line-height: 1;
 }
 
-/* Ripple (kept for JS compat) */
+/* Ripple */
 .visualize-btn-ripple {
   position: absolute;
   inset: 0;
@@ -99,11 +241,19 @@
   background: rgba(255,255,255,0.18);
 }
 
-/* Mobile: subtitle wraps/hides */
+/* ── Mobile ───────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .section-header {
     flex-wrap: wrap;
     gap: 10px;
+  }
+  .visualize-button-mount {
+    margin-left: 0;
+    width: 100%;
+    align-items: center;
+  }
+  .vc-coachmark {
+    max-width: 100%;
   }
   .visualize-card {
     padding: 8px 12px;
