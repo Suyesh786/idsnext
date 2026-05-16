@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 </head>
 
-<body>
+<body data-page="">
 
 <!-- ═══════════ XP POPUP ═══════════ -->
 <div class="xp-popup" id="xpPopup">
@@ -20,55 +20,8 @@
   </div>
 </div>
 
-<!-- ═══════════ SIDEBAR ═══════════ -->
-<aside class="sidebar">
-
-  <div class="logo">
-    <div class="logo-icon">
-      <img src="../../image/ilogo.png" alt="iDS Studio" class="logo-img">
-        <defs>
-          <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#4f8cff"/>
-            <stop offset="100%" stop-color="#1a56db"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-    <div class="logo-text">
-      <span class="logo-title">iDS Studio</span>
-      <span class="logo-sub">Next</span>
-    </div>
-  </div>
-
-  <nav class="menu">
-    <a href="../../dashboard/dashboard.html" class="menu-item">Dashboard</a>
-    <a href="../../learn/learn.html" class="menu-item active">Learn</a>
-    <a href="../../practice/practice.html" class="menu-item">Practice</a>
-    <a href="../../leaderboard/leaderboard.html" class="menu-item">Leaderboard</a>
-  </nav>
-
-  <div class="spacer"></div>
-
-  <div class="sidebar-footer">
-    <div class="user-chip">
-      <div class="user-avatar" id="userAvatar">U</div>
-      <div class="user-info">
-        <span class="user-name" id="sidebarUserName">User</span>
-        <span class="user-role">Student</span>
-      </div>
-    </div>
-    <div class="logout">
-      <button onclick="logout()">
-        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
-        Logout
-      </button>
-    </div>
-  </div>
-
-</aside>
-
 <!-- ═══════════ MAIN CONTENT ═══════════ -->
-<main class="main stack-main">
+<main class="main stack-main" id="mainContent">
 
   <!-- Title Row -->
   <div class="lesson-title-row">
@@ -604,5 +557,6 @@ int dequeue() {
 <script src="queue.js"></script>
 <link rel="stylesheet" href="../../spark/spark.css">
 <script src="../../spark/spark.js"></script>
+<script src="../../sidebar/sidebar.js"></script>
 </body>
 </html>
