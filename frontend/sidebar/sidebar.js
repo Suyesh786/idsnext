@@ -149,9 +149,16 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Failed to parse user from localStorage", e);
     }
   }
+
+  // 7. Auto-scroll flag: set on viz-item click before navigation
+  document.querySelectorAll(".viz-item").forEach(link => {
+    link.addEventListener("click", () => {
+      sessionStorage.setItem("ids_scroll_to_visualize", "1");
+    });
+  });
 });
 
-// 7. Global Functions
+// 8. Global Functions
 window.toggleSidebar = function() {
   const sidebar = document.getElementById("mainSidebar");
   const overlay = document.getElementById("sidebarOverlay");
