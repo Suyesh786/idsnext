@@ -108,8 +108,8 @@ body {
 /* Subtle separator between nav items */
 .menu > * + * {
   border-top: 0.5px solid #DDD6FE;
-  margin-top: 2px;
-  padding-top: 2px;
+  margin-top: 3px;
+  padding-top: 3px;
 }
 
 .menu-item {
@@ -118,9 +118,9 @@ body {
   gap: 10px;
   text-decoration: none;
   color: #6B7280;
-  padding: 8px 12px;
+  padding: 9px 12px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 400;
   transition: all 0.18s ease;
 }
@@ -197,13 +197,13 @@ body {
   font-weight: 400;
 }
 
-/* Logout — ghost style, minimal */
+/* Logout — soft red container, minimal */
 .logout button {
   width: 100%;
   padding: 6px 10px;
-  border: none;
-  background: transparent;
-  color: #9CA3AF;
+  border: 1px solid #FECACA;
+  background: #FEF2F2;
+  color: #EF4444;
   font-family: var(--font);
   font-size: 11px;
   font-weight: 400;
@@ -213,19 +213,20 @@ body {
   align-items: center;
   justify-content: flex-start;
   gap: 6px;
-  transition: background 0.18s ease, color 0.18s ease;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
 
 .logout button svg {
   width: 13px;
   height: 13px;
   flex-shrink: 0;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 .logout button:hover {
-  background: #EDE9FE;
-  color: #4F46E5;
+  background: #FEE2E2;
+  color: #DC2626;
+  border-color: #FCA5A5;
 }
 
 /* ─── Main Content ───────────────────────────────────────────── */

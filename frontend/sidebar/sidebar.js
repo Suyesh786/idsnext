@@ -100,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <a href="/topics/singly-circular-linked-list/singly-circular-linked-list.html" class="viz-item">Singly-Circular Linked List</a>
             <a href="/topics/unit-3/binary-trees/binary-trees.html" class="viz-item">Binary Tree Creation</a>
             <a href="/topics/unit-3/tree-representation/tree-representation.html" class="viz-item">Array Representation of Binary Tree</a>
+            <a href="/topics/unit-3/tree-traversals/tree-traversals.html" class="viz-item">Tree Traversals</a>
           </div>
         </div>
       </div>
