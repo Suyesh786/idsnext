@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glowing Button</title>
+    <style>
+        .glow-button {
+            background-color: #007bff; /* Default color */
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            animation: glow 2s infinite;
+        }
+
+        .glow-button:hover {
+            background-color: #0056b3; /* Darker color on hover */
+        }
+
+        @keyframes glow {
+            0% {
+                box-shadow: 0 0 0 0 #007bff;
+                opacity: 1;
+            }
+            50% {
+                box-shadow: 0 0 0 0 #4CAF50; /* Green glow */
+                opacity: 0.4;
+            }
+            100% {
+                box-shadow: 0 0 0 0 #007bff;
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="glow-button">Click Me</button>
+</body>
+</html>

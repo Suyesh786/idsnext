@@ -229,19 +229,166 @@
 ═══════════════════════════════════════════════════════════════ */
 .viz-anim-panel { position:relative; }
 
+
+
 .viz-anim-status {
   font-size:12px; font-weight:600; color:var(--text-muted);
   padding:3px 9px; background:var(--bg);
   border:1px solid var(--border); border-radius:99px;
 }
 
-/* Fade-in animation for new boxes — slides in from below */
+/* Viewport: clips canvas, panning done via canvas transform */
+.viz-anim-viewport {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;        /* JS pans via translate, not scroll */
+  cursor: grab;
+  user-select: none;
+}
+.viz-anim-viewport.grabbing { cursor: grabbing; }
+
+/* Canvas: absolute, wide — JS moves it via transform */
+.viz-anim-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 3000px;
+  will-change: transform;
+}
+
+.viz-arrows-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 10;
+}
+
+/* ── CALL BOX — diagonal cascade layout ── */
+.call-box {
+  position: absolute;
+  /* top and left set entirely by JS — diagonal cascade */
+  width: 240px;
+  background: var(--card-bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity .35s, border-color .25s, box-shadow .25s;
+}
+
+/* Active box: blue border + glow */
+.call-box.active-box {
+  border-color: var(--blue);
+  box-shadow: 0 4px 24px rgba(59,108,255,0.22);
+}
+
+/* Dimmed: waiting for child to return */
+.call-box.dimmed {
+  opacity: 0.42;
+  pointer-events: none;
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+/* Fading out (function returning) */
+.call-box.fading {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.97);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+/* Fade-in animation for new boxes */
 @keyframes boxFadeInV {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .call-box.box-fadein {
   animation: boxFadeInV 0.28s ease-out forwards;
+}
+
+/* ── Box header ── */
+.box-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(to bottom, rgba(248,250,252,.9), rgba(255,255,255,0));
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.box-fn-name {
+  font-family: var(--font-code); font-size: 12px; font-weight: 700; color: var(--blue);
+}
+.box-fn-name.is-main { color: #7c3aed; }
+
+.box-badge {
+  margin-left: auto;
+  font-family: var(--font-code); font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 5px;
+  background: var(--blue-light); border: 1px solid var(--blue-mid); color: var(--blue);
+}
+.box-badge.null-badge {
+  background: #fff1f0; border-color: #fca5a5; color: #dc2626;
+}
+.box-badge.main-badge {
+  background: #f5f3ff; border-color: #c4b5fd; color: #7c3aed;
+}
+
+/* ── Box steps ── */
+.box-steps { padding: 6px 0; }
+
+.box-step {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 4px 12px;
+  font-family: var(--font-code); font-size: 11px; color: var(--text-muted);
+  border-left: 3px solid transparent;
+  transition: background .15s, border-color .15s, color .15s;
+  line-height: 1.5;
+}
+
+/* Active step row inside active box */
+.box-step.active-step {
+  background: var(--blue-dim);
+  border-left-color: var(--blue);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.step-num { min-width: 14px; font-size: 9.5px; color: var(--text-muted); padding-top: 1px; }
+
+/* ── ARROW STYLES ── */
+@keyframes dash-flow {
+  to { stroke-dashoffset: -20; }
+}
+@keyframes dash-flow-ret {
+  to { stroke-dashoffset: -18; }
+}
+
+/* Call arrow: blue dashed, parent bottom → child top */
+.arrow-call {
+  stroke: #3b6cff; stroke-width: 2.5; fill: none;
+  stroke-dasharray: 7 4;
+  animation: dash-flow .5s linear infinite;
+}
+
+/* Return arrow: green dashed, child top → parent step row (upward) */
+.arrow-ret {
+  stroke: #10b981; stroke-width: 2.5; fill: none;
+  stroke-dasharray: 6 5;
+}
+
+/* Link arrow: persistent dashed blue, step-row bottom → child top */
+.arrow-link {
+  stroke: #3b6cff; stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; opacity: .55;
+}
+.arrow-link-faded {
+  opacity: .22;
+  animation: dash-flow .7s linear infinite;
 }
 
 /* ═══ CONTROLS ════════════════════════════════════════════════ */
@@ -502,6 +649,28 @@
   text-anchor: middle;
   dominant-baseline: central;
   pointer-events: none;
+}
+
+/* ── Inorder visit-glow overlay (orange node + green pulse ring at printf step) ── */
+.tree-node-glow {
+  fill: none;
+  stroke: none;
+  opacity: 0;
+  pointer-events: none;
+}
+.tree-node-glow.visit-glow {
+  stroke: #10b981;
+  stroke-width: 6;
+  opacity: 1;
+  filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.5));
+  animation: visitGlowPulse 1.5s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@keyframes visitGlowPulse {
+  0%   { stroke-width: 4; stroke-opacity: 0.45; transform: scale(1.00); }
+  50%  { stroke-width: 7; stroke-opacity: 0.85; transform: scale(1.18); }
+  100% { stroke-width: 4; stroke-opacity: 0.45; transform: scale(1.00); }
 }
 
 /* ── Output Card ── */
@@ -772,140 +941,7 @@
   }
   .viz-ctrl-btn { font-size: 11.5px; padding: 6px 10px; }
   .viz-progress-dots { display: none; }
-}
-/* ═══ CALL STACK ANIMATION — copied from binary-trees-visualize ═══ */
 
-/* VIEWPORT — overflow hidden; user can't scroll but JS translates canvas */
-.viz-anim-viewport {
-  flex:1; min-height:0;
-  position:relative;
-  overflow:hidden;
-  cursor:grab;
-  user-select:none;
-}
-.viz-anim-viewport.grabbing { cursor:grabbing; }
-
-/* CANVAS — wider than viewport; JS moves it via transform */
-.viz-anim-canvas {
-  position:absolute;
-  top:0; left:0;
-  height:100%;
-  width:3000px;
-  will-change:transform;
-  /* NO transition here — JS handles smooth pan manually
-     so manual drag is instant while auto-pan uses JS animation */
-}
-
-/* SVG arrows — sits on top of everything, full canvas size */
-.viz-arrows-svg {
-  position:absolute;
-  top:0; left:0;
-  width:100%; height:100%;
-  pointer-events:none;
-  overflow:visible;
-  z-index:10;
-}
-
-/* ── CALL BOX ────────────────────────────────────────────────── */
-.call-box {
-  position:absolute;
-  top:50%; transform:translateY(-50%);
-  width:236px;
-  background:var(--card-bg);
-  border:2px solid var(--border);
-  border-radius:12px;
-  box-shadow:var(--shadow-card);
-  display:flex; flex-direction:column;
-  overflow:hidden;
-  transition: opacity .35s, border-color .25s, box-shadow .25s;
-}
-.call-box.active-box {
-  border-color:var(--blue);
-  box-shadow:0 4px 24px rgba(59,108,255,0.22);
-}
-.call-box.dimmed {
-  opacity:.4;
-  border-color:var(--border);
-  box-shadow:none;
-}
-.call-box.fading { opacity:0; transform:translateY(-50%) scale(.92); }
-
-.box-header {
-  display:flex; align-items:center; gap:8px;
-  padding:8px 12px;
-  background:linear-gradient(to bottom,rgba(248,250,252,.9),rgba(255,255,255,0));
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
-}
-.box-fn-name {
-  font-family:var(--font-code); font-size:12px; font-weight:700; color:var(--blue);
-}
-.box-fn-name.is-main { color:#7c3aed; }
-
-.box-badge {
-  margin-left:auto;
-  font-family:var(--font-code); font-size:11px; font-weight:700;
-  padding:2px 8px; border-radius:5px;
-  background:var(--blue-light); border:1px solid var(--blue-mid); color:var(--blue);
-}
-.box-badge.null-badge {
-  background:#fff1f0; border-color:#fca5a5; color:#dc2626;
-}
-.box-badge.main-badge {
-  background:#f5f3ff; border-color:#c4b5fd; color:#7c3aed;
-}
-
-.box-steps { padding:6px 0; }
-
-.box-step {
-  display:flex; align-items:flex-start; gap:8px;
-  padding:4px 12px;
-  font-family:var(--font-code); font-size:11px; color:var(--text-muted);
-  border-left:3px solid transparent;
-  transition: background .15s, border-color .15s, color .15s;
-  line-height:1.5;
-}
-.box-step.active-step {
-  background:var(--blue-dim);
-  border-left-color:var(--blue);
-  color:var(--text-primary);
-  font-weight:600;
-}
-.step-num { min-width:14px; font-size:9.5px; color:var(--text-muted); padding-top:1px; }
-
-/* ── ARROW STYLES ────────────────────────────────────────────── */
-@keyframes dash-flow {
-  to { stroke-dashoffset:-20; }
-}
-@keyframes dash-flow-ret {
-  to { stroke-dashoffset:-18; }
-}
-
-.arrow-call {
-  stroke:#3b6cff; stroke-width:2.5; fill:none;
-  stroke-dasharray:7 4;
-  animation: dash-flow .5s linear infinite;
-}
-.arrow-ret {
-  stroke:#10b981; stroke-width:2.5; fill:none;
-  stroke-dasharray:6 5;
-}
-.arrow-link {
-  stroke:#3b6cff; stroke-width:2; fill:none;
-  stroke-dasharray:5 4; opacity:.55;
-}
-.arrow-link-faded {
-  opacity:.22;
-  animation: dash-flow .7s linear infinite;
-}
-
-/* ── MOBILE OVERRIDES (from binary-trees-visualize @media ≤768px) ── */
-@media (max-width: 768px) {
-  .viz-anim-viewport {
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-  }
   .call-box { width: 180px; }
   .box-fn-name { font-size: 10px; }
   .box-step { font-size: 9.5px; }

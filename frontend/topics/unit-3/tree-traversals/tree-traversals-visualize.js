@@ -3,7 +3,7 @@
    Inorder / Preorder / Postorder step-by-step visualizer
    ════════════════════════════════════════════════════════════ */
 
-/* ── Tree structure: A(root), B(A.left), C(A.right), D(B.left), E(C.left), F(C.right) ── */
+/* ── Tree structure: A(root), B(A.left), C(A.right), D(B.right), E(C.left), F(C.right) ── */
 
 /* SVG layout positions (viewBox 0 0 400 220) */
 const NODE_POS = {
@@ -29,8 +29,8 @@ const TRAVERSAL_CONFIGS = {
     statusRule: ['Left','→','Root','→','Right'],
     statusType: 'Inorder',
     hint: 'Inorder means: first go to the left subtree, then visit the root, then go to the right subtree.',
-    visitOrder: ['D','B','A','E','C','F'],
-    totalSteps: 27,
+    visitOrder: ['B','D','A','E','C','F'],
+    totalSteps: 35,
     codeLang: 'inorder',
   },
   preorder: {
@@ -142,1037 +142,48 @@ function buildSteps(type) {
   return POSTORDER_STEPS;
 }
 
+
+
 /* ══════════════════════════════════════════════════════════════
-   INORDER STEPS — visit order: D B A E C F
+   INORDER STEPS — visit order: B D A E C F
+   Tree: B.left=NULL, B.right=D (D is right child of B)
 ══════════════════════════════════════════════════════════════ */
 const INORDER_STEPS = [
-  {
-    codeLines: [
-      21
-    ],
-    currentNode: null,
-    visitedNodes: [],
-    traversedEdges: [],
-    callStack: [
-      "main() root"
-    ],
-    action: "Program starts. <strong>main()</strong> about to call inorder(root).",
-    stepLabel: 1
-  },
-  {
-    codeLines: [
-      10
-    ],
-    currentNode: "A",
-    visitedNodes: [],
-    traversedEdges: [],
-    callStack: [
-      "main() root",
-      "inorder(A)"
-    ],
-    action: "main() calls <strong>inorder(A)</strong>.",
-    stepLabel: 2
-  },
-  {
-    codeLines: [
-      14
-    ],
-    currentNode: "A",
-    visitedNodes: [
-      "A"
-    ],
-    traversedEdges: [],
-    callStack: [
-      "main() root",
-      "inorder(A)"
-    ],
-    action: "<strong>Visit A</strong> — printf fires. Output: A",
-    stepLabel: 3
-  },
-  {
-    codeLines: [
-      15
-    ],
-    currentNode: "A",
-    visitedNodes: [
-      "A"
-    ],
-    traversedEdges: [],
-    callStack: [
-      "main() root",
-      "inorder(A)"
-    ],
-    action: "<strong>inorder(A)</strong> goes RIGHT.",
-    stepLabel: 4
-  },
-  {
-    codeLines: [
-      10
-    ],
-    currentNode: "C",
-    visitedNodes: [
-      "A"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)"
-    ],
-    action: "inorder(A) calls <strong>inorder(C)</strong>.",
-    stepLabel: 5
-  },
-  {
-    codeLines: [
-      13
-    ],
-    currentNode: "C",
-    visitedNodes: [
-      "A"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)"
-    ],
-    action: "<strong>inorder(C)</strong> goes LEFT.",
-    stepLabel: 6
-  },
-  {
-    codeLines: [
-      10
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)"
-    ],
-    action: "inorder(C) calls <strong>inorder(E)</strong>.",
-    stepLabel: 7
-  },
-  {
-    codeLines: [
-      13
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)"
-    ],
-    action: "<strong>inorder(E)</strong> goes LEFT.",
-    stepLabel: 8
-  },
-  {
-    codeLines: [
-      10
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)",
-      "inorder(NULL)"
-    ],
-    action: "inorder(E) calls <strong>inorder(NULL)</strong>.",
-    stepLabel: 9
-  },
-  {
-    codeLines: [
-      11
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)",
-      "inorder(NULL)"
-    ],
-    action: "<strong>inorder(NULL)</strong> hits base case (root == NULL). Returning.",
-    stepLabel: 10
-  },
-  {
-    codeLines: [
-      13
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)"
-    ],
-    action: "<strong>inorder(NULL)</strong> returns to inorder(E).",
-    stepLabel: 11
-  },
-  {
-    codeLines: [
-      14
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A",
-      "E"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)"
-    ],
-    action: "<strong>Visit E</strong> — printf fires. Output: A E",
-    stepLabel: 12
-  },
-  {
-    codeLines: [
-      15
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A",
-      "E"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)"
-    ],
-    action: "<strong>inorder(E)</strong> goes RIGHT.",
-    stepLabel: 13
-  },
-  {
-    codeLines: [
-      10
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A",
-      "E"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)",
-      "inorder(NULL)"
-    ],
-    action: "inorder(E) calls <strong>inorder(NULL)</strong>.",
-    stepLabel: 14
-  },
-  {
-    codeLines: [
-      11
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A",
-      "E"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)",
-      "inorder(NULL)"
-    ],
-    action: "<strong>inorder(NULL)</strong> hits base case (root == NULL). Returning.",
-    stepLabel: 15
-  },
-  {
-    codeLines: [
-      15
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A",
-      "E"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)"
-    ],
-    action: "<strong>inorder(NULL)</strong> returns to inorder(E).",
-    stepLabel: 16
-  },
-  {
-    codeLines: [
-      16
-    ],
-    currentNode: "E",
-    visitedNodes: [
-      "A",
-      "E"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(E)"
-    ],
-    action: "<strong>inorder(E)</strong> complete. Returning.",
-    stepLabel: 17
-  },
-  {
-    codeLines: [
-      13
-    ],
-    currentNode: "C",
-    visitedNodes: [
-      "A",
-      "E"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)"
-    ],
-    action: "<strong>inorder(E)</strong> returns to inorder(C).",
-    stepLabel: 18
-  },
-  {
-    codeLines: [
-      14
-    ],
-    currentNode: "C",
-    visitedNodes: [
-      "A",
-      "E",
-      "C"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)"
-    ],
-    action: "<strong>Visit C</strong> — printf fires. Output: A E C",
-    stepLabel: 19
-  },
-  {
-    codeLines: [
-      15
-    ],
-    currentNode: "C",
-    visitedNodes: [
-      "A",
-      "E",
-      "C"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)"
-    ],
-    action: "<strong>inorder(C)</strong> goes RIGHT.",
-    stepLabel: 20
-  },
-  {
-    codeLines: [
-      10
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)"
-    ],
-    action: "inorder(C) calls <strong>inorder(F)</strong>.",
-    stepLabel: 21
-  },
-  {
-    codeLines: [
-      13
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)"
-    ],
-    action: "<strong>inorder(F)</strong> goes LEFT.",
-    stepLabel: 22
-  },
-  {
-    codeLines: [
-      10
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)",
-      "inorder(NULL)"
-    ],
-    action: "inorder(F) calls <strong>inorder(NULL)</strong>.",
-    stepLabel: 23
-  },
-  {
-    codeLines: [
-      11
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)",
-      "inorder(NULL)"
-    ],
-    action: "<strong>inorder(NULL)</strong> hits base case (root == NULL). Returning.",
-    stepLabel: 24
-  },
-  {
-    codeLines: [
-      13
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)"
-    ],
-    action: "<strong>inorder(NULL)</strong> returns to inorder(F).",
-    stepLabel: 25
-  },
-  {
-    codeLines: [
-      14
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)"
-    ],
-    action: "<strong>Visit F</strong> — printf fires. Output: A E C F",
-    stepLabel: 26
-  },
-  {
-    codeLines: [
-      15
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)"
-    ],
-    action: "<strong>inorder(F)</strong> goes RIGHT.",
-    stepLabel: 27
-  },
-  {
-    codeLines: [
-      10
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)",
-      "inorder(NULL)"
-    ],
-    action: "inorder(F) calls <strong>inorder(NULL)</strong>.",
-    stepLabel: 28
-  },
-  {
-    codeLines: [
-      11
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)",
-      "inorder(NULL)"
-    ],
-    action: "<strong>inorder(NULL)</strong> hits base case (root == NULL). Returning.",
-    stepLabel: 29
-  },
-  {
-    codeLines: [
-      15
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)"
-    ],
-    action: "<strong>inorder(NULL)</strong> returns to inorder(F).",
-    stepLabel: 30
-  },
-  {
-    codeLines: [
-      16
-    ],
-    currentNode: "F",
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)",
-      "inorder(F)"
-    ],
-    action: "<strong>inorder(F)</strong> complete. Returning.",
-    stepLabel: 31
-  },
-  {
-    codeLines: [
-      15
-    ],
-    currentNode: "C",
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)"
-    ],
-    action: "<strong>inorder(F)</strong> returns to inorder(C).",
-    stepLabel: 32
-  },
-  {
-    codeLines: [
-      16
-    ],
-    currentNode: "C",
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)",
-      "inorder(C)"
-    ],
-    action: "<strong>inorder(C)</strong> complete. Returning.",
-    stepLabel: 33
-  },
-  {
-    codeLines: [
-      15
-    ],
-    currentNode: "A",
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)"
-    ],
-    action: "<strong>inorder(C)</strong> returns to inorder(A).",
-    stepLabel: 34
-  },
-  {
-    codeLines: [
-      16
-    ],
-    currentNode: "A",
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root",
-      "inorder(A)"
-    ],
-    action: "<strong>inorder(A)</strong> complete. Returning.",
-    stepLabel: 35
-  },
-  {
-    codeLines: [
-      22
-    ],
-    currentNode: null,
-    visitedNodes: [
-      "A",
-      "E",
-      "C",
-      "F"
-    ],
-    traversedEdges: [
-      [
-        "A",
-        "C"
-      ],
-      [
-        "C",
-        "E"
-      ],
-      [
-        "C",
-        "F"
-      ]
-    ],
-    callStack: [
-      "main() root"
-    ],
-    action: "All frames unwind. <strong>Inorder traversal complete!</strong>",
-    stepLabel: 36
-  }
+  /* 1 */ { codeLines:[21], currentNode:null, visitedNodes:[], traversedEdges:[], callStack:["main() root"], action:"Program starts. <strong>main()</strong> about to call inorder(root).", stepLabel:1 },
+  /* 2 */ { codeLines:[10], currentNode:"A", visitedNodes:[], traversedEdges:[], callStack:["main() root","inorder(A)"], action:"main() calls <strong>inorder(A)</strong>. root ≠ NULL.", stepLabel:2 },
+  /* 3 */ { codeLines:[13], currentNode:"A", visitedNodes:[], traversedEdges:[], callStack:["main() root","inorder(A)"], action:"<strong>inorder(A)</strong> goes LEFT. Calling <strong>inorder(B)</strong>.", stepLabel:3 },
+  /* 4 */ { codeLines:[10], currentNode:"B", visitedNodes:[], traversedEdges:[["A","B"]], callStack:["main() root","inorder(A)","inorder(B)"], action:"<strong>inorder(A)</strong> calls <strong>inorder(B)</strong>. root ≠ NULL.", stepLabel:4 },
+  /* 5 */ { codeLines:[13], currentNode:"B", visitedNodes:[], traversedEdges:[["A","B"]], callStack:["main() root","inorder(A)","inorder(B)"], action:"<strong>inorder(B)</strong> checks LEFT. B.left = NULL ✓ — no recursive call.", stepLabel:5 },
+  /* 6 */ { codeLines:[14], currentNode:"B", visitedNodes:["B"], traversedEdges:[["A","B"]], callStack:["main() root","inorder(A)","inorder(B)"], action:"<strong>Visit B</strong> — printf fires. Output: B", stepLabel:6 },
+  /* 7 */ { codeLines:[15], currentNode:"B", visitedNodes:["B"], traversedEdges:[["A","B"]], callStack:["main() root","inorder(A)","inorder(B)"], action:"<strong>inorder(B)</strong> goes RIGHT. B.right = D. Calling <strong>inorder(D)</strong>.", stepLabel:7 },
+  /* 8 */ { codeLines:[10], currentNode:"D", visitedNodes:["B"], traversedEdges:[["A","B"],["B","D"]], callStack:["main() root","inorder(A)","inorder(B)","inorder(D)"], action:"<strong>inorder(B)</strong> calls <strong>inorder(D)</strong>. root ≠ NULL.", stepLabel:8 },
+  /* 9 */ { codeLines:[13], currentNode:"D", visitedNodes:["B"], traversedEdges:[["A","B"],["B","D"]], callStack:["main() root","inorder(A)","inorder(B)","inorder(D)"], action:"<strong>inorder(D)</strong> checks LEFT. D.left = NULL ✓ — no recursive call.", stepLabel:9 },
+  /* 10 */ { codeLines:[14], currentNode:"D", visitedNodes:["B","D"], traversedEdges:[["A","B"],["B","D"]], callStack:["main() root","inorder(A)","inorder(B)","inorder(D)"], action:"<strong>Visit D</strong> — printf fires. Output: B D", stepLabel:10 },
+  /* 11 */ { codeLines:[15], currentNode:"D", visitedNodes:["B","D"], traversedEdges:[["A","B"],["B","D"]], callStack:["main() root","inorder(A)","inorder(B)","inorder(D)"], action:"<strong>inorder(D)</strong> checks RIGHT. D.right = NULL ✓ — no recursive call.", stepLabel:11 },
+  /* 12 */ { codeLines:[16], currentNode:"D", visitedNodes:["B","D"], traversedEdges:[["A","B"],["B","D"]], callStack:["main() root","inorder(A)","inorder(B)","inorder(D)"], action:"<strong>inorder(D)</strong> complete. Returning to <strong>inorder(B)</strong>.", stepLabel:12 },
+  /* 13 */ { codeLines:[16], currentNode:"B", visitedNodes:["B","D"], traversedEdges:[["A","B"],["B","D"]], callStack:["main() root","inorder(A)","inorder(B)"], action:"<strong>inorder(D)</strong> returned. <strong>inorder(B)</strong> complete. Returning to <strong>inorder(A)</strong>.", stepLabel:13 },
+  /* 14 */ { codeLines:[14], currentNode:"A", visitedNodes:["B","D"], traversedEdges:[["A","B"],["B","D"]], callStack:["main() root","inorder(A)"], action:"<strong>inorder(B)</strong> returned. <strong>inorder(A)</strong> resumes — next: visit(root).", stepLabel:14 },
+  /* 15 */ { codeLines:[14], currentNode:"A", visitedNodes:["B","D","A"], traversedEdges:[["A","B"],["B","D"]], callStack:["main() root","inorder(A)"], action:"<strong>Visit A</strong> — printf fires. Output: B D A", stepLabel:15 },
+  /* 16 */ { codeLines:[15], currentNode:"A", visitedNodes:["B","D","A"], traversedEdges:[["A","B"],["B","D"]], callStack:["main() root","inorder(A)"], action:"<strong>inorder(A)</strong> goes RIGHT. Calling <strong>inorder(C)</strong>.", stepLabel:16 },
+  /* 17 */ { codeLines:[10], currentNode:"C", visitedNodes:["B","D","A"], traversedEdges:[["A","B"],["B","D"],["A","C"]], callStack:["main() root","inorder(A)","inorder(C)"], action:"<strong>inorder(A)</strong> calls <strong>inorder(C)</strong>. root ≠ NULL.", stepLabel:17 },
+  /* 18 */ { codeLines:[13], currentNode:"C", visitedNodes:["B","D","A"], traversedEdges:[["A","B"],["B","D"],["A","C"]], callStack:["main() root","inorder(A)","inorder(C)"], action:"<strong>inorder(C)</strong> goes LEFT. Calling <strong>inorder(E)</strong>.", stepLabel:18 },
+  /* 19 */ { codeLines:[10], currentNode:"E", visitedNodes:["B","D","A"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"]], callStack:["main() root","inorder(A)","inorder(C)","inorder(E)"], action:"<strong>inorder(C)</strong> calls <strong>inorder(E)</strong>. root ≠ NULL.", stepLabel:19 },
+  /* 20 */ { codeLines:[13], currentNode:"E", visitedNodes:["B","D","A"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"]], callStack:["main() root","inorder(A)","inorder(C)","inorder(E)"], action:"<strong>inorder(E)</strong> checks LEFT. E.left = NULL ✓ — no recursive call.", stepLabel:20 },
+  /* 21 */ { codeLines:[14], currentNode:"E", visitedNodes:["B","D","A","E"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"]], callStack:["main() root","inorder(A)","inorder(C)","inorder(E)"], action:"<strong>Visit E</strong> — printf fires. Output: B D A E", stepLabel:21 },
+  /* 22 */ { codeLines:[15], currentNode:"E", visitedNodes:["B","D","A","E"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"]], callStack:["main() root","inorder(A)","inorder(C)","inorder(E)"], action:"<strong>inorder(E)</strong> checks RIGHT. E.right = NULL ✓ — no recursive call.", stepLabel:22 },
+  /* 23 */ { codeLines:[16], currentNode:"E", visitedNodes:["B","D","A","E"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"]], callStack:["main() root","inorder(A)","inorder(C)","inorder(E)"], action:"<strong>inorder(E)</strong> complete. Returning to <strong>inorder(C)</strong>.", stepLabel:23 },
+  /* 24 */ { codeLines:[14], currentNode:"C", visitedNodes:["B","D","A","E"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"]], callStack:["main() root","inorder(A)","inorder(C)"], action:"<strong>inorder(E)</strong> returned. <strong>inorder(C)</strong> resumes — next: visit(root).", stepLabel:24 },
+  /* 25 */ { codeLines:[14], currentNode:"C", visitedNodes:["B","D","A","E","C"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"]], callStack:["main() root","inorder(A)","inorder(C)"], action:"<strong>Visit C</strong> — printf fires. Output: B D A E C", stepLabel:25 },
+  /* 26 */ { codeLines:[15], currentNode:"C", visitedNodes:["B","D","A","E","C"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"]], callStack:["main() root","inorder(A)","inorder(C)"], action:"<strong>inorder(C)</strong> goes RIGHT. Calling <strong>inorder(F)</strong>.", stepLabel:26 },
+  /* 27 */ { codeLines:[10], currentNode:"F", visitedNodes:["B","D","A","E","C"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"],["C","F"]], callStack:["main() root","inorder(A)","inorder(C)","inorder(F)"], action:"<strong>inorder(C)</strong> calls <strong>inorder(F)</strong>. root ≠ NULL.", stepLabel:27 },
+  /* 28 */ { codeLines:[13], currentNode:"F", visitedNodes:["B","D","A","E","C"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"],["C","F"]], callStack:["main() root","inorder(A)","inorder(C)","inorder(F)"], action:"<strong>inorder(F)</strong> checks LEFT. F.left = NULL ✓ — no recursive call.", stepLabel:28 },
+  /* 29 */ { codeLines:[14], currentNode:"F", visitedNodes:["B","D","A","E","C","F"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"],["C","F"]], callStack:["main() root","inorder(A)","inorder(C)","inorder(F)"], action:"<strong>Visit F</strong> — printf fires. Output: B D A E C F", stepLabel:29 },
+  /* 30 */ { codeLines:[15], currentNode:"F", visitedNodes:["B","D","A","E","C","F"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"],["C","F"]], callStack:["main() root","inorder(A)","inorder(C)","inorder(F)"], action:"<strong>inorder(F)</strong> checks RIGHT. F.right = NULL ✓ — no recursive call.", stepLabel:30 },
+  /* 31 */ { codeLines:[16], currentNode:"F", visitedNodes:["B","D","A","E","C","F"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"],["C","F"]], callStack:["main() root","inorder(A)","inorder(C)","inorder(F)"], action:"<strong>inorder(F)</strong> complete. Returning to <strong>inorder(C)</strong>.", stepLabel:31 },
+  /* 32 */ { codeLines:[16], currentNode:"C", visitedNodes:["B","D","A","E","C","F"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"],["C","F"]], callStack:["main() root","inorder(A)","inorder(C)"], action:"<strong>inorder(F)</strong> returned. <strong>inorder(C)</strong> complete. Returning to <strong>inorder(A)</strong>.", stepLabel:32 },
+  /* 33 */ { codeLines:[16], currentNode:"A", visitedNodes:["B","D","A","E","C","F"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"],["C","F"]], callStack:["main() root","inorder(A)"], action:"<strong>inorder(C)</strong> returned. <strong>inorder(A)</strong> complete. Returning to <strong>main()</strong>.", stepLabel:33 },
+  /* 34 */ { codeLines:[22], currentNode:null, visitedNodes:["B","D","A","E","C","F"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"],["C","F"]], callStack:["main() root"], action:"<strong>inorder(A)</strong> returned to <strong>main()</strong>. Stack fully unwound. Returning 0.", stepLabel:34 },
+  /* 35 */ { codeLines:[22], currentNode:null, visitedNodes:["B","D","A","E","C","F"], traversedEdges:[["A","B"],["B","D"],["A","C"],["C","E"],["C","F"]], callStack:["main() root"], action:"<strong>Inorder traversal complete!</strong> Output: B → D → A → E → C → F", stepLabel:35, done:true }
 ];
 
 /* ══════════════════════════════════════════════════════════════
@@ -1377,24 +388,20 @@ const POSTORDER_STEPS = [
 ];
 
 /* ══════════════════════════════════════════════════════════════
-   INORDER ANIMATION STEPS (27 steps, parallel to INORDER_STEPS)
+/* ══════════════════════════════════════════════════════════════
+   INORDER ANIMATION STEPS — no NULL frames, B.right=D, 32 steps
+   visit order: B → D → A → E → C → F
 ══════════════════════════════════════════════════════════════ */
 
-/* BOX_DEFS for inorder call frames */
+/* BOX_DEFS for inorder call frames — NULL checks inline, no separate NULL boxes */
 const BOX_DEFS = {
   main: {
     id: "main",
     label: "main()",
     isMain: true,
     steps: [
-      {
-        id: "m1",
-        text: "inorder(root)"
-      },
-      {
-        id: "m2",
-        text: "return 0"
-      }
+      { id: "m1", text: "inorder(root)" },
+      { id: "m2", text: "return 0" }
     ]
   },
   a1: {
@@ -1402,26 +409,11 @@ const BOX_DEFS = {
     label: "inorder(A)",
     badge: "root=A",
     steps: [
-      {
-        id: "a1s1",
-        text: "if(root == NULL)"
-      },
-      {
-        id: "a1s2",
-        text: "inorder(root->left)"
-      },
-      {
-        id: "a1s3",
-        text: "visit(root) → A"
-      },
-      {
-        id: "a1s4",
-        text: "inorder(root->right)"
-      },
-      {
-        id: "a1s5",
-        text: "return"
-      }
+      { id: "a1s1", text: "if(root == NULL)" },
+      { id: "a1s2", text: "inorder(root->left)  // → B" },
+      { id: "a1s3", text: "visit(root) → A" },
+      { id: "a1s4", text: "inorder(root->right) // → C" },
+      { id: "a1s5", text: "return" }
     ]
   },
   a2: {
@@ -1429,42 +421,11 @@ const BOX_DEFS = {
     label: "inorder(B)",
     badge: "root=B",
     steps: [
-      {
-        id: "a2s1",
-        text: "if(root == NULL)"
-      },
-      {
-        id: "a2s2",
-        text: "inorder(root->left)"
-      },
-      {
-        id: "a2s3",
-        text: "visit(root) → B"
-      },
-      {
-        id: "a2s4",
-        text: "inorder(root->right)"
-      },
-      {
-        id: "a2s5",
-        text: "return"
-      }
-    ]
-  },
-  a3: {
-    id: "a3",
-    label: "inorder(NULL)",
-    badge: "root=NULL",
-    isNull: true,
-    steps: [
-      {
-        id: "a3s1",
-        text: "if(root == NULL) → YES"
-      },
-      {
-        id: "a3s2",
-        text: "return"
-      }
+      { id: "a2s1", text: "if(root == NULL)" },
+      { id: "a2s2", text: "inorder(root->left)  // NULL ✓" },
+      { id: "a2s3", text: "visit(root) → B" },
+      { id: "a2s4", text: "inorder(root->right) // → D" },
+      { id: "a2s5", text: "return" }
     ]
   },
   a4: {
@@ -1472,58 +433,11 @@ const BOX_DEFS = {
     label: "inorder(D)",
     badge: "root=D",
     steps: [
-      {
-        id: "a4s1",
-        text: "if(root == NULL)"
-      },
-      {
-        id: "a4s2",
-        text: "inorder(root->left)"
-      },
-      {
-        id: "a4s3",
-        text: "visit(root) → D"
-      },
-      {
-        id: "a4s4",
-        text: "inorder(root->right)"
-      },
-      {
-        id: "a4s5",
-        text: "return"
-      }
-    ]
-  },
-  a5: {
-    id: "a5",
-    label: "inorder(NULL)",
-    badge: "root=NULL",
-    isNull: true,
-    steps: [
-      {
-        id: "a5s1",
-        text: "if(root == NULL) → YES"
-      },
-      {
-        id: "a5s2",
-        text: "return"
-      }
-    ]
-  },
-  a6: {
-    id: "a6",
-    label: "inorder(NULL)",
-    badge: "root=NULL",
-    isNull: true,
-    steps: [
-      {
-        id: "a6s1",
-        text: "if(root == NULL) → YES"
-      },
-      {
-        id: "a6s2",
-        text: "return"
-      }
+      { id: "a4s1", text: "if(root == NULL)" },
+      { id: "a4s2", text: "inorder(root->left)  // NULL ✓" },
+      { id: "a4s3", text: "visit(root) → D" },
+      { id: "a4s4", text: "inorder(root->right) // NULL ✓" },
+      { id: "a4s5", text: "return" }
     ]
   },
   a7: {
@@ -1531,26 +445,11 @@ const BOX_DEFS = {
     label: "inorder(C)",
     badge: "root=C",
     steps: [
-      {
-        id: "a7s1",
-        text: "if(root == NULL)"
-      },
-      {
-        id: "a7s2",
-        text: "inorder(root->left)"
-      },
-      {
-        id: "a7s3",
-        text: "visit(root) → C"
-      },
-      {
-        id: "a7s4",
-        text: "inorder(root->right)"
-      },
-      {
-        id: "a7s5",
-        text: "return"
-      }
+      { id: "a7s1", text: "if(root == NULL)" },
+      { id: "a7s2", text: "inorder(root->left)  // → E" },
+      { id: "a7s3", text: "visit(root) → C" },
+      { id: "a7s4", text: "inorder(root->right) // → F" },
+      { id: "a7s5", text: "return" }
     ]
   },
   a8: {
@@ -1558,58 +457,11 @@ const BOX_DEFS = {
     label: "inorder(E)",
     badge: "root=E",
     steps: [
-      {
-        id: "a8s1",
-        text: "if(root == NULL)"
-      },
-      {
-        id: "a8s2",
-        text: "inorder(root->left)"
-      },
-      {
-        id: "a8s3",
-        text: "visit(root) → E"
-      },
-      {
-        id: "a8s4",
-        text: "inorder(root->right)"
-      },
-      {
-        id: "a8s5",
-        text: "return"
-      }
-    ]
-  },
-  a9: {
-    id: "a9",
-    label: "inorder(NULL)",
-    badge: "root=NULL",
-    isNull: true,
-    steps: [
-      {
-        id: "a9s1",
-        text: "if(root == NULL) → YES"
-      },
-      {
-        id: "a9s2",
-        text: "return"
-      }
-    ]
-  },
-  a10: {
-    id: "a10",
-    label: "inorder(NULL)",
-    badge: "root=NULL",
-    isNull: true,
-    steps: [
-      {
-        id: "a10s1",
-        text: "if(root == NULL) → YES"
-      },
-      {
-        id: "a10s2",
-        text: "return"
-      }
+      { id: "a8s1", text: "if(root == NULL)" },
+      { id: "a8s2", text: "inorder(root->left)  // NULL ✓" },
+      { id: "a8s3", text: "visit(root) → E" },
+      { id: "a8s4", text: "inorder(root->right) // NULL ✓" },
+      { id: "a8s5", text: "return" }
     ]
   },
   a11: {
@@ -1617,1397 +469,87 @@ const BOX_DEFS = {
     label: "inorder(F)",
     badge: "root=F",
     steps: [
-      {
-        id: "a11s1",
-        text: "if(root == NULL)"
-      },
-      {
-        id: "a11s2",
-        text: "inorder(root->left)"
-      },
-      {
-        id: "a11s3",
-        text: "visit(root) → F"
-      },
-      {
-        id: "a11s4",
-        text: "inorder(root->right)"
-      },
-      {
-        id: "a11s5",
-        text: "return"
-      }
-    ]
-  },
-  a12: {
-    id: "a12",
-    label: "inorder(NULL)",
-    badge: "root=NULL",
-    isNull: true,
-    steps: [
-      {
-        id: "a12s1",
-        text: "if(root == NULL) → YES"
-      },
-      {
-        id: "a12s2",
-        text: "return"
-      }
-    ]
-  },
-  a13: {
-    id: "a13",
-    label: "inorder(NULL)",
-    badge: "root=NULL",
-    isNull: true,
-    steps: [
-      {
-        id: "a13s1",
-        text: "if(root == NULL) → YES"
-      },
-      {
-        id: "a13s2",
-        text: "return"
-      }
+      { id: "a11s1", text: "if(root == NULL)" },
+      { id: "a11s2", text: "inorder(root->left)  // NULL ✓" },
+      { id: "a11s3", text: "visit(root) → F" },
+      { id: "a11s4", text: "inorder(root->right) // NULL ✓" },
+      { id: "a11s5", text: "return" }
     ]
   }
 };
 
 const ALL_ANIM_BOX_IDS = Object.keys(BOX_DEFS);
-
 const INORDER_ANIM_STEPS = [
-  {
-    boxes: [
-      "main"
-    ],
-    activeBox: "main",
-    activeStep: 0,
-    dimmed: [],
-    hidden: [
-      "a1",
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a7",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: null,
-    panTo: "main",
-    expl: "Program starts. main() about to call inorder(root)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1"
-    ],
-    activeBox: "a1",
-    activeStep: 0,
-    dimmed: [
-      "main"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a7",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "call",
-      fromBox: "main",
-      fromStep: 0,
-      toBox: "a1",
-      toStep: 0
-    },
-    linkArrow: {
-      fromBox: "main",
-      fromStep: 0,
-      toBox: "a1"
-    },
-    panTo: "a1",
-    expl: "main() calls inorder(A)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1"
-    ],
-    activeBox: "a1",
-    activeStep: 2,
-    dimmed: [
-      "main"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a7",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "main",
-      fromStep: 0,
-      toBox: "a1"
-    },
-    panTo: "a1",
-    expl: "Visit A — printf fires. Output: A"
-  },
-  {
-    boxes: [
-      "main",
-      "a1"
-    ],
-    activeBox: "a1",
-    activeStep: 3,
-    dimmed: [
-      "main"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a7",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "main",
-      fromStep: 0,
-      toBox: "a1"
-    },
-    panTo: "a1",
-    expl: "inorder(A) goes RIGHT."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    activeBox: "a7",
-    activeStep: 0,
-    dimmed: [
-      "main",
-      "a1"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "call",
-      fromBox: "a1",
-      fromStep: 3,
-      toBox: "a7",
-      toStep: 0
-    },
-    linkArrow: {
-      fromBox: "a1",
-      fromStep: 3,
-      toBox: "a7"
-    },
-    panTo: "a7",
-    expl: "inorder(A) calls inorder(C)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    activeBox: "a7",
-    activeStep: 1,
-    dimmed: [
-      "main",
-      "a1"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a1",
-      fromStep: 3,
-      toBox: "a7"
-    },
-    panTo: "a7",
-    expl: "inorder(C) goes LEFT."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    activeBox: "a8",
-    activeStep: 0,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "call",
-      fromBox: "a7",
-      fromStep: 1,
-      toBox: "a8",
-      toStep: 0
-    },
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 1,
-      toBox: "a8"
-    },
-    panTo: "a8",
-    expl: "inorder(C) calls inorder(E)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    activeBox: "a8",
-    activeStep: 1,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 1,
-      toBox: "a8"
-    },
-    panTo: "a8",
-    expl: "inorder(E) goes LEFT."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8",
-      "a9"
-    ],
-    activeBox: "a9",
-    activeStep: 0,
-    dimmed: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "call",
-      fromBox: "a8",
-      fromStep: 1,
-      toBox: "a9",
-      toStep: 0
-    },
-    linkArrow: {
-      fromBox: "a8",
-      fromStep: 1,
-      toBox: "a9"
-    },
-    panTo: "a9",
-    expl: "inorder(E) calls inorder(NULL)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8",
-      "a9"
-    ],
-    activeBox: "a9",
-    activeStep: 1,
-    dimmed: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a8",
-      fromStep: 1,
-      toBox: "a9"
-    },
-    panTo: "a9",
-    expl: "inorder(NULL) hits base case (root == NULL). Returning."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    activeBox: "a8",
-    activeStep: 1,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "ret",
-      fromBox: "a9",
-      fromStep: 1,
-      toBox: "a8",
-      toStep: 1
-    },
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 1,
-      toBox: "a8"
-    },
-    panTo: "a8",
-    expl: "inorder(NULL) returns to inorder(E)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    activeBox: "a8",
-    activeStep: 2,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 1,
-      toBox: "a8"
-    },
-    panTo: "a8",
-    expl: "Visit E — printf fires. Output: A E"
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    activeBox: "a8",
-    activeStep: 3,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 1,
-      toBox: "a8"
-    },
-    panTo: "a8",
-    expl: "inorder(E) goes RIGHT."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8",
-      "a10"
-    ],
-    activeBox: "a10",
-    activeStep: 0,
-    dimmed: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a9",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "call",
-      fromBox: "a8",
-      fromStep: 3,
-      toBox: "a10",
-      toStep: 0
-    },
-    linkArrow: {
-      fromBox: "a8",
-      fromStep: 3,
-      toBox: "a10"
-    },
-    panTo: "a10",
-    expl: "inorder(E) calls inorder(NULL)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8",
-      "a10"
-    ],
-    activeBox: "a10",
-    activeStep: 1,
-    dimmed: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a9",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a8",
-      fromStep: 3,
-      toBox: "a10"
-    },
-    panTo: "a10",
-    expl: "inorder(NULL) hits base case (root == NULL). Returning."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    activeBox: "a8",
-    activeStep: 3,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "ret",
-      fromBox: "a10",
-      fromStep: 1,
-      toBox: "a8",
-      toStep: 3
-    },
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 1,
-      toBox: "a8"
-    },
-    panTo: "a8",
-    expl: "inorder(NULL) returns to inorder(E)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a8"
-    ],
-    activeBox: "a8",
-    activeStep: 4,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 1,
-      toBox: "a8"
-    },
-    panTo: "a8",
-    expl: "inorder(E) complete. Returning."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    activeBox: "a7",
-    activeStep: 1,
-    dimmed: [
-      "main",
-      "a1"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "ret",
-      fromBox: "a8",
-      fromStep: 4,
-      toBox: "a7",
-      toStep: 1
-    },
-    linkArrow: {
-      fromBox: "a1",
-      fromStep: 3,
-      toBox: "a7"
-    },
-    panTo: "a7",
-    expl: "inorder(E) returns to inorder(C)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    activeBox: "a7",
-    activeStep: 2,
-    dimmed: [
-      "main",
-      "a1"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a1",
-      fromStep: 3,
-      toBox: "a7"
-    },
-    panTo: "a7",
-    expl: "Visit C — printf fires. Output: A E C"
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    activeBox: "a7",
-    activeStep: 3,
-    dimmed: [
-      "main",
-      "a1"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a1",
-      fromStep: 3,
-      toBox: "a7"
-    },
-    panTo: "a7",
-    expl: "inorder(C) goes RIGHT."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    activeBox: "a11",
-    activeStep: 0,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "call",
-      fromBox: "a7",
-      fromStep: 3,
-      toBox: "a11",
-      toStep: 0
-    },
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 3,
-      toBox: "a11"
-    },
-    panTo: "a11",
-    expl: "inorder(C) calls inorder(F)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    activeBox: "a11",
-    activeStep: 1,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 3,
-      toBox: "a11"
-    },
-    panTo: "a11",
-    expl: "inorder(F) goes LEFT."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11",
-      "a12"
-    ],
-    activeBox: "a12",
-    activeStep: 0,
-    dimmed: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a13"
-    ],
-    arrow: {
-      type: "call",
-      fromBox: "a11",
-      fromStep: 1,
-      toBox: "a12",
-      toStep: 0
-    },
-    linkArrow: {
-      fromBox: "a11",
-      fromStep: 1,
-      toBox: "a12"
-    },
-    panTo: "a12",
-    expl: "inorder(F) calls inorder(NULL)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11",
-      "a12"
-    ],
-    activeBox: "a12",
-    activeStep: 1,
-    dimmed: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a11",
-      fromStep: 1,
-      toBox: "a12"
-    },
-    panTo: "a12",
-    expl: "inorder(NULL) hits base case (root == NULL). Returning."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    activeBox: "a11",
-    activeStep: 1,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "ret",
-      fromBox: "a12",
-      fromStep: 1,
-      toBox: "a11",
-      toStep: 1
-    },
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 3,
-      toBox: "a11"
-    },
-    panTo: "a11",
-    expl: "inorder(NULL) returns to inorder(F)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    activeBox: "a11",
-    activeStep: 2,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 3,
-      toBox: "a11"
-    },
-    panTo: "a11",
-    expl: "Visit F — printf fires. Output: A E C F"
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    activeBox: "a11",
-    activeStep: 3,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 3,
-      toBox: "a11"
-    },
-    panTo: "a11",
-    expl: "inorder(F) goes RIGHT."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11",
-      "a13"
-    ],
-    activeBox: "a13",
-    activeStep: 0,
-    dimmed: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a12"
-    ],
-    arrow: {
-      type: "call",
-      fromBox: "a11",
-      fromStep: 3,
-      toBox: "a13",
-      toStep: 0
-    },
-    linkArrow: {
-      fromBox: "a11",
-      fromStep: 3,
-      toBox: "a13"
-    },
-    panTo: "a13",
-    expl: "inorder(F) calls inorder(NULL)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11",
-      "a13"
-    ],
-    activeBox: "a13",
-    activeStep: 1,
-    dimmed: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a12"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a11",
-      fromStep: 3,
-      toBox: "a13"
-    },
-    panTo: "a13",
-    expl: "inorder(NULL) hits base case (root == NULL). Returning."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    activeBox: "a11",
-    activeStep: 3,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "ret",
-      fromBox: "a13",
-      fromStep: 1,
-      toBox: "a11",
-      toStep: 3
-    },
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 3,
-      toBox: "a11"
-    },
-    panTo: "a11",
-    expl: "inorder(NULL) returns to inorder(F)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7",
-      "a11"
-    ],
-    activeBox: "a11",
-    activeStep: 4,
-    dimmed: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a7",
-      fromStep: 3,
-      toBox: "a11"
-    },
-    panTo: "a11",
-    expl: "inorder(F) complete. Returning."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    activeBox: "a7",
-    activeStep: 3,
-    dimmed: [
-      "main",
-      "a1"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "ret",
-      fromBox: "a11",
-      fromStep: 4,
-      toBox: "a7",
-      toStep: 3
-    },
-    linkArrow: {
-      fromBox: "a1",
-      fromStep: 3,
-      toBox: "a7"
-    },
-    panTo: "a7",
-    expl: "inorder(F) returns to inorder(C)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1",
-      "a7"
-    ],
-    activeBox: "a7",
-    activeStep: 4,
-    dimmed: [
-      "main",
-      "a1"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "a1",
-      fromStep: 3,
-      toBox: "a7"
-    },
-    panTo: "a7",
-    expl: "inorder(C) complete. Returning."
-  },
-  {
-    boxes: [
-      "main",
-      "a1"
-    ],
-    activeBox: "a1",
-    activeStep: 3,
-    dimmed: [
-      "main"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a7",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "ret",
-      fromBox: "a7",
-      fromStep: 4,
-      toBox: "a1",
-      toStep: 3
-    },
-    linkArrow: {
-      fromBox: "main",
-      fromStep: 0,
-      toBox: "a1"
-    },
-    panTo: "a1",
-    expl: "inorder(C) returns to inorder(A)."
-  },
-  {
-    boxes: [
-      "main",
-      "a1"
-    ],
-    activeBox: "a1",
-    activeStep: 4,
-    dimmed: [
-      "main"
-    ],
-    hidden: [
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a7",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: null,
-    linkArrow: {
-      fromBox: "main",
-      fromStep: 0,
-      toBox: "a1"
-    },
-    panTo: "a1",
-    expl: "inorder(A) complete. Returning."
-  },
-  {
-    boxes: [
-      "main"
-    ],
-    activeBox: "main",
-    activeStep: 1,
-    dimmed: [],
-    hidden: [
-      "a1",
-      "a2",
-      "a3",
-      "a4",
-      "a5",
-      "a6",
-      "a7",
-      "a8",
-      "a9",
-      "a10",
-      "a11",
-      "a12",
-      "a13"
-    ],
-    arrow: {
-      type: "ret",
-      fromBox: "a1",
-      fromStep: 4,
-      toBox: "main",
-      toStep: 0
-    },
-    linkArrow: null,
-    panTo: "main",
-    expl: "All frames unwind. Inorder traversal complete!",
-    done: true
-  }
+  /* step 1 — program start */
+  { boxes:["main"], activeBox:"main", activeStep:0, dimmed:[], hidden:["a1","a2","a4","a7","a8","a11"], arrow:null, linkArrow:null, panTo:"main", expl:"Program starts." },
+  /* step 2 — inorder(A) called */
+  { boxes:["main","a1"], activeBox:"a1", activeStep:0, dimmed:["main"], hidden:["a2","a4","a7","a8","a11"], arrow:{type:"call",fromBox:"main",fromStep:0,toBox:"a1",toStep:0}, linkArrow:{fromBox:"main",fromStep:0,toBox:"a1"}, panTo:"a1", expl:"inorder(A) called. root ≠ NULL." },
+  /* step 3 — inorder(A) goes LEFT → calls inorder(B) */
+  { boxes:["main","a1"], activeBox:"a1", activeStep:1, dimmed:["main"], hidden:["a2","a4","a7","a8","a11"], arrow:null, linkArrow:{fromBox:"main",fromStep:0,toBox:"a1"}, panTo:"a1", expl:"inorder(A) goes LEFT." },
+  /* step 4 — inorder(B) called */
+  { boxes:["main","a1","a2"], activeBox:"a2", activeStep:0, dimmed:["main","a1"], hidden:["a4","a7","a8","a11"], arrow:{type:"call",fromBox:"a1",fromStep:1,toBox:"a2",toStep:0}, linkArrow:{fromBox:"a1",fromStep:1,toBox:"a2"}, panTo:"a2", expl:"inorder(B) called. root ≠ NULL." },
+  /* step 5 — inorder(B): B.left=NULL, inline null check, no new frame */
+  { boxes:["main","a1","a2"], activeBox:"a2", activeStep:1, dimmed:["main","a1"], hidden:["a4","a7","a8","a11"], arrow:null, linkArrow:{fromBox:"a1",fromStep:1,toBox:"a2"}, panTo:"a2", expl:"B.left = NULL ✓ — null check inline, no recursive call." },
+  /* step 6 — Visit B */
+  { boxes:["main","a1","a2"], activeBox:"a2", activeStep:2, dimmed:["main","a1"], hidden:["a4","a7","a8","a11"], arrow:null, linkArrow:{fromBox:"a1",fromStep:1,toBox:"a2"}, panTo:"a2", expl:"Visit B — printf fires. Output: B" },
+  /* step 7 — inorder(B) goes RIGHT → calls inorder(D) */
+  { boxes:["main","a1","a2"], activeBox:"a2", activeStep:3, dimmed:["main","a1"], hidden:["a4","a7","a8","a11"], arrow:null, linkArrow:{fromBox:"a1",fromStep:1,toBox:"a2"}, panTo:"a2", expl:"B.right = D. inorder(B) goes RIGHT." },
+  /* step 8 — inorder(D) called */
+  { boxes:["main","a1","a2","a4"], activeBox:"a4", activeStep:0, dimmed:["main","a1","a2"], hidden:["a7","a8","a11"], arrow:{type:"call",fromBox:"a2",fromStep:3,toBox:"a4",toStep:0}, linkArrow:{fromBox:"a2",fromStep:3,toBox:"a4"}, panTo:"a4", expl:"inorder(D) called. root ≠ NULL." },
+  /* step 9 — inorder(D): D.left=NULL inline */
+  { boxes:["main","a1","a2","a4"], activeBox:"a4", activeStep:1, dimmed:["main","a1","a2"], hidden:["a7","a8","a11"], arrow:null, linkArrow:{fromBox:"a2",fromStep:3,toBox:"a4"}, panTo:"a4", expl:"D.left = NULL ✓ — null check inline." },
+  /* step 10 — Visit D */
+  { boxes:["main","a1","a2","a4"], activeBox:"a4", activeStep:2, dimmed:["main","a1","a2"], hidden:["a7","a8","a11"], arrow:null, linkArrow:{fromBox:"a2",fromStep:3,toBox:"a4"}, panTo:"a4", expl:"Visit D — printf fires. Output: B D" },
+  /* step 11 — inorder(D): D.right=NULL inline */
+  { boxes:["main","a1","a2","a4"], activeBox:"a4", activeStep:3, dimmed:["main","a1","a2"], hidden:["a7","a8","a11"], arrow:null, linkArrow:{fromBox:"a2",fromStep:3,toBox:"a4"}, panTo:"a4", expl:"D.right = NULL ✓ — null check inline." },
+  /* step 12 — inorder(D) return */
+  { boxes:["main","a1","a2","a4"], activeBox:"a4", activeStep:4, dimmed:["main","a1","a2"], hidden:["a7","a8","a11"], arrow:null, linkArrow:{fromBox:"a2",fromStep:3,toBox:"a4"}, panTo:"a4", expl:"inorder(D) complete. return." },
+  /* step 13 — inorder(D) returns to inorder(B), B complete, return */
+  { boxes:["main","a1","a2"], activeBox:"a2", activeStep:4, dimmed:["main","a1"], hidden:["a4","a7","a8","a11"], arrow:{type:"ret",fromBox:"a4",fromStep:4,toBox:"a2",toStep:3}, linkArrow:{fromBox:"a1",fromStep:1,toBox:"a2"}, panTo:"a2", expl:"inorder(D) returned. inorder(B) complete. return." },
+  /* step 14 — inorder(B) returns to inorder(A), resumes at visit(root) */
+  { boxes:["main","a1"], activeBox:"a1", activeStep:2, dimmed:["main"], hidden:["a2","a4","a7","a8","a11"], arrow:{type:"ret",fromBox:"a2",fromStep:4,toBox:"a1",toStep:2}, linkArrow:{fromBox:"main",fromStep:0,toBox:"a1"}, panTo:"a1", expl:"inorder(B) returned. inorder(A) resumes — next: visit(root)." },
+  /* step 15 — Visit A */
+  { boxes:["main","a1"], activeBox:"a1", activeStep:2, dimmed:["main"], hidden:["a2","a4","a7","a8","a11"], arrow:null, linkArrow:{fromBox:"main",fromStep:0,toBox:"a1"}, panTo:"a1", expl:"Visit A — printf fires. Output: B D A" },
+  /* step 16 — inorder(A) goes RIGHT */
+  { boxes:["main","a1"], activeBox:"a1", activeStep:3, dimmed:["main"], hidden:["a2","a4","a7","a8","a11"], arrow:null, linkArrow:{fromBox:"main",fromStep:0,toBox:"a1"}, panTo:"a1", expl:"A.right = C. inorder(A) goes RIGHT." },
+  /* step 17 — inorder(C) called */
+  { boxes:["main","a1","a7"], activeBox:"a7", activeStep:0, dimmed:["main","a1"], hidden:["a2","a4","a8","a11"], arrow:{type:"call",fromBox:"a1",fromStep:3,toBox:"a7",toStep:0}, linkArrow:{fromBox:"a1",fromStep:3,toBox:"a7"}, panTo:"a7", expl:"inorder(C) called. root ≠ NULL." },
+  /* step 18 — inorder(C) goes LEFT */
+  { boxes:["main","a1","a7"], activeBox:"a7", activeStep:1, dimmed:["main","a1"], hidden:["a2","a4","a8","a11"], arrow:null, linkArrow:{fromBox:"a1",fromStep:3,toBox:"a7"}, panTo:"a7", expl:"C.left = E. inorder(C) goes LEFT." },
+  /* step 19 — inorder(E) called */
+  { boxes:["main","a1","a7","a8"], activeBox:"a8", activeStep:0, dimmed:["main","a1","a7"], hidden:["a2","a4","a11"], arrow:{type:"call",fromBox:"a7",fromStep:1,toBox:"a8",toStep:0}, linkArrow:{fromBox:"a7",fromStep:1,toBox:"a8"}, panTo:"a8", expl:"inorder(E) called. root ≠ NULL." },
+  /* step 20 — inorder(E): E.left=NULL inline */
+  { boxes:["main","a1","a7","a8"], activeBox:"a8", activeStep:1, dimmed:["main","a1","a7"], hidden:["a2","a4","a11"], arrow:null, linkArrow:{fromBox:"a7",fromStep:1,toBox:"a8"}, panTo:"a8", expl:"E.left = NULL ✓ — null check inline." },
+  /* step 21 — Visit E */
+  { boxes:["main","a1","a7","a8"], activeBox:"a8", activeStep:2, dimmed:["main","a1","a7"], hidden:["a2","a4","a11"], arrow:null, linkArrow:{fromBox:"a7",fromStep:1,toBox:"a8"}, panTo:"a8", expl:"Visit E — printf fires. Output: B D A E" },
+  /* step 22 — inorder(E): E.right=NULL inline */
+  { boxes:["main","a1","a7","a8"], activeBox:"a8", activeStep:3, dimmed:["main","a1","a7"], hidden:["a2","a4","a11"], arrow:null, linkArrow:{fromBox:"a7",fromStep:1,toBox:"a8"}, panTo:"a8", expl:"E.right = NULL ✓ — null check inline." },
+  /* step 23 — inorder(E) return */
+  { boxes:["main","a1","a7","a8"], activeBox:"a8", activeStep:4, dimmed:["main","a1","a7"], hidden:["a2","a4","a11"], arrow:null, linkArrow:{fromBox:"a7",fromStep:1,toBox:"a8"}, panTo:"a8", expl:"inorder(E) complete. return." },
+  /* step 24 — inorder(E) returns to inorder(C), resumes at visit(root) */
+  { boxes:["main","a1","a7"], activeBox:"a7", activeStep:2, dimmed:["main","a1"], hidden:["a2","a4","a8","a11"], arrow:{type:"ret",fromBox:"a8",fromStep:4,toBox:"a7",toStep:2}, linkArrow:{fromBox:"a1",fromStep:3,toBox:"a7"}, panTo:"a7", expl:"inorder(E) returned. inorder(C) resumes — next: visit(root)." },
+  /* step 25 — Visit C */
+  { boxes:["main","a1","a7"], activeBox:"a7", activeStep:2, dimmed:["main","a1"], hidden:["a2","a4","a8","a11"], arrow:null, linkArrow:{fromBox:"a1",fromStep:3,toBox:"a7"}, panTo:"a7", expl:"Visit C — printf fires. Output: B D A E C" },
+  /* step 26 — inorder(C) goes RIGHT */
+  { boxes:["main","a1","a7"], activeBox:"a7", activeStep:3, dimmed:["main","a1"], hidden:["a2","a4","a8","a11"], arrow:null, linkArrow:{fromBox:"a1",fromStep:3,toBox:"a7"}, panTo:"a7", expl:"C.right = F. inorder(C) goes RIGHT." },
+  /* step 27 — inorder(F) called */
+  { boxes:["main","a1","a7","a11"], activeBox:"a11", activeStep:0, dimmed:["main","a1","a7"], hidden:["a2","a4","a8"], arrow:{type:"call",fromBox:"a7",fromStep:3,toBox:"a11",toStep:0}, linkArrow:{fromBox:"a7",fromStep:3,toBox:"a11"}, panTo:"a11", expl:"inorder(F) called. root ≠ NULL." },
+  /* step 28 — inorder(F): F.left=NULL inline */
+  { boxes:["main","a1","a7","a11"], activeBox:"a11", activeStep:1, dimmed:["main","a1","a7"], hidden:["a2","a4","a8"], arrow:null, linkArrow:{fromBox:"a7",fromStep:3,toBox:"a11"}, panTo:"a11", expl:"F.left = NULL ✓ — null check inline." },
+  /* step 29 — Visit F */
+  { boxes:["main","a1","a7","a11"], activeBox:"a11", activeStep:2, dimmed:["main","a1","a7"], hidden:["a2","a4","a8"], arrow:null, linkArrow:{fromBox:"a7",fromStep:3,toBox:"a11"}, panTo:"a11", expl:"Visit F — printf fires. Output: B D A E C F" },
+  /* step 30 — inorder(F): F.right=NULL inline */
+  { boxes:["main","a1","a7","a11"], activeBox:"a11", activeStep:3, dimmed:["main","a1","a7"], hidden:["a2","a4","a8"], arrow:null, linkArrow:{fromBox:"a7",fromStep:3,toBox:"a11"}, panTo:"a11", expl:"F.right = NULL ✓ — null check inline." },
+  /* step 31 — inorder(F) return, unwind chain */
+  { boxes:["main","a1","a7","a11"], activeBox:"a11", activeStep:4, dimmed:["main","a1","a7"], hidden:["a2","a4","a8"], arrow:null, linkArrow:{fromBox:"a7",fromStep:3,toBox:"a11"}, panTo:"a11", expl:"inorder(F) complete. return." },
+  /* step 32 — inorder(F) returns to inorder(C) */
+  { boxes:["main","a1","a7"], activeBox:"a7", activeStep:4, dimmed:["main","a1"], hidden:["a2","a4","a8","a11"], arrow:{type:"ret",fromBox:"a11",fromStep:4,toBox:"a7",toStep:4}, linkArrow:{fromBox:"a1",fromStep:3,toBox:"a7"}, panTo:"a7", expl:"inorder(F) returned. inorder(C) complete. return." },
+  /* step 33 — inorder(C) returns to inorder(A) */
+  { boxes:["main","a1"], activeBox:"a1", activeStep:4, dimmed:["main"], hidden:["a2","a4","a7","a8","a11"], arrow:{type:"ret",fromBox:"a7",fromStep:4,toBox:"a1",toStep:4}, linkArrow:{fromBox:"main",fromStep:0,toBox:"a1"}, panTo:"a1", expl:"inorder(C) returned. inorder(A) complete. return." },
+  /* step 34 — inorder(A) returns to main */
+  { boxes:["main"], activeBox:"main", activeStep:1, dimmed:[], hidden:["a1","a2","a4","a7","a8","a11"], arrow:{type:"ret",fromBox:"a1",fromStep:4,toBox:"main",toStep:1}, linkArrow:null, panTo:"main", expl:"inorder(A) returned to main(). Stack fully unwound." },
+  /* step 35 — done */
+  { boxes:["main"], activeBox:"main", activeStep:1, dimmed:[], hidden:["a1","a2","a4","a7","a8","a11"], arrow:null, linkArrow:null, panTo:"main", expl:"Inorder traversal complete! Output: B → D → A → E → C → F", done:true }
 ];
 
 /* ══════════════════════════════════════════════════════════════
@@ -3108,6 +650,16 @@ function buildTreeSVG() {
     text.setAttribute('fill', '#0f172a');
     text.textContent = id;
 
+    const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    glow.setAttribute('id', `glow-${id}`);
+    glow.setAttribute('cx', pos.x);
+    glow.setAttribute('cy', pos.y);
+    glow.setAttribute('r', 22);
+    glow.setAttribute('class', 'tree-node-glow');
+    glow.setAttribute('fill', 'none');
+    glow.setAttribute('pointer-events', 'none');
+
+    g.appendChild(glow);
     g.appendChild(circle);
     g.appendChild(text);
     elTreeNodes.appendChild(g);
@@ -3115,90 +667,57 @@ function buildTreeSVG() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   ANIMATION PANEL — VERTICAL CALL STACK
-   Boxes stack downward: main at top, children below.
-   Layout: depth-based top, centered left.
+   ANIMATION PANEL — DIAGONAL CASCADE (mirrors binary-trees)
+   Each child box is offset right + below its parent.
+   left = CANVAS_LEFT_PAD + depth * BOX_GAP_H
+   top  = parentTop + parentHeight + BOX_GAP_V
 ══════════════════════════════════════════════════════════════ */
 
-const BOX_WIDTH      = 236;
-const BOX_GAP_V      = 32;    /* vertical gap between parent and child */
-const BOX_GAP_H      = 0;     /* boxes are centered (not left-cascaded), kept for setOffsets canvasW calc */
-const CANVAS_TOP_PAD = 24;
-const CANVAS_LEFT_PAD = 0;    /* boxes are centered; used only for canvasW bounds in setOffsets */
+const BOX_WIDTH      = 240;
+const BOX_GAP_H      = 60;   /* horizontal indent per depth level */
+const BOX_GAP_V      = 32;   /* vertical gap between parent bottom and child top */
+const CANVAS_LEFT_PAD = 40;
 
-/* Depth in call chain — determines vertical position */
+/* Depth in call chain — determines left offset */
 const BOX_DEPTH = {
   main: 0,
-  a1: 1,
-  a2: 2,
-  a3: 3,
-  a4: 3,
-  a5: 4,
-  a6: 4,
-  a7: 2,
-  a8: 3,
-  a9: 4,
-  a10: 4,
-  a11: 3,
-  a12: 4,
-  a13: 4
+  a1: 1,   /* inorder(A) */
+  a2: 2,   /* inorder(B) */
+  a4: 3,   /* inorder(D) — right child of B */
+  a7: 2,   /* inorder(C) */
+  a8: 3,   /* inorder(E) */
+  a11: 3   /* inorder(F) */
 };
 
 /* Parent map for computing top position */
 const BOX_PARENT_OF = {
   a1: "main",
   a2: "a1",
-  a3: "a2",
-  a4: "a2",
-  a5: "a4",
-  a6: "a4",
+  a4: "a2",   /* D is right child of B */
   a7: "a1",
   a8: "a7",
-  a9: "a8",
-  a10: "a8",
-  a11: "a7",
-  a12: "a11",
-  a13: "a11"
+  a11: "a7"
 };
 
-/* Which step index in parent called this box (for ancestor link chain) */
-const CALL_STEP_OF = {
-  a1:  0,   /* main step 0 = inorder(root) */
-  a2:  1,   /* a1 step 1 = inorder(root->left) */
-  a3:  1,   /* a2 step 1 */
-  a4:  1,   /* a2 step 1 (same) */
-  a5:  1,   /* a4 step 1 */
-  a6:  3,   /* a4 step 3 = inorder(root->right) */
-  a7:  3,   /* a1 step 3 = inorder(root->right) */
-  a8:  1,   /* a7 step 1 */
-  a9:  1,   /* a8 step 1 */
-  a10: 3,   /* a8 step 3 */
-  a11: 3,   /* a7 step 3 */
-  a12: 1,   /* a11 step 1 */
-  a13: 3    /* a11 step 3 */
-};
-
-/* Estimated box height: header ~36px + steps*28px + padding 12px */
+/* Estimated box height: header ~40px + steps*28px + padding 16px */
 function estimatedBoxHeight(id) {
   const def = BOX_DEFS[id];
   if (!def) return 60;
-  return 36 + def.steps.length * 28 + 12;
+  return 40 + def.steps.length * 28 + 16;
 }
 
-/* Compute top of box based on parent chain */
+/* Left position: diagonal cascade — depth*BOX_GAP_H from left pad */
+function computeBoxLeft(id) {
+  return CANVAS_LEFT_PAD + BOX_DEPTH[id] * BOX_GAP_H;
+}
+
+/* Top position: parent's top + parent's height + gap */
 function computeBoxTop(id) {
   const parentId = BOX_PARENT_OF[id];
-  if (!parentId) return CANVAS_TOP_PAD; /* main at top */
+  if (!parentId) return 40; /* main starts at top */
   const parentTop = computeBoxTop(parentId);
   const parentH   = estimatedBoxHeight(parentId);
   return parentTop + parentH + BOX_GAP_V;
-}
-
-/* Centered left in viewport */
-function computeBoxLeft(id) {
-  if (!animViewport) return 20;
-  const vpW = animViewport.offsetWidth;
-  return Math.max(20, (vpW / 2) - (BOX_WIDTH / 2));
 }
 
 const boxEls = {};
@@ -3210,14 +729,12 @@ function buildBox(id) {
   const el = document.createElement('div');
   el.className = 'call-box';
   el.id = 'box-' + id;
-  /* Position set by JS — top based on depth chain, left centered */
-  el.style.top  = computeBoxTop(id) + 'px';
   el.style.left = computeBoxLeft(id) + 'px';
-  el.style.width = BOX_WIDTH + 'px';
+  el.style.top  = computeBoxTop(id) + 'px';
   el.style.display = 'none';
 
   const nameClass = def.isMain ? 'is-main' : '';
-  const badgeCls  = def.isMain ? 'main-badge' : '';
+  const badgeCls  = def.isNull ? 'null-badge' : (def.isMain ? 'main-badge' : '');
 
   el.innerHTML =
     `<div class="box-header">` +
@@ -3238,30 +755,31 @@ function buildBox(id) {
 }
 
 function buildAllBoxes() {
+  if (!animCanvas) return;
+  /* Canvas must be absolute-positioned wide canvas like binary-trees */
+  animCanvas.style.position = 'absolute';
+  animCanvas.style.top = '0';
+  animCanvas.style.left = '0';
+  animCanvas.style.width = '3000px';
   ALL_ANIM_BOX_IDS.forEach(buildBox);
-  /* Set canvas min-height to fit all boxes */
   updateCanvasHeight();
 }
 
 function updateCanvasHeight() {
   if (!animCanvas) return;
-  const maxDepth = Math.max(...ALL_ANIM_BOX_IDS.map(id => BOX_DEPTH[id]));
-  /* Estimate total height needed */
-  let maxBottom = CANVAS_TOP_PAD;
+  let maxBottom = 40;
   ALL_ANIM_BOX_IDS.forEach(id => {
     const t = computeBoxTop(id);
     const h = estimatedBoxHeight(id);
     if (t + h > maxBottom) maxBottom = t + h;
   });
-  animCanvas.style.minHeight = (maxBottom + 80) + 'px';
+  animCanvas.style.height = Math.max(1200, maxBottom + 120) + 'px';
+  animCanvas.style.minHeight = '';
 }
 
-/* Reposition boxes on resize (left changes when viewport width changes) */
+/* In diagonal layout, positions are fixed — no resize repositioning needed */
 function repositionBoxes() {
-  ALL_ANIM_BOX_IDS.forEach(id => {
-    const el = boxEls[id];
-    if (el) el.style.left = computeBoxLeft(id) + 'px';
-  });
+  /* No-op: left is depth-based, not viewport-width-based */
 }
 
 /* ── Visibility + highlight ── */
@@ -3288,7 +806,10 @@ function setBoxVisibility(as) {
       const isActive = id === as.activeBox;
       const isDimmed = dimmedIds.includes(id);
       el.classList.toggle('active-box', isActive);
-      el.classList.toggle('dimmed', isDimmed && !isActive);
+      /* Subtle dimming only — older frames stay nearly fully visible */
+      el.classList.remove('dimmed');
+      el.style.opacity = (isDimmed && !isActive) ? '0.82' : '';
+      el.style.filter  = '';
       if (wasHidden) {
         el.classList.remove('box-fadein');
         void el.offsetWidth;
@@ -3310,124 +831,106 @@ function setBoxStepHighlight(as) {
   });
 }
 
-/* ── 2D pan ── */
-/* Compute current offsets from canvas transform */
+/* ── 2D pan — matches binary-trees: translate(-x, -y) ── */
 function getCurrentOffsets() {
-  const m = animCanvas.style.transform.match(/translate\(\s*(-?[\d.]+)px\s*,\s*(-?[\d.]+)px\s*\)/);
-  if (m) return { x: parseFloat(m[1]), y: parseFloat(m[2]) };
-  const my = animCanvas.style.transform.match(/translateY\(\s*(-?[\d.]+)px\s*\)/);
-  if (my) return { x: 0, y: parseFloat(my[1]) };
-  return { x: 0, y: 0 };
+  const m = animCanvas.style.transform.match(/translate\(-?([\d.]+)px,\s*-?([\d.]+)px\)/);
+  return m ? { x: parseFloat(m[1]), y: parseFloat(m[2]) } : { x: 0, y: 0 };
 }
 
 function setOffsets(ox, oy) {
-  const vpH = animViewport ? animViewport.offsetHeight : 400;
-  const vpW = animViewport ? animViewport.offsetWidth : 400;
-  const canvasH = animCanvas ? (parseInt(animCanvas.style.minHeight) || 1200) : 1200;
-  /* Add max depth check to calculate width */
-  let maxDepth = 0;
-  ALL_ANIM_BOX_IDS.forEach(id => { if(BOX_DEPTH[id] > maxDepth) maxDepth = BOX_DEPTH[id]; });
-  const canvasW = CANVAS_LEFT_PAD + maxDepth * BOX_GAP_H + BOX_WIDTH + 80;
-
-  const minX = Math.min(0, -(canvasW - vpW));
-  const minY = -(canvasH - vpH * 0.5);
-  const cx = Math.max(minX, Math.min(40, ox));
-  const cy = Math.max(minY, Math.min(40, oy));
-  animCanvas.style.transform = `translate(${cx}px, ${cy}px)`;
+  const vpWidth  = animViewport ? animViewport.offsetWidth  : 400;
+  const vpHeight = animViewport ? animViewport.offsetHeight : 400;
+  const cx = Math.max(0, Math.min(ox, 2400 - vpWidth));
+  const cy = Math.max(-vpHeight, Math.min(oy, Math.max(0, 1200 - vpHeight)));
+  animCanvas.style.transform = `translate(-${cx}px, -${cy}px)`;
 }
 
 function computePanTarget(id) {
   if (!id || !animViewport) return null;
-  const vpH    = animViewport.offsetHeight;
-  const vpW    = animViewport.offsetWidth;
-  const boxTop = computeBoxTop(id);
-  const boxH   = estimatedBoxHeight(id);
-  const boxX   = computeBoxLeft(id);
+  const vpWidth  = animViewport.offsetWidth;
+  const vpHeight = animViewport.offsetHeight;
+  const boxX     = computeBoxLeft(id);
 
-  /* Scroll so active box + its parent (if any) are visible vertically */
-  const parentId = BOX_PARENT_OF[id];
-  let targetY;
-  if (parentId) {
-    const parentTop = computeBoxTop(parentId);
-    const idealY = -(parentTop - 16);
-    const childBottom = boxTop + boxH;
-    const childBottomInView = -(idealY) + childBottom;
-    if (childBottomInView > vpH - 16) {
-      targetY = -(boxTop - 64);
+  const targetX  = boxX - vpWidth / 2 + BOX_WIDTH / 2;
+  const maxOffX  = 2400 - vpWidth;
+  const clampedX = Math.max(0, Math.min(targetX, maxOffX));
+
+  const isMobile = window.innerWidth <= 768;
+  let scrollY;
+  if (isMobile) {
+    const activeTop = computeBoxTop(id);
+    const parentId  = BOX_PARENT_OF[id];
+    if (parentId) {
+      const parentTop  = computeBoxTop(parentId);
+      const activeH    = estimatedBoxHeight(id);
+      const childBottom = activeTop + activeH;
+      const showFrom   = activeTop - 16;
+      const peekScroll = Math.max(0, parentTop - 8);
+      const childOffBottom = childBottom - (peekScroll + vpHeight);
+      scrollY = childOffBottom > 0 ? showFrom : peekScroll;
     } else {
-      targetY = idealY;
+      scrollY = Math.max(0, activeTop - 16);
     }
   } else {
-    targetY = -(boxTop - 24);
+    const parentId = BOX_PARENT_OF[id];
+    scrollY = parentId
+      ? Math.max(0, computeBoxTop(parentId) - 24)
+      : Math.max(0, computeBoxTop(id) - 24);
   }
 
-  /* Scroll horizontally to keep box in view */
-  let targetX = 0;
-  const idealX = -(boxX - (vpW / 2) + (BOX_WIDTH / 2));
-  
-  /* Clamp */
-  const canvasH = parseInt(animCanvas.style.minHeight) || 1200;
-  let maxDepth = 0;
-  ALL_ANIM_BOX_IDS.forEach(i => { if(BOX_DEPTH[i] > maxDepth) maxDepth = BOX_DEPTH[i]; });
-  const canvasW = CANVAS_LEFT_PAD + maxDepth * BOX_GAP_H + BOX_WIDTH + 80;
+  const maxOffY  = Math.max(0, 1200 - vpHeight);
+  const clampedY = Math.min(scrollY, maxOffY);
 
-  const minX = Math.min(0, -(canvasW - vpW));
-  const minY = -(canvasH - vpH * 0.5);
-  
-  targetX = Math.max(minX, Math.min(40, idealX));
-  targetY = Math.max(minY, Math.min(40, targetY));
-
-  return { x: targetX, y: targetY };
+  return { x: clampedX, y: clampedY };
 }
 
 function panToBox(id) {
-  if (!id || !animViewport) return;
-  const target = computePanTarget(id);
-  if (!target) return;
-  animCanvas.style.transition = 'transform 0.45s cubic-bezier(0.4,0,0.2,1)';
-  animCanvas.style.transform  = `translate(${target.x}px, ${target.y}px)`;
-  setTimeout(() => { if (animCanvas) animCanvas.style.transition = ''; }, 470);
+  const t = computePanTarget(id);
+  if (!t) return;
+  animCanvas.style.transform = `translate(-${t.x}px, -${t.y}px)`;
 }
 
 function smoothPanToBox(id, callback) {
   if (!id || !animViewport) { if (callback) callback(); return; }
-  const target = computePanTarget(id);
-  if (!target) { if (callback) callback(); return; }
-  const DURATION = 450;
-  animCanvas.style.transition = `transform ${DURATION}ms cubic-bezier(0.4,0,0.2,1)`;
-  animCanvas.style.transform  = `translate(${target.x}px, ${target.y}px)`;
+  const t = computePanTarget(id);
+  if (!t) { if (callback) callback(); return; }
+  const DURATION = 480;
+  animCanvas.style.transition = `transform ${DURATION}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+  animCanvas.style.transform  = `translate(-${t.x}px, -${t.y}px)`;
   setTimeout(() => {
     if (animCanvas) animCanvas.style.transition = '';
     if (callback) callback();
   }, DURATION + 20);
 }
 
-/* ── Arrow drawing (vertical bezier: top→bottom for call, bottom→top for return) ── */
+/* ── Arrow drawing (horizontal bezier: right→left for call, left→right for return) ── */
 function clearArrows() {
-  arrowsSvg.querySelectorAll('path, line').forEach(el => el.remove());
+  arrowsSvg.querySelectorAll('path, line, polyline').forEach(el => el.remove());
 }
 
-/* Get midpoint of a step row — 'top' for top edge, 'bottom' for bottom edge, 'left'/'right' for sides */
+/* Get midpoint of a step row — side: 'right' | 'left' | 'top' | 'bottom' */
 function getStepRowMidpoint(boxId, stepIdx, side) {
   const el = boxEls[boxId];
   if (!el || el.style.display === 'none') return null;
-  const stepsEl = el.querySelector('.box-steps');
-  const stepEls = stepsEl ? stepsEl.querySelectorAll('.box-step') : [];
-  const target  = stepEls[stepIdx];
-  const vpRect  = animViewport.getBoundingClientRect();
+  const stepsEl  = el.querySelector('.box-steps');
+  const stepEls  = stepsEl ? stepsEl.querySelectorAll('.box-step') : [];
+  const target   = stepEls[stepIdx];
+  const vpRect   = animViewport.getBoundingClientRect();
 
   if (!target) {
-    /* Fallback: use box header */
-    return getBoxHeaderMidpoint(boxId, side);
+    const hdr = el.querySelector('.box-header');
+    if (!hdr) return null;
+    const r = hdr.getBoundingClientRect();
+    return {
+      x: side === 'right' ? r.right - vpRect.left : r.left - vpRect.left,
+      y: r.top - vpRect.top + r.height / 2
+    };
   }
   const r = target.getBoundingClientRect();
-  switch (side) {
-    case 'top':    return { x: r.left - vpRect.left + r.width / 2,  y: r.top  - vpRect.top };
-    case 'bottom': return { x: r.left - vpRect.left + r.width / 2,  y: r.bottom - vpRect.top };
-    case 'right':  return { x: r.right - vpRect.left,               y: r.top  - vpRect.top + r.height / 2 };
-    case 'left':   return { x: r.left  - vpRect.left,               y: r.top  - vpRect.top + r.height / 2 };
-    default:       return { x: r.left  - vpRect.left + r.width / 2, y: r.top  - vpRect.top + r.height / 2 };
-  }
+  return {
+    x: side === 'right' ? r.right - vpRect.left : r.left - vpRect.left,
+    y: r.top - vpRect.top + r.height / 2
+  };
 }
 
 function getBoxHeaderMidpoint(boxId, side) {
@@ -3437,37 +940,18 @@ function getBoxHeaderMidpoint(boxId, side) {
   if (!hdr) return null;
   const vpRect = animViewport.getBoundingClientRect();
   const r = hdr.getBoundingClientRect();
-  switch (side) {
-    case 'top':    return { x: r.left - vpRect.left + r.width / 2, y: r.top    - vpRect.top };
-    case 'bottom': return { x: r.left - vpRect.left + r.width / 2, y: r.bottom - vpRect.top };
-    case 'right':  return { x: r.right - vpRect.left,              y: r.top    - vpRect.top + r.height / 2 };
-    case 'left':   return { x: r.left  - vpRect.left,              y: r.top    - vpRect.top + r.height / 2 };
-    default:       return { x: r.left  - vpRect.left + r.width / 2,y: r.top    - vpRect.top + r.height / 2 };
-  }
+  return {
+    x: side === 'right' ? r.right - vpRect.left : r.left - vpRect.left,
+    y: r.top - vpRect.top + r.height / 2
+  };
 }
 
-function getBoxBottom(boxId) {
-  const el = boxEls[boxId];
-  if (!el || el.style.display === 'none') return null;
-  const vpRect = animViewport.getBoundingClientRect();
-  const r = el.getBoundingClientRect();
-  return { x: r.left - vpRect.left + r.width / 2, y: r.bottom - vpRect.top };
-}
-
-function getBoxTop(boxId) {
-  const el = boxEls[boxId];
-  if (!el || el.style.display === 'none') return null;
-  const vpRect = animViewport.getBoundingClientRect();
-  const r = el.getBoundingClientRect();
-  return { x: r.left - vpRect.left + r.width / 2, y: r.top - vpRect.top };
-}
-
-/* Vertical bezier: top→bottom */
-function vertBezierPath(x1, y1, x2, y2) {
-  const dy   = Math.abs(y2 - y1);
-  const cp1y = y1 + dy * 0.45;
-  const cp2y = y2 - dy * 0.45;
-  return `M ${x1} ${y1} C ${x1} ${cp1y}, ${x2} ${cp2y}, ${x2} ${y2}`;
+/* Horizontal bezier: left-to-right */
+function bezierPath(x1, y1, x2, y2) {
+  const dx   = Math.abs(x2 - x1);
+  const cp1x = x1 + dx * 0.4;
+  const cp2x = x2 - dx * 0.4;
+  return `M ${x1} ${y1} C ${cp1x} ${y1}, ${cp2x} ${y2}, ${x2} ${y2}`;
 }
 
 function makePath(d, cls, markerId, animate) {
@@ -3478,6 +962,8 @@ function makePath(d, cls, markerId, animate) {
   arrowsSvg.appendChild(path);
 
   if (animate) {
+    const isRet  = cls.includes('arrow-ret');
+    const isLink = cls.includes('arrow-link') && !cls.includes('faded');
     const drawDuration = 520;
     requestAnimationFrame(() => {
       const len = path.getTotalLength();
@@ -3492,8 +978,6 @@ function makePath(d, cls, markerId, animate) {
         path.style.transition = '';
         path.style.strokeDasharray  = '';
         path.style.strokeDashoffset = '';
-        const isRet  = cls.includes('arrow-ret');
-        const isLink = cls.includes('arrow-link') && !cls.includes('faded');
         if (isRet)  path.style.animation = 'dash-flow-ret 0.65s linear infinite';
         if (isLink) path.style.animation = 'dash-flow 0.7s linear infinite';
       }, drawDuration + 20);
@@ -3501,27 +985,20 @@ function makePath(d, cls, markerId, animate) {
   }
 }
 
-/* Link arrow: parent step-row bottom-center → child box top-center (vertical) */
+/* Draw persistent blue link arrow: parent step-row right → child header left */
 function drawLinkArrow(link, faded) {
   if (!link) return;
-  /* fromPoint: bottom of the calling step row in parent */
-  const from = getStepRowMidpoint(link.fromBox, link.fromStep, 'bottom');
-  /* toPoint: top of child box header */
-  const to   = getBoxTop(link.toBox);
+  const from = getStepRowMidpoint(link.fromBox, link.fromStep, 'right');
+  const to   = getBoxHeaderMidpoint(link.toBox, 'left');
   if (!from || !to) return;
-
-  /* Offset slightly so call and return arrows don't exactly overlap */
-  const fx = from.x - 8;
-  const tx = to.x   - 8;
-
   const cls = faded ? 'arrow-link arrow-link-faded' : 'arrow-link';
   const linkKey = `${link.fromBox}->${link.toBox}`;
   const shouldAnimate = !faded && !drawnLinks.has(linkKey);
   if (shouldAnimate) drawnLinks.add(linkKey);
-  makePath(vertBezierPath(fx, from.y, tx, to.y), cls, 'mh-call', shouldAnimate);
+  makePath(bezierPath(from.x, from.y, to.x, to.y), cls, 'mh-call', shouldAnimate);
 }
 
-/* Return arrow: child top-center → parent step-row bottom-center (going UP) */
+/* Draw return arrow: child left → parent step-row right (going left) */
 function drawReturnArrow(arrow) {
   if (!arrow || arrow.type !== 'ret') return;
   const fromEl = boxEls[arrow.fromBox];
@@ -3529,32 +1006,47 @@ function drawReturnArrow(arrow) {
   if (!fromEl || !toEl) return;
   if (fromEl.style.display === 'none' || toEl.style.display === 'none') return;
 
-  /* From: top of child box (returning upward) */
-  const from = getBoxTop(arrow.fromBox);
-  /* To: bottom of destination step row in parent */
-  const to   = getStepRowMidpoint(arrow.toBox, arrow.toStep, 'bottom');
+  const from = getStepRowMidpoint(arrow.fromBox, arrow.fromStep, 'left');
+  const to   = getStepRowMidpoint(arrow.toBox,   arrow.toStep,   'right');
   if (!from || !to) return;
 
-  /* Offset to avoid overlapping link arrow */
-  const fx = from.x + 8;
-  const tx = to.x   + 8;
+  const dx   = Math.abs(from.x - to.x);
+  const cp1x = from.x - dx * 0.4;
+  const cp2x = to.x   + dx * 0.4;
+  const d = `M ${from.x} ${from.y} C ${cp1x} ${from.y}, ${cp2x} ${to.y}, ${to.x} ${to.y}`;
 
-  const d = vertBezierPath(fx, from.y, tx, to.y);
   const retKey = `ret:${arrow.fromBox}->${arrow.toBox}`;
   const shouldAnimate = !drawnLinks.has(retKey);
   if (shouldAnimate) drawnLinks.add(retKey);
   makePath(d, 'arrow-ret', 'mh-ret', shouldAnimate);
 }
 
-/* Build full ancestor link chain from activeBox up through visible boxes */
+/* Ancestor link chain */
+const PARENT_OF_ANIM = BOX_PARENT_OF;
+const CALL_STEP_OF = {
+  a1: 0,   /* main step 0 → inorder(A) */
+  a2: 1,   /* a1 step 1 (left) → inorder(B) */
+  a4: 3,   /* a2 step 3 (right) → inorder(D); D is B's right child */
+  a7: 3,   /* a1 step 3 (right) → inorder(C) */
+  a8: 1,   /* a7 step 1 (left) → inorder(E) */
+  a11: 3   /* a7 step 3 (right) → inorder(F) */
+};
+
 function getAncestorLinks(as) {
   const links = [];
   const visible = new Set(as.boxes || []);
   let child = as.activeBox;
   while (child) {
-    const parent = BOX_PARENT_OF[child];
+    const parent = PARENT_OF_ANIM[child];
     if (!parent || !visible.has(parent) || !visible.has(child)) break;
-    links.push({ fromBox: parent, fromStep: CALL_STEP_OF[child] !== undefined ? CALL_STEP_OF[child] : 0, toBox: child });
+    /* Use linkArrow fromStep if this is the immediate parent relationship */
+    const lk = as.linkArrow;
+    if (lk && lk.toBox === child && lk.fromBox === parent) {
+      links.push({ fromBox: parent, fromStep: lk.fromStep, toBox: child });
+    } else {
+      const step = CALL_STEP_OF[child] !== undefined ? CALL_STEP_OF[child] : 0;
+      links.push({ fromBox: parent, fromStep: step, toBox: child });
+    }
     child = parent;
   }
   return links;
@@ -3565,8 +1057,7 @@ function redrawAllArrows(as, skipReturn) {
   requestAnimationFrame(() => {
     const allLinks = getAncestorLinks(as);
     allLinks.forEach((lk, i) => {
-      const isImmediate = (i === 0);
-      drawLinkArrow(lk, !isImmediate);
+      drawLinkArrow(lk, i !== 0 /* faded for grandparent+ */);
     });
     if (!skipReturn && as.arrow && as.arrow.type === 'ret') drawReturnArrow(as.arrow);
   });
@@ -3620,7 +1111,6 @@ function updateAnimDots(idx) {
 /* ── renderAnimStep — drives center panel from INORDER_ANIM_STEPS ── */
 function renderAnimStep(idx) {
   if (currentType !== 'inorder') {
-    /* Non-inorder: hide all anim boxes, clear arrows */
     ALL_ANIM_BOX_IDS.forEach(id => {
       const el = boxEls[id];
       if (el) { el.style.display = 'none'; el.classList.remove('active-box','dimmed','box-fadein'); }
@@ -3633,33 +1123,59 @@ function renderAnimStep(idx) {
   const as = INORDER_ANIM_STEPS[idx];
   if (!as) return;
 
-  /* Compute disappearing boxes vs prev step */
-  const prev   = idx > 0 ? INORDER_ANIM_STEPS[idx - 1] : null;
-  const prevVis = new Set(prev ? (prev.boxes || []) : []);
-  const nextVis = new Set(as.boxes || []);
+  const prev         = idx > 0 ? INORDER_ANIM_STEPS[idx - 1] : null;
+  const prevVis      = new Set(prev ? (prev.boxes || []) : []);
+  const nextVis      = new Set(as.boxes || []);
   const disappearing = [...prevVis].filter(id => !nextVis.has(id));
-  const appearing    = [...nextVis].filter(id => !prevVis.has(id));
+  const SETTLE       = 60;
 
-  /* Phase 1: fade out gone boxes */
-  fadeOutBoxes(disappearing, () => {
-    /* Phase 2: smooth vertical pan to active box — redraw ancestor links mid-flight (no green) */
-    smoothPanToBox(as.panTo, () => {
-      /* Phase 3: show boxes + arrows after scroll settles */
-      setTimeout(() => {
-        setBoxVisibility(as);
-        setBoxStepHighlight(as);
-        redrawAllArrows(as, false);
-        updateAnimDots(idx);
+  /* ── Determine the green arrow to show on THIS step ──────────────────────────
+     Rule: every activeStep:4 ("return" line highlighted) must show green.
+     The green arrow always lives on the NEXT anim step's arrow field.
+     We look ahead regardless of whether as.arrow is set or not.
+  ───────────────────────────────────────────────────────────────────────────── */
+  const isReturnLine = (as.activeStep === 4);
+  const nextAs = INORDER_ANIM_STEPS[idx + 1];
+  const retArrow = (isReturnLine && nextAs && nextAs.arrow && nextAs.arrow.type === 'ret')
+    ? nextAs.arrow
+    : null;
 
-        if (elAnimStatus) {
-          const stepNum = idx + 1;
-          elAnimStatus.textContent = stepNum >= INORDER_ANIM_STEPS.length ? 'Done' : `Step ${stepNum}`;
-        }
+  /* Allow re-animation when revisiting (back/forward nav) */
+  if (isReturnLine && retArrow) {
+    drawnLinks.delete(`ret:${retArrow.fromBox}->${retArrow.toBox}`);
+  }
 
-        if (as.done) showDoneOverlay();
-      }, appearing.length ? 60 : 0);
+  /* ── Standard phase: fade gone boxes → pan → show current state ── */
+  function phaseStandard() {
+    fadeOutBoxes(disappearing, () => {
+      smoothPanToBox(as.panTo, () => {
+        setTimeout(() => {
+          setBoxVisibility(as);
+          setBoxStepHighlight(as);
+          /* For return-line steps: show link arrows + green.
+             For all others: full redraw (no green unless step carries its own ret). */
+          if (isReturnLine && retArrow) {
+            clearArrows();
+            requestAnimationFrame(() => {
+              const allLinks = getAncestorLinks(as);
+              allLinks.forEach((lk, i) => drawLinkArrow(lk, i !== 0));
+              drawReturnArrow(retArrow);
+            });
+          } else {
+            redrawAllArrows(as, false);
+          }
+          updateAnimDots(idx);
+          if (elAnimStatus) {
+            const stepNum = idx + 1;
+            elAnimStatus.textContent = stepNum >= INORDER_ANIM_STEPS.length ? 'Done' : `Step ${stepNum}`;
+          }
+          if (as.done) showDoneOverlay();
+        }, nextVis.size > prevVis.size ? SETTLE : 0);
+      });
     });
-  });
+  }
+
+  phaseStandard();
 }
 
 function showDoneOverlay() {
@@ -3670,7 +1186,7 @@ function showDoneOverlay() {
   div.innerHTML =
     `<div class="done-icon">🌿</div>` +
     `<div class="done-title">Traversal Done!</div>` +
-    `<div class="done-sub">Output: D → B → A → E → C → F</div>`;
+    `<div class="done-sub">Output: B → D → A → E → C → F</div>`;
   animViewport.appendChild(div);
 }
 
@@ -3737,6 +1253,22 @@ function renderStep(idx) {
       circle.setAttribute('fill', '#ffffff');
       circle.setAttribute('stroke', '#e2e8f0');
       label.setAttribute('fill', '#0f172a');
+    }
+  });
+
+  /* SVG tree: inorder visit glow — orange node + green glow ring at printf moment */
+  const isInorderVisitStep = currentType === 'inorder'
+    && s.codeLines.length === 1 && s.codeLines[0] === 14
+    && s.currentNode !== null
+    && s.visitedNodes.includes(s.currentNode)
+    && s.visitedNodes[s.visitedNodes.length - 1] === s.currentNode;
+
+  Object.keys(NODE_POS).forEach(id => {
+    const glowEl = document.getElementById(`glow-${id}`);
+    if (!glowEl) return;
+    glowEl.classList.remove('visit-glow');
+    if (isInorderVisitStep && id === s.currentNode) {
+      glowEl.classList.add('visit-glow');
     }
   });
 
@@ -3928,7 +1460,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-/* ── Drag-to-pan: vertical primary (both axes) ── */
+/* ── Drag-to-pan: both axes ── */
 (function initDrag() {
   if (!animViewport) return;
 
@@ -3946,10 +1478,7 @@ document.addEventListener('keydown', (e) => {
 
   window.addEventListener('mousemove', e => {
     if (!dragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    setOffsets(startOffX + dx, startOffY + dy);
-    /* Redraw arrows while dragging */
+    setOffsets(startOffX + (startX - e.clientX), startOffY + (startY - e.clientY));
     if (currentType === 'inorder' && INORDER_ANIM_STEPS[currentStep]) {
       redrawAllArrows(INORDER_ANIM_STEPS[currentStep]);
     }
@@ -3976,8 +1505,7 @@ document.addEventListener('keydown', (e) => {
     if (Math.abs(velX) < 0.3 && Math.abs(velY) < 0.3) { inertiaRaf = null; return; }
     const off = getCurrentOffsets();
     setOffsets(off.x + velX, off.y + velY);
-    velX *= FRICTION;
-    velY *= FRICTION;
+    velX *= FRICTION; velY *= FRICTION;
     if (currentType === 'inorder' && INORDER_ANIM_STEPS[currentStep]) {
       redrawAllArrows(INORDER_ANIM_STEPS[currentStep]);
     }
@@ -3992,7 +1520,7 @@ document.addEventListener('keydown', (e) => {
     lastTouchY  = touchStartY;
     lastTouchTime = Date.now();
     velX = 0; velY = 0;
-    const off = getCurrentOffsets(); 
+    const off = getCurrentOffsets();
     touchOffX = off.x; touchOffY = off.y;
   }, { passive: true });
 
@@ -4001,10 +1529,10 @@ document.addEventListener('keydown', (e) => {
     const ty  = e.touches[0].clientY;
     const now = Date.now();
     const dt  = Math.max(1, now - lastTouchTime);
-    velX = (tx - lastTouchX) / dt * 16;
-    velY = (ty - lastTouchY) / dt * 16;
+    velX = (lastTouchX - tx) / dt * 16;
+    velY = (lastTouchY - ty) / dt * 16;
     lastTouchX = tx; lastTouchY = ty; lastTouchTime = now;
-    setOffsets(touchOffX + (tx - touchStartX), touchOffY + (ty - touchStartY));
+    setOffsets(touchOffX + (touchStartX - tx), touchOffY + (touchStartY - ty));
     if (currentType === 'inorder' && INORDER_ANIM_STEPS[currentStep]) {
       redrawAllArrows(INORDER_ANIM_STEPS[currentStep]);
     }
@@ -4016,40 +1544,28 @@ document.addEventListener('keydown', (e) => {
     }
   }, { passive: true });
 
-  /* Mousewheel scroll (both axes) */
+  /* Mousewheel scroll (vertical + horizontal) */
   animViewport.addEventListener('wheel', e => {
     e.preventDefault();
     cancelInertia();
     const off = getCurrentOffsets();
-    setOffsets(off.x - e.deltaX * 0.8, off.y - e.deltaY * 0.8);
+    if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      setOffsets(off.x + (e.deltaX || e.deltaY) * 0.8, off.y);
+    } else {
+      setOffsets(off.x, off.y + e.deltaY * 0.8);
+    }
     if (currentType === 'inorder' && INORDER_ANIM_STEPS[currentStep]) {
       redrawAllArrows(INORDER_ANIM_STEPS[currentStep]);
     }
   }, { passive: false });
 })();
 
-/* Resize: reposition boxes + redraw arrows */
+/* Resize: redraw arrows */
 window.addEventListener('resize', () => {
-  repositionBoxes();
-  updateCanvasHeight();
   if (currentType === 'inorder' && INORDER_ANIM_STEPS[currentStep]) {
     redrawAllArrows(INORDER_ANIM_STEPS[currentStep]);
   }
 });
-
-/* ── Inject CSS: vertical fade-in for new boxes ── */
-(function injectStyles() {
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes boxFadeInV {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .call-box.box-fadein { animation: boxFadeInV 0.28s ease-out forwards; }
-    @keyframes dash-flow-ret { to { stroke-dashoffset: -18; } }
-  `;
-  document.head.appendChild(style);
-})();
 
 /* ═══════════════════════════════════════════════════════════
    INIT
