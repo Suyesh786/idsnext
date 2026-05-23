@@ -41,7 +41,7 @@ const TRAVERSAL_CONFIGS = {
     statusType: 'Preorder',
     hint: 'Preorder means: first visit the root, then go to the left subtree, then the right subtree.',
     visitOrder: ['A','B','D','C','E','F'],
-    totalSteps: 14,
+    totalSteps: 35,
     codeLang: 'preorder',
   },
   postorder: {
@@ -187,107 +187,80 @@ const INORDER_STEPS = [
 ];
 
 /* ══════════════════════════════════════════════════════════════
-   PREORDER STEPS — visit order: A B D C E F
+   PREORDER STEPS — 35 steps synced 1:1 with PREORDER_ANIM_STEPS
+   visit order: A B D C E F
 ══════════════════════════════════════════════════════════════ */
 const PREORDER_STEPS = [
-  {
-    codeLines:[21], currentNode:null, visitedNodes:[],
-    traversedEdges:[],
-    callStack:['main() root'],
-    action:'Program starts. <strong>main()</strong> calls <strong>preorder(root)</strong> where root = A.',
-    stepLabel:1
-  },
-  {
-    codeLines:[10], currentNode:'A', visitedNodes:[],
-    traversedEdges:[],
-    callStack:['main() root','preorder(A)'],
-    action:'<strong>preorder(A)</strong> called. root ≠ NULL. Continue.',
-    stepLabel:2
-  },
-  {
-    codeLines:[13], currentNode:'A', visitedNodes:['A'],
-    traversedEdges:[],
-    callStack:['main() root','preorder(A)'],
-    action:'<strong>Visit A</strong> — printf fires first (Root). A added to output.',
-    stepLabel:3
-  },
-  {
-    codeLines:[14], currentNode:'B', visitedNodes:['A'],
-    traversedEdges:[['A','B']],
-    callStack:['main() root','preorder(A)','preorder(B)'],
-    action:'<strong>preorder(A)</strong> goes LEFT — calling <strong>preorder(B)</strong>.',
-    stepLabel:4
-  },
-  {
-    codeLines:[13], currentNode:'B', visitedNodes:['A','B'],
-    traversedEdges:[['A','B']],
-    callStack:['main() root','preorder(A)','preorder(B)'],
-    action:'<strong>Visit B</strong> — printf fires. B added to output.',
-    stepLabel:5
-  },
-  {
-    codeLines:[14], currentNode:'D', visitedNodes:['A','B'],
-    traversedEdges:[['A','B'],['B','D']],
-    callStack:['main() root','preorder(A)','preorder(B)','preorder(D)'],
-    action:'<strong>preorder(B)</strong> goes LEFT — calling <strong>preorder(D)</strong>.',
-    stepLabel:6
-  },
-  {
-    codeLines:[13], currentNode:'D', visitedNodes:['A','B','D'],
-    traversedEdges:[['A','B'],['B','D']],
-    callStack:['main() root','preorder(A)','preorder(B)','preorder(D)'],
-    action:'<strong>Visit D</strong> — printf fires. D has no children. Returns to B.',
-    stepLabel:7
-  },
-  {
-    codeLines:[15], currentNode:'B', visitedNodes:['A','B','D'],
-    traversedEdges:[['A','B'],['B','D']],
-    callStack:['main() root','preorder(A)','preorder(B)'],
-    action:'<strong>preorder(B)</strong> goes RIGHT → NULL. Returns to A.',
-    stepLabel:8
-  },
-  {
-    codeLines:[15], currentNode:'C', visitedNodes:['A','B','D'],
-    traversedEdges:[['A','B'],['A','C']],
-    callStack:['main() root','preorder(A)','preorder(C)'],
-    action:'<strong>preorder(A)</strong> goes RIGHT — calling <strong>preorder(C)</strong>.',
-    stepLabel:9
-  },
-  {
-    codeLines:[13], currentNode:'C', visitedNodes:['A','B','D','C'],
-    traversedEdges:[['A','B'],['A','C']],
-    callStack:['main() root','preorder(A)','preorder(C)'],
-    action:'<strong>Visit C</strong> — printf fires. C added to output.',
-    stepLabel:10
-  },
-  {
-    codeLines:[14], currentNode:'E', visitedNodes:['A','B','D','C'],
-    traversedEdges:[['A','B'],['A','C'],['C','E']],
-    callStack:['main() root','preorder(A)','preorder(C)','preorder(E)'],
-    action:'<strong>preorder(C)</strong> goes LEFT — calling <strong>preorder(E)</strong>.',
-    stepLabel:11
-  },
-  {
-    codeLines:[13], currentNode:'E', visitedNodes:['A','B','D','C','E'],
-    traversedEdges:[['A','B'],['A','C'],['C','E']],
-    callStack:['main() root','preorder(A)','preorder(C)'],
-    action:'<strong>Visit E</strong> — E has no children. Returns to C.',
-    stepLabel:12
-  },
-  {
-    codeLines:[15], currentNode:'F', visitedNodes:['A','B','D','C','E'],
-    traversedEdges:[['A','B'],['A','C'],['C','E'],['C','F']],
-    callStack:['main() root','preorder(A)','preorder(C)','preorder(F)'],
-    action:'<strong>preorder(C)</strong> goes RIGHT — calling <strong>preorder(F)</strong>.',
-    stepLabel:13
-  },
-  {
-    codeLines:[21], currentNode:null, visitedNodes:['A','B','D','C','E','F'],
-    traversedEdges:[['A','B'],['A','C'],['C','E'],['C','F']],
-    callStack:['main() root'],
-    action:'<strong>preorder(C)</strong> goes right to F, visits F, then all frames unwind. <strong>Preorder complete!</strong> Output: A B D C E F.',
-    stepLabel:14, done:true
-  },
+  /* 1 — program start */
+  { codeLines:[21], currentNode:null, visitedNodes:[], traversedEdges:[], callStack:['main() root'], action:'Program starts. <strong>main()</strong> about to call preorder(root).', stepLabel:1 },
+  /* 2 — preorder(A) called */
+  { codeLines:[10], currentNode:'A', visitedNodes:[], traversedEdges:[], callStack:['main() root','preorder(A)'], action:'main() calls <strong>preorder(A)</strong>. root ≠ NULL.', stepLabel:2 },
+  /* 3 — Visit A immediately (Root first) */
+  { codeLines:[13], currentNode:'A', visitedNodes:['A'], traversedEdges:[], callStack:['main() root','preorder(A)'], action:'<strong>Visit A</strong> — printf fires first (Root). Output: A', stepLabel:3 },
+  /* 4 — preorder(A) goes LEFT */
+  { codeLines:[14], currentNode:'A', visitedNodes:['A'], traversedEdges:[], callStack:['main() root','preorder(A)'], action:'<strong>preorder(A)</strong> goes LEFT. Calling <strong>preorder(B)</strong>.', stepLabel:4 },
+  /* 5 — preorder(B) called */
+  { codeLines:[10], currentNode:'B', visitedNodes:['A'], traversedEdges:[['A','B']], callStack:['main() root','preorder(A)','preorder(B)'], action:'<strong>preorder(A)</strong> calls <strong>preorder(B)</strong>. root ≠ NULL.', stepLabel:5 },
+  /* 6 — Visit B immediately */
+  { codeLines:[13], currentNode:'B', visitedNodes:['A','B'], traversedEdges:[['A','B']], callStack:['main() root','preorder(A)','preorder(B)'], action:'<strong>Visit B</strong> — printf fires. Output: A B', stepLabel:6 },
+  /* 7 — preorder(B): B.left=NULL inline */
+  { codeLines:[14], currentNode:'B', visitedNodes:['A','B'], traversedEdges:[['A','B']], callStack:['main() root','preorder(A)','preorder(B)'], action:'<strong>preorder(B)</strong> checks LEFT. B.left = NULL ✓ — no recursive call.', stepLabel:7 },
+  /* 8 — preorder(B) goes RIGHT */
+  { codeLines:[15], currentNode:'B', visitedNodes:['A','B'], traversedEdges:[['A','B']], callStack:['main() root','preorder(A)','preorder(B)'], action:'<strong>preorder(B)</strong> goes RIGHT. B.right = D. Calling <strong>preorder(D)</strong>.', stepLabel:8 },
+  /* 9 — preorder(D) called */
+  { codeLines:[10], currentNode:'D', visitedNodes:['A','B'], traversedEdges:[['A','B'],['B','D']], callStack:['main() root','preorder(A)','preorder(B)','preorder(D)'], action:'<strong>preorder(B)</strong> calls <strong>preorder(D)</strong>. root ≠ NULL.', stepLabel:9 },
+  /* 10 — Visit D immediately */
+  { codeLines:[13], currentNode:'D', visitedNodes:['A','B','D'], traversedEdges:[['A','B'],['B','D']], callStack:['main() root','preorder(A)','preorder(B)','preorder(D)'], action:'<strong>Visit D</strong> — printf fires. Output: A B D', stepLabel:10 },
+  /* 11 — preorder(D): D.left=NULL inline */
+  { codeLines:[14], currentNode:'D', visitedNodes:['A','B','D'], traversedEdges:[['A','B'],['B','D']], callStack:['main() root','preorder(A)','preorder(B)','preorder(D)'], action:'<strong>preorder(D)</strong> checks LEFT. D.left = NULL ✓ — no recursive call.', stepLabel:11 },
+  /* 12 — preorder(D): D.right=NULL inline */
+  { codeLines:[15], currentNode:'D', visitedNodes:['A','B','D'], traversedEdges:[['A','B'],['B','D']], callStack:['main() root','preorder(A)','preorder(B)','preorder(D)'], action:'<strong>preorder(D)</strong> checks RIGHT. D.right = NULL ✓ — no recursive call.', stepLabel:12 },
+  /* 13 — preorder(D) return line */
+  { codeLines:[16], currentNode:'D', visitedNodes:['A','B','D'], traversedEdges:[['A','B'],['B','D']], callStack:['main() root','preorder(A)','preorder(B)','preorder(D)'], action:'<strong>preorder(D)</strong> complete. Returning to <strong>preorder(B)</strong>.', stepLabel:13 },
+  /* 14 — preorder(D) returns to preorder(B); B complete, return */
+  { codeLines:[16], currentNode:'B', visitedNodes:['A','B','D'], traversedEdges:[['A','B'],['B','D']], callStack:['main() root','preorder(A)','preorder(B)'], action:'<strong>preorder(D)</strong> returned. <strong>preorder(B)</strong> complete. Returning to <strong>preorder(A)</strong>.', stepLabel:14 },
+  /* 15 — preorder(B) returns to preorder(A); A resumes at right */
+  { codeLines:[15], currentNode:'A', visitedNodes:['A','B','D'], traversedEdges:[['A','B'],['B','D']], callStack:['main() root','preorder(A)'], action:'<strong>preorder(B)</strong> returned. <strong>preorder(A)</strong> resumes — next: go RIGHT.', stepLabel:15 },
+  /* 16 — preorder(A) goes RIGHT */
+  { codeLines:[15], currentNode:'A', visitedNodes:['A','B','D'], traversedEdges:[['A','B'],['B','D']], callStack:['main() root','preorder(A)'], action:'<strong>preorder(A)</strong> goes RIGHT. Calling <strong>preorder(C)</strong>.', stepLabel:16 },
+  /* 17 — preorder(C) called */
+  { codeLines:[10], currentNode:'C', visitedNodes:['A','B','D'], traversedEdges:[['A','B'],['B','D'],['A','C']], callStack:['main() root','preorder(A)','preorder(C)'], action:'<strong>preorder(A)</strong> calls <strong>preorder(C)</strong>. root ≠ NULL.', stepLabel:17 },
+  /* 18 — Visit C immediately */
+  { codeLines:[13], currentNode:'C', visitedNodes:['A','B','D','C'], traversedEdges:[['A','B'],['B','D'],['A','C']], callStack:['main() root','preorder(A)','preorder(C)'], action:'<strong>Visit C</strong> — printf fires. Output: A B D C', stepLabel:18 },
+  /* 19 — preorder(C) goes LEFT */
+  { codeLines:[14], currentNode:'C', visitedNodes:['A','B','D','C'], traversedEdges:[['A','B'],['B','D'],['A','C']], callStack:['main() root','preorder(A)','preorder(C)'], action:'<strong>preorder(C)</strong> goes LEFT. Calling <strong>preorder(E)</strong>.', stepLabel:19 },
+  /* 20 — preorder(E) called */
+  { codeLines:[10], currentNode:'E', visitedNodes:['A','B','D','C'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E']], callStack:['main() root','preorder(A)','preorder(C)','preorder(E)'], action:'<strong>preorder(C)</strong> calls <strong>preorder(E)</strong>. root ≠ NULL.', stepLabel:20 },
+  /* 21 — Visit E immediately */
+  { codeLines:[13], currentNode:'E', visitedNodes:['A','B','D','C','E'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E']], callStack:['main() root','preorder(A)','preorder(C)','preorder(E)'], action:'<strong>Visit E</strong> — printf fires. Output: A B D C E', stepLabel:21 },
+  /* 22 — preorder(E): E.left=NULL inline */
+  { codeLines:[14], currentNode:'E', visitedNodes:['A','B','D','C','E'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E']], callStack:['main() root','preorder(A)','preorder(C)','preorder(E)'], action:'<strong>preorder(E)</strong> checks LEFT. E.left = NULL ✓ — no recursive call.', stepLabel:22 },
+  /* 23 — preorder(E): E.right=NULL inline */
+  { codeLines:[15], currentNode:'E', visitedNodes:['A','B','D','C','E'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E']], callStack:['main() root','preorder(A)','preorder(C)','preorder(E)'], action:'<strong>preorder(E)</strong> checks RIGHT. E.right = NULL ✓ — no recursive call.', stepLabel:23 },
+  /* 24 — preorder(E) return line */
+  { codeLines:[16], currentNode:'E', visitedNodes:['A','B','D','C','E'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E']], callStack:['main() root','preorder(A)','preorder(C)','preorder(E)'], action:'<strong>preorder(E)</strong> complete. Returning to <strong>preorder(C)</strong>.', stepLabel:24 },
+  /* 25 — preorder(E) returns to preorder(C); C resumes at right */
+  { codeLines:[15], currentNode:'C', visitedNodes:['A','B','D','C','E'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E']], callStack:['main() root','preorder(A)','preorder(C)'], action:'<strong>preorder(E)</strong> returned. <strong>preorder(C)</strong> resumes — next: go RIGHT.', stepLabel:25 },
+  /* 26 — preorder(C) goes RIGHT */
+  { codeLines:[15], currentNode:'C', visitedNodes:['A','B','D','C','E'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E']], callStack:['main() root','preorder(A)','preorder(C)'], action:'<strong>preorder(C)</strong> goes RIGHT. Calling <strong>preorder(F)</strong>.', stepLabel:26 },
+  /* 27 — preorder(F) called */
+  { codeLines:[10], currentNode:'F', visitedNodes:['A','B','D','C','E'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E'],['C','F']], callStack:['main() root','preorder(A)','preorder(C)','preorder(F)'], action:'<strong>preorder(C)</strong> calls <strong>preorder(F)</strong>. root ≠ NULL.', stepLabel:27 },
+  /* 28 — Visit F immediately */
+  { codeLines:[13], currentNode:'F', visitedNodes:['A','B','D','C','E','F'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E'],['C','F']], callStack:['main() root','preorder(A)','preorder(C)','preorder(F)'], action:'<strong>Visit F</strong> — printf fires. Output: A B D C E F', stepLabel:28 },
+  /* 29 — preorder(F): F.left=NULL inline */
+  { codeLines:[14], currentNode:'F', visitedNodes:['A','B','D','C','E','F'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E'],['C','F']], callStack:['main() root','preorder(A)','preorder(C)','preorder(F)'], action:'<strong>preorder(F)</strong> checks LEFT. F.left = NULL ✓ — no recursive call.', stepLabel:29 },
+  /* 30 — preorder(F): F.right=NULL inline */
+  { codeLines:[15], currentNode:'F', visitedNodes:['A','B','D','C','E','F'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E'],['C','F']], callStack:['main() root','preorder(A)','preorder(C)','preorder(F)'], action:'<strong>preorder(F)</strong> checks RIGHT. F.right = NULL ✓ — no recursive call.', stepLabel:30 },
+  /* 31 — preorder(F) return line */
+  { codeLines:[16], currentNode:'F', visitedNodes:['A','B','D','C','E','F'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E'],['C','F']], callStack:['main() root','preorder(A)','preorder(C)','preorder(F)'], action:'<strong>preorder(F)</strong> complete. Returning to <strong>preorder(C)</strong>.', stepLabel:31 },
+  /* 32 — preorder(F) returns to preorder(C); C complete, return */
+  { codeLines:[16], currentNode:'C', visitedNodes:['A','B','D','C','E','F'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E'],['C','F']], callStack:['main() root','preorder(A)','preorder(C)'], action:'<strong>preorder(F)</strong> returned. <strong>preorder(C)</strong> complete. Returning to <strong>preorder(A)</strong>.', stepLabel:32 },
+  /* 33 — preorder(C) returns to preorder(A); A complete, return */
+  { codeLines:[16], currentNode:'A', visitedNodes:['A','B','D','C','E','F'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E'],['C','F']], callStack:['main() root','preorder(A)'], action:'<strong>preorder(C)</strong> returned. <strong>preorder(A)</strong> complete. Returning to <strong>main()</strong>.', stepLabel:33 },
+  /* 34 — preorder(A) returns to main */
+  { codeLines:[22], currentNode:null, visitedNodes:['A','B','D','C','E','F'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E'],['C','F']], callStack:['main() root'], action:'<strong>preorder(A)</strong> returned to <strong>main()</strong>. Stack fully unwound. Returning 0.', stepLabel:34 },
+  /* 35 — done */
+  { codeLines:[22], currentNode:null, visitedNodes:['A','B','D','C','E','F'], traversedEdges:[['A','B'],['B','D'],['A','C'],['C','E'],['C','F']], callStack:['main() root'], action:'<strong>Preorder traversal complete!</strong> Output: A → B → D → C → E → F', stepLabel:35, done:true }
 ];
 
 /* ══════════════════════════════════════════════════════════════
@@ -388,6 +361,213 @@ const POSTORDER_STEPS = [
 ];
 
 /* ══════════════════════════════════════════════════════════════
+   PREORDER BOX DEFS — visit: A B D C E F
+   Frame step layout (mirrors inorder exactly):
+     0: if(root == NULL)
+     1: visit(root) → X      ← printf line (code line 13)
+     2: preorder(root->left)  ← code line 14
+     3: preorder(root->right) ← code line 15
+     4: return
+   B has NO left child (NULL), only right child D.
+══════════════════════════════════════════════════════════════ */
+const PREORDER_BOX_DEFS = {
+  pmain: {
+    id: "pmain",
+    label: "main()",
+    isMain: true,
+    steps: [
+      { id: "pm1", text: "preorder(root)" },
+      { id: "pm2", text: "return 0" }
+    ]
+  },
+  pa1: {
+    id: "pa1",
+    label: "preorder(A)",
+    badge: "root=A",
+    steps: [
+      { id: "pa1s1", text: "if(root == NULL)" },
+      { id: "pa1s2", text: "visit(root) → A" },
+      { id: "pa1s3", text: "preorder(root->left)  // → B" },
+      { id: "pa1s4", text: "preorder(root->right) // → C" },
+      { id: "pa1s5", text: "return" }
+    ]
+  },
+  pa2: {
+    id: "pa2",
+    label: "preorder(B)",
+    badge: "root=B",
+    steps: [
+      { id: "pa2s1", text: "if(root == NULL)" },
+      { id: "pa2s2", text: "visit(root) → B" },
+      { id: "pa2s3", text: "preorder(root->left)  // NULL ✓" },
+      { id: "pa2s4", text: "preorder(root->right) // → D" },
+      { id: "pa2s5", text: "return" }
+    ]
+  },
+  pa4: {
+    id: "pa4",
+    label: "preorder(D)",
+    badge: "root=D",
+    steps: [
+      { id: "pa4s1", text: "if(root == NULL)" },
+      { id: "pa4s2", text: "visit(root) → D" },
+      { id: "pa4s3", text: "preorder(root->left)  // NULL ✓" },
+      { id: "pa4s4", text: "preorder(root->right) // NULL ✓" },
+      { id: "pa4s5", text: "return" }
+    ]
+  },
+  pa7: {
+    id: "pa7",
+    label: "preorder(C)",
+    badge: "root=C",
+    steps: [
+      { id: "pa7s1", text: "if(root == NULL)" },
+      { id: "pa7s2", text: "visit(root) → C" },
+      { id: "pa7s3", text: "preorder(root->left)  // → E" },
+      { id: "pa7s4", text: "preorder(root->right) // → F" },
+      { id: "pa7s5", text: "return" }
+    ]
+  },
+  pa8: {
+    id: "pa8",
+    label: "preorder(E)",
+    badge: "root=E",
+    steps: [
+      { id: "pa8s1", text: "if(root == NULL)" },
+      { id: "pa8s2", text: "visit(root) → E" },
+      { id: "pa8s3", text: "preorder(root->left)  // NULL ✓" },
+      { id: "pa8s4", text: "preorder(root->right) // NULL ✓" },
+      { id: "pa8s5", text: "return" }
+    ]
+  },
+  pa11: {
+    id: "pa11",
+    label: "preorder(F)",
+    badge: "root=F",
+    steps: [
+      { id: "pa11s1", text: "if(root == NULL)" },
+      { id: "pa11s2", text: "visit(root) → F" },
+      { id: "pa11s3", text: "preorder(root->left)  // NULL ✓" },
+      { id: "pa11s4", text: "preorder(root->right) // NULL ✓" },
+      { id: "pa11s5", text: "return" }
+    ]
+  }
+};
+
+const ALL_PREORDER_BOX_IDS = Object.keys(PREORDER_BOX_DEFS);
+
+/* Depth for diagonal layout */
+const PREORDER_BOX_DEPTH = {
+  pmain: 0,
+  pa1:   1,
+  pa2:   2,
+  pa4:   3,
+  pa7:   2,
+  pa8:   3,
+  pa11:  3
+};
+
+const PREORDER_BOX_PARENT_OF = {
+  pa1:  "pmain",
+  pa2:  "pa1",
+  pa4:  "pa2",
+  pa7:  "pa1",
+  pa8:  "pa7",
+  pa11: "pa7"
+};
+
+/* Which step-row in parent triggers the call to this child */
+const PREORDER_CALL_STEP_OF = {
+  pa1:  0,  /* pmain step 0 → preorder(A) */
+  pa2:  2,  /* pa1  step 2 (left)  → preorder(B) */
+  pa4:  3,  /* pa2  step 3 (right) → preorder(D) */
+  pa7:  3,  /* pa1  step 3 (right) → preorder(C) */
+  pa8:  2,  /* pa7  step 2 (left)  → preorder(E) */
+  pa11: 3   /* pa7  step 3 (right) → preorder(F) */
+};
+
+/* ── 35-step PREORDER_ANIM_STEPS (mirrors INORDER_ANIM_STEPS structure exactly) ──
+   activeStep indices map to PREORDER_BOX_DEFS steps:
+     0 = if(root==NULL)
+     1 = visit(root)       ← printf / visit line
+     2 = preorder(left)
+     3 = preorder(right)
+     4 = return
+*/
+const PREORDER_ANIM_STEPS = [
+  /* 1 — program start */
+  { boxes:["pmain"], activeBox:"pmain", activeStep:0, dimmed:[], hidden:["pa1","pa2","pa4","pa7","pa8","pa11"], arrow:null, linkArrow:null, panTo:"pmain", expl:"Program starts." },
+  /* 2 — preorder(A) called */
+  { boxes:["pmain","pa1"], activeBox:"pa1", activeStep:0, dimmed:["pmain"], hidden:["pa2","pa4","pa7","pa8","pa11"], arrow:{type:"call",fromBox:"pmain",fromStep:0,toBox:"pa1",toStep:0}, linkArrow:{fromBox:"pmain",fromStep:0,toBox:"pa1"}, panTo:"pa1", expl:"preorder(A) called. root ≠ NULL." },
+  /* 3 — Visit A immediately (Root first!) */
+  { boxes:["pmain","pa1"], activeBox:"pa1", activeStep:1, dimmed:["pmain"], hidden:["pa2","pa4","pa7","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pmain",fromStep:0,toBox:"pa1"}, panTo:"pa1", expl:"Visit A — printf fires first (Root). Output: A" },
+  /* 4 — preorder(A) goes LEFT */
+  { boxes:["pmain","pa1"], activeBox:"pa1", activeStep:2, dimmed:["pmain"], hidden:["pa2","pa4","pa7","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pmain",fromStep:0,toBox:"pa1"}, panTo:"pa1", expl:"A.left = B. preorder(A) goes LEFT." },
+  /* 5 — preorder(B) called */
+  { boxes:["pmain","pa1","pa2"], activeBox:"pa2", activeStep:0, dimmed:["pmain","pa1"], hidden:["pa4","pa7","pa8","pa11"], arrow:{type:"call",fromBox:"pa1",fromStep:2,toBox:"pa2",toStep:0}, linkArrow:{fromBox:"pa1",fromStep:2,toBox:"pa2"}, panTo:"pa2", expl:"preorder(B) called. root ≠ NULL." },
+  /* 6 — Visit B immediately */
+  { boxes:["pmain","pa1","pa2"], activeBox:"pa2", activeStep:1, dimmed:["pmain","pa1"], hidden:["pa4","pa7","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pa1",fromStep:2,toBox:"pa2"}, panTo:"pa2", expl:"Visit B — printf fires. Output: A B" },
+  /* 7 — preorder(B): B.left=NULL inline */
+  { boxes:["pmain","pa1","pa2"], activeBox:"pa2", activeStep:2, dimmed:["pmain","pa1"], hidden:["pa4","pa7","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pa1",fromStep:2,toBox:"pa2"}, panTo:"pa2", expl:"B.left = NULL ✓ — null check inline, no recursive call." },
+  /* 8 — preorder(B) goes RIGHT → D */
+  { boxes:["pmain","pa1","pa2"], activeBox:"pa2", activeStep:3, dimmed:["pmain","pa1"], hidden:["pa4","pa7","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pa1",fromStep:2,toBox:"pa2"}, panTo:"pa2", expl:"B.right = D. preorder(B) goes RIGHT." },
+  /* 9 — preorder(D) called */
+  { boxes:["pmain","pa1","pa2","pa4"], activeBox:"pa4", activeStep:0, dimmed:["pmain","pa1","pa2"], hidden:["pa7","pa8","pa11"], arrow:{type:"call",fromBox:"pa2",fromStep:3,toBox:"pa4",toStep:0}, linkArrow:{fromBox:"pa2",fromStep:3,toBox:"pa4"}, panTo:"pa4", expl:"preorder(D) called. root ≠ NULL." },
+  /* 10 — Visit D immediately */
+  { boxes:["pmain","pa1","pa2","pa4"], activeBox:"pa4", activeStep:1, dimmed:["pmain","pa1","pa2"], hidden:["pa7","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pa2",fromStep:3,toBox:"pa4"}, panTo:"pa4", expl:"Visit D — printf fires. Output: A B D" },
+  /* 11 — preorder(D): D.left=NULL inline */
+  { boxes:["pmain","pa1","pa2","pa4"], activeBox:"pa4", activeStep:2, dimmed:["pmain","pa1","pa2"], hidden:["pa7","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pa2",fromStep:3,toBox:"pa4"}, panTo:"pa4", expl:"D.left = NULL ✓ — null check inline." },
+  /* 12 — preorder(D): D.right=NULL inline */
+  { boxes:["pmain","pa1","pa2","pa4"], activeBox:"pa4", activeStep:3, dimmed:["pmain","pa1","pa2"], hidden:["pa7","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pa2",fromStep:3,toBox:"pa4"}, panTo:"pa4", expl:"D.right = NULL ✓ — null check inline." },
+  /* 13 — preorder(D) return line */
+  { boxes:["pmain","pa1","pa2","pa4"], activeBox:"pa4", activeStep:4, dimmed:["pmain","pa1","pa2"], hidden:["pa7","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pa2",fromStep:3,toBox:"pa4"}, panTo:"pa4", expl:"preorder(D) complete. return." },
+  /* 14 — preorder(D) returns to preorder(B); B complete, return */
+  { boxes:["pmain","pa1","pa2"], activeBox:"pa2", activeStep:4, dimmed:["pmain","pa1"], hidden:["pa4","pa7","pa8","pa11"], arrow:{type:"ret",fromBox:"pa4",fromStep:4,toBox:"pa2",toStep:3}, linkArrow:{fromBox:"pa1",fromStep:2,toBox:"pa2"}, panTo:"pa2", expl:"preorder(D) returned. preorder(B) complete. return." },
+  /* 15 — preorder(B) returns to preorder(A); A resumes at right */
+  { boxes:["pmain","pa1"], activeBox:"pa1", activeStep:3, dimmed:["pmain"], hidden:["pa2","pa4","pa7","pa8","pa11"], arrow:{type:"ret",fromBox:"pa2",fromStep:4,toBox:"pa1",toStep:3}, linkArrow:{fromBox:"pmain",fromStep:0,toBox:"pa1"}, panTo:"pa1", expl:"preorder(B) returned. preorder(A) resumes — next: go RIGHT." },
+  /* 16 — preorder(A) goes RIGHT → C */
+  { boxes:["pmain","pa1"], activeBox:"pa1", activeStep:3, dimmed:["pmain"], hidden:["pa2","pa4","pa7","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pmain",fromStep:0,toBox:"pa1"}, panTo:"pa1", expl:"A.right = C. preorder(A) goes RIGHT." },
+  /* 17 — preorder(C) called */
+  { boxes:["pmain","pa1","pa7"], activeBox:"pa7", activeStep:0, dimmed:["pmain","pa1"], hidden:["pa2","pa4","pa8","pa11"], arrow:{type:"call",fromBox:"pa1",fromStep:3,toBox:"pa7",toStep:0}, linkArrow:{fromBox:"pa1",fromStep:3,toBox:"pa7"}, panTo:"pa7", expl:"preorder(C) called. root ≠ NULL." },
+  /* 18 — Visit C immediately */
+  { boxes:["pmain","pa1","pa7"], activeBox:"pa7", activeStep:1, dimmed:["pmain","pa1"], hidden:["pa2","pa4","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pa1",fromStep:3,toBox:"pa7"}, panTo:"pa7", expl:"Visit C — printf fires. Output: A B D C" },
+  /* 19 — preorder(C) goes LEFT */
+  { boxes:["pmain","pa1","pa7"], activeBox:"pa7", activeStep:2, dimmed:["pmain","pa1"], hidden:["pa2","pa4","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pa1",fromStep:3,toBox:"pa7"}, panTo:"pa7", expl:"C.left = E. preorder(C) goes LEFT." },
+  /* 20 — preorder(E) called */
+  { boxes:["pmain","pa1","pa7","pa8"], activeBox:"pa8", activeStep:0, dimmed:["pmain","pa1","pa7"], hidden:["pa2","pa4","pa11"], arrow:{type:"call",fromBox:"pa7",fromStep:2,toBox:"pa8",toStep:0}, linkArrow:{fromBox:"pa7",fromStep:2,toBox:"pa8"}, panTo:"pa8", expl:"preorder(E) called. root ≠ NULL." },
+  /* 21 — Visit E immediately */
+  { boxes:["pmain","pa1","pa7","pa8"], activeBox:"pa8", activeStep:1, dimmed:["pmain","pa1","pa7"], hidden:["pa2","pa4","pa11"], arrow:null, linkArrow:{fromBox:"pa7",fromStep:2,toBox:"pa8"}, panTo:"pa8", expl:"Visit E — printf fires. Output: A B D C E" },
+  /* 22 — preorder(E): E.left=NULL inline */
+  { boxes:["pmain","pa1","pa7","pa8"], activeBox:"pa8", activeStep:2, dimmed:["pmain","pa1","pa7"], hidden:["pa2","pa4","pa11"], arrow:null, linkArrow:{fromBox:"pa7",fromStep:2,toBox:"pa8"}, panTo:"pa8", expl:"E.left = NULL ✓ — null check inline." },
+  /* 23 — preorder(E): E.right=NULL inline */
+  { boxes:["pmain","pa1","pa7","pa8"], activeBox:"pa8", activeStep:3, dimmed:["pmain","pa1","pa7"], hidden:["pa2","pa4","pa11"], arrow:null, linkArrow:{fromBox:"pa7",fromStep:2,toBox:"pa8"}, panTo:"pa8", expl:"E.right = NULL ✓ — null check inline." },
+  /* 24 — preorder(E) return line */
+  { boxes:["pmain","pa1","pa7","pa8"], activeBox:"pa8", activeStep:4, dimmed:["pmain","pa1","pa7"], hidden:["pa2","pa4","pa11"], arrow:null, linkArrow:{fromBox:"pa7",fromStep:2,toBox:"pa8"}, panTo:"pa8", expl:"preorder(E) complete. return." },
+  /* 25 — preorder(E) returns to preorder(C); C resumes at right */
+  { boxes:["pmain","pa1","pa7"], activeBox:"pa7", activeStep:3, dimmed:["pmain","pa1"], hidden:["pa2","pa4","pa8","pa11"], arrow:{type:"ret",fromBox:"pa8",fromStep:4,toBox:"pa7",toStep:2}, linkArrow:{fromBox:"pa1",fromStep:3,toBox:"pa7"}, panTo:"pa7", expl:"preorder(E) returned. preorder(C) resumes — next: go RIGHT." },
+  /* 26 — preorder(C) goes RIGHT → F */
+  { boxes:["pmain","pa1","pa7"], activeBox:"pa7", activeStep:3, dimmed:["pmain","pa1"], hidden:["pa2","pa4","pa8","pa11"], arrow:null, linkArrow:{fromBox:"pa1",fromStep:3,toBox:"pa7"}, panTo:"pa7", expl:"C.right = F. preorder(C) goes RIGHT." },
+  /* 27 — preorder(F) called */
+  { boxes:["pmain","pa1","pa7","pa11"], activeBox:"pa11", activeStep:0, dimmed:["pmain","pa1","pa7"], hidden:["pa2","pa4","pa8"], arrow:{type:"call",fromBox:"pa7",fromStep:3,toBox:"pa11",toStep:0}, linkArrow:{fromBox:"pa7",fromStep:3,toBox:"pa11"}, panTo:"pa11", expl:"preorder(F) called. root ≠ NULL." },
+  /* 28 — Visit F immediately */
+  { boxes:["pmain","pa1","pa7","pa11"], activeBox:"pa11", activeStep:1, dimmed:["pmain","pa1","pa7"], hidden:["pa2","pa4","pa8"], arrow:null, linkArrow:{fromBox:"pa7",fromStep:3,toBox:"pa11"}, panTo:"pa11", expl:"Visit F — printf fires. Output: A B D C E F" },
+  /* 29 — preorder(F): F.left=NULL inline */
+  { boxes:["pmain","pa1","pa7","pa11"], activeBox:"pa11", activeStep:2, dimmed:["pmain","pa1","pa7"], hidden:["pa2","pa4","pa8"], arrow:null, linkArrow:{fromBox:"pa7",fromStep:3,toBox:"pa11"}, panTo:"pa11", expl:"F.left = NULL ✓ — null check inline." },
+  /* 30 — preorder(F): F.right=NULL inline */
+  { boxes:["pmain","pa1","pa7","pa11"], activeBox:"pa11", activeStep:3, dimmed:["pmain","pa1","pa7"], hidden:["pa2","pa4","pa8"], arrow:null, linkArrow:{fromBox:"pa7",fromStep:3,toBox:"pa11"}, panTo:"pa11", expl:"F.right = NULL ✓ — null check inline." },
+  /* 31 — preorder(F) return line */
+  { boxes:["pmain","pa1","pa7","pa11"], activeBox:"pa11", activeStep:4, dimmed:["pmain","pa1","pa7"], hidden:["pa2","pa4","pa8"], arrow:null, linkArrow:{fromBox:"pa7",fromStep:3,toBox:"pa11"}, panTo:"pa11", expl:"preorder(F) complete. return." },
+  /* 32 — preorder(F) returns to preorder(C); C complete, return */
+  { boxes:["pmain","pa1","pa7"], activeBox:"pa7", activeStep:4, dimmed:["pmain","pa1"], hidden:["pa2","pa4","pa8","pa11"], arrow:{type:"ret",fromBox:"pa11",fromStep:4,toBox:"pa7",toStep:4}, linkArrow:{fromBox:"pa1",fromStep:3,toBox:"pa7"}, panTo:"pa7", expl:"preorder(F) returned. preorder(C) complete. return." },
+  /* 33 — preorder(C) returns to preorder(A); A complete, return */
+  { boxes:["pmain","pa1"], activeBox:"pa1", activeStep:4, dimmed:["pmain"], hidden:["pa2","pa4","pa7","pa8","pa11"], arrow:{type:"ret",fromBox:"pa7",fromStep:4,toBox:"pa1",toStep:4}, linkArrow:{fromBox:"pmain",fromStep:0,toBox:"pa1"}, panTo:"pa1", expl:"preorder(C) returned. preorder(A) complete. return." },
+  /* 34 — preorder(A) returns to main */
+  { boxes:["pmain"], activeBox:"pmain", activeStep:1, dimmed:[], hidden:["pa1","pa2","pa4","pa7","pa8","pa11"], arrow:{type:"ret",fromBox:"pa1",fromStep:4,toBox:"pmain",toStep:1}, linkArrow:null, panTo:"pmain", expl:"preorder(A) returned to main(). Stack fully unwound." },
+  /* 35 — done */
+  { boxes:["pmain"], activeBox:"pmain", activeStep:1, dimmed:[], hidden:["pa1","pa2","pa4","pa7","pa8","pa11"], arrow:null, linkArrow:null, panTo:"pmain", expl:"Preorder traversal complete! Output: A → B → D → C → E → F", done:true }
+];
+
+/* ══════════════════════════════════════════════════════════════
 /* ══════════════════════════════════════════════════════════════
    INORDER ANIMATION STEPS — no NULL frames, B.right=D, 32 steps
    visit order: B → D → A → E → C → F
@@ -479,6 +659,8 @@ const BOX_DEFS = {
 };
 
 const ALL_ANIM_BOX_IDS = Object.keys(BOX_DEFS);
+/* Combined list used only for hide/show when switching traversals */
+const ALL_BOX_IDS_COMBINED = [...Object.keys(BOX_DEFS)]; /* preorder boxes added after DOM ready */
 const INORDER_ANIM_STEPS = [
   /* step 1 — program start */
   { boxes:["main"], activeBox:"main", activeStep:0, dimmed:[], hidden:["a1","a2","a4","a7","a8","a11"], arrow:null, linkArrow:null, panTo:"main", expl:"Program starts." },
@@ -701,19 +883,20 @@ const BOX_PARENT_OF = {
 
 /* Estimated box height: header ~40px + steps*28px + padding 16px */
 function estimatedBoxHeight(id) {
-  const def = BOX_DEFS[id];
+  const def = BOX_DEFS[id] || PREORDER_BOX_DEFS[id];
   if (!def) return 60;
   return 40 + def.steps.length * 28 + 16;
 }
 
 /* Left position: diagonal cascade — depth*BOX_GAP_H from left pad */
 function computeBoxLeft(id) {
+  if (PREORDER_BOX_DEPTH[id] !== undefined) return CANVAS_LEFT_PAD + PREORDER_BOX_DEPTH[id] * BOX_GAP_H;
   return CANVAS_LEFT_PAD + BOX_DEPTH[id] * BOX_GAP_H;
 }
 
 /* Top position: parent's top + parent's height + gap */
 function computeBoxTop(id) {
-  const parentId = BOX_PARENT_OF[id];
+  const parentId = PREORDER_BOX_PARENT_OF[id] || BOX_PARENT_OF[id];
   if (!parentId) return 40; /* main starts at top */
   const parentTop = computeBoxTop(parentId);
   const parentH   = estimatedBoxHeight(parentId);
@@ -724,7 +907,7 @@ const boxEls = {};
 let drawnLinks = new Set();
 
 function buildBox(id) {
-  const def = BOX_DEFS[id];
+  const def = BOX_DEFS[id] || PREORDER_BOX_DEFS[id];
   if (!def) return;
   const el = document.createElement('div');
   el.className = 'call-box';
@@ -762,13 +945,14 @@ function buildAllBoxes() {
   animCanvas.style.left = '0';
   animCanvas.style.width = '3000px';
   ALL_ANIM_BOX_IDS.forEach(buildBox);
+  ALL_PREORDER_BOX_IDS.forEach(buildBox);
   updateCanvasHeight();
 }
 
 function updateCanvasHeight() {
   if (!animCanvas) return;
   let maxBottom = 40;
-  ALL_ANIM_BOX_IDS.forEach(id => {
+  [...ALL_ANIM_BOX_IDS, ...ALL_PREORDER_BOX_IDS].forEach(id => {
     const t = computeBoxTop(id);
     const h = estimatedBoxHeight(id);
     if (t + h > maxBottom) maxBottom = t + h;
@@ -783,11 +967,11 @@ function repositionBoxes() {
 }
 
 /* ── Visibility + highlight ── */
-function setBoxVisibility(as) {
+function setBoxVisibility(as, boxIdList) {
   const dimmedIds = as.dimmed || [];
   const hiddenIds = as.hidden || [];
 
-  ALL_ANIM_BOX_IDS.forEach(id => {
+  boxIdList.forEach(id => {
     const el = boxEls[id];
     if (!el) return;
     if (hiddenIds.includes(id)) {
@@ -819,9 +1003,9 @@ function setBoxVisibility(as) {
   });
 }
 
-function setBoxStepHighlight(as) {
-  ALL_ANIM_BOX_IDS.forEach(id => {
-    const def = BOX_DEFS[id];
+function setBoxStepHighlight(as, boxIdList) {
+  boxIdList.forEach(id => {
+    const def = BOX_DEFS[id] || PREORDER_BOX_DEFS[id];
     if (!def) return;
     def.steps.forEach((_, i) => {
       const el = document.getElementById(`bstep-${id}-${i}`);
@@ -872,10 +1056,16 @@ function computePanTarget(id) {
       scrollY = Math.max(0, activeTop - 16);
     }
   } else {
-    const parentId = BOX_PARENT_OF[id];
-    scrollY = parentId
-      ? Math.max(0, computeBoxTop(parentId) - 24)
-      : Math.max(0, computeBoxTop(id) - 24);
+    const parentId = PREORDER_BOX_PARENT_OF[id] || BOX_PARENT_OF[id];
+    const activeTop = computeBoxTop(id);
+    if (parentId) {
+      const parentTop = computeBoxTop(parentId);
+      /* Show parent partially (~60px above child), never scroll past parent top */
+      const peekAbove = Math.max(parentTop, activeTop - 80);
+      scrollY = Math.max(0, peekAbove - 16);
+    } else {
+      scrollY = Math.max(0, activeTop - 24);
+    }
   }
 
   const maxOffY  = Math.max(0, 1200 - vpHeight);
@@ -1033,18 +1223,21 @@ const CALL_STEP_OF = {
 };
 
 function getAncestorLinks(as) {
+  const isPreorder = currentType === 'preorder';
+  const parentMap  = isPreorder ? PREORDER_BOX_PARENT_OF : PARENT_OF_ANIM;
+  const callStepMap = isPreorder ? PREORDER_CALL_STEP_OF : CALL_STEP_OF;
   const links = [];
   const visible = new Set(as.boxes || []);
   let child = as.activeBox;
   while (child) {
-    const parent = PARENT_OF_ANIM[child];
+    const parent = parentMap[child];
     if (!parent || !visible.has(parent) || !visible.has(child)) break;
     /* Use linkArrow fromStep if this is the immediate parent relationship */
     const lk = as.linkArrow;
     if (lk && lk.toBox === child && lk.fromBox === parent) {
       links.push({ fromBox: parent, fromStep: lk.fromStep, toBox: child });
     } else {
-      const step = CALL_STEP_OF[child] !== undefined ? CALL_STEP_OF[child] : 0;
+      const step = callStepMap[child] !== undefined ? callStepMap[child] : 0;
       links.push({ fromBox: parent, fromStep: step, toBox: child });
     }
     child = parent;
@@ -1088,18 +1281,25 @@ function fadeOutBoxes(ids, callback) {
   }, FADE);
 }
 
-/* ── Update progress dots (only for inorder — 27 steps) ── */
+/* ── Update progress dots (for inorder and preorder) ── */
 function buildAnimProgressDots() {
   const dotsEl = document.getElementById('progressDots');
   if (!dotsEl) return;
-  if (currentType !== 'inorder') { dotsEl.innerHTML = ''; return; }
-  dotsEl.innerHTML = INORDER_ANIM_STEPS.map((_, i) =>
-    `<div class="viz-dot" id="adot-${i}"></div>`
-  ).join('');
+  if (currentType === 'inorder') {
+    dotsEl.innerHTML = INORDER_ANIM_STEPS.map((_, i) =>
+      `<div class="viz-dot" id="adot-${i}"></div>`
+    ).join('');
+  } else if (currentType === 'preorder') {
+    dotsEl.innerHTML = PREORDER_ANIM_STEPS.map((_, i) =>
+      `<div class="viz-dot" id="adot-${i}"></div>`
+    ).join('');
+  } else {
+    dotsEl.innerHTML = '';
+  }
 }
 
-function updateAnimDots(idx) {
-  INORDER_ANIM_STEPS.forEach((_, i) => {
+function updateAnimDots(idx, animSteps) {
+  animSteps.forEach((_, i) => {
     const d = document.getElementById('adot-' + i);
     if (!d) return;
     d.className = 'viz-dot' +
@@ -1108,10 +1308,14 @@ function updateAnimDots(idx) {
   });
 }
 
-/* ── renderAnimStep — drives center panel from INORDER_ANIM_STEPS ── */
+/* ── renderAnimStep — drives center panel from INORDER_ANIM_STEPS or PREORDER_ANIM_STEPS ── */
 function renderAnimStep(idx) {
-  if (currentType !== 'inorder') {
-    ALL_ANIM_BOX_IDS.forEach(id => {
+  const isInorder  = currentType === 'inorder';
+  const isPreorder = currentType === 'preorder';
+
+  if (!isInorder && !isPreorder) {
+    /* postorder: hide all boxes */
+    [...ALL_ANIM_BOX_IDS, ...ALL_PREORDER_BOX_IDS].forEach(id => {
       const el = boxEls[id];
       if (el) { el.style.display = 'none'; el.classList.remove('active-box','dimmed','box-fadein'); }
     });
@@ -1120,56 +1324,107 @@ function renderAnimStep(idx) {
     return;
   }
 
-  const as = INORDER_ANIM_STEPS[idx];
+  const animSteps  = isPreorder ? PREORDER_ANIM_STEPS : INORDER_ANIM_STEPS;
+  const boxIdList  = isPreorder ? ALL_PREORDER_BOX_IDS : ALL_ANIM_BOX_IDS;
+  const otherIds   = isPreorder ? ALL_ANIM_BOX_IDS : ALL_PREORDER_BOX_IDS;
+  const doneOutput = isPreorder ? 'A → B → D → C → E → F' : 'B → D → A → E → C → F';
+
+  /* Hide boxes from other traversal */
+  otherIds.forEach(id => {
+    const el = boxEls[id];
+    if (el) { el.style.display = 'none'; el.classList.remove('active-box','dimmed','box-fadein'); }
+  });
+
+  const as = animSteps[idx];
   if (!as) return;
 
-  const prev         = idx > 0 ? INORDER_ANIM_STEPS[idx - 1] : null;
+  const prev         = idx > 0 ? animSteps[idx - 1] : null;
   const prevVis      = new Set(prev ? (prev.boxes || []) : []);
   const nextVis      = new Set(as.boxes || []);
   const disappearing = [...prevVis].filter(id => !nextVis.has(id));
   const SETTLE       = 60;
 
-  /* ── Determine the green arrow to show on THIS step ──────────────────────────
-     Rule: every activeStep:4 ("return" line highlighted) must show green.
-     The green arrow always lives on the NEXT anim step's arrow field.
-     We look ahead regardless of whether as.arrow is set or not.
-  ───────────────────────────────────────────────────────────────────────────── */
+  /* ── Determine green return arrow for return-line steps ── */
   const isReturnLine = (as.activeStep === 4);
-  const nextAs = INORDER_ANIM_STEPS[idx + 1];
+  const nextAs = animSteps[idx + 1];
   const retArrow = (isReturnLine && nextAs && nextAs.arrow && nextAs.arrow.type === 'ret')
     ? nextAs.arrow
     : null;
 
-  /* Allow re-animation when revisiting (back/forward nav) */
   if (isReturnLine && retArrow) {
     drawnLinks.delete(`ret:${retArrow.fromBox}->${retArrow.toBox}`);
   }
 
-  /* ── Standard phase: fade gone boxes → pan → show current state ── */
+  /* ── Eager call: when highlighting a left/right recursive call line,
+     immediately show the child box + animated blue arrow + pan to child.
+     This eliminates the "one step late" feel for call arrows.
+     Preorder: left=step2, right=step3. Inorder: left=step1, right=step3. ── */
+  const isCallLine = (as.activeStep === 1 || as.activeStep === 2 || as.activeStep === 3);
+  const eagerCall = (isCallLine && nextAs && nextAs.arrow && nextAs.arrow.type === 'call')
+    ? nextAs.arrow
+    : null;
+
+  if (eagerCall) {
+    /* Always re-animate when landing on this step (forward or backward nav) */
+    drawnLinks.delete(`${eagerCall.fromBox}->${eagerCall.toBox}`);
+  }
+  /* When going back past a call step, clear its link key so it re-animates on return */
+  if (!eagerCall && isCallLine && nextAs && !nextAs.arrow) {
+    /* nothing extra needed */
+  }
+
   function phaseStandard() {
     fadeOutBoxes(disappearing, () => {
-      smoothPanToBox(as.panTo, () => {
+      /* If eager call: pan to the child box (nextAs.panTo) so user sees the new frame appear */
+      const panTarget = eagerCall ? nextAs.panTo : as.panTo;
+      smoothPanToBox(panTarget, () => {
         setTimeout(() => {
-          setBoxVisibility(as);
-          setBoxStepHighlight(as);
-          /* For return-line steps: show link arrows + green.
-             For all others: full redraw (no green unless step carries its own ret). */
-          if (isReturnLine && retArrow) {
+          if (eagerCall) {
+            /* Build a merged visibility: current as state + child box from nextAs visible */
+            const mergedAs = Object.assign({}, as, {
+              boxes: nextAs.boxes,
+              hidden: nextAs.hidden,
+              dimmed: as.dimmed  /* keep current dimming (parent stays visible) */
+            });
+            setBoxVisibility(mergedAs, boxIdList);
+            /* Keep line highlight on CURRENT parent step, not the child's step 0 */
+            setBoxStepHighlight(as, boxIdList);
+            /* Draw ancestor links for current state, then animate the new call arrow */
             clearArrows();
             requestAnimationFrame(() => {
               const allLinks = getAncestorLinks(as);
               allLinks.forEach((lk, i) => drawLinkArrow(lk, i !== 0));
-              drawReturnArrow(retArrow);
+              /* Animate the eager call arrow */
+              const callKey = `${eagerCall.fromBox}->${eagerCall.toBox}`;
+              if (!drawnLinks.has(callKey)) {
+                drawnLinks.add(callKey);
+                const from = getStepRowMidpoint(eagerCall.fromBox, eagerCall.fromStep, 'right');
+                const to   = getBoxHeaderMidpoint(eagerCall.toBox, 'left');
+                if (from && to) {
+                  makePath(bezierPath(from.x, from.y, to.x, to.y), 'arrow-link', 'mh-call', true);
+                }
+              }
             });
           } else {
-            redrawAllArrows(as, false);
+            setBoxVisibility(as, boxIdList);
+            setBoxStepHighlight(as, boxIdList);
+            if (isReturnLine && retArrow) {
+              clearArrows();
+              requestAnimationFrame(() => {
+                const allLinks = getAncestorLinks(as);
+                allLinks.forEach((lk, i) => drawLinkArrow(lk, i !== 0));
+                drawReturnArrow(retArrow);
+              });
+            } else {
+              redrawAllArrows(as, false);
+            }
           }
-          updateAnimDots(idx);
+          updateAnimDots(idx, animSteps);
           if (elAnimStatus) {
             const stepNum = idx + 1;
-            elAnimStatus.textContent = stepNum >= INORDER_ANIM_STEPS.length ? 'Done' : `Step ${stepNum}`;
+            elAnimStatus.textContent = stepNum >= animSteps.length ? 'Done' : `Step ${stepNum}`;
           }
-          if (as.done) showDoneOverlay();
+          if (as.done) showDoneOverlay(doneOutput);
         }, nextVis.size > prevVis.size ? SETTLE : 0);
       });
     });
@@ -1178,15 +1433,16 @@ function renderAnimStep(idx) {
   phaseStandard();
 }
 
-function showDoneOverlay() {
+function showDoneOverlay(outputStr) {
   if (!animViewport) return;
   if (animViewport.querySelector('.done-overlay')) return;
+  const out = outputStr || 'B → D → A → E → C → F';
   const div = document.createElement('div');
   div.className = 'done-overlay';
   div.innerHTML =
     `<div class="done-icon">🌿</div>` +
     `<div class="done-title">Traversal Done!</div>` +
-    `<div class="done-sub">Output: B → D → A → E → C → F</div>`;
+    `<div class="done-sub">Output: ${out}</div>`;
   animViewport.appendChild(div);
 }
 
@@ -1256,18 +1512,26 @@ function renderStep(idx) {
     }
   });
 
-  /* SVG tree: inorder visit glow — orange node + green glow ring at printf moment */
+  /* SVG tree: visit glow — orange node + green glow ring at printf moment */
   const isInorderVisitStep = currentType === 'inorder'
     && s.codeLines.length === 1 && s.codeLines[0] === 14
     && s.currentNode !== null
     && s.visitedNodes.includes(s.currentNode)
     && s.visitedNodes[s.visitedNodes.length - 1] === s.currentNode;
 
+  const isPreorderVisitStep = currentType === 'preorder'
+    && s.codeLines.length === 1 && s.codeLines[0] === 13
+    && s.currentNode !== null
+    && s.visitedNodes.includes(s.currentNode)
+    && s.visitedNodes[s.visitedNodes.length - 1] === s.currentNode;
+
+  const isVisitStep = isInorderVisitStep || isPreorderVisitStep;
+
   Object.keys(NODE_POS).forEach(id => {
     const glowEl = document.getElementById(`glow-${id}`);
     if (!glowEl) return;
     glowEl.classList.remove('visit-glow');
-    if (isInorderVisitStep && id === s.currentNode) {
+    if (isVisitStep && id === s.currentNode) {
       glowEl.classList.add('visit-glow');
     }
   });
@@ -1374,7 +1638,7 @@ function switchTraversal(type) {
     animCanvas.style.transition = '';
     animCanvas.style.transform  = 'translate(0px, 0px)';
   }
-  ALL_ANIM_BOX_IDS.forEach(id => {
+  [...ALL_ANIM_BOX_IDS, ...ALL_PREORDER_BOX_IDS].forEach(id => {
     const el = boxEls[id];
     if (el) {
       el.style.display = 'none';
@@ -1479,8 +1743,9 @@ document.addEventListener('keydown', (e) => {
   window.addEventListener('mousemove', e => {
     if (!dragging) return;
     setOffsets(startOffX + (startX - e.clientX), startOffY + (startY - e.clientY));
-    if (currentType === 'inorder' && INORDER_ANIM_STEPS[currentStep]) {
-      redrawAllArrows(INORDER_ANIM_STEPS[currentStep]);
+    const animSteps = currentType === 'preorder' ? PREORDER_ANIM_STEPS : INORDER_ANIM_STEPS;
+    if ((currentType === 'inorder' || currentType === 'preorder') && animSteps[currentStep]) {
+      redrawAllArrows(animSteps[currentStep]);
     }
   });
 
@@ -1506,8 +1771,9 @@ document.addEventListener('keydown', (e) => {
     const off = getCurrentOffsets();
     setOffsets(off.x + velX, off.y + velY);
     velX *= FRICTION; velY *= FRICTION;
-    if (currentType === 'inorder' && INORDER_ANIM_STEPS[currentStep]) {
-      redrawAllArrows(INORDER_ANIM_STEPS[currentStep]);
+    const animSteps2 = currentType === 'preorder' ? PREORDER_ANIM_STEPS : INORDER_ANIM_STEPS;
+    if ((currentType === 'inorder' || currentType === 'preorder') && animSteps2[currentStep]) {
+      redrawAllArrows(animSteps2[currentStep]);
     }
     inertiaRaf = requestAnimationFrame(runInertia);
   }
@@ -1533,8 +1799,9 @@ document.addEventListener('keydown', (e) => {
     velY = (lastTouchY - ty) / dt * 16;
     lastTouchX = tx; lastTouchY = ty; lastTouchTime = now;
     setOffsets(touchOffX + (touchStartX - tx), touchOffY + (touchStartY - ty));
-    if (currentType === 'inorder' && INORDER_ANIM_STEPS[currentStep]) {
-      redrawAllArrows(INORDER_ANIM_STEPS[currentStep]);
+    const animSteps3 = currentType === 'preorder' ? PREORDER_ANIM_STEPS : INORDER_ANIM_STEPS;
+    if ((currentType === 'inorder' || currentType === 'preorder') && animSteps3[currentStep]) {
+      redrawAllArrows(animSteps3[currentStep]);
     }
   }, { passive: true });
 
@@ -1554,16 +1821,18 @@ document.addEventListener('keydown', (e) => {
     } else {
       setOffsets(off.x, off.y + e.deltaY * 0.8);
     }
-    if (currentType === 'inorder' && INORDER_ANIM_STEPS[currentStep]) {
-      redrawAllArrows(INORDER_ANIM_STEPS[currentStep]);
+    const animSteps4 = currentType === 'preorder' ? PREORDER_ANIM_STEPS : INORDER_ANIM_STEPS;
+    if ((currentType === 'inorder' || currentType === 'preorder') && animSteps4[currentStep]) {
+      redrawAllArrows(animSteps4[currentStep]);
     }
   }, { passive: false });
 })();
 
 /* Resize: redraw arrows */
 window.addEventListener('resize', () => {
-  if (currentType === 'inorder' && INORDER_ANIM_STEPS[currentStep]) {
-    redrawAllArrows(INORDER_ANIM_STEPS[currentStep]);
+  const animSteps5 = currentType === 'preorder' ? PREORDER_ANIM_STEPS : INORDER_ANIM_STEPS;
+  if ((currentType === 'inorder' || currentType === 'preorder') && animSteps5[currentStep]) {
+    redrawAllArrows(animSteps5[currentStep]);
   }
 });
 
