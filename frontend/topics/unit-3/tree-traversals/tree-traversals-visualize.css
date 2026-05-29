@@ -907,9 +907,15 @@
 
 /* ═══ MOBILE ════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  :root { --header-h: 52px; --tab-h: 42px; }
+  :root { --header-h: 52px; --tab-h: 42px; --mobile-card-h: 420px; }
 
-  .viz-body { height: auto; min-height: 100vh; overflow-y: auto; overflow-x: hidden; }
+  /* ── Body: scrollable column ── */
+  .viz-body {
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
 
   .viz-header { padding: 0 14px; }
   .viz-header-divider { display: none; }
@@ -918,22 +924,163 @@
   .viz-tab-row { padding: 0 14px; gap: 8px; }
   .viz-tab-btn { font-size: 12px; padding: 5px 14px; }
 
+  /* ── Main: two rows (top-card + code) ── */
   .viz-main {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 12px;
-    overflow: visible;
+    gap: 10px;
+    padding: 10px 12px;
+    overflow: hidden;
   }
 
-  .viz-panel { flex-shrink: 0; border-radius: var(--radius); }
+  /* ── TOP CARD: fixed height, clips both pages ── */
+  .viz-mobile-top-card {
+    height: var(--mobile-card-h);
+    flex-shrink: 0;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
 
-  .viz-right-panel { height: auto; overflow: visible; }
-  .viz-right-scroll { overflow: visible; height: auto; }
+  /* Toggle bar inside top card */
+  .viz-mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 8px 16px 6px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(to bottom, rgba(248,250,252,.95) 0%, rgba(255,255,255,0) 100%);
+    position: relative;
+    z-index: 5;
+  }
 
-  .viz-anim-panel { min-height: 320px; }
-  .viz-code-panel { height: 35vh; min-height: 200px; }
+  .viz-mobile-toggle-track {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 99px;
+    padding: 3px;
+    position: relative;
+  }
 
+  .viz-mobile-toggle-btn {
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    border-radius: 99px;
+    padding: 5px 16px;
+    cursor: pointer;
+    transition: color .2s, background .2s;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+  }
+
+  .viz-mobile-toggle-btn.active {
+    color: var(--blue);
+    background: var(--card-bg);
+    box-shadow: 0 1px 4px rgba(15,23,42,0.10);
+  }
+
+  .viz-mobile-toggle-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    margin: 0 2px;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+  .viz-mobile-toggle-dot.active { background: var(--blue); }
+
+  /* Pages slider container */
+  .viz-mobile-pages {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    width: 200%;
+    transition: transform .32s cubic-bezier(.4,0,.2,1);
+    will-change: transform;
+  }
+
+  .viz-mobile-pages.show-tree {
+    transform: translateX(-50%);
+  }
+
+  /* Each page = exactly half the slider = full card width */
+  .viz-mobile-page {
+    width: 50%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* ── ANIM PANEL inside page 1 ── */
+  .viz-anim-panel {
+    flex: 1;
+    min-height: 0;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+  .viz-anim-panel:hover { box-shadow: none; }
+
+  /* ── RIGHT PANEL inside page 2: scrollable internally ── */
+  .viz-right-panel {
+    flex: 1;
+    min-height: 0;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .viz-right-panel:hover { box-shadow: none; }
+
+  .viz-right-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Code panel: remaining space */
+  .viz-code-panel {
+    flex: 1;
+    min-height: 0;
+    min-height: 160px;
+  }
+
+  /* ── Call stack: tighter on mobile ── */
+  .call-box {
+    width: 195px;
+  }
+  .box-fn-name { font-size: 11px; }
+  .box-step { font-size: 10px; padding: 3px 10px; gap: 6px; }
+  .box-header { padding: 6px 10px; gap: 6px; }
+  .box-badge { font-size: 10px; padding: 2px 6px; }
+  .step-num { font-size: 9px; }
+
+  /* Controls */
   .viz-controls {
     flex-wrap: wrap;
     gap: 5px;
@@ -942,8 +1089,18 @@
   .viz-ctrl-btn { font-size: 11.5px; padding: 6px 10px; }
   .viz-progress-dots { display: none; }
 
-  .call-box { width: 180px; }
-  .box-fn-name { font-size: 10px; }
-  .box-step { font-size: 9.5px; }
-  .box-header { padding: 6px 10px; }
+  /* Status bar: wrap on narrow */
+  .viz-status-bar {
+    flex-wrap: wrap;
+  }
+  .viz-status-chip {
+    min-width: 80px;
+  }
+}
+
+/* ── Extra small ── */
+@media (max-width: 400px) {
+  :root { --mobile-card-h: 390px; }
+  .call-box { width: 170px; }
+  .viz-mobile-toggle-btn { padding: 5px 12px; font-size: 11.5px; }
 }

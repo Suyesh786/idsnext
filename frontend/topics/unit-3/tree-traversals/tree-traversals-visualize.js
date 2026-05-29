@@ -2003,3 +2003,160 @@ buildCodePanel();
 buildAnimProgressDots();
 buildTreeSVG();
 renderStep(0);
+/* ═══════════════════════════════════════════════════════════
+   MOBILE PAGE TOGGLE — Animation ↔ Tree
+   Only activates on mobile (≤768px). Desktop untouched.
+═══════════════════════════════════════════════════════════ */
+(function initMobileToggle() {
+  const BREAKPOINT = 768;
+
+  function isMobile() { return window.innerWidth <= BREAKPOINT; }
+
+  /* Build the top card wrapper + inject toggle bar */
+  function buildMobileCard() {
+    if (document.getElementById('mobileTopCard')) return; // already built
+
+    const animPanel  = document.querySelector('.viz-anim-panel');
+    const rightPanel = document.querySelector('.viz-right-panel');
+    const vizMain    = document.querySelector('.viz-main');
+    if (!animPanel || !rightPanel || !vizMain) return;
+
+    /* Create top card */
+    const card = document.createElement('div');
+    card.className = 'viz-mobile-top-card viz-panel';
+    card.id = 'mobileTopCard';
+
+    /* Toggle bar */
+    card.innerHTML = `
+      <div class="viz-mobile-toggle" id="mobileToggleBar">
+        <div class="viz-mobile-toggle-track">
+          <button class="viz-mobile-toggle-btn active" id="mToggleAnim">Animation</button>
+          <span class="viz-mobile-toggle-dot active" id="mDot0"></span>
+          <span class="viz-mobile-toggle-dot" id="mDot1"></span>
+          <button class="viz-mobile-toggle-btn" id="mToggleTree">Tree</button>
+        </div>
+      </div>
+    `;
+
+    /* Pages slider */
+    const pages = document.createElement('div');
+    pages.className = 'viz-mobile-pages';
+    pages.id = 'mobilePages';
+
+    const page1 = document.createElement('div');
+    page1.className = 'viz-mobile-page';
+    page1.id = 'mobilePage1';
+
+    const page2 = document.createElement('div');
+    page2.className = 'viz-mobile-page';
+    page2.id = 'mobilePage2';
+
+    page1.appendChild(animPanel);
+    page2.appendChild(rightPanel);
+    pages.appendChild(page1);
+    pages.appendChild(page2);
+    card.appendChild(pages);
+
+    /* Insert card as first child of viz-main (before code panel) */
+    vizMain.insertBefore(card, vizMain.firstChild);
+
+    setupToggleEvents();
+    setupSwipe();
+  }
+
+  let currentPage = 0; // 0=anim, 1=tree
+
+  function setPage(idx, animate) {
+    currentPage = idx;
+    const pages  = document.getElementById('mobilePages');
+    const bAnim  = document.getElementById('mToggleAnim');
+    const bTree  = document.getElementById('mToggleTree');
+    const dot0   = document.getElementById('mDot0');
+    const dot1   = document.getElementById('mDot1');
+    if (!pages) return;
+
+    if (!animate) pages.style.transition = 'none';
+    pages.classList.toggle('show-tree', idx === 1);
+    if (!animate) requestAnimationFrame(() => { pages.style.transition = ''; });
+
+    if (bAnim)  bAnim.classList.toggle('active',  idx === 0);
+    if (bTree)  bTree.classList.toggle('active',  idx === 1);
+    if (dot0) { dot0.classList.toggle('active', idx === 0); }
+    if (dot1) { dot1.classList.toggle('active', idx === 1); }
+  }
+
+  function setupToggleEvents() {
+    const bAnim = document.getElementById('mToggleAnim');
+    const bTree = document.getElementById('mToggleTree');
+    if (bAnim) bAnim.addEventListener('click', () => setPage(0, true));
+    if (bTree) bTree.addEventListener('click', () => setPage(1, true));
+  }
+
+  /* Swipe left/right inside top card to switch pages */
+  function setupSwipe() {
+    const card = document.getElementById('mobileTopCard');
+    if (!card) return;
+
+    let sx = 0, sy = 0, moved = false;
+
+    card.addEventListener('touchstart', e => {
+      /* Only track if touch starts in toggle bar or pages (not anim viewport panning) */
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+      moved = false;
+    }, { passive: true });
+
+    card.addEventListener('touchmove', e => {
+      moved = true;
+    }, { passive: true });
+
+    card.addEventListener('touchend', e => {
+      if (!moved) return;
+      const ex = e.changedTouches[0].clientX;
+      const ey = e.changedTouches[0].clientY;
+      const dx = ex - sx;
+      const dy = ey - sy;
+      /* Only count as horizontal swipe if dx > dy and dx > threshold */
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        if (dx < 0 && currentPage === 0) setPage(1, true); // swipe left → tree
+        if (dx > 0 && currentPage === 1) setPage(0, true); // swipe right → anim
+      }
+    }, { passive: true });
+  }
+
+  /* Restore original DOM on resize to desktop */
+  function teardownMobileCard() {
+    const card   = document.getElementById('mobileTopCard');
+    const vizMain = document.querySelector('.viz-main');
+    if (!card || !vizMain) return;
+
+    const animPanel  = document.querySelector('.viz-anim-panel');
+    const rightPanel = document.querySelector('.viz-right-panel');
+
+    /* Move panels back to viz-main */
+    if (animPanel)  vizMain.insertBefore(animPanel,  card);
+    if (rightPanel) vizMain.appendChild(rightPanel);
+
+    card.remove();
+    currentPage = 0;
+  }
+
+  /* Init on load */
+  let mobileActive = false;
+
+  function checkBreakpoint() {
+    if (isMobile() && !mobileActive) {
+      mobileActive = true;
+      buildMobileCard();
+    } else if (!isMobile() && mobileActive) {
+      mobileActive = false;
+      teardownMobileCard();
+    }
+  }
+
+  /* Run after existing init */
+  requestAnimationFrame(() => {
+    checkBreakpoint();
+    window.addEventListener('resize', checkBreakpoint);
+  });
+})();
