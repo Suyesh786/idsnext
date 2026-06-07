@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Search Tree | iDS Studio Next</title>
+<link rel="stylesheet" href="../../../dashboard/dashboard.css">
+<link rel="stylesheet" href="binary-search-tree.css">
+<link rel="stylesheet" href="../../../visualize-button/visualize-button.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+
+<body data-page="">
+
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main ll-main" id="mainContent">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <nav class="breadcrumb">
+        <a href="../../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 3</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Binary Search Tree</span>
+      </nav>
+      <h1 class="lesson-heading">
+        Binary Search Tree
+        <span class="lesson-heading-tag">Ordered Binary Tree</span>
+      </h1>
+    </div>
+
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- ── SECTION 01: What is a BST? ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is a Binary Search Tree?</h2>
+      </div>
+
+      <div class="bst-split">
+        <div class="bst-text">
+          <div class="definition-box">
+            <div class="definition-icon">🔎</div>
+            <div class="definition-body">
+              A <strong>Binary Search Tree</strong> is a binary tree where every node follows one simple rule:
+              values smaller than the node go to its <span class="highlight-text">left subtree</span>,
+              and values greater than the node go to its <span class="highlight-text">right subtree</span>.
+            </div>
+          </div>
+          <p class="lesson-para">
+            The name says exactly what it does. It is a <strong>binary tree</strong> because each node can have at most two children, and it is built for <strong>searching</strong> because the ordering rule tells us which side to ignore.
+          </p>
+          <p class="lesson-para">
+            Think of it like a sorted decision path. At each node, you ask one question: "Is my value smaller or larger?" That answer decides the next direction.
+          </p>
+          <div class="info-box">
+            <span class="info-icon">💡</span>
+            <span>A balanced BST can find values much faster than a linked list because it does not need to check every node one by one.</span>
+          </div>
+        </div>
+
+        <div class="bst-diagram">
+          <div class="tree-visual-wrap" style="margin:0;">
+            <div class="tree-visual-label">A BST keeps smaller values left and larger values right</div>
+            <div class="tree-diagram">
+              <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" class="tree-svg" aria-label="Binary Search Tree with root 50">
+                <line x1="260" y1="54" x2="145" y2="122" class="edge"/>
+                <line x1="260" y1="54" x2="375" y2="122" class="edge"/>
+                <line x1="145" y1="122" x2="82" y2="200" class="edge"/>
+                <line x1="145" y1="122" x2="208" y2="200" class="edge"/>
+                <line x1="375" y1="122" x2="312" y2="200" class="edge"/>
+                <line x1="375" y1="122" x2="438" y2="200" class="edge"/>
+
+                <circle cx="260" cy="42" r="30" class="node node-root"/>
+                <text x="260" y="48" class="node-text root-text">50</text>
+                <text x="214" y="26" class="diagram-note">root</text>
+
+                <circle cx="145" cy="122" r="28" class="node node-left"/>
+                <text x="145" y="128" class="node-text left-text">30</text>
+                <circle cx="375" cy="122" r="28" class="node node-right"/>
+                <text x="375" y="128" class="node-text right-text">70</text>
+
+                <circle cx="82" cy="200" r="25" class="node node-left"/>
+                <text x="82" y="205" class="node-text left-text">20</text>
+                <circle cx="208" cy="200" r="25" class="node node-left"/>
+                <text x="208" y="205" class="node-text left-text">40</text>
+                <circle cx="312" cy="200" r="25" class="node node-right"/>
+                <text x="312" y="205" class="node-text right-text">60</text>
+                <circle cx="438" cy="200" r="25" class="node node-right"/>
+                <text x="438" y="205" class="node-text right-text">80</text>
+
+                <text x="132" y="88" class="diagram-note">less than 50</text>
+                <text x="348" y="88" class="diagram-note">greater than 50</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 02: Structure ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Structure of a BST</h2>
+      </div>
+
+      <p class="lesson-para">
+        A BST is made of nodes. Each node stores a value and two links: one to the left child and one to the right child. A group of nodes below any node is called a <strong>subtree</strong>.
+      </p>
+
+      <div class="structure-grid">
+        <div class="structure-card">
+          <div class="structure-title">Node fields</div>
+          <div class="node-memory">
+            <div class="memory-cell pointer-cell">left</div>
+            <div class="memory-cell data-cell">data</div>
+            <div class="memory-cell pointer-cell">right</div>
+          </div>
+          <p class="mini-desc">Every BST node has the same three-part memory layout.</p>
+        </div>
+        <div class="structure-card">
+          <div class="structure-title">Tree roles</div>
+          <div class="role-list">
+            <div class="role-item"><span class="role-dot root-dot"></span><strong>Root</strong> starts the tree.</div>
+            <div class="role-item"><span class="role-dot left-dot"></span><strong>Left subtree</strong> stores smaller values.</div>
+            <div class="role-item"><span class="role-dot right-dot"></span><strong>Right subtree</strong> stores larger values.</div>
+            <div class="role-item"><span class="role-dot leaf-dot"></span><strong>Leaf</strong> has no children.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block small-code">
+        <div class="code-block-header">
+          <span class="code-lang">C — BST Node Structure</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content">struct node {
+    int data;
+    struct node* left;
+    struct node* right;
+};</pre>
+      </div>
+    </section>
+
+    <!-- ── SECTION 03: Properties ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">BST Properties</h2>
+      </div>
+
+      <div class="property-split">
+        <div>
+          <p class="lesson-para">
+            The BST rule is not applied only at the root. It must be true for <strong>every node</strong> in the tree. That is what makes searching reliable.
+          </p>
+          <div class="property-list">
+            <div class="property-item">
+              <span class="property-num">1</span>
+              <span>All values in the left subtree are smaller than the current node.</span>
+            </div>
+            <div class="property-item">
+              <span class="property-num">2</span>
+              <span>All values in the right subtree are greater than the current node.</span>
+            </div>
+            <div class="property-item">
+              <span class="property-num">3</span>
+              <span>Both left and right subtrees must also be valid BSTs.</span>
+            </div>
+          </div>
+          <div class="info-box">
+            <span class="info-icon">ℹ️</span>
+            <span>Duplicates are handled by policy: many simple BST programs either ignore duplicates or always place them on one chosen side.</span>
+          </div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-title">BST ordering rule</div>
+          <div class="rule-visual">
+            <div class="rule-zone rule-left">&lt; Root</div>
+            <div class="rule-root">Root</div>
+            <div class="rule-zone rule-right">&gt; Root</div>
+          </div>
+          <div class="rule-equation">Left &lt; Root &lt; Right</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 04: Searching ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">How Searching Works</h2>
+      </div>
+
+      <p class="lesson-para">
+        Searching in a BST is a guided walk. Start at the root, compare the target with the current node, and move only in the direction where the answer can exist.
+      </p>
+
+      <div class="operation-card">
+        <div class="operation-content">
+          <div class="operation-badge">Search</div>
+          <h3 class="operation-title">Purpose</h3>
+          <p class="operation-desc">Find whether a value exists in the tree.</p>
+          <h3 class="operation-title">Idea</h3>
+          <p class="operation-desc">Compare once per level. Smaller goes left, larger goes right, equal means found.</p>
+          <div class="complexity-pill">Time: O(h)</div>
+        </div>
+        <div class="operation-visual">
+          <div class="path-title">Example: Search 60</div>
+          <div class="path-flow">
+            <span class="path-node">50</span>
+            <span class="path-arrow">→</span>
+            <span class="path-node">70</span>
+            <span class="path-arrow">→</span>
+            <span class="path-node found-node">60</span>
+          </div>
+          <div class="path-caption">60 is greater than 50, then smaller than 70, so the search turns right then left.</div>
+        </div>
+      </div>
+
+      <div class="step-grid">
+        <div class="step-card"><span class="step-num">1</span>Start at the root.</div>
+        <div class="step-card"><span class="step-num">2</span>If key is smaller, go left.</div>
+        <div class="step-card"><span class="step-num">3</span>If key is larger, go right.</div>
+        <div class="step-card"><span class="step-num">4</span>Stop when found or when the pointer becomes NULL.</div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 05: Insertion ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">How Insertion Works</h2>
+      </div>
+
+      <p class="lesson-para">
+        Insertion works like searching, but instead of stopping at an existing value, we stop at an empty child pointer. The new node is attached there.
+      </p>
+
+      <div class="operation-card insert-card">
+        <div class="operation-content">
+          <div class="operation-badge">Insert</div>
+          <h3 class="operation-title">Purpose</h3>
+          <p class="operation-desc">Add a new value without breaking the BST rule.</p>
+          <h3 class="operation-title">Idea</h3>
+          <p class="operation-desc">Follow comparisons until the correct left or right child is empty.</p>
+          <div class="complexity-pill">Time: O(h)</div>
+        </div>
+        <div class="before-after">
+          <div class="mini-tree-panel">
+            <div class="panel-label">Before</div>
+            <svg viewBox="0 0 220 150" class="tree-svg">
+              <line x1="110" y1="32" x2="60" y2="82" class="edge"/>
+              <line x1="110" y1="32" x2="160" y2="82" class="edge"/>
+              <line x1="160" y1="82" x2="130" y2="132" class="edge"/>
+              <circle cx="110" cy="25" r="21" class="node node-root"/><text x="110" y="30" class="node-text root-text">50</text>
+              <circle cx="60" cy="82" r="19" class="node node-left"/><text x="60" y="87" class="node-text left-text">30</text>
+              <circle cx="160" cy="82" r="19" class="node node-right"/><text x="160" y="87" class="node-text right-text">70</text>
+              <circle cx="130" cy="132" r="17" class="node node-right"/><text x="130" y="137" class="node-text right-text">60</text>
+            </svg>
+          </div>
+          <div class="mini-tree-panel">
+            <div class="panel-label">After inserting 65</div>
+            <svg viewBox="0 0 220 170" class="tree-svg">
+              <line x1="110" y1="32" x2="60" y2="82" class="edge"/>
+              <line x1="110" y1="32" x2="160" y2="82" class="edge"/>
+              <line x1="160" y1="82" x2="130" y2="132" class="edge"/>
+              <line x1="130" y1="132" x2="162" y2="158" class="edge edge-new"/>
+              <circle cx="110" cy="25" r="21" class="node node-root"/><text x="110" y="30" class="node-text root-text">50</text>
+              <circle cx="60" cy="82" r="19" class="node node-left"/><text x="60" y="87" class="node-text left-text">30</text>
+              <circle cx="160" cy="82" r="19" class="node node-right"/><text x="160" y="87" class="node-text right-text">70</text>
+              <circle cx="130" cy="132" r="17" class="node node-right"/><text x="130" y="137" class="node-text right-text">60</text>
+              <circle cx="162" cy="158" r="16" class="node node-new"/><text x="162" y="163" class="node-text new-text">65</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 06: Deletion ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">How Deletion Works</h2>
+      </div>
+
+      <p class="lesson-para">
+        Deletion must remove a value and still keep the BST valid. The simplest case is deleting a leaf node, because no child pointers need to be preserved.
+      </p>
+
+      <div class="operation-card delete-card">
+        <div class="operation-content">
+          <div class="operation-badge">Delete</div>
+          <h3 class="operation-title">Purpose</h3>
+          <p class="operation-desc">Remove a value while keeping the ordering rule true.</p>
+          <h3 class="operation-title">Idea</h3>
+          <p class="operation-desc">Find the node first, then handle it based on how many children it has.</p>
+          <div class="complexity-pill">Time: O(h)</div>
+        </div>
+        <div class="before-after">
+          <div class="mini-tree-panel">
+            <div class="panel-label">Before: delete leaf 20</div>
+            <svg viewBox="0 0 220 150" class="tree-svg">
+              <line x1="110" y1="32" x2="60" y2="82" class="edge"/>
+              <line x1="110" y1="32" x2="160" y2="82" class="edge"/>
+              <line x1="60" y1="82" x2="32" y2="132" class="edge edge-delete"/>
+              <line x1="60" y1="82" x2="88" y2="132" class="edge"/>
+              <circle cx="110" cy="25" r="21" class="node node-root"/><text x="110" y="30" class="node-text root-text">50</text>
+              <circle cx="60" cy="82" r="19" class="node node-left"/><text x="60" y="87" class="node-text left-text">30</text>
+              <circle cx="160" cy="82" r="19" class="node node-right"/><text x="160" y="87" class="node-text right-text">70</text>
+              <circle cx="32" cy="132" r="17" class="node node-delete"/><text x="32" y="137" class="node-text delete-text">20</text>
+              <circle cx="88" cy="132" r="17" class="node node-left"/><text x="88" y="137" class="node-text left-text">40</text>
+            </svg>
+          </div>
+          <div class="mini-tree-panel">
+            <div class="panel-label">After</div>
+            <svg viewBox="0 0 220 150" class="tree-svg">
+              <line x1="110" y1="32" x2="60" y2="82" class="edge"/>
+              <line x1="110" y1="32" x2="160" y2="82" class="edge"/>
+              <line x1="60" y1="82" x2="88" y2="132" class="edge"/>
+              <circle cx="110" cy="25" r="21" class="node node-root"/><text x="110" y="30" class="node-text root-text">50</text>
+              <circle cx="60" cy="82" r="19" class="node node-left"/><text x="60" y="87" class="node-text left-text">30</text>
+              <circle cx="160" cy="82" r="19" class="node node-right"/><text x="160" y="87" class="node-text right-text">70</text>
+              <circle cx="88" cy="132" r="17" class="node node-left"/><text x="88" y="137" class="node-text left-text">40</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-grid">
+        <div class="case-card">
+          <span class="case-label">Case 1</span>
+          <strong>Leaf node</strong>
+          <p>Remove it directly.</p>
+        </div>
+        <div class="case-card">
+          <span class="case-label">Case 2</span>
+          <strong>One child</strong>
+          <p>Connect the parent to the child.</p>
+        </div>
+        <div class="case-card">
+          <span class="case-label">Case 3</span>
+          <strong>Two children</strong>
+          <p>Replace with inorder successor, then delete the successor.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 07: Traversals ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2 class="section-title">BST Traversals</h2>
+      </div>
+
+      <p class="lesson-para">
+        Traversal means visiting every node exactly once. A BST can use the same traversals as any binary tree, but one traversal becomes especially powerful: <strong>inorder traversal prints values in sorted order</strong>.
+      </p>
+
+      <div class="traversal-layout">
+        <div class="tree-visual-wrap" style="margin:0;">
+          <div class="tree-visual-label">Traversal example tree</div>
+          <div class="tree-diagram">
+            <svg viewBox="0 0 430 230" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
+              <line x1="215" y1="50" x2="118" y2="110" class="edge"/>
+              <line x1="215" y1="50" x2="312" y2="110" class="edge"/>
+              <line x1="118" y1="110" x2="65" y2="178" class="edge"/>
+              <line x1="118" y1="110" x2="170" y2="178" class="edge"/>
+              <line x1="312" y1="110" x2="260" y2="178" class="edge"/>
+              <line x1="312" y1="110" x2="365" y2="178" class="edge"/>
+              <circle cx="215" cy="40" r="28" class="node node-root"/><text x="215" y="46" class="node-text root-text">50</text>
+              <circle cx="118" cy="110" r="25" class="node node-left"/><text x="118" y="115" class="node-text left-text">30</text>
+              <circle cx="312" cy="110" r="25" class="node node-right"/><text x="312" y="115" class="node-text right-text">70</text>
+              <circle cx="65" cy="178" r="23" class="node node-left"/><text x="65" y="183" class="node-text left-text">20</text>
+              <circle cx="170" cy="178" r="23" class="node node-left"/><text x="170" y="183" class="node-text left-text">40</text>
+              <circle cx="260" cy="178" r="23" class="node node-right"/><text x="260" y="183" class="node-text right-text">60</text>
+              <circle cx="365" cy="178" r="23" class="node node-right"/><text x="365" y="183" class="node-text right-text">80</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="traversal-cards">
+          <div class="traversal-card">
+            <span class="traversal-name">Inorder</span>
+            <span class="traversal-rule">Left → Root → Right</span>
+            <p>Output: <strong>20 → 30 → 40 → 50 → 60 → 70 → 80</strong></p>
+            <small>Best takeaway: sorted order.</small>
+          </div>
+          <div class="traversal-card">
+            <span class="traversal-name">Preorder</span>
+            <span class="traversal-rule">Root → Left → Right</span>
+            <p>Output: <strong>50 → 30 → 20 → 40 → 70 → 60 → 80</strong></p>
+            <small>Useful for copying tree structure.</small>
+          </div>
+          <div class="traversal-card">
+            <span class="traversal-name">Postorder</span>
+            <span class="traversal-rule">Left → Right → Root</span>
+            <p>Output: <strong>20 → 40 → 30 → 60 → 80 → 70 → 50</strong></p>
+            <small>Useful for freeing/deleting a tree.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 08: Time Complexity ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">08</span>
+        <h2 class="section-title">Time Complexity</h2>
+      </div>
+
+      <p class="lesson-para">
+        BST operation time depends on the height of the tree. If the tree stays balanced, height is close to <strong>log n</strong>. If it becomes skewed, height can become <strong>n</strong>.
+      </p>
+
+      <div class="table-wrap">
+        <table class="ids-table">
+          <thead>
+            <tr>
+              <th>Operation</th>
+              <th>Best Case</th>
+              <th>Average Case</th>
+              <th>Worst Case</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Search</td>
+              <td>O(log n)</td>
+              <td>O(log n)</td>
+              <td>O(n)</td>
+              <td>Follows one path from root to leaf.</td>
+            </tr>
+            <tr>
+              <td>Insert</td>
+              <td>O(log n)</td>
+              <td>O(log n)</td>
+              <td>O(n)</td>
+              <td>Searches for the empty position first.</td>
+            </tr>
+            <tr>
+              <td>Delete</td>
+              <td>O(log n)</td>
+              <td>O(log n)</td>
+              <td>O(n)</td>
+              <td>Finds the node, then repairs links.</td>
+            </tr>
+            <tr>
+              <td>Traversal</td>
+              <td>O(n)</td>
+              <td>O(n)</td>
+              <td>O(n)</td>
+              <td>Every node must be visited once.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="balance-note-grid">
+        <div class="balance-card good-balance">
+          <strong>Balanced BST</strong>
+          <span>Height is small, so search paths are short.</span>
+        </div>
+        <div class="balance-card weak-balance">
+          <strong>Skewed BST</strong>
+          <span>Tree behaves like a linked list, so performance drops.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 09: BST vs Binary Tree ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">09</span>
+        <h2 class="section-title">BST vs Binary Tree</h2>
+      </div>
+
+      <p class="lesson-para">
+        A BST is a binary tree with an extra ordering rule. That one rule changes how searching, traversal, and insertion behave.
+      </p>
+
+      <div class="table-wrap">
+        <table class="ids-table comparison-table">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Binary Tree</th>
+              <th>Binary Search Tree</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ordering</td>
+              <td>No required value order.</td>
+              <td>Left values are smaller; right values are larger.</td>
+            </tr>
+            <tr>
+              <td>Searching</td>
+              <td>May need to check many nodes.</td>
+              <td>Can skip an entire side at each comparison.</td>
+            </tr>
+            <tr>
+              <td>Insertion</td>
+              <td>Depends on the tree's purpose.</td>
+              <td>Inserted according to comparisons.</td>
+            </tr>
+            <tr>
+              <td>Efficiency</td>
+              <td>Usually O(n) for search.</td>
+              <td>O(log n) when balanced, O(n) when skewed.</td>
+            </tr>
+            <tr>
+              <td>Structure</td>
+              <td>Only the "up to two children" rule exists.</td>
+              <td>Every subtree must also follow BST order.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECTION 10: Advantages ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">10</span>
+        <h2 class="section-title">Advantages</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card">
+          <div class="app-icon">⚡</div>
+          <h4 class="app-title">Fast Searching</h4>
+          <p class="app-desc">A balanced BST avoids unnecessary branches and reaches the value quickly.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">↕</div>
+          <h4 class="app-title">Ordered Data</h4>
+          <p class="app-desc">Inorder traversal naturally gives values in sorted order.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">＋</div>
+          <h4 class="app-title">Dynamic Structure</h4>
+          <p class="app-desc">Nodes are created as needed, so size can grow at runtime.</p>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">⤴</div>
+          <h4 class="app-title">Efficient Insertion</h4>
+          <p class="app-desc">New values are placed by following a single search path.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 11: Limitations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">11</span>
+        <h2 class="section-title">Limitations</h2>
+      </div>
+
+      <div class="warning-grid">
+        <div class="warning-card">
+          <span class="warning-icon">!</span>
+          <h4>Can become skewed</h4>
+          <p>If values are inserted in sorted order, the BST can lean to one side.</p>
+        </div>
+        <div class="warning-card">
+          <span class="warning-icon">↻</span>
+          <h4>Recursive complexity</h4>
+          <p>Many BST algorithms are recursive, so beginners must understand call flow clearly.</p>
+        </div>
+        <div class="warning-card">
+          <span class="warning-icon">n</span>
+          <h4>Worst-case O(n)</h4>
+          <p>When the tree is skewed, search, insert, and delete may act like linked-list operations.</p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <span>Balanced BST variants like AVL Trees and Red-Black Trees solve this by rotating nodes to keep height small.</span>
+      </div>
+    </section>
+
+    <!-- ── SECTION 12: Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">12</span>
+        <h2 class="section-title">Applications</h2>
+      </div>
+
+      <p class="lesson-para">
+        BSTs are useful whenever data must stay searchable and ordered. Even when real systems use balanced versions, the idea starts here.
+      </p>
+
+      <div class="apps-grid">
+        <div class="app-card"><div class="app-icon">▦</div><h4 class="app-title">Databases</h4><p class="app-desc">Tree-based indexing concepts help locate records quickly.</p></div>
+        <div class="app-card"><div class="app-icon">⌂</div><h4 class="app-title">File Systems</h4><p class="app-desc">Ordered lookup ideas support fast organization and retrieval.</p></div>
+        <div class="app-card"><div class="app-icon">A</div><h4 class="app-title">Dictionaries</h4><p class="app-desc">Words or keys can be stored for ordered searching.</p></div>
+        <div class="app-card"><div class="app-icon">⇄</div><h4 class="app-title">Routing Tables</h4><p class="app-desc">Ordered key lookup helps choose matching entries efficiently.</p></div>
+        <div class="app-card"><div class="app-icon">⌕</div><h4 class="app-title">Autocomplete</h4><p class="app-desc">Range-style lookup ideas help narrow possible suggestions.</p></div>
+        <div class="app-card"><div class="app-icon">{ }</div><h4 class="app-title">Symbol Tables</h4><p class="app-desc">Compilers store identifiers and retrieve them by name.</p></div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 13: Implementation ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">13</span>
+        <h2 class="section-title">Implementation in C</h2>
+        <div class="visualize-button-mount" data-visualize-link="binary-search-tree-visualize.html"></div>
+      </div>
+
+      <p class="lesson-para">
+        The C implementation follows the same idea as the theory: compare with the current node, then move left or right. Below are the basic building blocks.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">C — Node and Creation</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content">#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+
+struct node {
+    int data;
+    struct node* left;
+    struct node* right;
+};
+
+struct node* createNode(int value) {
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    newNode-&gt;data = value;
+    newNode-&gt;left = NULL;
+    newNode-&gt;right = NULL;
+    return newNode;
+}</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">C — Basic Search Function</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content">struct node* search(struct node* root, int key) {
+    if (root == NULL || root-&gt;data == key) {
+        return root;
+    }
+
+    if (key &lt; root-&gt;data) {
+        return search(root-&gt;left, key);
+    }
+
+    return search(root-&gt;right, key);
+}</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">C — Basic Insertion</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content">struct node* insert(struct node* root, int value) {
+    if (root == NULL) {
+        return createNode(value);
+    }
+
+    if (value &lt; root-&gt;data) {
+        root-&gt;left = insert(root-&gt;left, value);
+    } else if (value &gt; root-&gt;data) {
+        root-&gt;right = insert(root-&gt;right, value);
+    }
+
+    return root;
+}</pre>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">👁️</span>
+        <span>Notice how search and insert both use the same decision rule: smaller values move left, larger values move right.</span>
+      </div>
+    </section>
+
+    <!-- Sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGradBST)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGradBST" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="binary-search-tree.js"></script>
+<link rel="stylesheet" href="../../../spark/spark.css">
+<script src="../../../spark/spark.js"></script>
+<script src="../../../sidebar/sidebar.js"></script>
+<script src="../../../visualize-button/visualize-button.js"></script>
+</body>
+</html>
