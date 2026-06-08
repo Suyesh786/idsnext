@@ -396,123 +396,10 @@
       </div>
     </section>
 
-    <!-- ── SECTION 09: Expression Tree vs Binary Tree ── -->
+    <!-- ── SECTION 09: Implementation in C ── -->
     <section class="lesson-section">
       <div class="section-header">
         <span class="section-number">09</span>
-        <h2 class="section-title">Expression Tree vs Binary Tree</h2>
-      </div>
-
-      <p class="lesson-para">
-        An expression tree is a special use of a binary tree. The structure is binary, but the meaning of each node is specific to expressions.
-      </p>
-
-      <div class="table-wrap">
-        <table class="ids-table comparison-table">
-          <thead>
-            <tr>
-              <th>Topic</th>
-              <th>Binary Tree</th>
-              <th>Expression Tree</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Purpose</td>
-              <td>General hierarchical data storage.</td>
-              <td>Represents arithmetic or logical expressions.</td>
-            </tr>
-            <tr>
-              <td>Data Stored</td>
-              <td>Any kind of value.</td>
-              <td>Operators and operands.</td>
-            </tr>
-            <tr>
-              <td>Structure</td>
-              <td>Each node can have up to two children.</td>
-              <td>Operators usually have two children; operands are leaves.</td>
-            </tr>
-            <tr>
-              <td>Usage</td>
-              <td>Used for general tree algorithms.</td>
-              <td>Used for parsing, conversion, and evaluation.</td>
-            </tr>
-            <tr>
-              <td>Traversal Meaning</td>
-              <td>Shows visit order.</td>
-              <td>Produces infix, prefix, or postfix expressions.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ── SECTION 10: Advantages ── -->
-    <section class="lesson-section">
-      <div class="section-header">
-        <span class="section-number">10</span>
-        <h2 class="section-title">Advantages</h2>
-      </div>
-
-      <div class="apps-grid">
-        <div class="app-card"><div class="app-icon">=</div><h4 class="app-title">Easy Evaluation</h4><p class="app-desc">Evaluate children first, then apply the parent operator.</p></div>
-        <div class="app-card"><div class="app-icon">⚙</div><h4 class="app-title">Useful for Compilers</h4><p class="app-desc">Compilers use tree forms to analyze and generate code.</p></div>
-        <div class="app-card"><div class="app-icon">()</div><h4 class="app-title">Supports Precedence</h4><p class="app-desc">Parentheses and operator priority become part of the shape.</p></div>
-        <div class="app-card"><div class="app-icon">∗</div><h4 class="app-title">Handles Complexity</h4><p class="app-desc">Large expressions can be broken into smaller subexpressions.</p></div>
-      </div>
-    </section>
-
-    <!-- ── SECTION 11: Limitations ── -->
-    <section class="lesson-section">
-      <div class="section-header">
-        <span class="section-number">11</span>
-        <h2 class="section-title">Limitations</h2>
-      </div>
-
-      <div class="warning-grid">
-        <div class="warning-card">
-          <span class="warning-icon">M</span>
-          <h4>Extra Memory</h4>
-          <p>Each node stores data plus child pointers, so it uses more memory than a plain expression string.</p>
-        </div>
-        <div class="warning-card">
-          <span class="warning-icon">↧</span>
-          <h4>Complex Construction</h4>
-          <p>The tree usually needs parsing or postfix conversion before it can be built.</p>
-        </div>
-        <div class="warning-card">
-          <span class="warning-icon">1</span>
-          <h4>Not Always Needed</h4>
-          <p>For very simple calculations, building a full tree may be unnecessary overhead.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── SECTION 12: Applications ── -->
-    <section class="lesson-section">
-      <div class="section-header">
-        <span class="section-number">12</span>
-        <h2 class="section-title">Applications</h2>
-      </div>
-
-      <p class="lesson-para">
-        Expression trees appear wherever programs need to understand or evaluate formulas, expressions, or query logic.
-      </p>
-
-      <div class="apps-grid">
-        <div class="app-card"><div class="app-icon">C</div><h4 class="app-title">Compilers</h4><p class="app-desc">Represent parsed expressions before optimization and code generation.</p></div>
-        <div class="app-card"><div class="app-icon">I</div><h4 class="app-title">Interpreters</h4><p class="app-desc">Execute expressions directly from a tree-like representation.</p></div>
-        <div class="app-card"><div class="app-icon">∑</div><h4 class="app-title">Math Evaluation</h4><p class="app-desc">Evaluate formulas in a clear bottom-up order.</p></div>
-        <div class="app-card"><div class="app-icon">⌗</div><h4 class="app-title">Calculators</h4><p class="app-desc">Handle brackets and operator precedence correctly.</p></div>
-        <div class="app-card"><div class="app-icon">SQL</div><h4 class="app-title">SQL Query Processing</h4><p class="app-desc">Represent conditions and logical expressions in query plans.</p></div>
-        <div class="app-card"><div class="app-icon">{ }</div><h4 class="app-title">Language Parsing</h4><p class="app-desc">Build syntax structures for programming language expressions.</p></div>
-      </div>
-    </section>
-
-    <!-- ── SECTION 13: Implementation in C ── -->
-    <section class="lesson-section">
-      <div class="section-header">
-        <span class="section-number">13</span>
         <h2 class="section-title">Implementation in C</h2>
         <div class="visualize-button-mount" data-visualize-link="expression-tree-visualize.html"></div>
       </div>
@@ -566,6 +453,119 @@ root-&gt;left-&gt;right = createNode('B');</pre>
       <div class="info-box">
         <span class="info-icon">👁️</span>
         <span>This creates the tree for <strong>(A + B) * C</strong>. A full program would usually build this automatically from postfix or another parsed form.</span>
+      </div>
+    </section>
+
+    <!-- ── SECTION 10: Expression Tree vs Binary Tree ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">10</span>
+        <h2 class="section-title">Expression Tree vs Binary Tree</h2>
+      </div>
+
+      <p class="lesson-para">
+        An expression tree is a special use of a binary tree. The structure is binary, but the meaning of each node is specific to expressions.
+      </p>
+
+      <div class="table-wrap">
+        <table class="ids-table comparison-table">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Binary Tree</th>
+              <th>Expression Tree</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Purpose</td>
+              <td>General hierarchical data storage.</td>
+              <td>Represents arithmetic or logical expressions.</td>
+            </tr>
+            <tr>
+              <td>Data Stored</td>
+              <td>Any kind of value.</td>
+              <td>Operators and operands.</td>
+            </tr>
+            <tr>
+              <td>Structure</td>
+              <td>Each node can have up to two children.</td>
+              <td>Operators usually have two children; operands are leaves.</td>
+            </tr>
+            <tr>
+              <td>Usage</td>
+              <td>Used for general tree algorithms.</td>
+              <td>Used for parsing, conversion, and evaluation.</td>
+            </tr>
+            <tr>
+              <td>Traversal Meaning</td>
+              <td>Shows visit order.</td>
+              <td>Produces infix, prefix, or postfix expressions.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECTION 11: Advantages ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">11</span>
+        <h2 class="section-title">Advantages</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card"><div class="app-icon">=</div><h4 class="app-title">Easy Evaluation</h4><p class="app-desc">Evaluate children first, then apply the parent operator.</p></div>
+        <div class="app-card"><div class="app-icon">⚙</div><h4 class="app-title">Useful for Compilers</h4><p class="app-desc">Compilers use tree forms to analyze and generate code.</p></div>
+        <div class="app-card"><div class="app-icon">()</div><h4 class="app-title">Supports Precedence</h4><p class="app-desc">Parentheses and operator priority become part of the shape.</p></div>
+        <div class="app-card"><div class="app-icon">∗</div><h4 class="app-title">Handles Complexity</h4><p class="app-desc">Large expressions can be broken into smaller subexpressions.</p></div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 12: Limitations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">12</span>
+        <h2 class="section-title">Limitations</h2>
+      </div>
+
+      <div class="warning-grid">
+        <div class="warning-card">
+          <span class="warning-icon">M</span>
+          <h4>Extra Memory</h4>
+          <p>Each node stores data plus child pointers, so it uses more memory than a plain expression string.</p>
+        </div>
+        <div class="warning-card">
+          <span class="warning-icon">↧</span>
+          <h4>Complex Construction</h4>
+          <p>The tree usually needs parsing or postfix conversion before it can be built.</p>
+        </div>
+        <div class="warning-card">
+          <span class="warning-icon">1</span>
+          <h4>Not Always Needed</h4>
+          <p>For very simple calculations, building a full tree may be unnecessary overhead.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 13: Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">13</span>
+        <h2 class="section-title">Applications</h2>
+      </div>
+
+      <p class="lesson-para">
+        Expression trees appear wherever programs need to understand or evaluate formulas, expressions, or query logic.
+      </p>
+
+      <div class="apps-grid">
+        <div class="app-card"><div class="app-icon">C</div><h4 class="app-title">Compilers</h4><p class="app-desc">Represent parsed expressions before optimization and code generation.</p></div>
+        <div class="app-card"><div class="app-icon">I</div><h4 class="app-title">Interpreters</h4><p class="app-desc">Execute expressions directly from a tree-like representation.</p></div>
+        <div class="app-card"><div class="app-icon">∑</div><h4 class="app-title">Math Evaluation</h4><p class="app-desc">Evaluate formulas in a clear bottom-up order.</p></div>
+        <div class="app-card"><div class="app-icon">⌗</div><h4 class="app-title">Calculators</h4><p class="app-desc">Handle brackets and operator precedence correctly.</p></div>
+        <div class="app-card"><div class="app-icon">SQL</div><h4 class="app-title">SQL Query Processing</h4><p class="app-desc">Represent conditions and logical expressions in query plans.</p></div>
+        <div class="app-card"><div class="app-icon">{ }</div><h4 class="app-title">Language Parsing</h4><p class="app-desc">Build syntax structures for programming language expressions.</p></div>
       </div>
     </section>
 
