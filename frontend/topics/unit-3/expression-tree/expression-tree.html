@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expression Tree | iDS Studio Next</title>
+<link rel="stylesheet" href="../../../dashboard/dashboard.css">
+<link rel="stylesheet" href="expression-tree.css">
+<link rel="stylesheet" href="../../../visualize-button/visualize-button.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+
+<body data-page="">
+
+<!-- ═══════════ XP POPUP ═══════════ -->
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-icon">🎉</div>
+  <div class="xp-popup-text">
+    <span class="xp-popup-amount">+10 XP received</span>
+    <span class="xp-popup-sub">Lesson marked complete!</span>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main ll-main" id="mainContent">
+
+  <!-- Title Row -->
+  <div class="lesson-title-row">
+    <div class="lesson-title-left">
+      <nav class="breadcrumb">
+        <a href="../../../learn/learn.html" class="breadcrumb-link">Learn</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">Unit 3</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Expression Tree</span>
+      </nav>
+      <h1 class="lesson-heading">
+        Expression Tree
+        <span class="lesson-heading-tag">Expression Representation</span>
+      </h1>
+    </div>
+
+    <button class="mark-complete-btn" id="markCompleteBtn">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="btn-label">Mark Complete</span>
+    </button>
+  </div>
+
+  <!-- Content Box -->
+  <div class="lesson-content-box" id="lessonContentBox">
+
+    <!-- ── SECTION 01: What is an Expression Tree? ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">What is an Expression Tree?</h2>
+      </div>
+
+      <div class="expr-split">
+        <div class="expr-text">
+          <div class="definition-box">
+            <div class="definition-icon">∑</div>
+            <div class="definition-body">
+              An <strong>Expression Tree</strong> is a binary tree that stores an expression in tree form.
+              <span class="highlight-text">Operators</span> become internal nodes, and
+              <span class="highlight-text">operands</span> become leaf nodes.
+            </div>
+          </div>
+          <p class="lesson-para">
+            Instead of reading an expression only as text, an expression tree shows the actual solving structure. The top node is the final operation, and the children are the smaller expressions that must be solved first.
+          </p>
+          <p class="lesson-para">
+            For example, in <strong>(A + B) * C</strong>, the addition happens before multiplication because it is lower in the tree. The root <strong>*</strong> is the final operation.
+          </p>
+          <div class="info-box">
+            <span class="info-icon">💡</span>
+            <span>Compilers use tree-like structures to understand expressions, preserve operator precedence, and generate correct machine instructions.</span>
+          </div>
+        </div>
+
+        <div class="expr-diagram">
+          <div class="tree-visual-wrap" style="margin:0;">
+            <div class="tree-visual-label">Expression: (A + B) * C</div>
+            <div class="tree-diagram">
+              <svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg" class="tree-svg" aria-label="Expression tree for A plus B multiplied by C">
+                <line x1="180" y1="54" x2="112" y2="122" class="edge"/>
+                <line x1="180" y1="54" x2="248" y2="122" class="edge"/>
+                <line x1="112" y1="122" x2="74" y2="190" class="edge"/>
+                <line x1="112" y1="122" x2="150" y2="190" class="edge"/>
+
+                <circle cx="180" cy="42" r="30" class="expr-node operator-node"/>
+                <text x="180" y="50" class="expr-node-text operator-text">*</text>
+                <text x="216" y="31" class="diagram-note">final operation</text>
+
+                <circle cx="112" cy="122" r="27" class="expr-node operator-node"/>
+                <text x="112" y="130" class="expr-node-text operator-text">+</text>
+                <circle cx="248" cy="122" r="27" class="expr-node operand-node"/>
+                <text x="248" y="130" class="expr-node-text operand-text">C</text>
+
+                <circle cx="74" cy="190" r="25" class="expr-node operand-node"/>
+                <text x="74" y="198" class="expr-node-text operand-text">A</text>
+                <circle cx="150" cy="190" r="25" class="expr-node operand-node"/>
+                <text x="150" y="198" class="expr-node-text operand-text">B</text>
+
+                <text x="45" y="220" class="mini-caption">Leaves are operands</text>
+                <text x="196" y="220" class="mini-caption">Internal nodes are operators</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 02: Why Do We Need Expression Trees? ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Why Do We Need Expression Trees?</h2>
+      </div>
+
+      <p class="lesson-para">
+        Expressions written as strings can be confusing for a computer. Parentheses, precedence, and associativity must all be interpreted correctly. A tree makes the order of work visible.
+      </p>
+
+      <div class="need-grid">
+        <div class="need-card">
+          <div class="need-icon">()</div>
+          <h4>Handles precedence</h4>
+          <p>Multiplication, division, addition, and subtraction are placed according to the real solving order.</p>
+        </div>
+        <div class="need-card">
+          <div class="need-icon">↧</div>
+          <h4>Shows dependency</h4>
+          <p>A parent operator waits until its child expressions are evaluated first.</p>
+        </div>
+        <div class="need-card">
+          <div class="need-icon">⚙</div>
+          <h4>Helps compilers</h4>
+          <p>Compilers parse expressions into tree form before checking, optimizing, or generating code.</p>
+        </div>
+      </div>
+
+      <div class="process-strip">
+        <div class="process-chip">Text expression</div>
+        <div class="process-arrow">→</div>
+        <div class="process-chip">Tree structure</div>
+        <div class="process-arrow">→</div>
+        <div class="process-chip">Clear solving order</div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 03: Structure ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Structure of an Expression Tree</h2>
+      </div>
+
+      <div class="structure-grid">
+        <div class="structure-card">
+          <div class="structure-title">Root</div>
+          <p class="mini-desc">The topmost operator. It usually represents the final operation of the expression.</p>
+        </div>
+        <div class="structure-card">
+          <div class="structure-title">Internal Nodes</div>
+          <p class="mini-desc">These are operators like <strong>+</strong>, <strong>-</strong>, <strong>*</strong>, and <strong>/</strong>. They combine two child results.</p>
+        </div>
+        <div class="structure-card">
+          <div class="structure-title">Leaf Nodes</div>
+          <p class="mini-desc">These are operands like variables and numbers. They do not have children.</p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">ℹ️</span>
+        <span>Most basic expression trees are binary because each operator here works on two operands: left value and right value.</span>
+      </div>
+    </section>
+
+    <!-- ── SECTION 04: Components ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Components of an Expression Tree</h2>
+      </div>
+
+      <p class="lesson-para">
+        Expression trees are easy to read once you separate their two node types: operators and operands.
+      </p>
+
+      <div class="component-layout">
+        <div class="component-card">
+          <div class="component-head">
+            <span class="component-badge operator-badge">Operator Nodes</span>
+            <span class="component-note">Internal nodes</span>
+          </div>
+          <div class="symbol-row">
+            <span class="symbol-pill operator-pill">+</span>
+            <span class="symbol-pill operator-pill">-</span>
+            <span class="symbol-pill operator-pill">*</span>
+            <span class="symbol-pill operator-pill">/</span>
+          </div>
+          <p>Operators perform work. They take values from their left and right children.</p>
+        </div>
+
+        <div class="component-card">
+          <div class="component-head">
+            <span class="component-badge operand-badge">Operand Nodes</span>
+            <span class="component-note">Leaf nodes</span>
+          </div>
+          <div class="symbol-row">
+            <span class="symbol-pill operand-pill">A</span>
+            <span class="symbol-pill operand-pill">B</span>
+            <span class="symbol-pill operand-pill">5</span>
+            <span class="symbol-pill operand-pill">10</span>
+          </div>
+          <p>Operands hold actual values. They are the starting points for evaluation.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 05: Represents an Expression ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">How an Expression Tree Represents an Expression</h2>
+      </div>
+
+      <p class="lesson-para">
+        The tree form of <strong>(A + B) * (C - D)</strong> makes the expression's grouping visible. The root <strong>*</strong> says: multiply the result of the left expression by the result of the right expression.
+      </p>
+
+      <div class="mapping-card">
+        <div class="mapping-expression">
+          <span class="mapping-label">Expression</span>
+          <strong>(A + B) * (C - D)</strong>
+        </div>
+        <div class="mapping-arrow">↓</div>
+        <div class="tree-visual-wrap" style="margin:0;">
+          <div class="tree-visual-label">Mapped expression tree</div>
+          <div class="tree-diagram compact-tree">
+            <svg viewBox="0 0 430 240" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
+              <line x1="215" y1="54" x2="122" y2="120" class="edge"/>
+              <line x1="215" y1="54" x2="308" y2="120" class="edge"/>
+              <line x1="122" y1="120" x2="72" y2="192" class="edge"/>
+              <line x1="122" y1="120" x2="172" y2="192" class="edge"/>
+              <line x1="308" y1="120" x2="258" y2="192" class="edge"/>
+              <line x1="308" y1="120" x2="358" y2="192" class="edge"/>
+
+              <circle cx="215" cy="42" r="30" class="expr-node operator-node"/><text x="215" y="50" class="expr-node-text operator-text">*</text>
+              <circle cx="122" cy="120" r="27" class="expr-node operator-node"/><text x="122" y="128" class="expr-node-text operator-text">+</text>
+              <circle cx="308" cy="120" r="27" class="expr-node operator-node"/><text x="308" y="128" class="expr-node-text operator-text">-</text>
+              <circle cx="72" cy="192" r="24" class="expr-node operand-node"/><text x="72" y="200" class="expr-node-text operand-text">A</text>
+              <circle cx="172" cy="192" r="24" class="expr-node operand-node"/><text x="172" y="200" class="expr-node-text operand-text">B</text>
+              <circle cx="258" cy="192" r="24" class="expr-node operand-node"/><text x="258" y="200" class="expr-node-text operand-text">C</text>
+              <circle cx="358" cy="192" r="24" class="expr-node operand-node"/><text x="358" y="200" class="expr-node-text operand-text">D</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 06: Building ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Building an Expression Tree</h2>
+      </div>
+
+      <p class="lesson-para">
+        A common method is to convert an infix expression to postfix, then scan the postfix expression from left to right. Operands become nodes immediately; operators connect the two most recent nodes.
+      </p>
+
+      <div class="flow-diagram">
+        <div class="flow-step">Infix Expression</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">Convert to Postfix</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">Scan Symbols Left to Right</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">Push Operands as Nodes</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">On Operator: Pop 2, Attach, Push Back</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step flow-final">Final Stack Node = Root</div>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <span>For <strong>(A + B) * (C - D)</strong>, postfix becomes <strong>A B + C D - *</strong>. That postfix form is very convenient for building the tree using a stack.</span>
+      </div>
+    </section>
+
+    <!-- ── SECTION 07: Traversals ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Expression Tree Traversals</h2>
+      </div>
+
+      <p class="lesson-para">
+        This is the most important idea: the same expression tree can be read in different traversal orders, and each order gives a different expression notation.
+      </p>
+
+      <div class="traversal-layout">
+        <div class="tree-visual-wrap" style="margin:0;">
+          <div class="tree-visual-label">Sample tree: (A + B) * (C - D)</div>
+          <div class="tree-diagram compact-tree">
+            <svg viewBox="0 0 430 240" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
+              <line x1="215" y1="54" x2="122" y2="120" class="edge"/>
+              <line x1="215" y1="54" x2="308" y2="120" class="edge"/>
+              <line x1="122" y1="120" x2="72" y2="192" class="edge"/>
+              <line x1="122" y1="120" x2="172" y2="192" class="edge"/>
+              <line x1="308" y1="120" x2="258" y2="192" class="edge"/>
+              <line x1="308" y1="120" x2="358" y2="192" class="edge"/>
+              <circle cx="215" cy="42" r="30" class="expr-node operator-node"/><text x="215" y="50" class="expr-node-text operator-text">*</text>
+              <circle cx="122" cy="120" r="27" class="expr-node operator-node"/><text x="122" y="128" class="expr-node-text operator-text">+</text>
+              <circle cx="308" cy="120" r="27" class="expr-node operator-node"/><text x="308" y="128" class="expr-node-text operator-text">-</text>
+              <circle cx="72" cy="192" r="24" class="expr-node operand-node"/><text x="72" y="200" class="expr-node-text operand-text">A</text>
+              <circle cx="172" cy="192" r="24" class="expr-node operand-node"/><text x="172" y="200" class="expr-node-text operand-text">B</text>
+              <circle cx="258" cy="192" r="24" class="expr-node operand-node"/><text x="258" y="200" class="expr-node-text operand-text">C</text>
+              <circle cx="358" cy="192" r="24" class="expr-node operand-node"/><text x="358" y="200" class="expr-node-text operand-text">D</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="traversal-cards">
+          <div class="traversal-card">
+            <span class="traversal-name">Inorder Traversal</span>
+            <span class="traversal-rule">Left → Root → Right</span>
+            <p><strong>Infix:</strong> ((A + B) * (C - D))</p>
+            <small>Human-friendly form, usually with parentheses to preserve meaning.</small>
+          </div>
+          <div class="traversal-card">
+            <span class="traversal-name">Preorder Traversal</span>
+            <span class="traversal-rule">Root → Left → Right</span>
+            <p><strong>Prefix:</strong> * + A B - C D</p>
+            <small>Operator appears before its operands.</small>
+          </div>
+          <div class="traversal-card">
+            <span class="traversal-name">Postorder Traversal</span>
+            <span class="traversal-rule">Left → Right → Root</span>
+            <p><strong>Postfix:</strong> A B + C D - *</p>
+            <small>Operator appears after its operands; useful for stack evaluation.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 08: Evaluation ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">08</span>
+        <h2 class="section-title">Expression Evaluation</h2>
+      </div>
+
+      <p class="lesson-para">
+        Expression trees are evaluated from the leaves upward. First evaluate the children, then apply the parent operator.
+      </p>
+
+      <div class="evaluation-layout">
+        <div class="tree-visual-wrap" style="margin:0;">
+          <div class="tree-visual-label">Expression: (5 + 2) * 3</div>
+          <div class="tree-diagram">
+            <svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" class="tree-svg">
+              <line x1="170" y1="54" x2="108" y2="122" class="edge"/>
+              <line x1="170" y1="54" x2="232" y2="122" class="edge"/>
+              <line x1="108" y1="122" x2="70" y2="188" class="edge"/>
+              <line x1="108" y1="122" x2="146" y2="188" class="edge"/>
+              <circle cx="170" cy="42" r="30" class="expr-node operator-node"/><text x="170" y="50" class="expr-node-text operator-text">*</text>
+              <circle cx="108" cy="122" r="27" class="expr-node operator-node"/><text x="108" y="130" class="expr-node-text operator-text">+</text>
+              <circle cx="232" cy="122" r="27" class="expr-node operand-node"/><text x="232" y="130" class="expr-node-text operand-text">3</text>
+              <circle cx="70" cy="188" r="25" class="expr-node operand-node"/><text x="70" y="196" class="expr-node-text operand-text">5</text>
+              <circle cx="146" cy="188" r="25" class="expr-node operand-node"/><text x="146" y="196" class="expr-node-text operand-text">2</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="eval-steps">
+          <div class="eval-step">
+            <span class="eval-num">1</span>
+            <span>Evaluate the left subtree: <strong>5 + 2 = 7</strong></span>
+          </div>
+          <div class="eval-step">
+            <span class="eval-num">2</span>
+            <span>Use that result at the root: <strong>7 * 3</strong></span>
+          </div>
+          <div class="eval-step">
+            <span class="eval-num">3</span>
+            <span>Final answer: <strong>21</strong></span>
+          </div>
+          <div class="result-badge">Result = 21</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 09: Expression Tree vs Binary Tree ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">09</span>
+        <h2 class="section-title">Expression Tree vs Binary Tree</h2>
+      </div>
+
+      <p class="lesson-para">
+        An expression tree is a special use of a binary tree. The structure is binary, but the meaning of each node is specific to expressions.
+      </p>
+
+      <div class="table-wrap">
+        <table class="ids-table comparison-table">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Binary Tree</th>
+              <th>Expression Tree</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Purpose</td>
+              <td>General hierarchical data storage.</td>
+              <td>Represents arithmetic or logical expressions.</td>
+            </tr>
+            <tr>
+              <td>Data Stored</td>
+              <td>Any kind of value.</td>
+              <td>Operators and operands.</td>
+            </tr>
+            <tr>
+              <td>Structure</td>
+              <td>Each node can have up to two children.</td>
+              <td>Operators usually have two children; operands are leaves.</td>
+            </tr>
+            <tr>
+              <td>Usage</td>
+              <td>Used for general tree algorithms.</td>
+              <td>Used for parsing, conversion, and evaluation.</td>
+            </tr>
+            <tr>
+              <td>Traversal Meaning</td>
+              <td>Shows visit order.</td>
+              <td>Produces infix, prefix, or postfix expressions.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECTION 10: Advantages ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">10</span>
+        <h2 class="section-title">Advantages</h2>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card"><div class="app-icon">=</div><h4 class="app-title">Easy Evaluation</h4><p class="app-desc">Evaluate children first, then apply the parent operator.</p></div>
+        <div class="app-card"><div class="app-icon">⚙</div><h4 class="app-title">Useful for Compilers</h4><p class="app-desc">Compilers use tree forms to analyze and generate code.</p></div>
+        <div class="app-card"><div class="app-icon">()</div><h4 class="app-title">Supports Precedence</h4><p class="app-desc">Parentheses and operator priority become part of the shape.</p></div>
+        <div class="app-card"><div class="app-icon">∗</div><h4 class="app-title">Handles Complexity</h4><p class="app-desc">Large expressions can be broken into smaller subexpressions.</p></div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 11: Limitations ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">11</span>
+        <h2 class="section-title">Limitations</h2>
+      </div>
+
+      <div class="warning-grid">
+        <div class="warning-card">
+          <span class="warning-icon">M</span>
+          <h4>Extra Memory</h4>
+          <p>Each node stores data plus child pointers, so it uses more memory than a plain expression string.</p>
+        </div>
+        <div class="warning-card">
+          <span class="warning-icon">↧</span>
+          <h4>Complex Construction</h4>
+          <p>The tree usually needs parsing or postfix conversion before it can be built.</p>
+        </div>
+        <div class="warning-card">
+          <span class="warning-icon">1</span>
+          <h4>Not Always Needed</h4>
+          <p>For very simple calculations, building a full tree may be unnecessary overhead.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 12: Applications ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">12</span>
+        <h2 class="section-title">Applications</h2>
+      </div>
+
+      <p class="lesson-para">
+        Expression trees appear wherever programs need to understand or evaluate formulas, expressions, or query logic.
+      </p>
+
+      <div class="apps-grid">
+        <div class="app-card"><div class="app-icon">C</div><h4 class="app-title">Compilers</h4><p class="app-desc">Represent parsed expressions before optimization and code generation.</p></div>
+        <div class="app-card"><div class="app-icon">I</div><h4 class="app-title">Interpreters</h4><p class="app-desc">Execute expressions directly from a tree-like representation.</p></div>
+        <div class="app-card"><div class="app-icon">∑</div><h4 class="app-title">Math Evaluation</h4><p class="app-desc">Evaluate formulas in a clear bottom-up order.</p></div>
+        <div class="app-card"><div class="app-icon">⌗</div><h4 class="app-title">Calculators</h4><p class="app-desc">Handle brackets and operator precedence correctly.</p></div>
+        <div class="app-card"><div class="app-icon">SQL</div><h4 class="app-title">SQL Query Processing</h4><p class="app-desc">Represent conditions and logical expressions in query plans.</p></div>
+        <div class="app-card"><div class="app-icon">{ }</div><h4 class="app-title">Language Parsing</h4><p class="app-desc">Build syntax structures for programming language expressions.</p></div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 13: Implementation in C ── -->
+    <section class="lesson-section">
+      <div class="section-header">
+        <span class="section-number">13</span>
+        <h2 class="section-title">Implementation in C</h2>
+        <div class="visualize-button-mount" data-visualize-link="expression-tree-visualize.html"></div>
+      </div>
+
+      <p class="lesson-para">
+        The basic C structure is small. Each node stores one character and two child pointers. Operators and operands are stored in the same node type.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">C — Node Structure</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content">struct node {
+    char data;
+    struct node* left;
+    struct node* right;
+};</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">C — Create a Node</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content">#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+
+struct node* createNode(char value) {
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    newNode-&gt;data = value;
+    newNode-&gt;left = NULL;
+    newNode-&gt;right = NULL;
+    return newNode;
+}</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">C — Simple Manual Tree</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre class="code-content">struct node* root = createNode('*');
+root-&gt;left = createNode('+');
+root-&gt;right = createNode('C');
+
+root-&gt;left-&gt;left = createNode('A');
+root-&gt;left-&gt;right = createNode('B');</pre>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">👁️</span>
+        <span>This creates the tree for <strong>(A + B) * C</strong>. A full program would usually build this automatically from postfix or another parsed form.</span>
+      </div>
+    </section>
+
+    <!-- Sparkle decoration -->
+    <div class="sparkle-deco" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27 6 L29.5 21 L44 19 L32 28 L38 42 L27 33 L16 42 L22 28 L10 19 L24.5 21 Z"
+              fill="url(#sparkleGradExpr)" opacity="0.18"/>
+        <path d="M44 10 L45 14 L49 15 L45 16 L44 20 L43 16 L39 15 L43 14 Z"
+              fill="#3b6cff" opacity="0.35"/>
+        <circle cx="12" cy="38" r="2.5" fill="#7c3aed" opacity="0.25"/>
+        <defs>
+          <linearGradient id="sparkleGradExpr" x1="10" y1="6" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+  </div><!-- /lesson-content-box -->
+
+</main>
+
+<script src="expression-tree.js"></script>
+<link rel="stylesheet" href="../../../spark/spark.css">
+<script src="../../../spark/spark.js"></script>
+<script src="../../../sidebar/sidebar.js"></script>
+<script src="../../../visualize-button/visualize-button.js"></script>
+</body>
+</html>
