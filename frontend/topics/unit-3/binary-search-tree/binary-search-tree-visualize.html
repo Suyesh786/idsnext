@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary Search Tree - Visualize Code | iDS Studio Next</title>
+  <link rel="stylesheet" href="binary-search-tree-visualize.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="viz-body">
+  <header class="viz-header">
+    <div class="viz-header-left">
+      <a href="binary-search-tree.html" class="viz-back-btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+        </svg>
+        Back to Binary Search Tree
+      </a>
+      <div class="viz-header-divider"></div>
+      <div class="viz-header-title-wrap">
+        <span class="viz-header-eyebrow">Binary Search Tree</span>
+        <h1 class="viz-header-title">Visualize Code</h1>
+      </div>
+    </div>
+    <div class="viz-header-right">
+      <div class="viz-operation-badge">
+        <span class="viz-op-dot"></span>
+        Framework Ready
+      </div>
+      <div class="viz-step-counter">
+        Step <span id="headerStepNum">0</span> / <span id="headerStepTotal">0</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="viz-op-selector-bar" aria-label="Binary search tree operations">
+    <button class="viz-op-pill viz-op-pill-active" data-mode="insert" disabled>
+      <span class="viz-op-pill-icon">+</span>
+      Insert
+    </button>
+    <button class="viz-op-pill" data-mode="search" disabled>
+      <span class="viz-op-pill-icon">?</span>
+      Search
+    </button>
+    <button class="viz-op-pill viz-op-pill-delete" data-mode="delete" disabled>
+      <span class="viz-op-pill-icon">-</span>
+      Delete
+    </button>
+    <button class="viz-op-pill" data-mode="traversal" disabled>
+      <span class="viz-op-pill-icon">T</span>
+      Traversal
+    </button>
+  </nav>
+
+  <main class="viz-main" id="mainContent">
+    <section class="viz-panel viz-code-panel">
+      <div class="viz-panel-header">
+        <div class="viz-panel-title-row">
+          <span class="viz-panel-icon">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </span>
+          <span class="viz-panel-title">C Code</span>
+        </div>
+        <span class="viz-lang-tag">C</span>
+      </div>
+
+      <div class="viz-code-block">
+        <div class="viz-code-lines" id="codeLines"></div>
+      </div>
+
+      <div class="viz-complexity-bar">
+        <span class="viz-complexity-label">Time</span>
+        <span class="viz-complexity-val">TBD</span>
+        <span class="viz-complexity-sep">.</span>
+        <span class="viz-complexity-label">Space</span>
+        <span class="viz-complexity-val">TBD</span>
+      </div>
+    </section>
+
+    <section class="viz-panel viz-anim-panel">
+      <div class="viz-panel-header">
+        <div class="viz-panel-title-row">
+          <span class="viz-panel-icon">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.986.074-1.95.292-2.843A7 7 0 1010 14h2z"/>
+            </svg>
+          </span>
+          <span class="viz-panel-title">Animation</span>
+        </div>
+        <span class="viz-anim-status" id="animStatus">Static</span>
+      </div>
+
+      <div class="viz-tree-stage" id="treeStage">
+        <svg class="viz-bst-svg" viewBox="0 0 520 320" role="img" aria-labelledby="bstTitle bstDesc">
+          <title id="bstTitle">Static binary search tree example</title>
+          <desc id="bstDesc">Root 50 with children 30 and 70. Node 30 has children 20 and 40. Node 70 has children 60 and 80.</desc>
+          <g class="viz-bst-edges">
+            <line x1="260" y1="72" x2="155" y2="142"></line>
+            <line x1="260" y1="72" x2="365" y2="142"></line>
+            <line x1="155" y1="142" x2="92" y2="222"></line>
+            <line x1="155" y1="142" x2="218" y2="222"></line>
+            <line x1="365" y1="142" x2="302" y2="222"></line>
+            <line x1="365" y1="142" x2="428" y2="222"></line>
+          </g>
+          <g class="viz-bst-node viz-bst-root" transform="translate(260 72)">
+            <circle r="27"></circle>
+            <text y="5">50</text>
+          </g>
+          <g class="viz-bst-node" transform="translate(155 142)">
+            <circle r="27"></circle>
+            <text y="5">30</text>
+          </g>
+          <g class="viz-bst-node" transform="translate(365 142)">
+            <circle r="27"></circle>
+            <text y="5">70</text>
+          </g>
+          <g class="viz-bst-node" transform="translate(92 222)">
+            <circle r="27"></circle>
+            <text y="5">20</text>
+          </g>
+          <g class="viz-bst-node" transform="translate(218 222)">
+            <circle r="27"></circle>
+            <text y="5">40</text>
+          </g>
+          <g class="viz-bst-node" transform="translate(302 222)">
+            <circle r="27"></circle>
+            <text y="5">60</text>
+          </g>
+          <g class="viz-bst-node" transform="translate(428 222)">
+            <circle r="27"></circle>
+            <text y="5">80</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="viz-controls">
+        <button class="viz-ctrl-btn viz-ctrl-reset" id="btnReset" disabled>
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+          </svg>
+          Reset
+        </button>
+        <div class="viz-ctrl-center">
+          <button class="viz-ctrl-btn" id="btnPrev" disabled>
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            Prev
+          </button>
+          <button class="viz-ctrl-btn viz-ctrl-play" id="btnPlay" disabled>
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+            </svg>
+            Play
+          </button>
+          <button class="viz-ctrl-btn" id="btnNext" disabled>
+            Next
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+        <div class="viz-progress-dots" id="progressDots" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="viz-panel viz-explain-panel">
+      <div class="viz-panel-header">
+        <div class="viz-panel-title-row">
+          <span class="viz-panel-icon">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+          </span>
+          <span class="viz-panel-title">Explanation</span>
+        </div>
+      </div>
+
+      <div class="viz-explain-body">
+        <div class="viz-explain-step-card">
+          <div class="viz-explain-step-num">Static Framework</div>
+          <h2 class="viz-explain-title">Binary Search Tree</h2>
+          <p class="viz-explain-text">
+            The example tree keeps smaller values on the left and larger values on the right.
+          </p>
+        </div>
+
+        <div class="viz-explain-what">
+          <div class="viz-what-header">Example Structure</div>
+          <div class="viz-what-body">
+            Root 50 connects to 30 and 70. The leaf values are 20, 40, 60, and 80.
+          </div>
+        </div>
+
+        <div class="viz-step-list">
+          <div class="viz-step-item viz-step-active">
+            <div class="viz-step-dot"></div>
+            <span>Visualizer shell</span>
+          </div>
+          <div class="viz-step-item">
+            <div class="viz-step-dot"></div>
+            <span>Insert operation</span>
+          </div>
+          <div class="viz-step-item">
+            <div class="viz-step-dot"></div>
+            <span>Search operation</span>
+          </div>
+          <div class="viz-step-item">
+            <div class="viz-step-dot"></div>
+            <span>Delete operation</span>
+          </div>
+          <div class="viz-step-item">
+            <div class="viz-step-dot"></div>
+            <span>Traversal operation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="binary-search-tree-visualize.js"></script>
+</body>
+</html>
